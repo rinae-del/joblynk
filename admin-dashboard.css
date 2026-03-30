@@ -1131,10 +1131,10 @@
     .admin-table tbody tr {
         background: var(--admin-surface);
         border-radius: var(--admin-radius);
-        padding: 16px;
+        padding: 0;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 0;
         border: 1px solid var(--admin-border);
         box-shadow: var(--admin-shadow-sm);
         position: relative;
@@ -1142,20 +1142,125 @@
         transition: all var(--admin-transition);
     }
 
-    .admin-table tbody tr::before {
+    /* ─── User Card: redesigned mobile layout ─── */
+    .card-row-users {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+
+    /* Header area: avatar + name + role */
+    .card-row-users td:first-child {
+        padding: 16px 16px 12px !important;
+        border-bottom: 1px solid var(--admin-border) !important;
+        background: var(--admin-surface-alt);
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    .card-row-users td:first-child::before { display: none; }
+
+    .card-row-users td:first-child .table-user {
+        width: 100%;
+    }
+
+    .card-row-users td:first-child .table-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        font-size: 0.82rem;
+    }
+
+    .card-row-users td:first-child .entity-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+    .card-row-users td:first-child .entity-sub {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    /* Middle detail cells: compact grid-like rows */
+    .card-row-users td:not(:first-child):not(.actions-cell) {
+        padding: 10px 16px;
+        border-bottom: 1px solid #F1F5F9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-row-users td:not(:first-child):not(.actions-cell)::before {
+        content: attr(data-label);
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+    }
+
+    /* Hide the Email cell on mobile since it's visible in the entity-sub or not needed */
+    .card-row-users td[data-label="Email"] {
+        font-size: 0.82rem;
+    }
+
+    .card-row-users td[data-label="Email"] .table-value span:first-child {
+        font-size: 0.82rem;
+        word-break: break-all;
+    }
+
+    .card-row-users td[data-label="Role"] .role-tag {
+        font-size: 0.72rem;
+        padding: 3px 10px;
+    }
+
+    .card-row-users td[data-label="Status"] {
+        font-size: 0.82rem;
+    }
+
+    .card-row-users td[data-label="Joined"] .table-value {
+        text-align: right;
+    }
+
+    .card-row-users td[data-label="Joined"] .table-value span:first-child { font-size: 0.82rem; }
+    .card-row-users td[data-label="Joined"] .table-note { font-size: 0.68rem; }
+
+    /* Actions row: bottom of card */
+    .card-row-users td.actions-cell {
+        padding: 12px 16px !important;
+        background: var(--admin-surface-alt);
+        border-top: 1px solid var(--admin-border) !important;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end !important;
+    }
+
+    .card-row-users td.actions-cell::before { display: none; }
+
+    .card-row-users td.actions-cell .tbl-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 0.85rem;
+    }
+
+    /* Generic card stripe — keep for non-user tables */
+    .admin-table tbody tr:not(.card-row-users):not(.card-row-jobs):not(.card-row-apps)::before {
         content: '';
         position: absolute;
         top: 0; left: 0;
         width: 4px;
         height: 100%;
         border-radius: 4px 0 0 4px;
+        background: linear-gradient(180deg, #94A3B8, #CBD5E1);
     }
 
     /* Color-coded side stripe per table type */
-    .card-row-users::before   { background: linear-gradient(180deg, #3B82F6, #6366F1); }
-    .card-row-jobs::before    { background: linear-gradient(180deg, #059669, #10B981); }
-    .card-row-apps::before    { background: linear-gradient(180deg, #7C3AED, #A78BFA); }
+    .card-row-jobs::before    { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 4px 0 0 4px; background: linear-gradient(180deg, #059669, #10B981); }
+    .card-row-apps::before    { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 4px 0 0 4px; background: linear-gradient(180deg, #7C3AED, #A78BFA); }
 
+    /* Generic fallback for older tables */
     .admin-table tbody td {
         padding: 0;
         border-bottom: none;
@@ -1165,7 +1270,7 @@
         gap: 8px;
     }
 
-    .admin-table tbody td::before {
+    .admin-table tbody td:not(.card-row-users td)::before {
         content: attr(data-label);
         font-size: 0.68rem;
         font-weight: 600;
@@ -1176,8 +1281,8 @@
         min-width: 72px;
     }
 
-    /* First cell (entity cell) – full width */
-    .admin-table tbody td:first-child {
+    /* First cell (entity cell) – full width — non-user tables */
+    .admin-table tbody td:first-child:not(.card-row-users td:first-child) {
         flex-direction: column;
         align-items: flex-start;
         padding-bottom: 10px;
@@ -1185,19 +1290,19 @@
         margin-bottom: 2px;
     }
 
-    .admin-table tbody td:first-child::before {
+    .admin-table tbody td:first-child:not(.card-row-users td:first-child)::before {
         display: none;
     }
 
-    /* Actions cell */
-    .admin-table tbody td.actions-cell {
+    /* Actions cell — non-user tables */
+    .admin-table tbody td.actions-cell:not(.card-row-users td.actions-cell) {
         padding-top: 10px;
         border-top: 1px solid #F1F5F9;
         margin-top: 2px;
         justify-content: flex-start;
     }
 
-    .admin-table tbody td.actions-cell::before {
+    .admin-table tbody td.actions-cell:not(.card-row-users td.actions-cell)::before {
         display: none;
     }
 
@@ -1311,6 +1416,32 @@
         font-size: 0.85rem;
     }
 
+    .filter-row {
+        flex-wrap: wrap;
+    }
+
+    .filter-row .filter-select {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 0;
+    }
+
+    .card-row-users td:first-child {
+        padding: 14px 14px 10px !important;
+    }
+
+    .card-row-users td:not(:first-child):not(.actions-cell) {
+        padding: 8px 14px;
+    }
+
+    .card-row-users td.actions-cell {
+        padding: 10px 14px !important;
+    }
+
+    .card-row-users td.actions-cell .tbl-btn {
+        width: 38px;
+        height: 38px;
+    }
+
     .btab-more-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1381,14 +1512,30 @@
     letter-spacing: 0.04em;
 }
 
-/* Section title group with count badge */
-.section-title-group {
+/* ── Users Toolbar (search + filters) ── */
+.users-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.search-box-full {
+    width: 100%;
+}
+
+.search-box-full input {
+    width: 100%;
+}
+
+.filter-row {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
-.section-count-badge {
+.filter-result-count {
     background: var(--admin-accent-soft);
     color: var(--admin-accent);
     font-size: 0.72rem;
@@ -1396,6 +1543,7 @@
     padding: 3px 10px;
     border-radius: 20px;
     letter-spacing: 0.02em;
+    margin-left: auto;
 }
 
 /* ======================================
@@ -1662,14 +1810,50 @@
         right: 0;
     }
 
-    .section-title-row {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 12px;
+    /* Users toolbar mobile */
+    .users-toolbar {
+        gap: 10px;
     }
 
-    .section-title-group {
-        flex-wrap: wrap;
+    .search-box-full {
+        position: relative;
+    }
+
+    .search-box-full input {
+        padding: 12px 16px 12px 42px;
+        border-radius: 28px;
+        font-size: 0.88rem;
+        border: 1px solid var(--admin-border);
+        background: var(--admin-surface);
+        box-shadow: var(--admin-shadow-sm);
+    }
+
+    .search-box-full i {
+        left: 16px;
+        font-size: 0.85rem;
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-row .filter-select {
+        flex: 1;
+        padding: 10px 32px 10px 12px;
+        border-radius: 12px;
+        font-size: 0.82rem;
+    }
+
+    .filter-result-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 16px;
+        font-size: 0.75rem;
     }
 }
 

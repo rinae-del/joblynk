@@ -55,16 +55,12 @@
 
         <!-- ── Filters + Controls ── -->
         <section class="dash-section">
-            <div class="section-title-row">
-                <div class="section-title-group">
-                    <h2><i class="fa-solid fa-users section-icon" style="color:#3B82F6"></i> Users</h2>
-                    <span class="section-count-badge" id="userCountBadge">0</span>
+            <div class="users-toolbar">
+                <div class="search-box search-box-full">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="userSearch" placeholder="Search by name or email..." oninput="advancedFilterUsers()">
                 </div>
-                <div class="table-controls">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="userSearch" placeholder="Search by name or email..." oninput="advancedFilterUsers()">
-                    </div>
+                <div class="filter-row">
                     <select class="filter-select" id="userRoleFilter" onchange="advancedFilterUsers()">
                         <option value="">All Roles</option>
                         <option value="job_seeker">Job Seeker</option>
@@ -76,6 +72,7 @@
                         <option value="verified">Verified</option>
                         <option value="unverified">Unverified</option>
                     </select>
+                    <span class="filter-result-count" id="userCountBadge">0</span>
                 </div>
             </div>
             <div class="admin-table-wrapper">
