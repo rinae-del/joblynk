@@ -18,7 +18,7 @@
 }
 
 body.landing-page {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;

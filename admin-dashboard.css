@@ -22,7 +22,11 @@
 
 /* ── Admin Hero ── */
 .admin-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 30%, #7f1d1d 70%, #991b1b 100%);
+    background:
+        radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 30%, #7f1d1d 70%, #991b1b 100%);
+    background-size: 20px 20px, 100% 100%;
+    border: 1px solid rgba(255,255,255,.06);
 }
 
 .admin-hero::before {
@@ -350,8 +354,12 @@
    ====================================== */
 .table-controls {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
+    padding: 6px;
+    background: var(--bg);
+    border-radius: 14px;
+    border: 1px solid var(--border);
 }
 
 .search-box {
@@ -371,15 +379,15 @@
 
 .search-box input {
     padding: 11px 16px 11px 38px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
     font-family: var(--font);
     font-size: 0.88rem;
     color: var(--text);
-    background: var(--bg);
+    background: var(--bg-white);
     width: 260px;
     transition: all 0.25s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow: none;
 }
 
 .search-box input::placeholder {
@@ -391,31 +399,31 @@
     outline: none;
     border-color: var(--accent, #3B4BA6);
     background: var(--bg-white);
-    box-shadow: 0 0 0 4px rgba(59, 75, 166, 0.1), 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 0 0 3px rgba(59, 75, 166, 0.1);
 }
 
 .filter-select {
     padding: 11px 36px 11px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
     font-family: var(--font);
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--text);
-    background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+    background: var(--bg-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6'/%3E%3C/svg%3E") no-repeat right 12px center;
     background-size: 12px;
     appearance: none;
     -webkit-appearance: none;
     cursor: pointer;
     transition: all 0.25s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow: none;
 }
 
 .filter-select:focus {
     outline: none;
     border-color: var(--accent, #3B4BA6);
     background-color: var(--bg-white);
-    box-shadow: 0 0 0 4px rgba(59, 75, 166, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 75, 166, 0.1);
 }
 
 .admin-table-wrapper {
@@ -950,38 +958,39 @@
     }
 
     .table-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+        flex-wrap: wrap;
+        gap: 6px;
         width: 100%;
+        padding: 8px;
+        border-radius: 16px;
     }
 
     .search-box {
-        width: 100%;
+        flex: 1 1 180px;
     }
 
     .search-box input {
         width: 100%;
-        padding: 14px 16px 14px 42px;
-        font-size: 0.95rem;
-        border-radius: 14px;
+        padding: 12px 16px 12px 40px;
+        font-size: 0.9rem;
+        border-radius: 12px;
         background: var(--bg-white);
-        border: 1.5px solid var(--border);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid transparent;
     }
 
     .search-box i {
-        left: 16px;
-        font-size: 0.9rem;
+        left: 14px;
+        font-size: 0.85rem;
     }
 
     .filter-select {
-        width: 100%;
-        padding: 14px 40px 14px 16px;
-        font-size: 0.9rem;
-        border-radius: 14px;
+        flex: 0 0 auto;
+        min-width: 120px;
+        padding: 12px 36px 12px 14px;
+        font-size: 0.85rem;
+        border-radius: 12px;
         background-color: var(--bg-white);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid transparent;
     }
 
     /* ── Mobile Card Tables ── */
@@ -1259,17 +1268,21 @@
     }
 
     /* Better mobile search styling for 480px */
+    .table-controls {
+        flex-direction: column;
+    }
+
     .search-box input {
-        padding: 13px 14px 13px 40px;
-        font-size: 0.9rem;
-        border-radius: 12px;
+        padding: 12px 14px 12px 38px;
+        font-size: 0.88rem;
+        border-radius: 10px;
     }
 
     .filter-select {
         width: 100%;
-        padding: 13px 36px 13px 14px;
-        font-size: 0.88rem;
-        border-radius: 12px;
+        padding: 12px 36px 12px 14px;
+        font-size: 0.85rem;
+        border-radius: 10px;
     }
 
     .activity-item {

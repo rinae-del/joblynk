@@ -572,6 +572,17 @@ function switchView(viewId) {
     if (target) {
         target.classList.add('active');
     }
+
+    // Update breadcrumb
+    const breadcrumbMap = {
+        'overview': 'Recruiter Overview',
+        'post-job': 'Post a Job',
+        'my-jobs': 'My Jobs',
+        'candidates': 'Candidates',
+        'messages': 'Messages'
+    };
+    const crumb = document.getElementById('breadcrumbTitle');
+    if (crumb) crumb.textContent = breadcrumbMap[viewId] || 'Recruiter';
     
     // Update nav active states
     const navItems = document.querySelectorAll('.sidebar-nav .nav-item');

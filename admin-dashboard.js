@@ -23,6 +23,20 @@ function switchView(viewName) {
     const targetView = document.getElementById('view-' + viewName);
     if (targetView) targetView.classList.add('active');
 
+    // Update breadcrumb
+    const breadcrumbMap = {
+        'overview': 'Admin Overview',
+        'users': 'Users',
+        'recruiters': 'Recruiters',
+        'jobs': 'Job Listings',
+        'applications': 'Applications',
+        'documents': 'Documents',
+        'reports': 'Reports',
+        'settings': 'Settings'
+    };
+    const crumb = document.getElementById('breadcrumbTitle');
+    if (crumb) crumb.textContent = breadcrumbMap[viewName] || 'Admin';
+
     // Update sidebar nav active state
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(n => n.classList.remove('active'));
     const navMap = {

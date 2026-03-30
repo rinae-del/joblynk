@@ -8,10 +8,10 @@
     <meta name="description"
         content="Platform-wide administration dashboard for Joblynk. Manage users, recruiters, jobs, and system settings.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=5">
-    <link rel="stylesheet" href="admin-dashboard.css?v=5">
+    <link rel="stylesheet" href="dashboard.css?v=6">
+    <link rel="stylesheet" href="admin-dashboard.css?v=6">
     <script src="auth-guard.js" data-role="admin"></script>
 </head>
 
@@ -84,6 +84,13 @@
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="dashboard.html" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current" id="breadcrumbTitle">Admin Overview</span>
+        </nav>
 
         <!-- ================= OVERVIEW VIEW ================= -->
         <div id="view-overview" class="admin-view active">
@@ -834,8 +841,8 @@
 
     </main>
 
-    <script src="jobs-store.js?v=5"></script>
-    <script src="admin-dashboard.js?v=5"></script>
+    <script src="jobs-store.js?v=6"></script>
+    <script src="admin-dashboard.js?v=6"></script>
 </body>
 
 </html>

@@ -2,7 +2,7 @@
    DESIGN TOKENS
    ====================================== */
 :root {
-    --font: 'Inter', system-ui, sans-serif;
+    --font: 'Plus Jakarta Sans', system-ui, sans-serif;
     --sidebar-bg: #1E293B;
     --sidebar-w: 220px;
     --sidebar-hover: rgba(255, 255, 255, .08);
@@ -216,12 +216,13 @@ body {
     left: 0;
     right: 0;
     height: 56px;
-    background: var(--sidebar-bg);
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
     z-index: 600;
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,.06);
 }
 
 .mobile-topbar .topbar-brand {
@@ -232,38 +233,43 @@ body {
 }
 
 .mobile-topbar .topbar-logo {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #fff;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .mobile-topbar .topbar-badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 0.6rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.58rem;
     font-weight: 700;
-    letter-spacing: .06em;
+    letter-spacing: .08em;
     text-transform: uppercase;
-    color: #fff;
-    background: rgba(255, 255, 255, .15);
+    color: rgba(255,255,255,.85);
+    background: linear-gradient(135deg, rgba(99,102,241,.35), rgba(139,92,246,.25));
+    border: 1px solid rgba(255,255,255,.1);
 }
 
 .mobile-topbar .topbar-hamburger {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    background: rgba(255,255,255,.1);
-    border: none;
-    color: #fff;
-    font-size: 1.15rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
+    transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -306,13 +312,17 @@ body {
    WELCOME HERO
    ====================================== */
 .welcome-hero {
-    background: linear-gradient(135deg, #1E293B 0%, #334155 40%, #3B4BA6 100%);
-    border-radius: 16px;
-    padding: 40px 44px 36px;
+    background:
+        radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(135deg, #0F172A 0%, #1E1B4B 35%, #312E81 65%, #4338CA 100%);
+    background-size: 20px 20px, 100% 100%;
+    border-radius: 20px;
+    padding: 44px 48px 40px;
     margin-bottom: 40px;
     color: #fff;
     position: relative;
     overflow: hidden;
+    border: 1px solid rgba(255,255,255,.08);
 }
 
 .welcome-hero::before {
@@ -343,14 +353,15 @@ body {
 }
 
 .welcome-text h1 {
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: 800;
-    margin-bottom: 8px;
-    letter-spacing: -.02em;
+    margin-bottom: 10px;
+    letter-spacing: -.03em;
+    line-height: 1.2;
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #93C5FD, #60A5FA, #A78BFA);
+    background: linear-gradient(135deg, #93C5FD, #818CF8, #C084FC);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -419,6 +430,9 @@ body {
 
 .stat-item {
     text-align: center;
+    background: rgba(255,255,255,.06);
+    padding: 12px 20px;
+    border-radius: 12px;
 }
 
 .stat-number {
@@ -460,8 +474,7 @@ body {
 }
 
 .section-icon {
-    font-size: .9rem;
-    color: var(--accent);
+    display: none;
 }
 
 .section-arrow {
@@ -483,6 +496,38 @@ body {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--accent-light);
+}
+
+/* ======================================
+   BREADCRUMB
+   ====================================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-size: 0.82rem;
+}
+
+.breadcrumb-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.breadcrumb-link:hover {
+    color: var(--accent);
+}
+
+.breadcrumb-sep {
+    color: var(--border);
+    font-size: 0.7rem;
+}
+
+.breadcrumb-current {
+    color: var(--text);
+    font-weight: 600;
 }
 
 /* ======================================
@@ -819,6 +864,9 @@ body {
 .meta-chip i {
     font-size: .68rem;
     color: var(--text-muted);
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
 }
 
 .table-value {
@@ -871,6 +919,9 @@ body {
 .app-status-badge {
     padding: 6px 10px;
     border-radius: 999px;
+    white-space: nowrap;
+    font-size: .72rem;
+    font-weight: 600;
 }
 
 .app-status-badge.is-submitted {
@@ -1024,6 +1075,9 @@ body {
 .job-meta-pill i {
     font-size: .68rem;
     color: var(--text-muted);
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
 }
 
 .job-insights {
@@ -1042,6 +1096,9 @@ body {
 
 .job-insight i {
     color: var(--job-accent, #3B4BA6);
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
 }
 
 .job-insight strong {
@@ -1102,6 +1159,7 @@ body {
     flex-shrink: 0;
     border: 1px solid transparent;
     align-self: flex-start;
+    white-space: nowrap;
 }
 
 .job-badge.new {
@@ -1364,6 +1422,11 @@ body {
 @media (max-width: 480px) {
     .main-content {
         padding: 66px 12px 30px;
+    }
+
+    .breadcrumb {
+        margin-bottom: 16px;
+        font-size: 0.78rem;
     }
 
     .welcome-hero {
