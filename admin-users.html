@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css?v=10">
-    <link rel="stylesheet" href="admin-dashboard.css?v=10">
+    <link rel="stylesheet" href="admin-dashboard.css?v=11">
     <script src="auth-guard.js?v=8" data-role="admin"></script>
 </head>
 
@@ -21,18 +21,60 @@
     <main class="main-content">
         <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Users"}]'></nav>
 
+        <!-- ── User Stats Banner ── -->
+        <div class="user-stats-banner">
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-users"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalUsersPage">0</span>
+                    <span class="user-stat-label">Total Users</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(16,185,129,0.1); color:#10B981;"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statVerifiedUsers">0</span>
+                    <span class="user-stat-label">Verified</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(245,158,11,0.1); color:#F59E0B;"><i class="fa-solid fa-clock"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statUnverifiedUsers">0</span>
+                    <span class="user-stat-label">Unverified</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(126,34,206,0.1); color:#7C3AED;"><i class="fa-solid fa-user-plus"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statNewUsers30d">0</span>
+                    <span class="user-stat-label">New (30 days)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Filters + Controls ── -->
         <section class="dash-section">
             <div class="section-title-row">
-                <h2><i class="fa-solid fa-users section-icon" style="color:#3B82F6"></i> User Management</h2>
+                <div class="section-title-group">
+                    <h2><i class="fa-solid fa-users section-icon" style="color:#3B82F6"></i> Users</h2>
+                    <span class="section-count-badge" id="userCountBadge">0</span>
+                </div>
                 <div class="table-controls">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="userSearch" placeholder="Search users..." oninput="filterTable('userSearch','usersTableBody')">
+                        <input type="text" id="userSearch" placeholder="Search by name or email..." oninput="advancedFilterUsers()">
                     </div>
-                    <select class="filter-select" id="userRoleFilter" onchange="filterTable('userSearch','usersTableBody')">
+                    <select class="filter-select" id="userRoleFilter" onchange="advancedFilterUsers()">
                         <option value="">All Roles</option>
-                        <option value="Job Seeker">Job Seeker</option>
-                        <option value="Premium">Premium</option>
+                        <option value="job_seeker">Job Seeker</option>
+                        <option value="recruiter">Recruiter</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <select class="filter-select" id="userStatusFilter" onchange="advancedFilterUsers()">
+                        <option value="">All Status</option>
+                        <option value="verified">Verified</option>
+                        <option value="unverified">Unverified</option>
                     </select>
                 </div>
             </div>
@@ -46,13 +88,26 @@
             </div>
             <div class="table-footer">
                 <span class="table-info" id="usersTableInfo">Loading users...</span>
+                <div class="table-pagination" id="usersPagination"></div>
             </div>
         </section>
     </main>
 
+    <!-- ── User Detail Drawer ── -->
+    <div class="drawer-overlay" id="userDrawerOverlay"></div>
+    <aside class="user-drawer" id="userDrawer">
+        <div class="drawer-header">
+            <h3>User Details</h3>
+            <button class="drawer-close" id="userDrawerClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body" id="userDrawerBody">
+            <!-- populated by JS -->
+        </div>
+    </aside>
+
     <script src="components.js?v=9"></script>
     <script src="jobs-store.js?v=7"></script>
-    <script src="admin-dashboard.js?v=8"></script>
+    <script src="admin-dashboard.js?v=9"></script>
 </body>
 
 </html>

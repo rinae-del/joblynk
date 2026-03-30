@@ -425,6 +425,9 @@ window.saveDeepSeekKey = async function() {
 };
 
 // ── Fetch Real Users from API ──
+const USERS_PER_PAGE = 10;
+let currentUsersPage = 1;
+
 async function fetchAndRenderUsers() {
     const tbody = document.getElementById('usersTableBody');
     const info = document.getElementById('usersTableInfo');
@@ -442,87 +445,10 @@ async function fetchAndRenderUsers() {
             return;
         }
 
-        const users = data.users;
-        adminState.users = users;
-        tbody.innerHTML = '';
-
-        if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No registered users yet</td></tr>';
-            if (info) info.textContent = 'Showing 0 users';
-            return;
-        }
-
-        const avatarColors = [
-            { bg: '#DBEAFE', fg: '#2563EB' },
-            { bg: '#FFF1F2', fg: '#E11D48' },
-            { bg: '#F0FDF4', fg: '#16A34A' },
-            { bg: '#FEF3C7', fg: '#D97706' },
-            { bg: '#EDE9FE', fg: '#7C3AED' },
-            { bg: '#FCE7F3', fg: '#DB2777' },
-            { bg: '#ECFDF5', fg: '#059669' },
-            { bg: '#FEF9C3', fg: '#CA8A04' },
-        ];
-
-        users.forEach((user, idx) => {
-            const initials = ((user.first_name || '')[0] || '') + ((user.last_name || '')[0] || '');
-            const fullName = escapeHtml(`${user.first_name} ${user.last_name}`);
-            const safeEmail = escapeHtml(user.email);
-            const color = avatarColors[idx % avatarColors.length];
-
-            const roleMap = {
-                'job_seeker': { label: 'Job Seeker', cls: 'seeker' },
-                'recruiter': { label: 'Recruiter', cls: 'premium' },
-                'admin': { label: 'Admin', cls: 'premium' }
-            };
-            const role = roleMap[user.role] || { label: escapeHtml(user.role), cls: 'seeker' };
-
-            const verified = parseInt(user.email_verified);
-            const statusDot = verified ? 'active' : 'suspended';
-            const statusText = verified ? 'Verified' : 'Unverified';
-
-            const isSelfOrAdmin = user.role === 'admin';
-            const userId = parseInt(user.id);
-            const impersonateBtn = isSelfOrAdmin 
-                ? `<button class="tbl-btn" title="Cannot Impersonate Admin" disabled style="opacity:0.5; cursor:not-allowed;"><i class="fa-solid fa-user-secret"></i></button>`
-                : `<button class="tbl-btn" title="Impersonate User" onclick="window.location.href='api/admin/impersonate.php?user_id=${userId}'" style="color:#7C3AED"><i class="fa-solid fa-user-secret"></i></button>`;
-
-            const tr = document.createElement('tr');
-            tr.className = 'card-row card-row-users';
-            tr.innerHTML = `
-                <td data-label="User">
-                    <div class="table-user">
-                        <div class="table-avatar" style="background:${color.bg}; color:${color.fg};">${escapeHtml(initials).toUpperCase()}</div>
-                        <div class="entity-block">
-                            <span class="entity-title">${fullName}</span>
-                            <span class="entity-sub">Platform account</span>
-                        </div>
-                    </div>
-                </td>
-                <td data-label="Email">
-                    <div class="table-value">
-                        <span>${safeEmail}</span>
-                        <span class="table-note">${verified ? 'Email confirmed' : 'Verification pending'}</span>
-                    </div>
-                </td>
-                <td data-label="Role"><span class="role-tag ${role.cls}">${role.label}</span></td>
-                <td data-label="Status"><span class="status-dot ${statusDot}"></span> ${statusText}</td>
-                <td data-label="Joined">
-                    <div class="table-value">
-                        <span>${formatDate(user.created_at)}</span>
-                        <span class="table-note">Member since sign up</span>
-                    </div>
-                </td>
-                <td class="actions-cell" data-label="Actions">
-                    ${impersonateBtn}
-                    <button class="tbl-btn" title="View" onclick="adminViewUser(${userId})"><i class="fa-solid fa-eye"></i></button>
-                    ${isSelfOrAdmin ? '' : `<button class="tbl-btn warn" title="${verified ? 'Suspend' : 'Verify'}" onclick="adminToggleUser(${userId}, ${verified ? 0 : 1})"><i class="fa-solid fa-${verified ? 'ban' : 'check'}"></i></button>`}
-                    ${isSelfOrAdmin ? '' : `<button class="tbl-btn danger" title="Delete" onclick="adminDeleteUser(${userId})"><i class="fa-solid fa-trash"></i></button>`}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        if (info) info.textContent = `Showing ${users.length} registered user${users.length !== 1 ? 's' : ''}`;
+        adminState.users = data.users;
+        updateUserPageStats();
+        currentUsersPage = 1;
+        renderUsersPage();
         updateOverviewStats();
 
     } catch (err) {
@@ -532,6 +458,182 @@ async function fetchAndRenderUsers() {
         if (info) info.textContent = 'API unavailable';
         updateOverviewStats();
     }
+}
+
+// ── User Page Stats ──
+function updateUserPageStats() {
+    const users = adminState.users;
+    const verified = users.filter(u => parseInt(u.email_verified));
+    const unverified = users.filter(u => !parseInt(u.email_verified));
+    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    const newUsers = users.filter(u => new Date(u.created_at).getTime() > thirtyDaysAgo);
+
+    setTextById('statTotalUsersPage', users.length.toString());
+    setTextById('statVerifiedUsers', verified.length.toString());
+    setTextById('statUnverifiedUsers', unverified.length.toString());
+    setTextById('statNewUsers30d', newUsers.length.toString());
+
+    var badge = document.getElementById('userCountBadge');
+    if (badge) badge.textContent = users.length;
+}
+
+// ── Advanced User Filtering ──
+function getFilteredUsers() {
+    const search = (document.getElementById('userSearch')?.value || '').toLowerCase();
+    const roleFilter = document.getElementById('userRoleFilter')?.value || '';
+    const statusFilter = document.getElementById('userStatusFilter')?.value || '';
+
+    return adminState.users.filter(user => {
+        const fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).toLowerCase();
+        const email = (user.email || '').toLowerCase();
+        const matchSearch = !search || fullName.includes(search) || email.includes(search);
+        const matchRole = !roleFilter || user.role === roleFilter;
+        const verified = parseInt(user.email_verified);
+        const matchStatus = !statusFilter ||
+            (statusFilter === 'verified' && verified) ||
+            (statusFilter === 'unverified' && !verified);
+        return matchSearch && matchRole && matchStatus;
+    });
+}
+
+window.advancedFilterUsers = function() {
+    currentUsersPage = 1;
+    renderUsersPage();
+};
+
+// ── Paginated Rendering ──
+function renderUsersPage() {
+    const tbody = document.getElementById('usersTableBody');
+    const info = document.getElementById('usersTableInfo');
+    const pagDiv = document.getElementById('usersPagination');
+    if (!tbody) return;
+
+    const filtered = getFilteredUsers();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / USERS_PER_PAGE));
+    if (currentUsersPage > totalPages) currentUsersPage = totalPages;
+    const start = (currentUsersPage - 1) * USERS_PER_PAGE;
+    const pageUsers = filtered.slice(start, start + USERS_PER_PAGE);
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No users match your filters</td></tr>';
+        if (info) info.textContent = 'No results';
+        if (pagDiv) pagDiv.innerHTML = '';
+        return;
+    }
+
+    const avatarColors = [
+        { bg: '#DBEAFE', fg: '#2563EB' },
+        { bg: '#FFF1F2', fg: '#E11D48' },
+        { bg: '#F0FDF4', fg: '#16A34A' },
+        { bg: '#FEF3C7', fg: '#D97706' },
+        { bg: '#EDE9FE', fg: '#7C3AED' },
+        { bg: '#FCE7F3', fg: '#DB2777' },
+        { bg: '#ECFDF5', fg: '#059669' },
+        { bg: '#FEF9C3', fg: '#CA8A04' },
+    ];
+
+    pageUsers.forEach((user, idx) => {
+        const initials = ((user.first_name || '')[0] || '') + ((user.last_name || '')[0] || '');
+        const fullName = escapeHtml(`${user.first_name} ${user.last_name}`);
+        const safeEmail = escapeHtml(user.email);
+        const color = avatarColors[(start + idx) % avatarColors.length];
+
+        const roleMap = {
+            'job_seeker': { label: 'Job Seeker', cls: 'seeker' },
+            'recruiter': { label: 'Recruiter', cls: 'premium' },
+            'admin': { label: 'Admin', cls: 'premium' }
+        };
+        const role = roleMap[user.role] || { label: escapeHtml(user.role), cls: 'seeker' };
+
+        const verified = parseInt(user.email_verified);
+        const statusDot = verified ? 'active' : 'suspended';
+        const statusText = verified ? 'Verified' : 'Unverified';
+
+        const isSelfOrAdmin = user.role === 'admin';
+        const userId = parseInt(user.id);
+
+        const tr = document.createElement('tr');
+        tr.className = 'card-row card-row-users';
+        tr.innerHTML = `
+            <td data-label="User">
+                <div class="table-user">
+                    <div class="table-avatar" style="background:${color.bg}; color:${color.fg};">${escapeHtml(initials).toUpperCase()}</div>
+                    <div class="entity-block">
+                        <span class="entity-title">${fullName}</span>
+                        <span class="entity-sub">${role.label}</span>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Email">
+                <div class="table-value">
+                    <span>${safeEmail}</span>
+                    <span class="table-note">${verified ? '<i class="fa-solid fa-circle-check" style="color:#10B981;font-size:0.7rem"></i> Confirmed' : '<i class="fa-solid fa-clock" style="color:#F59E0B;font-size:0.7rem"></i> Pending'}</span>
+                </div>
+            </td>
+            <td data-label="Role"><span class="role-tag ${role.cls}">${role.label}</span></td>
+            <td data-label="Status"><span class="status-dot ${statusDot}"></span> ${statusText}</td>
+            <td data-label="Joined">
+                <div class="table-value">
+                    <span>${formatDate(user.created_at)}</span>
+                    <span class="table-note">${timeAgo(user.created_at)}</span>
+                </div>
+            </td>
+            <td class="actions-cell" data-label="Actions">
+                <button class="tbl-btn" title="View Details" onclick="openUserDrawer(${userId})"><i class="fa-solid fa-eye"></i></button>
+                ${isSelfOrAdmin ? '' : `<button class="tbl-btn warn" title="${verified ? 'Suspend' : 'Verify'}" onclick="adminToggleUser(${userId}, ${verified ? 0 : 1})"><i class="fa-solid fa-${verified ? 'ban' : 'check'}"></i></button>`}
+                ${isSelfOrAdmin ? '' : `<button class="tbl-btn danger" title="Delete" onclick="adminDeleteUser(${userId})"><i class="fa-solid fa-trash"></i></button>`}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Footer info
+    const from = start + 1;
+    const to = Math.min(start + USERS_PER_PAGE, filtered.length);
+    if (info) {
+        const filterNote = filtered.length < adminState.users.length ? ` (filtered from ${adminState.users.length})` : '';
+        info.textContent = `Showing ${from}–${to} of ${filtered.length} user${filtered.length !== 1 ? 's' : ''}${filterNote}`;
+    }
+
+    // Pagination
+    if (pagDiv) {
+        pagDiv.innerHTML = '';
+        if (totalPages > 1) {
+            const prevBtn = createPageBtn('<i class="fa-solid fa-chevron-left"></i>', currentUsersPage <= 1);
+            prevBtn.onclick = function() { currentUsersPage--; renderUsersPage(); };
+            pagDiv.appendChild(prevBtn);
+
+            for (let p = 1; p <= totalPages; p++) {
+                if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentUsersPage) > 1) {
+                    if (p === 3 || p === totalPages - 2) {
+                        const dots = document.createElement('span');
+                        dots.className = 'page-dots';
+                        dots.textContent = '...';
+                        pagDiv.appendChild(dots);
+                    }
+                    continue;
+                }
+                const btn = createPageBtn(p.toString(), false);
+                if (p === currentUsersPage) btn.classList.add('active-page');
+                btn.onclick = (function(page) { return function() { currentUsersPage = page; renderUsersPage(); }; })(p);
+                pagDiv.appendChild(btn);
+            }
+
+            const nextBtn = createPageBtn('<i class="fa-solid fa-chevron-right"></i>', currentUsersPage >= totalPages);
+            nextBtn.onclick = function() { currentUsersPage++; renderUsersPage(); };
+            pagDiv.appendChild(nextBtn);
+        }
+    }
+}
+
+function createPageBtn(htmlContent, disabled) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn';
+    btn.innerHTML = htmlContent;
+    btn.disabled = disabled;
+    return btn;
 }
 
 // ── Update Overview Stats from API state ──
@@ -834,18 +936,106 @@ function renderAdminDocuments() {
 }
 
 // ── Admin User Management ──
-window.adminViewUser = function(userId) {
+window.openUserDrawer = function(userId) {
     const user = adminState.users.find(u => parseInt(u.id) === userId);
     if (!user) return;
-    const details = [
-        `Name: ${user.first_name} ${user.last_name}`,
-        `Email: ${user.email}`,
-        `Role: ${user.role}`,
-        `Verified: ${parseInt(user.email_verified) ? 'Yes' : 'No'}`,
-        `Company: ${user.company_name || '—'}`,
-        `Joined: ${formatDate(user.created_at)}`,
+
+    const drawer = document.getElementById('userDrawer');
+    const overlay = document.getElementById('userDrawerOverlay');
+    const body = document.getElementById('userDrawerBody');
+    if (!drawer || !body) return;
+
+    const initials = ((user.first_name || '')[0] || '') + ((user.last_name || '')[0] || '');
+    const fullName = escapeHtml(`${user.first_name} ${user.last_name}`);
+    const verified = parseInt(user.email_verified);
+    const isSelfOrAdmin = user.role === 'admin';
+    const userId_ = parseInt(user.id);
+
+    const roleMap = {
+        'job_seeker': { label: 'Job Seeker', icon: 'fa-solid fa-user', color: '#3B82F6' },
+        'recruiter': { label: 'Recruiter', icon: 'fa-solid fa-building', color: '#7C3AED' },
+        'admin': { label: 'Admin', icon: 'fa-solid fa-shield-halved', color: '#DC2626' }
+    };
+    const roleInfo = roleMap[user.role] || { label: user.role, icon: 'fa-solid fa-user', color: '#6B7280' };
+
+    const avatarColors = [
+        { bg: '#DBEAFE', fg: '#2563EB' },
+        { bg: '#FFF1F2', fg: '#E11D48' },
+        { bg: '#F0FDF4', fg: '#16A34A' },
+        { bg: '#EDE9FE', fg: '#7C3AED' },
     ];
-    alert(details.join('\n'));
+    const color = avatarColors[userId_ % avatarColors.length];
+
+    body.innerHTML = `
+        <div class="drawer-profile">
+            <div class="drawer-avatar" style="background:${color.bg}; color:${color.fg};">
+                ${escapeHtml(initials).toUpperCase()}
+                <span class="drawer-avatar-badge ${verified ? 'verified' : 'unverified'}">
+                    <i class="fa-solid fa-${verified ? 'check' : 'clock'}"></i>
+                </span>
+            </div>
+            <div class="drawer-profile-name">${fullName}</div>
+            <div class="drawer-profile-email">${escapeHtml(user.email)}</div>
+            <div style="margin-top:10px;">
+                <span class="role-tag ${user.role === 'job_seeker' ? 'seeker' : 'premium'}">${roleInfo.label}</span>
+            </div>
+        </div>
+
+        <div class="drawer-details">
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-fingerprint"></i> User ID</span>
+                <span class="drawer-detail-value">#${userId_}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-envelope"></i> Email</span>
+                <span class="drawer-detail-value">${verified ? '<span style="color:#10B981">Verified</span>' : '<span style="color:#F59E0B">Unverified</span>'}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-building"></i> Company</span>
+                <span class="drawer-detail-value">${escapeHtml(user.company_name || '—')}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-calendar"></i> Joined</span>
+                <span class="drawer-detail-value">${formatDate(user.created_at)}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-clock-rotate-left"></i> Updated</span>
+                <span class="drawer-detail-value">${user.updated_at ? formatDate(user.updated_at) : '—'}</span>
+            </div>
+        </div>
+
+        <div class="drawer-actions">
+            ${!isSelfOrAdmin ? `<button class="drawer-action-btn btn-impersonate" onclick="window.location.href='api/admin/impersonate.php?user_id=${userId_}'"><i class="fa-solid fa-user-secret"></i> Impersonate User</button>` : ''}
+            ${!isSelfOrAdmin && !verified ? `<button class="drawer-action-btn btn-verify" onclick="adminToggleUser(${userId_}, 1); closeUserDrawer();"><i class="fa-solid fa-circle-check"></i> Verify User</button>` : ''}
+            ${!isSelfOrAdmin && verified ? `<button class="drawer-action-btn btn-suspend" onclick="adminToggleUser(${userId_}, 0); closeUserDrawer();"><i class="fa-solid fa-ban"></i> Suspend User</button>` : ''}
+            ${!isSelfOrAdmin ? `<button class="drawer-action-btn btn-delete" onclick="adminDeleteUser(${userId_}); closeUserDrawer();"><i class="fa-solid fa-trash"></i> Delete User</button>` : ''}
+            ${isSelfOrAdmin ? '<p style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:12px 0;">Admin accounts cannot be modified here.</p>' : ''}
+        </div>
+    `;
+
+    drawer.classList.add('drawer-open');
+    if (overlay) overlay.classList.add('drawer-active');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeUserDrawer = function() {
+    const drawer = document.getElementById('userDrawer');
+    const overlay = document.getElementById('userDrawerOverlay');
+    if (drawer) drawer.classList.remove('drawer-open');
+    if (overlay) overlay.classList.remove('drawer-active');
+    document.body.style.overflow = '';
+};
+
+// Wire up drawer close events
+document.addEventListener('DOMContentLoaded', function() {
+    var closeBtn = document.getElementById('userDrawerClose');
+    var overlay = document.getElementById('userDrawerOverlay');
+    if (closeBtn) closeBtn.addEventListener('click', closeUserDrawer);
+    if (overlay) overlay.addEventListener('click', closeUserDrawer);
+});
+
+window.adminViewUser = function(userId) {
+    openUserDrawer(userId);
 };
 
 window.adminToggleUser = async function(userId, newVerified) {
