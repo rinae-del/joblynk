@@ -892,23 +892,98 @@
 @media (max-width: 900px) {
     .kpi-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
 
     .table-controls {
         flex-direction: column;
         align-items: stretch;
+        gap: 8px;
     }
 
     .search-box input {
         width: 100%;
     }
 
-    .admin-table-wrapper {
-        overflow-x: auto;
+    .section-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
 
-    .admin-table {
-        min-width: 600px;
+    /* ── Mobile Card Tables ── */
+    .admin-table-wrapper {
+        background: none;
+        border: none;
+        border-radius: 0;
+        overflow: visible;
+    }
+
+    .admin-table,
+    .admin-table thead,
+    .admin-table tbody,
+    .admin-table th,
+    .admin-table td,
+    .admin-table tr {
+        display: block;
+    }
+
+    .admin-table thead {
+        display: none;
+    }
+
+    .admin-table tbody tr {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .admin-table tbody tr:hover {
+        box-shadow: var(--shadow-sm);
+    }
+
+    .admin-table td {
+        padding: 0;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.85rem;
+    }
+
+    .admin-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    .admin-table td:first-child {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .admin-table td:first-child::before {
+        display: none;
+    }
+
+    .table-user {
+        gap: 10px;
+    }
+
+    .actions-cell {
+        justify-content: flex-end;
+        padding-top: 6px;
+        border-top: 1px solid var(--border);
     }
 
     .table-footer {
@@ -917,23 +992,55 @@
         align-items: center;
     }
 
-    .section-title-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+    .table-pagination {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
     .kpi-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .kpi-card {
-        padding: 18px 20px;
+        padding: 16px 18px;
+    }
+
+    .kpi-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
+
+    .kpi-value {
+        font-size: 1.25rem;
     }
 
     .report-cards {
         grid-template-columns: 1fr;
+    }
+
+    .settings-card {
+        padding: 20px 16px;
+    }
+
+    .setting-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .setting-info {
+        padding-right: 0;
+    }
+
+    .admin-table tbody tr {
+        padding: 14px;
+    }
+
+    .filter-select {
+        width: 100%;
     }
 }

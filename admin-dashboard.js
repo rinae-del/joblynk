@@ -260,9 +260,9 @@ function renderAuditLog(reports) {
 
     tbody.innerHTML = rows.map(function(r) {
         return '<tr><td style="white-space:nowrap;">' + formatDate(r.ts) + '</td>' +
-            '<td><span class="audit-action ' + r.cls + '">' + escapeHtml(r.action) + '</span></td>' +
-            '<td>' + escapeHtml(r.by) + '</td>' +
-            '<td>' + escapeHtml(r.detail) + '</td></tr>';
+            '<td data-label="Action"><span class="audit-action ' + r.cls + '">' + escapeHtml(r.action) + '</span></td>' +
+            '<td data-label="By">' + escapeHtml(r.by) + '</td>' +
+            '<td data-label="Detail">' + escapeHtml(r.detail) + '</td></tr>';
     }).join('');
 }
 
@@ -532,11 +532,11 @@ async function fetchAndRenderUsers() {
                         <span>${fullName}</span>
                     </div>
                 </td>
-                <td>${safeEmail}</td>
-                <td><span class="role-tag ${role.cls}">${role.label}</span></td>
-                <td><span class="status-dot ${statusDot}"></span> ${statusText}</td>
-                <td>${formatDate(user.created_at)}</td>
-                <td class="actions-cell">
+                <td data-label="Email">${safeEmail}</td>
+                <td data-label="Role"><span class="role-tag ${role.cls}">${role.label}</span></td>
+                <td data-label="Status"><span class="status-dot ${statusDot}"></span> ${statusText}</td>
+                <td data-label="Joined">${formatDate(user.created_at)}</td>
+                <td class="actions-cell" data-label="Actions">
                     ${impersonateBtn}
                     <button class="tbl-btn" title="View" onclick="adminViewUser(${userId})"><i class="fa-solid fa-eye"></i></button>
                     ${isSelfOrAdmin ? '' : `<button class="tbl-btn warn" title="${verified ? 'Suspend' : 'Verify'}" onclick="adminToggleUser(${userId}, ${verified ? 0 : 1})"><i class="fa-solid fa-${verified ? 'ban' : 'check'}"></i></button>`}
@@ -619,14 +619,14 @@ function renderAdminJobs() {
                         <div style="font-weight:600;">${escapeHtml(job.title)}</div>
                         <small style="color:var(--text-muted);">${escapeHtml(job.location || 'Remote')} • ${escapeHtml(job.type || 'Full-time')}</small>
                     </td>
-                    <td>
+                    <td data-label="Company">
                         <div>${escapeHtml(job.company || '—')}</div>
                         <small style="color:var(--text-muted);">${recruiterName}</small>
                     </td>
-                    <td><strong>${parseInt(job.applicant_count) || 0}</strong></td>
-                    <td><span class="job-status ${statusClass}">${job.status === 'active' ? 'Active' : 'Closed'}</span></td>
-                    <td>${formatDate(job.created_at)}</td>
-                    <td class="actions-cell">
+                    <td data-label="Applicants"><strong>${parseInt(job.applicant_count) || 0}</strong></td>
+                    <td data-label="Status"><span class="job-status ${statusClass}">${job.status === 'active' ? 'Active' : 'Closed'}</span></td>
+                    <td data-label="Posted">${formatDate(job.created_at)}</td>
+                    <td class="actions-cell" data-label="Actions">
                         <button class="tbl-btn" title="View" onclick="adminViewJob(${jobId})"><i class="fa-solid fa-eye"></i></button>
                         <button class="tbl-btn danger" title="Remove" onclick="adminDeleteJob(${jobId})"><i class="fa-solid fa-trash"></i></button>
                     </td>
@@ -721,12 +721,12 @@ function renderAdminApplications() {
                             </div>
                         </div>
                     </td>
-                    <td style="font-weight:600;">${escapeHtml(app.job_title || 'Unknown Job')}</td>
-                    <td>${escapeHtml(app.job_company || '—')}</td>
-                    <td>${app.cv_name ? '<span style="color:#059669;"><i class="fa-solid fa-check-circle"></i> ' + escapeHtml(app.cv_name) + '</span>' : '<span style="color:var(--text-muted);">None</span>'}</td>
-                    <td>${app.cl_name ? '<span style="color:#7E22CE;"><i class="fa-solid fa-check-circle"></i> ' + escapeHtml(app.cl_name) + '</span>' : '<span style="color:var(--text-muted);">None</span>'}</td>
-                    <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> ${escapeHtml(app.status || 'submitted')}</span></td>
-                    <td>${formatDate(app.created_at)}</td>
+                    <td data-label="Job" style="font-weight:600;">${escapeHtml(app.job_title || 'Unknown Job')}</td>
+                    <td data-label="Company">${escapeHtml(app.job_company || '—')}</td>
+                    <td data-label="CV">${app.cv_name ? '<span style="color:#059669;"><i class="fa-solid fa-check-circle"></i> ' + escapeHtml(app.cv_name) + '</span>' : '<span style="color:var(--text-muted);">None</span>'}</td>
+                    <td data-label="Cover Letter">${app.cl_name ? '<span style="color:#7E22CE;"><i class="fa-solid fa-check-circle"></i> ' + escapeHtml(app.cl_name) + '</span>' : '<span style="color:var(--text-muted);">None</span>'}</td>
+                    <td data-label="Status"><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> ${escapeHtml(app.status || 'submitted')}</span></td>
+                    <td data-label="Date">${formatDate(app.created_at)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -771,9 +771,9 @@ function renderAdminDocuments() {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td style="font-weight:600;">${escapeHtml(cv.name || 'Untitled CV')}</td>
-                            <td>${ownerName}</td>
-                            <td>${formatDate(cv.updated_at || cv.created_at)}</td>
-                            <td><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${accent}; vertical-align:middle;"></span> <code style="font-size:0.8rem;">${accent}</code></td>
+                            <td data-label="Owner">${ownerName}</td>
+                            <td data-label="Updated">${formatDate(cv.updated_at || cv.created_at)}</td>
+                            <td data-label="Color"><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${accent}; vertical-align:middle;"></span> <code style="font-size:0.8rem;">${accent}</code></td>
                         `;
                         cvsBody.appendChild(tr);
                     });
@@ -791,9 +791,9 @@ function renderAdminDocuments() {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td style="font-weight:600;">${escapeHtml(cl.name || 'Untitled Cover Letter')}</td>
-                            <td>${ownerName}</td>
-                            <td>${formatDate(cl.updated_at || cl.created_at)}</td>
-                            <td><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${accent}; vertical-align:middle;"></span> <code style="font-size:0.8rem;">${accent}</code></td>
+                            <td data-label="Owner">${ownerName}</td>
+                            <td data-label="Updated">${formatDate(cl.updated_at || cl.created_at)}</td>
+                            <td data-label="Color"><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${accent}; vertical-align:middle;"></span> <code style="font-size:0.8rem;">${accent}</code></td>
                         `;
                         clsBody.appendChild(tr);
                     });
