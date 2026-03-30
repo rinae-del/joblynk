@@ -524,17 +524,31 @@ async function fetchAndRenderUsers() {
                 : `<button class="tbl-btn" title="Impersonate User" onclick="window.location.href='api/admin/impersonate.php?user_id=${userId}'" style="color:#7C3AED"><i class="fa-solid fa-user-secret"></i></button>`;
 
             const tr = document.createElement('tr');
+            tr.className = 'card-row card-row-users';
             tr.innerHTML = `
-                <td>
+                <td data-label="User">
                     <div class="table-user">
                         <div class="table-avatar" style="background:${color.bg}; color:${color.fg};">${escapeHtml(initials).toUpperCase()}</div>
-                        <span>${fullName}</span>
+                        <div class="entity-block">
+                            <span class="entity-title">${fullName}</span>
+                            <span class="entity-sub">Platform account</span>
+                        </div>
                     </div>
                 </td>
-                <td data-label="Email">${safeEmail}</td>
+                <td data-label="Email">
+                    <div class="table-value">
+                        <span>${safeEmail}</span>
+                        <span class="table-note">${verified ? 'Email confirmed' : 'Verification pending'}</span>
+                    </div>
+                </td>
                 <td data-label="Role"><span class="role-tag ${role.cls}">${role.label}</span></td>
                 <td data-label="Status"><span class="status-dot ${statusDot}"></span> ${statusText}</td>
-                <td data-label="Joined">${formatDate(user.created_at)}</td>
+                <td data-label="Joined">
+                    <div class="table-value">
+                        <span>${formatDate(user.created_at)}</span>
+                        <span class="table-note">Member since sign up</span>
+                    </div>
+                </td>
                 <td class="actions-cell" data-label="Actions">
                     ${impersonateBtn}
                     <button class="tbl-btn" title="View" onclick="adminViewUser(${userId})"><i class="fa-solid fa-eye"></i></button>
@@ -612,19 +626,38 @@ function renderAdminJobs() {
                 const statusClass = job.status === 'active' ? 'active' : 'closed';
                 const recruiterName = escapeHtml(`${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown recruiter');
                 const jobId = parseInt(job.id);
+                const applicantCount = parseInt(job.applicant_count, 10) || 0;
                 const tr = document.createElement('tr');
+                tr.className = 'card-row card-row-jobs';
                 tr.innerHTML = `
-                    <td>
-                        <div style="font-weight:600;">${escapeHtml(job.title)}</div>
-                        <small style="color:var(--text-muted);">${escapeHtml(job.location || 'Remote')} • ${escapeHtml(job.type || 'Full-time')}</small>
+                    <td data-label="Job">
+                        <div class="entity-block">
+                            <span class="entity-title">${escapeHtml(job.title)}</span>
+                            <div class="entity-meta">
+                                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || 'Remote')}</span>
+                                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escapeHtml(job.type || 'Full-time')}</span>
+                            </div>
+                        </div>
                     </td>
                     <td data-label="Company">
-                        <div>${escapeHtml(job.company || '—')}</div>
-                        <small style="color:var(--text-muted);">${recruiterName}</small>
+                        <div class="table-value">
+                            <span>${escapeHtml(job.company || '—')}</span>
+                            <span class="table-note">${recruiterName}</span>
+                        </div>
                     </td>
-                    <td data-label="Applicants"><strong>${parseInt(job.applicant_count) || 0}</strong></td>
+                    <td data-label="Applicants">
+                        <div class="table-value">
+                            <span class="table-metric">${applicantCount}</span>
+                            <span class="table-note">candidate${applicantCount === 1 ? '' : 's'}</span>
+                        </div>
+                    </td>
                     <td data-label="Status"><span class="job-status ${statusClass}">${job.status === 'active' ? 'Active' : 'Closed'}</span></td>
-                    <td data-label="Posted">${formatDate(job.created_at)}</td>
+                    <td data-label="Posted">
+                        <div class="table-value">
+                            <span>${formatDate(job.created_at)}</span>
+                            <span class="table-note">Recruiter listing</span>
+                        </div>
+                    </td>
                     <td class="actions-cell" data-label="Actions">
                         <button class="tbl-btn" title="View" onclick="adminViewJob(${jobId})"><i class="fa-solid fa-eye"></i></button>
                         <button class="tbl-btn danger" title="Remove" onclick="adminDeleteJob(${jobId})"><i class="fa-solid fa-trash"></i></button>
@@ -709,23 +742,47 @@ function renderAdminApplications() {
 
             data.applications.forEach(app => {
                 const applicantName = escapeHtml(`${app.first_name || ''} ${app.last_name || ''}`.trim() || app.applicant_name || 'Unknown');
+                const statusValue = String(app.status || 'submitted').toLowerCase();
+                const statusClass = {
+                    submitted: 'is-submitted',
+                    reviewed: 'is-reviewed',
+                    shortlisted: 'is-shortlisted',
+                    rejected: 'is-rejected'
+                }[statusValue] || 'is-submitted';
+                const statusLabel = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
                 const tr = document.createElement('tr');
+                tr.className = 'card-row card-row-apps';
                 tr.innerHTML = `
-                    <td>
+                    <td data-label="Applicant">
                         <div class="table-user">
                             <div class="table-avatar" style="background:#DBEAFE; color:#2563EB;">${(applicantName[0] || 'U').toUpperCase()}</div>
-                            <div>
-                                <span>${applicantName}</span>
+                            <div class="entity-block">
+                                <span class="entity-title">${applicantName}</span>
                                 <small class="table-sub">${escapeHtml(app.email || '—')}</small>
                             </div>
                         </div>
                     </td>
-                    <td data-label="Job" style="font-weight:600;">${escapeHtml(app.job_title || 'Unknown Job')}</td>
-                    <td data-label="Company">${escapeHtml(app.job_company || '—')}</td>
-                    <td data-label="CV">${app.cv_name ? '<span style="color:#059669;"><i class="fa-solid fa-check-circle"></i> ' + escapeHtml(app.cv_name) + '</span>' : '<span style="color:var(--text-muted);">None</span>'}</td>
-                    <td data-label="Cover Letter">${app.cl_name ? '<span style="color:#7E22CE;"><i class="fa-solid fa-check-circle"></i> ' + escapeHtml(app.cl_name) + '</span>' : '<span style="color:var(--text-muted);">None</span>'}</td>
-                    <td data-label="Status"><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> ${escapeHtml(app.status || 'submitted')}</span></td>
-                    <td data-label="Date">${formatDate(app.created_at)}</td>
+                    <td data-label="Job">
+                        <div class="table-value">
+                            <span class="entity-title">${escapeHtml(app.job_title || 'Unknown Job')}</span>
+                            <span class="table-note">Applied role</span>
+                        </div>
+                    </td>
+                    <td data-label="Company">
+                        <div class="table-value">
+                            <span>${escapeHtml(app.job_company || '—')}</span>
+                            <span class="table-note">Hiring company</span>
+                        </div>
+                    </td>
+                    <td data-label="CV">${app.cv_name ? '<span class="document-chip success"><i class="fa-solid fa-file-lines"></i> ' + escapeHtml(app.cv_name) + '</span>' : '<span class="document-chip muted">No CV</span>'}</td>
+                    <td data-label="Cover Letter">${app.cl_name ? '<span class="document-chip accent"><i class="fa-solid fa-envelope-open-text"></i> ' + escapeHtml(app.cl_name) + '</span>' : '<span class="document-chip muted">No cover letter</span>'}</td>
+                    <td data-label="Status"><span class="verification-badge app-status-badge ${statusClass}"><i class="fa-solid fa-circle-check"></i> ${escapeHtml(statusLabel)}</span></td>
+                    <td data-label="Date">
+                        <div class="table-value">
+                            <span>${formatDate(app.created_at)}</span>
+                            <span class="table-note">Submission date</span>
+                        </div>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });

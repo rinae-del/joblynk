@@ -24,6 +24,7 @@
 .dashboard-view-section {
     display: none;
 }
+
 .dashboard-view-section.active {
     display: block;
     animation: fadeIn 0.3s ease;
@@ -70,6 +71,28 @@ textarea.form-control {
     min-height: 120px;
 }
 
+.tbl-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #E4E8F1;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 100%);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.tbl-btn:hover {
+    color: var(--text);
+    border-color: #CBD5E1;
+    transform: translateY(-1px);
+}
+
 .btn-submit {
     padding: 12px 24px;
     background: linear-gradient(135deg, #3B4BA6 0%, #5B6BD6 100%);
@@ -96,66 +119,164 @@ textarea.form-control {
 }
 
 .candidate-item {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
-    background: var(--bg-white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    gap: 18px;
+    padding: 18px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCFBFF 100%);
+    border: 1px solid #EAE7F5;
+    border-radius: 20px;
     transition: all 0.25s ease;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.candidate-item::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: linear-gradient(180deg, #7E22CE, rgba(126, 34, 206, 0));
+}
+
+.candidate-item::after {
+    content: '';
+    position: absolute;
+    top: -32px;
+    right: -24px;
+    width: 124px;
+    height: 124px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 72%);
+    pointer-events: none;
 }
 
 .candidate-item:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-    border-color: #C7C7D4;
-    transform: translateY(-1px);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+    border-color: #DDD6FE;
+    transform: translateY(-3px);
+}
+
+.candidate-item.is-empty {
+    box-shadow: none;
+    border-style: dashed;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 100%);
+}
+
+.candidate-item.is-empty::before,
+.candidate-item.is-empty::after {
+    display: none;
 }
 
 .candidate-info-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 16px;
+    position: relative;
+    z-index: 1;
 }
 
 .candidate-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent);
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #F5F3FF 0%, #FCE7F3 100%);
+    color: #7E22CE;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
     font-weight: 700;
+    box-shadow: 0 10px 18px rgba(126, 34, 206, 0.12);
+}
+
+.candidate-kicker {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #A855F7;
 }
 
 .candidate-details h4 {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .candidate-details p {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.candidate-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.candidate-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: #FFFFFF;
+    border: 1px solid #E7E3F5;
+    color: #475569;
+}
+
+.candidate-chip i {
+    font-size: 0.7rem;
+}
+
+.candidate-chip.muted {
+    background: #F8FAFC;
+    border-color: #E2E8F0;
+    color: #64748B;
+}
+
+.candidate-chip.accent {
+    background: #F5F3FF;
+    border-color: #DDD6FE;
+    color: #7C3AED;
+}
+
+.candidate-chip.success {
+    background: #ECFDF5;
+    border-color: #A7F3D0;
+    color: #059669;
+}
+
+.candidate-chip.warm {
+    background: #FFF7ED;
+    border-color: #FED7AA;
+    color: #C2410C;
 }
 
 .candidate-actions {
     display: flex;
     gap: 8px;
+    position: relative;
+    z-index: 1;
 }
 
 .btn-action {
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
     border: 1px solid transparent;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
 }
 
 .btn-action.view {
@@ -206,6 +327,78 @@ textarea.form-control {
 .job-status.draft {
     background: #F3F4F6;
     color: #4B5563;
+}
+
+.recruiter-mini-posting {
+    position: relative;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid #E9E2F8;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCFAFF 100%);
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.recruiter-mini-posting::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: linear-gradient(180deg, #7E22CE, rgba(126, 34, 206, 0));
+}
+
+.recruiter-mini-posting::after {
+    content: '';
+    position: absolute;
+    top: -32px;
+    right: -24px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 72%);
+}
+
+.recruiter-mini-posting.is-empty {
+    box-shadow: none;
+    border-style: dashed;
+}
+
+.recruiter-mini-posting.is-empty::before,
+.recruiter-mini-posting.is-empty::after {
+    display: none;
+}
+
+.recruiter-mini-posting-head,
+.recruiter-mini-posting-meta,
+.recruiter-mini-posting-foot {
+    position: relative;
+    z-index: 1;
+}
+
+.recruiter-mini-posting-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.recruiter-mini-posting-kicker {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #A855F7;
+}
+
+.recruiter-mini-posting-foot {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.76rem;
+    color: var(--text-muted);
 }
 
 /* Multi-step Form Wizard */
@@ -310,15 +503,13 @@ textarea.form-control {
     .candidate-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 14px;
-        border-radius: 16px;
+        gap: 16px;
+        border-radius: 18px;
         padding: 18px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-        transition: box-shadow 0.25s ease;
     }
 
     .candidate-item:hover {
-        box-shadow: var(--shadow-md);
+        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
     }
 
     .candidate-actions {
@@ -331,8 +522,8 @@ textarea.form-control {
     .btn-action {
         text-align: center;
         justify-content: center;
-        padding: 12px 8px;
-        border-radius: 10px;
+        padding: 12px 10px;
+        border-radius: 14px;
         font-size: 0.82rem;
     }
 
@@ -365,30 +556,53 @@ textarea.form-control {
     }
 
     .recruiter-table tbody tr {
-        background: var(--bg-white);
-        border: 1px solid var(--border);
-        border-left: 4px solid #7E22CE;
-        border-radius: 16px;
-        padding: 18px 18px 18px 16px;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, #FFFFFF 0%, #FCFAFF 100%);
+        border: 1px solid #E9E2F8;
+        border-radius: 22px;
+        padding: 18px;
         margin-bottom: 14px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        gap: 14px;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
         transition: box-shadow 0.25s ease;
     }
 
+    .recruiter-table tbody tr::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: linear-gradient(180deg, #7E22CE, rgba(126, 34, 206, 0));
+    }
+
+    .recruiter-table tbody tr::after {
+        content: '';
+        position: absolute;
+        top: -32px;
+        right: -24px;
+        width: 128px;
+        height: 128px;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 72%);
+        pointer-events: none;
+    }
+
     .recruiter-table tbody tr:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
     }
 
     .recruiter-table td {
         padding: 0 !important;
         border-bottom: none !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: minmax(78px, 92px) minmax(0, 1fr);
+        gap: 8px 14px;
+        align-items: start;
         font-size: 0.88rem;
+        position: relative;
+        z-index: 1;
     }
 
     .recruiter-table td::before {
@@ -399,10 +613,11 @@ textarea.form-control {
         text-transform: uppercase;
         letter-spacing: 0.05em;
         flex-shrink: 0;
-        margin-right: 12px;
+        padding-top: 6px;
     }
 
     .recruiter-table td:first-child {
+        display: block;
         font-weight: 700;
         font-size: 0.95rem;
         padding-bottom: 6px !important;
@@ -415,7 +630,10 @@ textarea.form-control {
     }
 
     .recruiter-table .actions-cell {
+        display: flex;
         justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
         padding-top: 12px !important;
         border-top: 1px solid var(--border) !important;
     }
@@ -423,7 +641,7 @@ textarea.form-control {
     .recruiter-table .tbl-btn {
         width: 40px;
         height: 40px;
-        border-radius: 10px;
+        border-radius: 12px;
         font-size: 0.85rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
@@ -433,7 +651,6 @@ textarea.form-control {
         width: 100% !important;
         padding: 14px 40px 14px 16px;
         font-size: 0.9rem;
-        border-radius: 14px;
         border: 1.5px solid var(--border);
         background-color: var(--bg-white);
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -443,6 +660,19 @@ textarea.form-control {
         background-repeat: no-repeat;
         background-position: right 14px center;
         background-size: 12px;
+        border-radius: 16px;
+    }
+
+    .recruiter-mini-posting,
+    .recruiter-mini-posting.is-empty {
+        border-radius: 18px;
+        padding: 16px;
+    }
+
+    .recruiter-mini-posting-head,
+    .recruiter-mini-posting-foot {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     /* Post job form improvements */
@@ -464,7 +694,7 @@ textarea.form-control {
 @media (max-width: 480px) {
     .candidate-item {
         padding: 16px;
-        border-radius: 14px;
+        border-radius: 16px;
     }
 
     .candidate-info-wrapper {
@@ -488,6 +718,7 @@ textarea.form-control {
     .btn-action {
         padding: 12px 10px;
         font-size: 0.78rem;
+        border-radius: 12px;
     }
 
     .checkbox-grid {
@@ -525,7 +756,19 @@ textarea.form-control {
 
     .recruiter-table tbody tr {
         padding: 16px;
-        border-radius: 14px;
+        border-radius: 18px;
+    }
+
+    .recruiter-mini-posting,
+    .recruiter-mini-posting.is-empty {
+        border-radius: 18px;
+        padding: 16px;
+    }
+
+    .recruiter-mini-posting-head,
+    .recruiter-mini-posting-foot {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     /* No credits banner mobile */

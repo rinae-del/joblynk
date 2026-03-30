@@ -30,19 +30,37 @@ function getInitials(name) {
         .join('');
 }
 
+function formatStatusLabel(value) {
+    const safeValue = String(value || 'submitted').toLowerCase();
+    return safeValue.charAt(0).toUpperCase() + safeValue.slice(1);
+}
+
 function renderCandidateCard(app, compact = false) {
     const applicantName = `${app.first_name || ''} ${app.last_name || ''}`.trim() || app.applicant_name || 'Unknown Applicant';
     const jobTitle = app.job_title || 'Unknown Job';
-    const submitted = compact ? '' : ` • ${formatRecruiterDate(app.created_at)}`;
     const reviewLabel = compact ? 'Review' : 'Review Profile';
+    const statusValue = String(app.status || 'submitted').toLowerCase();
+    const statusLabel = formatStatusLabel(statusValue);
+    const statusTone = {
+        submitted: 'warm',
+        reviewed: 'accent',
+        shortlisted: 'success',
+        rejected: 'muted',
+        hired: 'success'
+    }[statusValue] || 'warm';
 
     return `
-        <div class="candidate-item">
+        <div class="candidate-item${compact ? ' is-compact' : ''}">
             <div class="candidate-info-wrapper">
                 <div class="candidate-avatar">${getInitials(applicantName)}</div>
                 <div class="candidate-details">
+                    <span class="candidate-kicker">${compact ? 'Recent applicant' : statusLabel}</span>
                     <h4>${applicantName}</h4>
-                    <p>Applied for <strong>${jobTitle}</strong>${submitted}</p>
+                    <div class="candidate-meta">
+                        <span class="candidate-chip"><i class="fa-solid fa-briefcase"></i> ${jobTitle}</span>
+                        <span class="candidate-chip muted"><i class="fa-regular fa-calendar"></i> ${formatRecruiterDate(app.created_at)}</span>
+                        ${compact ? '' : `<span class="candidate-chip ${statusTone}"><i class="fa-solid fa-signal"></i> ${statusLabel}</span>`}
+                    </div>
                 </div>
             </div>
             <div class="candidate-actions">
@@ -62,7 +80,7 @@ function renderCandidatesPreview() {
 
     if (recruiterState.applications.length === 0) {
         container.innerHTML = `
-            <div class="candidate-item">
+            <div class="candidate-item is-empty">
                 <div class="candidate-info-wrapper">
                     <div class="candidate-details">
                         <h4>No candidates yet</h4>
@@ -84,25 +102,37 @@ function renderActivePostingsPreview() {
     const activeJobs = recruiterState.jobs.filter(job => job.status === 'active').slice(0, 3);
     if (activeJobs.length === 0) {
         container.innerHTML = `
-            <div class="job-item" style="border: 1px solid var(--border)">
-                <div class="job-info">
-                    <div class="job-title">No active postings yet</div>
-                    <div class="job-company">Published jobs will appear here.</div>
+            <div class="recruiter-mini-posting is-empty">
+                <div class="entity-block">
+                    <span class="entity-title">No active postings yet</span>
+                    <span class="entity-sub">Published jobs will appear here once you go live.</span>
                 </div>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = activeJobs.map((job, index) => `
-        <div class="job-item" style="border: 1px solid var(--border); ${index < activeJobs.length - 1 ? 'margin-bottom: 8px;' : ''}">
-            <div class="job-info">
-                <div class="job-title">${job.title}</div>
-                <div class="job-company">${job.applicant_count || 0} Applicants • Posted ${timeSince(job.created_at)}</div>
+    container.innerHTML = activeJobs.map(job => {
+        const applicantCount = parseInt(job.applicant_count, 10) || 0;
+        return `
+        <div class="recruiter-mini-posting">
+            <div class="recruiter-mini-posting-head">
+                <div class="entity-block">
+                    <span class="recruiter-mini-posting-kicker">Active posting</span>
+                    <span class="entity-title">${job.title}</span>
+                </div>
+                <span class="job-status active">Active</span>
             </div>
-            <span class="job-status active">Active</span>
-        </div>
-    `).join('');
+            <div class="entity-meta recruiter-mini-posting-meta">
+                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${job.location || 'Remote'}</span>
+                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${job.type || 'Full-time'}</span>
+            </div>
+            <div class="recruiter-mini-posting-foot">
+                <span>${applicantCount} applicant${applicantCount === 1 ? '' : 's'}</span>
+                <span>Posted ${timeSince(job.created_at)}</span>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 function populateCandidateFilter() {
@@ -127,7 +157,7 @@ function renderCandidatesView() {
     const filteredApps = recruiterState.applications.filter(app => !select?.value || String(app.job_id) === String(select.value));
     if (filteredApps.length === 0) {
         container.innerHTML = `
-            <div class="candidate-item">
+            <div class="candidate-item is-empty">
                 <div class="candidate-info-wrapper">
                     <div class="candidate-details">
                         <h4>No matching candidates</h4>
@@ -351,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             result.jobs.forEach(job => {
                 const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid var(--border)';
+                tr.className = 'card-row card-row-recruiter';
                 const applicants = job.applicant_count || 0;
                 totalApplicants += parseInt(applicants, 10);
 
@@ -359,15 +389,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 const statusLabel = job.status.charAt(0).toUpperCase() + job.status.slice(1);
 
                 tr.innerHTML = `
-                    <td style="padding: 16px;">
-                        <div style="font-weight: 600;">${job.title}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${job.location || ''} • ${job.type || ''}</div>
+                    <td data-label="Job">
+                        <div class="entity-block">
+                            <span class="entity-title">${job.title}</span>
+                            <div class="entity-meta">
+                                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${job.location || 'Remote'}</span>
+                                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${job.type || 'Full-time'}</span>
+                            </div>
+                        </div>
                     </td>
-                    <td style="padding: 16px;"><span class="job-status ${statusClass}">${statusLabel}</span></td>
-                    <td style="padding: 16px; font-weight: 600;">${applicants}</td>
-                    <td style="padding: 16px; font-size: 0.85rem; color: var(--text-muted);">${formatRecruiterDate(job.created_at)}</td>
-                    <td style="padding: 16px;">
-                        <button class="section-arrow" style="width: 30px; height: 30px;" title="Edit" onclick="editMyJob(${job.id})"><i class="fa-solid fa-pen"></i></button>
+                    <td data-label="Status"><span class="job-status ${statusClass}">${statusLabel}</span></td>
+                    <td data-label="Applicants">
+                        <div class="table-value">
+                            <span class="table-metric">${applicants}</span>
+                            <span class="table-note">candidate${parseInt(applicants, 10) === 1 ? '' : 's'}</span>
+                        </div>
+                    </td>
+                    <td data-label="Posted">
+                        <div class="table-value">
+                            <span>${formatRecruiterDate(job.created_at)}</span>
+                            <span class="table-note">${timeSince(job.created_at)}</span>
+                        </div>
+                    </td>
+                    <td class="actions-cell" data-label="Actions">
+                        <button class="tbl-btn" title="Edit" onclick="editMyJob(${job.id})"><i class="fa-solid fa-pen"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);

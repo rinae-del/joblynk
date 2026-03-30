@@ -420,9 +420,10 @@
 
 .admin-table-wrapper {
     background: var(--bg-white);
-    border-radius: 14px;
+    border-radius: 18px;
     border: 1px solid var(--border);
     overflow: hidden;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
 }
 
 .admin-table {
@@ -432,21 +433,21 @@
 }
 
 .admin-table thead tr {
-    background: var(--bg);
+    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
     border-bottom: 1px solid var(--border);
 }
 
 .admin-table th {
     padding: 14px 18px;
     font-weight: 600;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
 }
 
 .admin-table td {
-    padding: 14px 18px;
+    padding: 16px 18px;
     font-size: 0.88rem;
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
@@ -462,6 +463,18 @@
 
 .admin-table tbody tr:hover {
     background: rgba(59, 75, 166, 0.03);
+}
+
+.admin-table tbody tr.card-row-users td:first-child {
+    box-shadow: inset 3px 0 0 rgba(37, 99, 235, 0.2);
+}
+
+.admin-table tbody tr.card-row-jobs td:first-child {
+    box-shadow: inset 3px 0 0 rgba(249, 115, 22, 0.2);
+}
+
+.admin-table tbody tr.card-row-apps td:first-child {
+    box-shadow: inset 3px 0 0 rgba(5, 150, 105, 0.2);
 }
 
 /* Table user cell */
@@ -555,11 +568,11 @@
 }
 
 .tbl-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-white);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #E4E8F1;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 100%);
     color: var(--text-muted);
     cursor: pointer;
     display: flex;
@@ -567,12 +580,14 @@
     justify-content: center;
     font-size: 0.75rem;
     transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
 }
 
 .tbl-btn:hover {
-    background: var(--bg);
+    background: #fff;
     color: var(--text);
-    border-color: #ccc;
+    border-color: #CBD5E1;
+    transform: translateY(-1px);
 }
 
 .tbl-btn.warn:hover {
@@ -991,21 +1006,65 @@
     }
 
     .admin-table tbody tr {
-        background: var(--bg-white);
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--accent, #3B4BA6);
-        border-radius: 16px;
-        padding: 18px 18px 18px 16px;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, #FFFFFF 0%, #F9FBFF 100%);
+        border: 1px solid #E7EAF2;
+        border-radius: 22px;
+        padding: 18px;
         margin-bottom: 14px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        gap: 14px;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
         transition: box-shadow 0.25s ease, transform 0.25s ease;
     }
 
+    .admin-table tbody tr::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: linear-gradient(180deg, #3B4BA6, rgba(59, 75, 166, 0));
+    }
+
+    .admin-table tbody tr::after {
+        content: '';
+        position: absolute;
+        top: -32px;
+        right: -24px;
+        width: 128px;
+        height: 128px;
+        background: radial-gradient(circle, rgba(59, 75, 166, 0.11) 0%, rgba(59, 75, 166, 0) 72%);
+        pointer-events: none;
+    }
+
+    .admin-table tbody tr.card-row-users::before {
+        background: linear-gradient(180deg, #2563EB, rgba(37, 99, 235, 0));
+    }
+
+    .admin-table tbody tr.card-row-users::after {
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0) 72%);
+    }
+
+    .admin-table tbody tr.card-row-jobs::before {
+        background: linear-gradient(180deg, #F97316, rgba(249, 115, 22, 0));
+    }
+
+    .admin-table tbody tr.card-row-jobs::after {
+        background: radial-gradient(circle, rgba(249, 115, 22, 0.12) 0%, rgba(249, 115, 22, 0) 72%);
+    }
+
+    .admin-table tbody tr.card-row-apps::before {
+        background: linear-gradient(180deg, #059669, rgba(5, 150, 105, 0));
+    }
+
+    .admin-table tbody tr.card-row-apps::after {
+        background: radial-gradient(circle, rgba(5, 150, 105, 0.12) 0%, rgba(5, 150, 105, 0) 72%);
+    }
+
     .admin-table tbody tr:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
     }
 
     .admin-table tbody tr:active {
@@ -1015,11 +1074,14 @@
     .admin-table td {
         padding: 0;
         border-bottom: none;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: minmax(78px, 92px) minmax(0, 1fr);
+        gap: 8px 14px;
+        align-items: start;
         font-size: 0.88rem;
         min-height: 24px;
+        position: relative;
+        z-index: 1;
     }
 
     .admin-table td::before {
@@ -1030,10 +1092,15 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
         flex-shrink: 0;
-        margin-right: 12px;
+        padding-top: 6px;
+    }
+
+    .admin-table td > * {
+        min-width: 0;
     }
 
     .admin-table td:first-child {
+        display: block;
         font-weight: 700;
         font-size: 0.95rem;
         padding-bottom: 6px;
@@ -1047,6 +1114,7 @@
 
     .table-user {
         gap: 10px;
+        align-items: flex-start;
     }
 
     .table-avatar {
@@ -1062,7 +1130,10 @@
     }
 
     .actions-cell {
+        display: flex;
         justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
         padding-top: 12px;
         border-top: 1px solid var(--border);
         gap: 8px;
@@ -1150,7 +1221,7 @@
     .admin-table tbody tr {
         padding: 16px;
         margin-bottom: 12px;
-        border-radius: 14px;
+        border-radius: 18px;
     }
 
     .tbl-btn {

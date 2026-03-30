@@ -311,6 +311,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     let currentApplyJobId = null;
 
+    function getDaysSince(dateValue) {
+        const parsedDate = new Date(dateValue).getTime();
+        if (!parsedDate) return 0;
+        return Math.max(0, Math.floor((Date.now() - parsedDate) / 86400000));
+    }
+
+    function formatRelativeAge(dateValue) {
+        const days = getDaysSince(dateValue);
+        if (days === 0) return 'Posted today';
+        if (days === 1) return 'Posted yesterday';
+        return `Posted ${days} days ago`;
+    }
+
+    function formatSalaryLabel(job) {
+        const salaryFrom = Number(job.salaryFrom || 0);
+        const salaryTo = Number(job.salaryTo || 0);
+        if (!salaryFrom && !salaryTo) return '';
+
+        const compactMoney = value => new Intl.NumberFormat('en', {
+            notation: 'compact',
+            maximumFractionDigits: 1,
+        }).format(value);
+
+        const period = String(job.salaryPeriod || 'Per Month').replace(/^Per\s+/i, '/');
+        if (salaryFrom && salaryTo) {
+            return `R${compactMoney(salaryFrom)} - R${compactMoney(salaryTo)} ${period}`;
+        }
+        if (salaryFrom) {
+            return `From R${compactMoney(salaryFrom)} ${period}`;
+        }
+        return `Up to R${compactMoney(salaryTo)} ${period}`;
+    }
+
+    function getJobFootnote(job, daysSince, applicants) {
+        if (job.closingDate) {
+            const closingDate = new Date(job.closingDate).getTime();
+            if (closingDate) {
+                const closingDays = Math.ceil((closingDate - Date.now()) / 86400000);
+                if (closingDays <= 0) return 'Closing today';
+                if (closingDays === 1) return 'Closes tomorrow';
+                if (closingDays <= 7) return `Closes in ${closingDays} days`;
+            }
+        }
+
+        if (daysSince === 0) return 'Freshly published role';
+        if (applicants >= 40) return 'High-interest opportunity';
+        return 'Quick apply with your saved profile';
+    }
+
     async function renderJobs() {
         const jobList = $('jobList');
         if (!jobList || typeof JobsStore === 'undefined') return;
@@ -321,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         jobList.innerHTML = '';
 
         if (jobs.length === 0) {
-            jobList.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-briefcase" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>No jobs available yet</div>';
+            jobList.innerHTML = '<div class="job-empty-state"><i class="fa-solid fa-briefcase job-empty-icon"></i><p>No jobs available yet</p><span>Fresh matches will appear here as soon as recruiters publish them.</span></div>';
             return;
         }
 
@@ -332,34 +381,54 @@ document.addEventListener('DOMContentLoaded', () => {
             const letter = job.company ? job.company[0].toUpperCase() : 'J';
             const color = job.color || '#3B4BA6';
             const lighterColor = color + '88';
+            const accentSoft = color + '22';
             const applied = JobsStore.hasApplied(job.id);
-            const daysSince = Math.floor((Date.now() - new Date(job.postedAt).getTime()) / 86400000);
-            let badge = '';
+            const daysSince = getDaysSince(job.postedAt);
+            const applicants = parseInt(job.applicants, 10) || 0;
+            const benefitsCount = Array.isArray(job.benefits) ? job.benefits.length : 0;
+            const salaryLabel = formatSalaryLabel(job);
+            const footnote = applied ? 'Tracked in your applications board' : getJobFootnote(job, daysSince, applicants);
+            let badge = '<span class="job-badge is-open">Open</span>';
             if (applied) {
-                badge = '<span class="job-badge" style="background:#ECFDF5; color:#059669;">Applied ✓</span>';
+                badge = '<span class="job-badge is-applied">Applied</span>';
             } else if (daysSince <= 3) {
                 badge = '<span class="job-badge new">New</span>';
-            } else if (job.applicants >= 40) {
+            } else if (applicants >= 40) {
                 badge = '<span class="job-badge hot">Hot</span>';
             }
 
             const item = document.createElement('div');
             item.className = 'job-item';
+            item.style.setProperty('--job-accent', color);
+            item.style.setProperty('--job-accent-soft', accentSoft);
             item.innerHTML = `
                 <div class="job-avatar" style="background:linear-gradient(135deg,${color},${lighterColor})">${letter}</div>
-                <div class="job-info">
-                    <div class="job-title">${job.title}</div>
-                    <div class="job-meta">
-                        <span class="job-meta-pill"><i class="fa-solid fa-building"></i> ${job.company}</span>
-                        ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>` : ''}
-                        ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${job.type}</span>` : ''}
+                <div class="job-body">
+                    <div class="job-header">
+                        <div class="job-heading">
+                            <span class="job-kicker">${job.company}</span>
+                            <div class="job-title">${job.title}</div>
+                        </div>
+                        ${badge}
                     </div>
-                    ${applied
-                        ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application Submitted</span>'
-                        : `<button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply Now</button>`
-                    }
+                    <div class="job-meta">
+                        ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>` : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>'}
+                        ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${job.type}</span>` : ''}
+                        ${salaryLabel ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${salaryLabel}</span>` : ''}
+                    </div>
+                    <div class="job-insights">
+                        <span class="job-insight"><i class="fa-regular fa-clock"></i> ${formatRelativeAge(job.postedAt)}</span>
+                        <span class="job-insight"><i class="fa-solid fa-users"></i> <strong>${applicants}</strong> applicant${applicants === 1 ? '' : 's'}</span>
+                        ${benefitsCount ? `<span class="job-insight"><i class="fa-solid fa-sparkles"></i> ${benefitsCount} benefit${benefitsCount === 1 ? '' : 's'}</span>` : ''}
+                    </div>
+                    <div class="job-footer">
+                        ${applied
+                            ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
+                            : `<button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply now</button>`
+                        }
+                        <span class="job-footnote">${footnote}</span>
+                    </div>
                 </div>
-                ${badge}
             `;
             jobList.appendChild(item);
         });
@@ -472,28 +541,46 @@ document.addEventListener('DOMContentLoaded', () => {
             const jobTitle = app.jobTitle || (JobsStore.getJobById(app.jobId)?.title) || 'Unknown Job';
             const jobCompany = app.jobCompany || (JobsStore.getJobById(app.jobId)?.company) || '';
             const color = app.jobColor || (JobsStore.getJobById(app.jobId)?.color) || '#3B4BA6';
+            const accentSoft = color + '22';
             const letter = jobCompany ? jobCompany[0].toUpperCase() : 'J';
+            const jobLocation = app.jobLocation || (JobsStore.getJobById(app.jobId)?.location) || '';
+            const jobType = app.jobType || (JobsStore.getJobById(app.jobId)?.type) || '';
 
             const statusMap = {
-                submitted: { bg: '#ECFDF5', color: '#059669', text: 'Submitted' },
-                reviewed: { bg: '#EFF6FF', color: '#2563EB', text: 'Reviewed' },
-                shortlisted: { bg: '#FDF4FF', color: '#A855F7', text: 'Shortlisted' },
-                rejected: { bg: '#FEF2F2', color: '#DC2626', text: 'Rejected' },
+                submitted: { cls: 'is-submitted', text: 'Submitted' },
+                reviewed: { cls: 'is-reviewed', text: 'Reviewed' },
+                shortlisted: { cls: 'is-shortlisted', text: 'Shortlisted' },
+                rejected: { cls: 'is-rejected', text: 'Rejected' },
             };
             const st = statusMap[app.status] || statusMap.submitted;
 
             const item = document.createElement('div');
-            item.className = 'job-item';
+            item.className = 'job-item job-item-application';
+            item.style.setProperty('--job-accent', color);
+            item.style.setProperty('--job-accent-soft', accentSoft);
             item.innerHTML = `
-                <div class="job-avatar" style="background:linear-gradient(135deg,${color},${color}88); width:38px; height:38px; font-size:0.82rem;">${letter}</div>
-                <div class="job-info">
-                    <div class="job-title">${jobTitle}</div>
+                <div class="job-avatar" style="background:linear-gradient(135deg,${color},${color}88);">${letter}</div>
+                <div class="job-body">
+                    <div class="job-header">
+                        <div class="job-heading">
+                            <span class="job-kicker">${jobCompany || 'Application tracker'}</span>
+                            <div class="job-title">${jobTitle}</div>
+                        </div>
+                        <span class="job-badge ${st.cls}">${st.text}</span>
+                    </div>
                     <div class="job-meta">
-                        <span class="job-meta-pill"><i class="fa-solid fa-building"></i> ${jobCompany}</span>
-                        <span class="job-meta-pill"><i class="fa-regular fa-clock"></i> ${getTimeAgo(app.submittedAt)}</span>
+                        ${jobCompany ? `<span class="job-meta-pill"><i class="fa-solid fa-building"></i> ${jobCompany}</span>` : ''}
+                        ${jobLocation ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${jobLocation}</span>` : ''}
+                        ${jobType ? `<span class="job-meta-pill"><i class="fa-solid fa-briefcase"></i> ${jobType}</span>` : ''}
+                    </div>
+                    <div class="job-insights">
+                        <span class="job-insight"><i class="fa-regular fa-clock"></i> ${getTimeAgo(app.submittedAt)}</span>
+                        <span class="job-insight"><i class="fa-solid fa-shield-check"></i> Application status synced</span>
+                    </div>
+                    <div class="job-footer">
+                        <span class="job-footnote">Keep your CV and cover letter updated while the recruiter reviews your profile.</span>
                     </div>
                 </div>
-                <span class="job-badge" style="background:${st.bg}; color:${st.color}; position:static;">${st.text}</span>
             `;
             appList.appendChild(item);
         });
