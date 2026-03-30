@@ -117,25 +117,7 @@ function showToast(message) {
 
     const toast = document.createElement('div');
     toast.className = 'admin-toast';
-    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #1a1a2e;
-        color: #fff;
-        padding: 14px 24px;
-        border-radius: 12px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.88rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 9999;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        animation: toastIn 0.35s ease;
-    `;
+    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${escapeHtml(message)}`;
     document.body.appendChild(toast);
 
     // Add animation keyframes dynamically
@@ -143,10 +125,6 @@ function showToast(message) {
         const style = document.createElement('style');
         style.id = 'toastStyles';
         style.textContent = `
-            @keyframes toastIn {
-                from { transform: translateY(20px); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
             @keyframes toastOut {
                 from { transform: translateY(0); opacity: 1; }
                 to { transform: translateY(20px); opacity: 0; }

@@ -1,6 +1,6 @@
 /**
  * Joblynk – Shared UI Components
- * Renders sidebar, mobile topbar, and breadcrumb from a single source.
+ * Renders sidebar, mobile topbar, bottom tab-bar, and breadcrumb.
  *
  * Usage:
  *   <div id="app-sidebar" data-role="admin" data-active="users"></div>
@@ -27,6 +27,19 @@
                 { id: 'navReports',      key: 'reports',      icon: 'fa-solid fa-chart-line',       label: 'Reports',       href: 'admin-reports.html' },
                 { id: 'navSettings',     key: 'settings',     icon: 'fa-solid fa-gear',             label: 'Settings',      href: 'admin-settings.html' },
             ],
+            // Bottom tab bar: first 4 items + "More" drawer
+            tabBarItems: [
+                { key: 'overview',     icon: 'fa-solid fa-gauge-high',     label: 'Home',     href: 'admin-overview.html' },
+                { key: 'users',        icon: 'fa-solid fa-users',          label: 'Users',    href: 'admin-users.html' },
+                { key: 'jobs',         icon: 'fa-solid fa-briefcase',       label: 'Jobs',     href: 'admin-jobs.html' },
+                { key: 'reports',      icon: 'fa-solid fa-chart-line',     label: 'Reports',  href: 'admin-reports.html' },
+            ],
+            moreItems: [
+                { key: 'recruiters',   icon: 'fa-solid fa-building',       label: 'Recruiters',   href: 'admin-recruiters.html' },
+                { key: 'applications', icon: 'fa-solid fa-file-signature', label: 'Applications', href: 'admin-applications.html' },
+                { key: 'documents',    icon: 'fa-solid fa-folder-open',    label: 'Documents',    href: 'admin-documents.html' },
+                { key: 'settings',     icon: 'fa-solid fa-gear',           label: 'Settings',     href: 'admin-settings.html' },
+            ],
             userIcon: { icon: 'fa-solid fa-shield-halved', bg: 'rgba(220,38,38,0.2)', color: '#FCA5A5' },
             bottomLinks: [
                 { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Job Seeker View', href: 'dashboard.html' },
@@ -44,6 +57,15 @@
                 { id: 'navCandidates', key: 'candidates',  icon: 'fa-solid fa-users',        label: 'Candidates',  href: 'recruiter-candidates.html' },
                 { id: 'navMessages',   key: 'messages',    icon: 'fa-regular fa-envelope',   label: 'Messages',    href: 'recruiter-messages.html' },
                 { id: 'navPricing',    key: 'pricing',     icon: 'fa-solid fa-tag',          label: 'Pricing',     href: 'recruiter-pricing.html' },
+            ],
+            tabBarItems: [
+                { key: 'overview',   icon: 'fa-solid fa-chart-pie',  label: 'Home',       href: 'recruiter-overview.html' },
+                { key: 'my-jobs',    icon: 'fa-solid fa-briefcase',  label: 'My Jobs',    href: 'recruiter-my-jobs.html' },
+                { key: 'candidates', icon: 'fa-solid fa-users',      label: 'Candidates', href: 'recruiter-candidates.html' },
+                { key: 'messages',   icon: 'fa-regular fa-envelope', label: 'Messages',   href: 'recruiter-messages.html' },
+            ],
+            moreItems: [
+                { key: 'pricing', icon: 'fa-solid fa-tag', label: 'Pricing', href: 'recruiter-pricing.html' },
             ],
             userIcon: { icon: 'fa-solid fa-building', bg: 'rgba(126,34,206,0.2)', color: '#c084fc' },
             bottomLinks: [
@@ -125,6 +147,7 @@
         if (!el) return;
 
         const label = el.dataset.label || 'Dashboard';
+        const role = el.dataset.role || (document.getElementById('sidebar')?.classList.contains('admin-sidebar') ? 'admin' : '');
 
         el.outerHTML = `
     <button class="mobile-hamburger" id="btnHamburger"><i class="fa-solid fa-bars"></i></button>
@@ -136,6 +159,75 @@
         <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>`;
+    }
+
+    // ── Render Bottom Tab Bar (mobile-native navigation) ──
+    function renderBottomTabBar() {
+        const sidebarEl = document.getElementById('sidebar');
+        if (!sidebarEl) return;
+
+        const role = sidebarEl.classList.contains('admin-sidebar') ? 'admin' : 'recruiter';
+        const cfg = NAV[role];
+        if (!cfg || !cfg.tabBarItems) return;
+
+        const activeKey = detectActiveKey(cfg.items);
+        // Check if active page is one of the "more" items
+        const isMoreActive = cfg.moreItems && cfg.moreItems.some(m => m.key === activeKey);
+
+        const tabs = cfg.tabBarItems.map(tab => {
+            const isActive = tab.key === activeKey;
+            return `<a href="${esc(tab.href)}" class="btab-item${isActive ? ' btab-active' : ''}">
+                <i class="${tab.icon}"></i>
+                <span>${esc(tab.label)}</span>
+            </a>`;
+        }).join('');
+
+        const moreItems = (cfg.moreItems || []).map(item => {
+            const isActive = item.key === activeKey;
+            return `<a href="${esc(item.href)}" class="btab-more-item${isActive ? ' btab-more-active' : ''}">
+                <i class="${item.icon}"></i>
+                <span>${esc(item.label)}</span>
+            </a>`;
+        }).join('');
+
+        const bar = document.createElement('div');
+        bar.innerHTML = `
+    <nav class="btab-bar" id="bottomTabBar">
+        ${tabs}
+        <button class="btab-item btab-more-btn${isMoreActive ? ' btab-active' : ''}" id="btabMoreBtn" type="button">
+            <i class="fa-solid fa-ellipsis"></i>
+            <span>More</span>
+        </button>
+    </nav>
+    <div class="btab-more-sheet" id="btabMoreSheet">
+        <div class="btab-more-header">
+            <span>More</span>
+            <button class="btab-more-close" id="btabMoreClose" type="button"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="btab-more-grid">${moreItems}</div>
+    </div>
+    <div class="btab-more-overlay" id="btabMoreOverlay"></div>`;
+
+        document.body.appendChild(bar);
+
+        // Wire up More sheet
+        const moreBtn = document.getElementById('btabMoreBtn');
+        const moreSheet = document.getElementById('btabMoreSheet');
+        const moreOverlay = document.getElementById('btabMoreOverlay');
+        const moreClose = document.getElementById('btabMoreClose');
+
+        function openMore() {
+            moreSheet.classList.add('btab-sheet-open');
+            moreOverlay.classList.add('btab-overlay-active');
+        }
+        function closeMore() {
+            moreSheet.classList.remove('btab-sheet-open');
+            moreOverlay.classList.remove('btab-overlay-active');
+        }
+
+        if (moreBtn) moreBtn.addEventListener('click', openMore);
+        if (moreClose) moreClose.addEventListener('click', closeMore);
+        if (moreOverlay) moreOverlay.addEventListener('click', closeMore);
     }
 
     // ── Render Breadcrumb ──
@@ -170,6 +262,7 @@
         renderSidebar();
         renderTopbar();
         renderBreadcrumb();
+        renderBottomTabBar();
 
         // Wire up mobile sidebar toggle
         const btnH = document.getElementById('btnHamburger');

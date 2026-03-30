@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joblynk – Dashboard</title>
+    <title>Joblynk â€“ Dashboard</title>
     <meta name="description" content="Manage your CVs, job applications and more from your Joblynk dashboard.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=6">
-    <script src="auth-guard.js"></script>
+    <link rel="stylesheet" href="dashboard.css?v=10">
+    <script src="auth-guard.js?v=8"></script>
 </head>
 
 <body>
@@ -88,16 +88,17 @@
             <span class="breadcrumb-current">Dashboard</span>
         </nav>
 
-        <!-- ── Welcome Hero ── -->
+        <!-- â”€â”€ Welcome Hero â”€â”€ -->
         <section class="welcome-hero">
             <div class="welcome-text">
                 <h1>Welcome to <span class="gradient-text">Joblynk</span></h1>
-                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role — all in one place.</p>
+                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role â€” all in one place.</p>
             </div>
             <div class="welcome-actions">
                 <a href="cv-builder.html" class="welcome-btn primary"><i class="fa-solid fa-plus"></i> Create a CV</a>
-                <a href="cover-letter.html" class="welcome-btn primary" style="background: rgba(255,255,255,0.9);"><i class="fa-solid fa-envelope-open-text"></i> Create Cover Letter</a>
+                <a href="cover-letter.html" class="welcome-btn primary"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</a>
                 <a href="#sectionJobs" class="welcome-btn secondary"><i class="fa-solid fa-compass"></i> Browse Jobs</a>
+            </div>
             </div>
             <div class="welcome-stats">
                 <div class="stat-item">
@@ -119,7 +120,7 @@
             </div>
         </section>
 
-        <!-- ── Section: CVs ── -->
+        <!-- â”€â”€ Section: CVs â”€â”€ -->
         <section class="dash-section" id="sectionCvs">
             <div class="section-title-row">
                 <h2><i class="fa-regular fa-file-lines section-icon"></i> My CVs</h2>
@@ -138,7 +139,7 @@
             </div>
         </section>
 
-        <!-- ── Section: Cover Letters ── -->
+        <!-- â”€â”€ Section: Cover Letters â”€â”€ -->
         <section class="dash-section" id="sectionCoverLetters">
             <div class="section-title-row">
                 <h2><i class="fa-solid fa-envelope-open-text section-icon"></i> My Cover Letters</h2>
@@ -159,7 +160,7 @@
 
         <!-- Two-column row for Jobs & Applications -->
         <div class="dash-row">
-            <!-- ── Section: Jobs ── -->
+            <!-- â”€â”€ Section: Jobs â”€â”€ -->
             <section class="dash-section dash-section-half" id="sectionJobs">
                 <div class="section-title-row">
                     <h2><i class="fa-solid fa-briefcase section-icon"></i> Jobs</h2>
@@ -171,7 +172,7 @@
                 </div>
             </section>
 
-            <!-- ── Section: Applications ── -->
+            <!-- â”€â”€ Section: Applications â”€â”€ -->
             <section class="dash-section dash-section-half" id="sectionApps">
                 <div class="section-title-row">
                     <h2><i class="fa-regular fa-rectangle-list section-icon"></i> Applications</h2>
@@ -193,42 +194,42 @@
     </main>
 
     <!-- ========== APPLICATION MODAL ========== -->
-    <div class="app-modal-overlay" id="appModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-        <div class="app-modal" style="background:#fff; border-radius:16px; max-width:500px; width:90%; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation: scaleIn 0.2s ease;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                <h2 style="font-size:1.3rem; font-weight:800; color:#1E293B;">Apply for this job</h2>
-                <button onclick="closeAppModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#94A3B8;">&times;</button>
+    <div class="app-modal-overlay" id="appModalOverlay">
+        <div class="app-modal">
+            <div class="app-modal-header">
+                <h2>Apply for this job</h2>
+                <button onclick="closeAppModal()" class="app-modal-close" aria-label="Close">&times;</button>
             </div>
-            <div id="appModalJobInfo" style="background:#F8FAFC; padding:1rem; border-radius:10px; margin-bottom:1.5rem; border:1px solid #E2E8F0;">
-                <div id="appModalTitle" style="font-weight:700; font-size:1.05rem; margin-bottom:4px;"></div>
-                <div id="appModalCompany" style="color:#64748B; font-size:0.9rem;"></div>
+            <div class="app-modal-job-info" id="appModalJobInfo">
+                <div class="app-modal-title" id="appModalTitle"></div>
+                <div class="app-modal-company" id="appModalCompany"></div>
             </div>
-            <div style="margin-bottom:1.25rem;">
-                <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:#1E293B;">Attach CV</label>
-                <select id="appCvSelect" style="width:100%; padding:0.7rem 1rem; border:1.5px solid #E2E8F0; border-radius:8px; font-family:inherit; font-size:0.95rem;">
+            <div class="app-modal-field">
+                <label for="appCvSelect">Attach CV</label>
+                <select id="appCvSelect" class="app-modal-select">
                     <option value="">-- Select a saved CV --</option>
                 </select>
             </div>
-            <div style="margin-bottom:1.5rem;">
-                <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:#1E293B;">Attach Cover Letter (optional)</label>
-                <select id="appClSelect" style="width:100%; padding:0.7rem 1rem; border:1.5px solid #E2E8F0; border-radius:8px; font-family:inherit; font-size:0.95rem;">
+            <div class="app-modal-field">
+                <label for="appClSelect">Attach Cover Letter (optional)</label>
+                <select id="appClSelect" class="app-modal-select">
                     <option value="">-- None --</option>
                 </select>
             </div>
-            <div style="padding:0.75rem 1rem; background:#FFFBEB; border:1px solid #FEF3C7; border-radius:8px; color:#92400E; font-size:0.85rem; margin-bottom:1.5rem;">
+            <div class="app-modal-notice">
                 <i class="fa-solid fa-circle-info"></i> By submitting, you agree to share your profile and documents with this employer.
             </div>
-            <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
-                <button onclick="closeAppModal()" style="padding:0.7rem 1.5rem; border:1.5px solid #E2E8F0; border-radius:8px; background:#fff; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button>
-                <button id="btnSubmitApp" onclick="submitJobApplication()" style="padding:0.7rem 1.5rem; border:none; border-radius:8px; background:#3B4BA6; color:#fff; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:0.5rem;">
+            <div class="app-modal-actions">
+                <button onclick="closeAppModal()" class="app-modal-cancel">Cancel</button>
+                <button id="btnSubmitApp" onclick="submitJobApplication()" class="app-modal-submit">
                     <i class="fa-solid fa-paper-plane"></i> Submit Application
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="jobs-store.js?v=6"></script>
-    <script src="dashboard.js?v=6"></script>
+    <script src="jobs-store.js?v=9"></script>
+    <script src="dashboard.js?v=9"></script>
 </body>
 
 </html>

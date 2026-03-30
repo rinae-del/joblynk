@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         jobs.forEach(job => {
             const letter = job.company ? job.company[0].toUpperCase() : 'J';
-            const color = job.color || '#3B4BA6';
+            const color = job.color || '#4F46E5';
             const lighterColor = color + '88';
             const accentSoft = color + '22';
             const applied = JobsStore.hasApplied(job.id);
@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 closeAppModal();
                 btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application';
-                btn.style.background = '#3B4BA6';
+                btn.style.background = '';
                 btn.disabled = false;
                 renderJobs();
                 renderApplications();

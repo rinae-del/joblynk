@@ -1,22 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joblynk – Platform Settings</title>
+    <title>Joblynk â€“ Platform Settings</title>
     <meta name="description" content="Configure platform settings for the Joblynk system.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=7">
-    <link rel="stylesheet" href="admin-dashboard.css?v=7">
-    <script src="auth-guard.js" data-role="admin"></script>
+    <link rel="stylesheet" href="dashboard.css?v=10">
+    <link rel="stylesheet" href="admin-dashboard.css?v=10">
+    <script src="auth-guard.js?v=8" data-role="admin"></script>
 </head>
 
 <body>
     <div id="app-sidebar" data-role="admin" data-active="settings"></div>
-    <div id="app-topbar" data-label="Admin"></div>
+    <div id="app-topbar" data-label="Admin" data-role="admin"></div>
 
     <main class="main-content">
         <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Settings"}]'></nav>
@@ -101,7 +101,7 @@
 
                     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;">
                         <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
-                            <span class="setting-name" style="font-size:0.8rem;">🔥 Intro Offer (R)</span>
+                            <span class="setting-name" style="font-size:0.8rem;">ðŸ”¥ Intro Offer (R)</span>
                             <input type="number" id="priceIntro" value="750" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
                         </div>
                         <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
@@ -155,9 +155,9 @@
         </section>
     </main>
 
-    <script src="components.js?v=8"></script>
+    <script src="components.js?v=9"></script>
     <script src="jobs-store.js?v=7"></script>
-    <script src="admin-dashboard.js?v=7"></script>
+    <script src="admin-dashboard.js?v=8"></script>
 </body>
 
 </html>

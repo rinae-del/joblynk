@@ -1,22 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joblynk – Admin Overview</title>
+    <title>Joblynk â€“ Admin Overview</title>
     <meta name="description" content="Platform-wide administration overview for Joblynk.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=7">
-    <link rel="stylesheet" href="admin-dashboard.css?v=7">
-    <script src="auth-guard.js" data-role="admin"></script>
+    <link rel="stylesheet" href="dashboard.css?v=10">
+    <link rel="stylesheet" href="admin-dashboard.css?v=10">
+    <script src="auth-guard.js?v=8" data-role="admin"></script>
 </head>
 
 <body>
     <div id="app-sidebar" data-role="admin" data-active="overview"></div>
-    <div id="app-topbar" data-label="Admin"></div>
+    <div id="app-topbar" data-label="Admin" data-role="admin"></div>
 
     <main class="main-content">
         <nav id="app-breadcrumb" data-crumbs='[{"label":"Home","href":"dashboard.html"},{"label":"Admin Overview"}]'></nav>
@@ -133,9 +133,9 @@
         </div>
     </main>
 
-    <script src="components.js?v=8"></script>
+    <script src="components.js?v=9"></script>
     <script src="jobs-store.js?v=7"></script>
-    <script src="admin-dashboard.js?v=7"></script>
+    <script src="admin-dashboard.js?v=8"></script>
 </body>
 
 </html>

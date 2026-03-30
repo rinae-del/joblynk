@@ -8,12 +8,29 @@
  *   <script src="auth-guard.js" data-role="recruiter"></script>   — recruiter only
  *   <script src="auth-guard.js" data-role="admin"></script>       — admin only
  */
+// Capture script ref synchronously (before any await nullifies document.currentScript)
+const _authScript = document.currentScript || document.querySelector('script[src*="auth-guard"]');
+
 (async function authGuard() {
     try {
         const res = await fetch('api/auth/session.php', {
             credentials: 'include'
         });
-        const data = await res.json();
+
+        if (!res.ok) {
+            console.error('[AuthGuard] Session endpoint returned', res.status);
+            window.location.replace('sign-in.html');
+            return;
+        }
+
+        let data;
+        try {
+            data = await res.json();
+        } catch (parseErr) {
+            console.error('[AuthGuard] Invalid JSON from session endpoint:', parseErr);
+            window.location.replace('sign-in.html');
+            return;
+        }
 
         if (!data.loggedIn) {
             window.location.replace('sign-in.html');
@@ -21,8 +38,7 @@
         }
 
         // Check role restriction if specified
-        const script = document.currentScript || document.querySelector('script[src*="auth-guard"]');
-        const requiredRole = script?.getAttribute('data-role');
+        const requiredRole = _authScript?.getAttribute('data-role');
         
         // Strict mapping of dashboard pages to roles
         const path = window.location.pathname.toLowerCase();
@@ -36,11 +52,19 @@
         if ((requiredRole && data.user.role !== requiredRole) || isWrongDashboard) {
             // Wrong role — redirect to their correct dashboard
             window.location.replace(correctDashboard);
-            return; // Stop execution
+            return;
         }
 
         // Store user data for page scripts to use
         window.__joblynkUser = data.user;
+
+        // Wait for body to be available before DOM operations
+        if (!document.body) {
+            await new Promise(resolve => {
+                if (document.readyState !== 'loading') resolve();
+                else document.addEventListener('DOMContentLoaded', resolve);
+            });
+        }
 
         // Impersonation Banner
         if (data.user.is_impersonating) {
@@ -56,7 +80,6 @@
         // Populate user name in any element with data-user-name attribute
         document.querySelectorAll('[data-user-name]').forEach(el => {
             el.textContent = data.user.name;
-            // Also set value for option/input elements
             if (el.tagName === 'OPTION' || el.tagName === 'INPUT') {
                 el.value = data.user.name;
             }
@@ -79,7 +102,7 @@
         document.body.classList.add('auth-ready');
 
     } catch (err) {
-        // If the API call fails, redirect to sign-in as a safety measure
+        console.error('[AuthGuard] Unexpected error:', err);
         window.location.replace('sign-in.html');
     }
 })();
