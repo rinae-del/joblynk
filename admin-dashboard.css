@@ -44,27 +44,7 @@
     -webkit-text-fill-color: transparent;
 }
 
-/* ── Admin View Switching ── */
-.admin-view {
-    display: none;
-}
-
-.admin-view.active {
-    display: block;
-    animation: adminFadeIn 0.35s ease;
-}
-
-@keyframes adminFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* (Page content is now shown per-page; no toggle needed) */
 
 /* ======================================
    KPI CARDS
@@ -573,41 +553,6 @@
 .actions-cell {
     display: flex;
     gap: 6px;
-}
-
-.tbl-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid #E4E8F1;
-    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 100%);
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    transition: all 0.2s;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-}
-
-.tbl-btn:hover {
-    background: #fff;
-    color: var(--text);
-    border-color: #CBD5E1;
-    transform: translateY(-1px);
-}
-
-.tbl-btn.warn:hover {
-    background: #FEF3C7;
-    color: #D97706;
-    border-color: #FCD34D;
-}
-
-.tbl-btn.danger:hover {
-    background: #FEF2F2;
-    color: #DC2626;
-    border-color: #FECACA;
 }
 
 /* Table Footer */

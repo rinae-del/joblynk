@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Recruiter Overview</title>
+    <meta name="description" content="Overview of your Joblynk Recruiter dashboard.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="recruiter-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="recruiter"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="recruiter" data-active="overview"></div>
+    <div id="app-topbar" data-label="Recruiter"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Home","href":"dashboard.html"},{"label":"Recruiter Overview"}]'></nav>
+
+        <section class="welcome-hero recruiter-hero">
+            <div class="welcome-text">
+                <h1>Welcome back, <span class="recruiter-gradient-text">Tech Corp HR</span></h1>
+                <p>Manage your job postings, track candidates, and find your next great hire efficiently.</p>
+            </div>
+            <div class="welcome-actions">
+                <a href="recruiter-post-job.html" class="welcome-btn primary"><i class="fa-solid fa-plus"></i> Post New Job</a>
+                <a href="recruiter-candidates.html" class="welcome-btn secondary"><i class="fa-solid fa-users"></i> View Candidates</a>
+            </div>
+            <div class="welcome-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="statActiveJobs">0</span>
+                    <span class="stat-label">Active Jobs</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statApplicants">0</span>
+                    <span class="stat-label">Total Applicants</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statCredits">0</span>
+                    <span class="stat-label">Job Credits Left</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="dash-row">
+            <section class="dash-section dash-section-half">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-user-clock section-icon" style="color:#7E22CE"></i> Recent Candidates</h2>
+                    <a class="section-arrow" href="recruiter-candidates.html" title="View all"><i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+                <div class="candidate-list" id="recentCandidatesList">
+                    <div class="candidate-item">
+                        <div class="candidate-info-wrapper">
+                            <div class="candidate-details">
+                                <h4>No candidates yet</h4>
+                                <p>Your most recent applications will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dash-section dash-section-half">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-fire section-icon" style="color:#EC4899"></i> Active Postings</h2>
+                    <a class="section-arrow" href="recruiter-my-jobs.html" title="View all Jobs"><i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+                <div class="job-list" id="activePostingsList">
+                    <div class="job-item" style="border: 1px solid var(--border)">
+                        <div class="job-info">
+                            <div class="job-title">No active postings yet</div>
+                            <div class="job-company">Published jobs will appear here.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="recruiter-dashboard.js?v=7"></script>
+    <script>
+    (async function loadCredits() {
+        try {
+            const res = await fetch('api/credits/index.php', { credentials: 'include' });
+            const data = await res.json();
+            if (data.success) {
+                const remaining = data.total_remaining || 0;
+                const el = document.getElementById('statCredits');
+                if (el) el.textContent = remaining;
+            }
+        } catch (e) {
+            console.warn('Failed to load credits:', e);
+        }
+    })();
+    </script>
+</body>
+
+</html>

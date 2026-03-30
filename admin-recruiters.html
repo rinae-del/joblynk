@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Recruiter Management</title>
+    <meta name="description" content="Manage recruiters on the Joblynk platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="admin-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="recruiters"></div>
+    <div id="app-topbar" data-label="Admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Recruiters"}]'></nav>
+
+        <section class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-building section-icon" style="color:#7E22CE"></i> Recruiter Management</h2>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="recruiterSearch" placeholder="Search recruiters..." oninput="filterTable('recruiterSearch','recruitersTableBody')">
+                    </div>
+                    <select class="filter-select" id="recruiterStatusFilter" onchange="filterTable('recruiterSearch','recruitersTableBody')">
+                        <option value="">All Status</option>
+                        <option value="Verified">Verified</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>Company</th><th>Contact</th><th>Active Jobs</th><th>Plan</th><th>Verification</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="recruitersTableBody">
+                        <tr>
+                            <td><div class="table-user"><div class="table-avatar" style="background:rgba(126,34,206,0.1); color:#7E22CE;"><i class="fa-solid fa-building"></i></div><div><span>Tech Corp Inc.</span><small class="table-sub">hr@techcorp.com</small></div></div></td>
+                            <td>Sarah Williams</td><td><strong>3</strong></td><td><span class="role-tag premium">Premium</span></td>
+                            <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> Verified</span></td>
+                            <td class="actions-cell"><button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button><button class="tbl-btn warn" title="Suspend"><i class="fa-solid fa-ban"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td><div class="table-user"><div class="table-avatar" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fa-solid fa-building"></i></div><div><span>Acme Solutions (Pty) Ltd</span><small class="table-sub">recruit@acme.co.za</small></div></div></td>
+                            <td>David Mokoena</td><td><strong>7</strong></td><td><span class="role-tag premium">Premium</span></td>
+                            <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> Verified</span></td>
+                            <td class="actions-cell"><button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button><button class="tbl-btn warn" title="Suspend"><i class="fa-solid fa-ban"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td><div class="table-user"><div class="table-avatar" style="background:rgba(234,179,8,0.1); color:#D97706;"><i class="fa-solid fa-building"></i></div><div><span>StartupXYZ</span><small class="table-sub">talent@startupxyz.io</small></div></div></td>
+                            <td>Fatima Khan</td><td><strong>2</strong></td><td><span class="role-tag seeker">Free</span></td>
+                            <td><span class="verification-badge pending"><i class="fa-solid fa-clock"></i> Pending</span></td>
+                            <td class="actions-cell"><button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button><button class="tbl-btn" title="Verify" style="color:#059669"><i class="fa-solid fa-check"></i></button><button class="tbl-btn warn" title="Reject"><i class="fa-solid fa-xmark"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td><div class="table-user"><div class="table-avatar" style="background:rgba(220,38,38,0.1); color:#DC2626;"><i class="fa-solid fa-building"></i></div><div><span>Mega Recruitment SA</span><small class="table-sub">info@megarecruit.co.za</small></div></div></td>
+                            <td>James van der Merwe</td><td><strong>12</strong></td><td><span class="role-tag premium">Premium</span></td>
+                            <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> Verified</span></td>
+                            <td class="actions-cell"><button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button><button class="tbl-btn warn" title="Suspend"><i class="fa-solid fa-ban"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td><div class="table-user"><div class="table-avatar" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-building"></i></div><div><span>Cloud Nine Staffing</span><small class="table-sub">hire@cloudnine.com</small></div></div></td>
+                            <td>Maria Santos</td><td><strong>5</strong></td><td><span class="role-tag seeker">Free</span></td>
+                            <td><span class="verification-badge pending"><i class="fa-solid fa-clock"></i> Pending</span></td>
+                            <td class="actions-cell"><button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button><button class="tbl-btn" title="Verify" style="color:#059669"><i class="fa-solid fa-check"></i></button><button class="tbl-btn warn" title="Reject"><i class="fa-solid fa-xmark"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span class="table-info">Showing 5 of 186 recruiters</span>
+                <div class="table-pagination">
+                    <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="page-btn active-page">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span class="page-dots">…</span>
+                    <button class="page-btn">31</button>
+                    <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="admin-dashboard.js?v=7"></script>
+</body>
+
+</html>

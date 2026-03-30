@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Platform Settings</title>
+    <meta name="description" content="Configure platform settings for the Joblynk system.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="admin-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="settings"></div>
+    <div id="app-topbar" data-label="Admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Settings"}]'></nav>
+
+        <section class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-gear section-icon" style="color:#6B7280"></i> Platform Settings</h2>
+            </div>
+
+            <div class="settings-grid">
+                <!-- General -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-globe"></i> General</h3>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Maintenance Mode</span><span class="setting-desc">Put the platform into maintenance mode. Users will see a maintenance page.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleMaintenance"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">User Registration</span><span class="setting-desc">Allow new users to register on the platform.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleRegistration" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Recruiter Self-Signup</span><span class="setting-desc">Allow recruiters to register without admin approval.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleRecruiterSignup" checked><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-bell"></i> Notifications</h3>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Email Alerts</span><span class="setting-desc">Send email alerts for flagged content and system issues.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleEmailAlerts" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">New User Notifications</span><span class="setting-desc">Receive a notification when a new user or recruiter registers.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleNewUser" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Weekly Summary Report</span><span class="setting-desc">Receive a weekly email digest with platform performance stats.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleWeekly"><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+
+                <!-- AI Integration -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-robot"></i> AI Integration</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">The DeepSeek API key is used for AI-powered cover letter generation. This key is stored securely on the server and is never exposed to users.</p>
+                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                        <span class="setting-name" style="font-size:0.8rem;">DeepSeek API Key</span>
+                        <div style="display:flex; gap:8px; width:100%;">
+                            <input type="password" id="deepseekApiKey" placeholder="sk-..." style="flex:1; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#059669,#10B981); padding:8px 16px; font-size:0.8rem; white-space:nowrap;" onclick="saveDeepSeekKey()">
+                                <i class="fa-solid fa-key"></i> Save Key
+                            </button>
+                        </div>
+                        <span id="deepseekKeyStatus" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;"></span>
+                    </div>
+                </div>
+
+                <!-- Moderation -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-shield-halved"></i> Moderation</h3>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Auto-Flag Spam Jobs</span><span class="setting-desc">Automatically flag job posts containing suspicious keywords.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleAutoFlag" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Require Job Approval</span><span class="setting-desc">Jobs require admin approval before going live on the platform.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleJobApproval"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><span class="setting-name">Content Profanity Filter</span><span class="setting-desc">Filter profanity from job descriptions and user profiles.</span></div>
+                        <label class="toggle-switch"><input type="checkbox" id="toggleProfanity" checked><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="settings-card" style="grid-column: 1 / -1;">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-tag"></i> Pricing Management</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Update recruiter job posting prices. Changes take effect immediately on the pricing page.</p>
+
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;">
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">🔥 Intro Offer (R)</span>
+                            <input type="number" id="priceIntro" value="750" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">1 Job Standard (R)</span>
+                            <input type="number" id="price1Job" value="1300" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">2-Job Bundle (R)</span>
+                            <input type="number" id="price2Job" value="2200" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">3-Job Bundle (R)</span>
+                            <input type="number" id="price3Job" value="2950" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">4-Job Bundle (R)</span>
+                            <input type="number" id="price4Job" value="3500" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">5-Job Bundle (R)</span>
+                            <input type="number" id="price5Job" value="3900" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                        <div class="setting-row" style="flex:0 0 auto;">
+                            <div class="setting-info"><span class="setting-name">Intro Offer Active</span><span class="setting-desc">Enable the R750 introductory offer on the pricing page.</span></div>
+                            <label class="toggle-switch"><input type="checkbox" id="toggleIntroOffer" checked><span class="toggle-slider"></span></label>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px; flex:0 0 auto;">
+                            <span class="setting-name" style="font-size:0.8rem;">Intro Offer Expiry Date</span>
+                            <input type="date" id="introExpiry" value="2026-05-31" style="padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                        </div>
+                        <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#6366F1,#818CF8); margin-top:auto;" onclick="savePricingSettings()">
+                            <i class="fa-solid fa-check"></i> Save Pricing
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:28px; display:flex; gap:12px;">
+                <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#DC2626,#F97316);" onclick="saveAllSettings()">
+                    <i class="fa-solid fa-check"></i> Save Changes
+                </button>
+                <button class="welcome-btn secondary" style="color:var(--text); border-color:var(--border); background:var(--bg);" onclick="resetSettingsDefaults()">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="admin-dashboard.js?v=7"></script>
+</body>
+
+</html>

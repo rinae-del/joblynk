@@ -15,48 +15,19 @@ function escapeHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-// ── View Switching ──
+// ── View Navigation (redirects to separate pages) ──
 function switchView(viewName) {
-    // Hide all views
-    document.querySelectorAll('.admin-view').forEach(v => v.classList.remove('active'));
-    // Show target view
-    const targetView = document.getElementById('view-' + viewName);
-    if (targetView) targetView.classList.add('active');
-
-    // Update breadcrumb
-    const breadcrumbMap = {
-        'overview': 'Admin Overview',
-        'users': 'Users',
-        'recruiters': 'Recruiters',
-        'jobs': 'Job Listings',
-        'applications': 'Applications',
-        'documents': 'Documents',
-        'reports': 'Reports',
-        'settings': 'Settings'
+    const pageMap = {
+        'overview': 'admin-overview.html',
+        'users': 'admin-users.html',
+        'recruiters': 'admin-recruiters.html',
+        'jobs': 'admin-jobs.html',
+        'applications': 'admin-applications.html',
+        'documents': 'admin-documents.html',
+        'reports': 'admin-reports.html',
+        'settings': 'admin-settings.html'
     };
-    const crumb = document.getElementById('breadcrumbTitle');
-    if (crumb) crumb.textContent = breadcrumbMap[viewName] || 'Admin';
-
-    // Update sidebar nav active state
-    document.querySelectorAll('.sidebar-nav .nav-item').forEach(n => n.classList.remove('active'));
-    const navMap = {
-        'overview': 'navOverview',
-        'users': 'navUsers',
-        'recruiters': 'navRecruiters',
-        'jobs': 'navJobs',
-        'applications': 'navApplications',
-        'documents': 'navDocuments',
-        'reports': 'navReports',
-        'settings': 'navSettings'
-    };
-    const navEl = document.getElementById(navMap[viewName]);
-    if (navEl) navEl.classList.add('active');
-
-    // Close mobile sidebar
-    closeMobileSidebar();
-
-    // Re-animate counters if switching to overview
-    if (viewName === 'overview') animateCounters();
+    window.location.href = pageMap[viewName] || 'admin-overview.html';
 }
 
 // ── Mobile Sidebar ──

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – User Management</title>
+    <meta name="description" content="Manage platform users on Joblynk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="admin-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="users"></div>
+    <div id="app-topbar" data-label="Admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Users"}]'></nav>
+
+        <section class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-users section-icon" style="color:#3B82F6"></i> User Management</h2>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="userSearch" placeholder="Search users..." oninput="filterTable('userSearch','usersTableBody')">
+                    </div>
+                    <select class="filter-select" id="userRoleFilter" onchange="filterTable('userSearch','usersTableBody')">
+                        <option value="">All Roles</option>
+                        <option value="Job Seeker">Job Seeker</option>
+                        <option value="Premium">Premium</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span class="table-info" id="usersTableInfo">Loading users...</span>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="admin-dashboard.js?v=7"></script>
+</body>
+
+</html>

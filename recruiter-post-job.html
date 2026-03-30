@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Post a Job</title>
+    <meta name="description" content="Post a new job listing on Joblynk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="recruiter-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="recruiter"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="recruiter" data-active="post-job"></div>
+    <div id="app-topbar" data-label="Recruiter"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Recruiter","href":"recruiter-overview.html"},{"label":"Post a Job"}]'></nav>
+
+        <!-- No-credits banner (hidden by default) -->
+        <section id="noCreditsBanner" class="dash-section" style="display:none;">
+            <div style="background: linear-gradient(135deg, #7E22CE 0%, #a855f7 100%); border-radius: 14px; padding: 40px; text-align: center; color: #fff;">
+                <i class="fa-solid fa-ticket" style="font-size: 2.5rem; margin-bottom: 16px; opacity: 0.9;"></i>
+                <h2 style="margin-bottom: 8px; font-size: 1.4rem;">No Job Credits Remaining</h2>
+                <p style="opacity: 0.85; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">You need at least one job credit to post a new position. Purchase a package to continue hiring top talent.</p>
+                <a href="recruiter-pricing.html" class="welcome-btn primary" style="background: #fff; color: #7E22CE; font-weight: 700; border: none; padding: 12px 28px;"><i class="fa-solid fa-cart-shopping"></i> Buy Credits</a>
+            </div>
+        </section>
+
+        <section id="postJobSection" class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-plus-circle section-icon" style="color:#7E22CE"></i> Post a New Job</h2>
+            </div>
+            <div style="background: var(--bg-white); padding: 32px; border-radius: 14px; border: 1px solid var(--border);">
+                <!-- Stepper -->
+                <div class="wizard-stepper">
+                    <div class="step-indicator active" id="indicator-1">1</div>
+                    <div class="step-indicator" id="indicator-2">2</div>
+                    <div class="step-indicator" id="indicator-3">3</div>
+                    <div class="step-indicator" id="indicator-4">4</div>
+                </div>
+
+                <form id="postJobFormWizard">
+                    <!-- Step 1 -->
+                    <div class="wizard-step active" id="step-1">
+                        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 1: Job Identity & Matching</h3>
+                        <div class="dash-row" style="gap: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizJobTitle">Job Title*</label>
+                                <input type="text" id="wizJobTitle" class="form-control" placeholder="e.g. Senior Product Manager" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizCompany">Company Display Name*</label>
+                                <select id="wizCompany" class="form-control" required>
+                                    <option value="" data-user-name>Loading...</option>
+                                    <option value="Confidential">Confidential / Hidden</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dash-row" style="gap: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizLocation">Hyper-Local Location* <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(For smart matching)</span></label>
+                                <input type="text" id="wizLocation" class="form-control" placeholder="Specific City, Neighborhood, or 'Remote'" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizType">Employment Type*</label>
+                                <select id="wizType" class="form-control" required>
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Freelance">Freelance</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                            <button type="button" class="btn-submit" onclick="nextWizardStep(1)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="wizard-step" id="step-2">
+                        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 2: Role Details & Skills</h3>
+                        <div class="form-group">
+                            <label for="wizDesc">Role Description* <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Describe a day in the life)</span></label>
+                            <textarea id="wizDesc" class="form-control" style="min-height: 100px;" placeholder="What will they be doing?" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="wizReqs">Qualifications & Requirements*</label>
+                            <textarea id="wizReqs" class="form-control" style="min-height: 100px;" placeholder="List necessary degrees, certifications, or years of experience..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="wizSkills">Key Skills Tags <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Comma separated)</span></label>
+                            <input type="text" id="wizSkills" class="form-control" placeholder="e.g. React, Python, Project Management, Agile">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                            <button type="button" class="welcome-btn secondary" style="color: var(--text); border-color: var(--border);" onclick="prevWizardStep(2)">Back</button>
+                            <button type="button" class="btn-submit" onclick="nextWizardStep(2)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="wizard-step" id="step-3">
+                        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 3: Compensation & Benefits</h3>
+                        <div class="dash-row" style="gap: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizSalaryFrom">Salary From</label>
+                                <input type="number" id="wizSalaryFrom" class="form-control" placeholder="Amount (e.g. 15000)">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizSalaryTo">Salary Up To</label>
+                                <input type="number" id="wizSalaryTo" class="form-control" placeholder="Amount (e.g. 25000)">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizSalaryPeriod">Salary Period</label>
+                                <select id="wizSalaryPeriod" class="form-control">
+                                    <option value="Per Month">Per Month</option>
+                                    <option value="Per Annum">Per Annum</option>
+                                    <option value="Per Hour">Per Hour</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label>Benefits Included</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="Medical Aid"><span>Medical Aid</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="Pension Fund"><span>Pension Fund</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="Flexible Hours"><span>Flexible Hours</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="Remote Work"><span>Remote Work Option</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="Training"><span>Training Allowance</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="Performance Bonus"><span>Performance Bonus</span></label>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                            <button type="button" class="welcome-btn secondary" style="color: var(--text); border-color: var(--border);" onclick="prevWizardStep(3)">Back</button>
+                            <button type="button" class="btn-submit" onclick="nextWizardStep(3)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="wizard-step" id="step-4">
+                        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 4: Application Management</h3>
+                        <div class="dash-row" style="gap: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizDate">Closing Date*</label>
+                                <input type="date" id="wizDate" class="form-control" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizScreening">Screening Questionnaire</label>
+                                <select id="wizScreening" class="form-control">
+                                    <option value="None">None</option>
+                                    <option value="Standard Tech">Standard Tech Pre-screen</option>
+                                    <option value="Management">Management Scenario Questions</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-item" style="display:inline-flex; width:auto; border:none; background:none; padding:0;">
+                                <input type="checkbox" id="wizAutoRegret">
+                                <span style="font-weight:600;">Enable Auto-Regret Emails</span>
+                            </label>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Automatically send regret emails to applicants who fail the screening questionnaire.</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                            <button type="button" class="welcome-btn secondary" style="color: var(--text); border-color: var(--border);" onclick="prevWizardStep(4)">Back</button>
+                            <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #059669, #10B981);"><i class="fa-solid fa-paper-plane"></i> Publish Job</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="recruiter-dashboard.js?v=7"></script>
+    <script>
+    (async function loadCredits() {
+        try {
+            const res = await fetch('api/credits/index.php', { credentials: 'include' });
+            const data = await res.json();
+            if (data.success) {
+                const remaining = data.total_remaining || 0;
+                const banner = document.getElementById('noCreditsBanner');
+                const form = document.getElementById('postJobSection');
+                if (remaining <= 0) {
+                    if (banner) banner.style.display = '';
+                    if (form) form.style.display = 'none';
+                } else {
+                    if (banner) banner.style.display = 'none';
+                    if (form) form.style.display = '';
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to load credits:', e);
+        }
+    })();
+    </script>
+</body>
+
+</html>

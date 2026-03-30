@@ -118,7 +118,7 @@ sendResendEmail($email, 'Verify your email – Joblynk Recruiter', $emailHtml);
 $pfData = [
     'merchant_id'  => PAYFAST_MERCHANT_ID,
     'merchant_key' => PAYFAST_MERCHANT_KEY,
-    'return_url'   => APP_URL . '/recruiter-dashboard.html?payment=success',
+    'return_url'   => APP_URL . '/recruiter-overview.html?payment=success',
     'cancel_url'   => APP_URL . '/recruiter-pricing.html?payment=cancelled',
     'notify_url'   => APP_URL . '/api/payments/notify.php',
     'name_first'   => $firstName,

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Messages</title>
+    <meta name="description" content="Recruiter messages on Joblynk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="recruiter-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="recruiter"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="recruiter" data-active="messages"></div>
+    <div id="app-topbar" data-label="Recruiter"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Recruiter","href":"recruiter-overview.html"},{"label":"Messages"}]'></nav>
+
+        <section class="dash-section" style="text-align:center; padding:60px 20px;">
+            <i class="fa-regular fa-comments" style="font-size:3rem; color:var(--border); margin-bottom:16px;"></i>
+            <h3 style="margin-bottom:8px; color:var(--text);">No new messages</h3>
+            <p style="color:var(--text-muted);">When candidates or the platform send you messages, they'll appear here.</p>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="recruiter-dashboard.js?v=7"></script>
+</body>
+
+</html>

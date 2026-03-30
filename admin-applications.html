@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Applications</title>
+    <meta name="description" content="View all job applications on the Joblynk platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="admin-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="applications"></div>
+    <div id="app-topbar" data-label="Admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Applications"}]'></nav>
+
+        <section class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-file-signature section-icon" style="color:#059669"></i> All Applications</h2>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="appSearch" placeholder="Search applications..." oninput="filterTable('appSearch','appsTableBody')">
+                    </div>
+                </div>
+            </div>
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>Applicant</th><th>Job Applied For</th><th>Company</th><th>CV Attached</th><th>Cover Letter</th><th>Status</th><th>Submitted</th></tr>
+                    </thead>
+                    <tbody id="appsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span class="table-info" id="appsTableInfo">Showing 0 applications</span>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="admin-dashboard.js?v=7"></script>
+</body>
+
+</html>

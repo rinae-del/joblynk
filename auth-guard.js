@@ -27,8 +27,8 @@
         // Strict mapping of dashboard pages to roles
         const path = window.location.pathname.toLowerCase();
         let correctDashboard = 'dashboard.html';
-        if (data.user.role === 'recruiter') correctDashboard = 'recruiter-dashboard.html';
-        if (data.user.role === 'admin') correctDashboard = 'admin-dashboard.html';
+        if (data.user.role === 'recruiter') correctDashboard = 'recruiter-overview.html';
+        if (data.user.role === 'admin') correctDashboard = 'admin-overview.html';
 
         // Redirect if they are explicitly forbidden (via data-role) OR if they are on the wrong dashboard
         const isWrongDashboard = (path.includes('dashboard') && !path.includes(correctDashboard));

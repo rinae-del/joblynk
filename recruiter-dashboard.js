@@ -561,51 +561,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCandidates();
 });
 
-// View Setup
+// View Navigation (redirects to separate pages)
 function switchView(viewId) {
-    // Hide all sections
-    const sections = document.querySelectorAll('.dashboard-view-section');
-    sections.forEach(sec => sec.classList.remove('active'));
-    
-    // Show target section
-    const target = document.getElementById('view-' + viewId);
-    if (target) {
-        target.classList.add('active');
-    }
-
-    // Update breadcrumb
-    const breadcrumbMap = {
-        'overview': 'Recruiter Overview',
-        'post-job': 'Post a Job',
-        'my-jobs': 'My Jobs',
-        'candidates': 'Candidates',
-        'messages': 'Messages'
+    const pageMap = {
+        'overview': 'recruiter-overview.html',
+        'post-job': 'recruiter-post-job.html',
+        'my-jobs': 'recruiter-my-jobs.html',
+        'candidates': 'recruiter-candidates.html',
+        'messages': 'recruiter-messages.html'
     };
-    const crumb = document.getElementById('breadcrumbTitle');
-    if (crumb) crumb.textContent = breadcrumbMap[viewId] || 'Recruiter';
-    
-    // Update nav active states
-    const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
-    navItems.forEach(item => item.classList.remove('active'));
-    
-    // Map viewId to nav item ID
-    const navMap = {
-        'overview': 'navDashboard',
-        'my-jobs': 'navMyJobs',
-        'candidates': 'navCandidates',
-        'messages': 'navMessages'
-    };
-    
-    if (navMap[viewId]) {
-        const activeNav = document.getElementById(navMap[viewId]);
-        if (activeNav) activeNav.classList.add('active');
-    }
-    
-    // Close sidebar on mobile after clicking
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-    }
+    window.location.href = pageMap[viewId] || 'recruiter-overview.html';
 }

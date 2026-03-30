@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Job Listings</title>
+    <meta name="description" content="Manage all job listings on the Joblynk platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="admin-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="jobs"></div>
+    <div id="app-topbar" data-label="Admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Job Listings"}]'></nav>
+
+        <section class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-briefcase section-icon" style="color:#059669"></i> All Job Listings</h2>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="jobSearch" placeholder="Search jobs..." oninput="filterTable('jobSearch','jobsTableBody')">
+                    </div>
+                    <select class="filter-select" id="jobStatusFilter" onchange="filterTable('jobSearch','jobsTableBody')">
+                        <option value="">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Closed">Closed</option>
+                        <option value="Flagged">Flagged</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>Job Title</th><th>Company</th><th>Applicants</th><th>Status</th><th>Posted</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="jobsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span class="table-info" id="jobsTableInfo">Showing 0 jobs</span>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="admin-dashboard.js?v=7"></script>
+</body>
+
+</html>

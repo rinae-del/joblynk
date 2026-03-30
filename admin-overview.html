@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Admin Overview</title>
+    <meta name="description" content="Platform-wide administration overview for Joblynk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=7">
+    <link rel="stylesheet" href="admin-dashboard.css?v=7">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="overview"></div>
+    <div id="app-topbar" data-label="Admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Home","href":"dashboard.html"},{"label":"Admin Overview"}]'></nav>
+
+        <!-- Hero -->
+        <section class="welcome-hero admin-hero">
+            <div class="welcome-text">
+                <h1>Platform <span class="admin-gradient-text">Command Center</span></h1>
+                <p>Real-time overview of Joblynk's ecosystem. Monitor users, jobs, revenue, and platform health at a glance.</p>
+            </div>
+            <div class="welcome-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="statTotalUsers" data-target="6">0</span>
+                    <span class="stat-label">Total Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statTotalJobs" data-target="3">0</span>
+                    <span class="stat-label">Active Jobs</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statTotalApps" data-target="0">0</span>
+                    <span class="stat-label">Applications</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statTotalDocs" data-target="0">0</span>
+                    <span class="stat-label">Documents</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(59,130,246,0.1); color: #3B82F6;"><i class="fa-solid fa-user-plus"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-value" id="kpiNewUsers" data-target="0">0</span>
+                    <span class="kpi-label">New Users (30d)</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(126,34,206,0.1); color: #7E22CE;"><i class="fa-solid fa-building"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-value" id="kpiNewRecruiters" data-target="0">0</span>
+                    <span class="kpi-label">New Recruiters (30d)</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(5,150,105,0.1); color: #059669;"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-value" id="kpiNewApps" data-target="0">0</span>
+                    <span class="kpi-label">Applications (30d)</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(220,38,38,0.1); color: #DC2626;"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-value kpi-currency" id="kpiRevenue" data-target="0">0</span>
+                    <span class="kpi-label">Revenue (30d)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two-column row -->
+        <div class="dash-row">
+            <section class="dash-section dash-section-half">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-clock-rotate-left section-icon" style="color:#DC2626"></i> Recent Activity</h2>
+                </div>
+                <div class="activity-feed" id="activityFeed"></div>
+            </section>
+            <section class="dash-section dash-section-half">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-heart-pulse section-icon" style="color:#059669"></i> Platform Health</h2>
+                </div>
+                <div class="health-grid">
+                    <div class="health-item">
+                        <div class="health-indicator online"></div>
+                        <div class="health-info"><span class="health-name">API Server</span><span class="health-status">Operational</span></div>
+                        <span class="health-uptime">99.9%</span>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-indicator online"></div>
+                        <div class="health-info"><span class="health-name">Database</span><span class="health-status">Operational</span></div>
+                        <span class="health-uptime">99.8%</span>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-indicator online"></div>
+                        <div class="health-info"><span class="health-name">Email Service</span><span class="health-status">Operational</span></div>
+                        <span class="health-uptime">99.5%</span>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-indicator warning"></div>
+                        <div class="health-info"><span class="health-name">Search Index</span><span class="health-status" style="color:#F59E0B">Degraded</span></div>
+                        <span class="health-uptime" style="color:#F59E0B">97.2%</span>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-indicator online"></div>
+                        <div class="health-info"><span class="health-name">CDN / Assets</span><span class="health-status">Operational</span></div>
+                        <span class="health-uptime">100%</span>
+                    </div>
+                </div>
+                <div class="mini-chart-section">
+                    <h3 class="mini-chart-title">Revenue Trend (6 months)</h3>
+                    <div class="mini-bar-chart">
+                        <div class="bar-col"><div class="bar" style="height:45%"></div><span class="bar-label">Oct</span></div>
+                        <div class="bar-col"><div class="bar" style="height:55%"></div><span class="bar-label">Nov</span></div>
+                        <div class="bar-col"><div class="bar" style="height:40%"></div><span class="bar-label">Dec</span></div>
+                        <div class="bar-col"><div class="bar" style="height:65%"></div><span class="bar-label">Jan</span></div>
+                        <div class="bar-col"><div class="bar" style="height:78%"></div><span class="bar-label">Feb</span></div>
+                        <div class="bar-col"><div class="bar active-bar" style="height:90%"></div><span class="bar-label">Mar</span></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="components.js?v=8"></script>
+    <script src="jobs-store.js?v=7"></script>
+    <script src="admin-dashboard.js?v=7"></script>
+</body>
+
+</html>
