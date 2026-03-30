@@ -548,9 +548,8 @@ function switchView(viewId) {
     // Close sidebar on mobile after clicking
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
+    if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
         overlay.classList.remove('active');
-        sidebar.style.transform = 'translateX(-100%)';
     }
 }

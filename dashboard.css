@@ -43,6 +43,7 @@ body {
     color: var(--text);
     background: var(--bg);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 /* ======================================
@@ -225,6 +226,13 @@ body {
     box-shadow: 0 1px 8px rgba(0,0,0,.18);
 }
 
+.mobile-topbar .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
 .mobile-topbar .topbar-logo {
     font-size: 1.15rem;
     font-weight: 800;
@@ -232,6 +240,20 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.mobile-topbar .topbar-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .9);
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .1);
 }
 
 .mobile-topbar .topbar-hamburger {
@@ -893,6 +915,8 @@ body {
     .sidebar {
         transform: translateX(-100%);
         border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+        z-index: 650;
+        box-shadow: var(--shadow-lg);
     }
 
     .sidebar.open {
