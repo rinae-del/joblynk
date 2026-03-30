@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Joblynk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-split-layout">
+        <!-- Visual Sidebar (Desktop Only) -->
+        <div class="auth-banner">
+            <a href="index.html" class="auth-banner-logo">Joblynk.</a>
+            
+            <div class="auth-banner-content">
+                <h1>Unlock your career potential.</h1>
+                <p>Join over 2 million professionals building their professional brand, networking, and landing their dream jobs every day.</p>
+                
+                <div class="auth-glass-card">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=random" alt="Reviewer">
+                    <div class="auth-glass-text">
+                        <h4>"The best platform out there"</h4>
+                        <p>Sarah Jenkins, Product Manager</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Sidebar -->
+        <div class="auth-main">
+            <!-- Mobile Logo -->
+            <a href="index.html" class="auth-mobile-logo">Joblynk.</a>
+
+            <div class="auth-main-inner">
+                <div class="auth-header">
+                    <h2>Welcome back</h2>
+                    <p>Enter your details to access your account.</p>
+                </div>
+
+                <form id="signinForm">
+                    <div class="auth-form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" class="auth-input" placeholder="name@company.com" required autofocus>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="auth-input" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="auth-form-row">
+                        <label class="auth-checkbox-wrap">
+                            <input type="checkbox" class="auth-checkbox">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="reset-password.html" class="auth-link">Forgot password?</a>
+                    </div>
+
+                    <div id="formError" style="display: none; background: #FEF2F2; color: #DC2626; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+                    <div id="formInfo" style="display: none; background: #EFF6FF; color: #2563EB; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+
+                    <button type="submit" class="auth-btn" id="btnSubmit">Sign In</button>
+                    
+
+                    <div class="auth-footer">
+                        Don't have an account? <a href="sign-up.html" class="auth-link">Create one</a>
+                    </div>
+                </form>
+
+                <script>
+                    document.getElementById('signinForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const btn = document.getElementById('btnSubmit');
+                        const errorEl = document.getElementById('formError');
+                        const infoEl = document.getElementById('formInfo');
+                        errorEl.style.display = 'none';
+                        infoEl.style.display = 'none';
+
+                        const email = document.getElementById('email').value.trim();
+                        const password = document.getElementById('password').value;
+
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
+
+                        try {
+                            const res = await fetch('api/auth/signin.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ email, password })
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                                // Redirect based on role
+                                const role = data.user.role;
+                                if (role === 'recruiter') {
+                                    window.location.href = 'recruiter-dashboard.html';
+                                } else if (role === 'admin') {
+                                    window.location.href = 'admin-dashboard.html';
+                                } else {
+                                    window.location.href = 'dashboard.html';
+                                }
+                            } else if (data.needsVerify) {
+                                infoEl.innerHTML = data.message + ' <a href="verify-email.html?email=' + encodeURIComponent(data.email) + '" style="color:#2563EB;font-weight:600;">Resend verification email →</a>';
+                                infoEl.style.display = 'block';
+                                btn.disabled = false;
+                                btn.textContent = 'Sign In';
+                            } else {
+                                errorEl.textContent = data.message;
+                                errorEl.style.display = 'block';
+                                btn.disabled = false;
+                                btn.textContent = 'Sign In';
+                            }
+                        } catch (err) {
+                            errorEl.textContent = 'Something went wrong. Please try again.';
+                            errorEl.style.display = 'block';
+                            btn.disabled = false;
+                            btn.textContent = 'Sign In';
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Builder | Joblynk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+</head>
+
+<body>
+
+    <!-- ====== Top Navigation Bar ====== -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="dashboard.html" class="topbar-btn" id="btnBack"><i class="fa-solid fa-arrow-left"></i>
+                <span>Dashboard</span></a>
+        </div>
+        <div class="topbar-center">
+            <span class="topbar-title" contenteditable="true" spellcheck="false">Untitled CV</span>
+            <i class="fa-solid fa-cloud topbar-cloud"></i>
+        </div>
+        <div class="topbar-right">
+            <button class="topbar-btn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+            <button class="topbar-btn" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+            <button class="topbar-btn-download" id="btnPdf"><i class="fa-solid fa-download"></i> Download</button>
+        </div>
+    </header>
+
+    <!-- ====== Main Split View ====== -->
+    <div class="app-container">
+
+        <!-- ====== Left Editor Pane ====== -->
+        <main class="editor-pane" id="editorPane">
+            <div class="editor-scroll">
+
+                <!-- Personal Details Section -->
+                <div class="form-section" id="section-personal" data-section="personal">
+                    <div class="section-header">
+                        <h3>Personal details</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-row form-row-photo">
+                            <div class="input-group photo-group">
+                                <label>Photo</label>
+                                <div class="photo-upload-box" id="photoTrigger">
+                                    <img id="avatarPreview" src="" alt="" style="display:none;">
+                                    <i class="fa-solid fa-camera" id="avatarIcon"></i>
+                                </div>
+                                <input type="file" id="photoUpload" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="input-group">
+                                <label for="firstName">Given name</label>
+                                <input type="text" id="firstName" data-cv="firstName">
+                            </div>
+                            <div class="input-group">
+                                <label for="lastName">Family name</label>
+                                <input type="text" id="lastName" data-cv="lastName">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group full-width">
+                                <label for="jobTitle">Desired job position</label>
+                                <input type="text" id="jobTitle" data-cv="jobTitle">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="email">Email address</label>
+                                <input type="email" id="email" data-cv="email">
+                            </div>
+                            <div class="input-group">
+                                <label for="phone">Phone number</label>
+                                <input type="tel" id="phone" data-cv="phone">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group full-width">
+                                <label for="address">Address</label>
+                                <input type="text" id="address" data-cv="address">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="postCode">Post code</label>
+                                <input type="text" id="postCode" data-cv="postCode">
+                            </div>
+                            <div class="input-group">
+                                <label for="city">City</label>
+                                <input type="text" id="city" data-cv="city">
+                            </div>
+                        </div>
+
+                        <!-- Optional field chips -->
+                        <div class="optional-chips">
+                            <button class="chip" data-field="dateOfBirth"><i class="fa-solid fa-plus"></i> Date of
+                                birth</button>
+                            <button class="chip" data-field="placeOfBirth"><i class="fa-solid fa-plus"></i> Place of
+                                birth</button>
+                            <button class="chip" data-field="drivingLicence"><i class="fa-solid fa-plus"></i> Driving
+                                licence</button>
+                            <button class="chip" data-field="gender"><i class="fa-solid fa-plus"></i> Gender</button>
+                            <button class="chip" data-field="nationality"><i class="fa-solid fa-plus"></i>
+                                Nationality</button>
+                            <button class="chip" data-field="civilStatus"><i class="fa-solid fa-plus"></i> Civil
+                                status</button>
+                            <button class="chip" data-field="website"><i class="fa-solid fa-plus"></i> Website</button>
+                            <button class="chip" data-field="linkedin"><i class="fa-solid fa-plus"></i>
+                                LinkedIn</button>
+                        </div>
+                        <!-- Dynamic optional fields appear here -->
+                        <div id="optionalFieldsContainer"></div>
+                    </div>
+                </div>
+
+                <!-- Professional Summary Section -->
+                <div class="form-section" data-section="summary">
+                    <div class="section-header">
+                        <h3>Professional summary</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <p class="section-hint">Write 2-4 short, energetic sentences about how great you are. Mention
+                            the role and what you did. What were the big achievements? Describe your motivation and list
+                            your skills.</p>
+                        <div class="form-row">
+                            <div class="input-group full-width">
+                                <textarea id="summary" rows="5" data-cv="summary"
+                                    placeholder="e.g. Passionate software engineer with 5+ years of experience..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment History Section -->
+                <div class="form-section" data-section="employment">
+                    <div class="section-header">
+                        <h3>Employment history</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <p class="section-hint">Show your relevant experience (last 10 years). Use bullet points to note
+                            your achievements.</p>
+                        <div id="experience-list" class="dynamic-list"></div>
+                        <button class="btn-add" id="btnAddExperience"><i class="fa-solid fa-plus"></i> Add
+                            employment</button>
+                    </div>
+                </div>
+
+                <!-- Education Section -->
+                <div class="form-section" data-section="education">
+                    <div class="section-header">
+                        <h3>Education</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <p class="section-hint">A varied education on your resume sums up the value that your learnings
+                            and background will bring to job.</p>
+                        <div id="education-list" class="dynamic-list"></div>
+                        <button class="btn-add" id="btnAddEducation"><i class="fa-solid fa-plus"></i> Add
+                            education</button>
+                    </div>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="form-section" data-section="skills">
+                    <div class="section-header">
+                        <h3>Skills</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <div id="skills-list" class="dynamic-list"></div>
+                        <button class="btn-add" id="btnAddSkill"><i class="fa-solid fa-plus"></i> Add skill</button>
+                    </div>
+                </div>
+
+                <!-- Languages Section -->
+                <div class="form-section" data-section="languages">
+                    <div class="section-header">
+                        <h3>Languages</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <div id="languages-list" class="dynamic-list"></div>
+                        <button class="btn-add" id="btnAddLanguage"><i class="fa-solid fa-plus"></i> Add
+                            language</button>
+                    </div>
+                </div>
+
+                <!-- Hobbies Section -->
+                <div class="form-section" data-section="hobbies">
+                    <div class="section-header">
+                        <h3>Hobbies</h3>
+                        <div class="section-controls">
+                            <button class="section-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <button class="section-btn section-toggle"><i class="fa-solid fa-chevron-up"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-row">
+                            <div class="input-group full-width">
+                                <textarea id="hobbies" rows="3" data-cv="hobbies"
+                                    placeholder="e.g. Reading, Hiking, Photography"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ====== Right Preview Pane ====== -->
+        <aside class="preview-pane" id="previewPane">
+            <div class="preview-scroll">
+                <div class="a4-paper" id="cvPaper">
+
+                    <!-- CV Header with colored background -->
+                    <div class="cv-header-block">
+                        <div class="cv-header-label">Curriculum vitae</div>
+                        <div class="cv-header-content">
+                            <div class="cv-photo-wrap" id="previewPhotoWrap" style="display:none;">
+                                <img id="previewPhoto" src="" alt="">
+                            </div>
+                            <div class="cv-identity">
+                                <h1 id="previewName" class="cv-name"></h1>
+                                <h2 id="previewJobTitle" class="cv-jobtitle"></h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CV Body -->
+                    <div class="cv-content">
+                        <!-- Left Column: Contact + Skills -->
+                        <div class="cv-col-left">
+                            <div class="cv-sidebar-block" id="previewContactBlock">
+                                <h4 class="cv-sidebar-heading">Details</h4>
+                                <div class="cv-detail-row" id="previewAddressRow"><span id="previewAddress"></span>
+                                </div>
+                                <div class="cv-detail-row" id="previewCityRow"><span id="previewCityPostcode"></span>
+                                </div>
+                                <div class="cv-detail-row" id="previewEmailRow"><span id="previewEmail"></span></div>
+                                <div class="cv-detail-row" id="previewPhoneRow"><span id="previewPhone"></span></div>
+                                <div id="previewOptionalDetails"></div>
+                            </div>
+
+                            <div class="cv-sidebar-block" id="previewSkillsBlock" style="display:none;">
+                                <h4 class="cv-sidebar-heading">Skills</h4>
+                                <div id="previewSkillsList" class="cv-skills-stacked"></div>
+                            </div>
+
+                            <div class="cv-sidebar-block" id="previewLanguagesBlock" style="display:none;">
+                                <h4 class="cv-sidebar-heading">Languages</h4>
+                                <div id="previewLanguagesList" class="cv-skills-stacked"></div>
+                            </div>
+
+                            <div class="cv-sidebar-block" id="previewHobbiesBlock" style="display:none;">
+                                <h4 class="cv-sidebar-heading">Hobbies</h4>
+                                <div id="previewHobbies" class="cv-text-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Summary, Experience, Education -->
+                        <div class="cv-col-right">
+                            <div class="cv-main-block" id="previewSummaryBlock" style="display:none;">
+                                <h4 class="cv-main-heading">Profile</h4>
+                                <p id="previewSummary" class="cv-text-body"></p>
+                            </div>
+
+                            <div class="cv-main-block" id="previewExperienceBlock" style="display:none;">
+                                <h4 class="cv-main-heading">Employment history</h4>
+                                <div id="previewExperienceList" class="cv-entries"></div>
+                            </div>
+
+                            <div class="cv-main-block" id="previewEducationBlock" style="display:none;">
+                                <h4 class="cv-main-heading">Education</h4>
+                                <div id="previewEducationList" class="cv-entries"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decorative wave at bottom -->
+                    <div class="cv-wave"></div>
+                </div>
+            </div>
+
+            <!-- Template Picker Panel (slides up) -->
+            <div class="template-panel" id="templatePanel">
+                <div class="template-panel-header">
+                    <span>Choose a template</span>
+                    <button class="template-panel-close" id="btnCloseTemplates"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="template-grid">
+                    <!-- Classic -->
+                    <div class="template-card active" data-template="classic">
+                        <div class="tpl-preview tpl-preview-classic">
+                            <div class="tp-header" style="background:#3B4BA6"></div>
+                            <div class="tp-body">
+                                <div class="tp-sidebar">
+                                    <div class="tp-line w60"></div>
+                                    <div class="tp-line w40"></div>
+                                    <div class="tp-line w50"></div>
+                                </div>
+                                <div class="tp-main">
+                                    <div class="tp-line w80"></div>
+                                    <div class="tp-line w100"></div>
+                                    <div class="tp-line w70"></div>
+                                    <div class="tp-line w90"></div>
+                                </div>
+                            </div>
+                            <div class="tp-wave" style="background:#3B4BA6"></div>
+                        </div>
+                        <span>Classic</span>
+                    </div>
+                    <!-- Modern -->
+                    <div class="template-card" data-template="modern">
+                        <div class="tpl-preview tpl-preview-modern">
+                            <div class="tp-header-full" style="background:#0F766E">
+                                <div class="tp-circle"></div>
+                                <div class="tp-line-white w60"></div>
+                            </div>
+                            <div class="tp-body-single">
+                                <div class="tp-line w80"></div>
+                                <div class="tp-line w100"></div>
+                                <div class="tp-line w60"></div>
+                                <div class="tp-line w90"></div>
+                                <div class="tp-line w70"></div>
+                            </div>
+                        </div>
+                        <span>Modern</span>
+                    </div>
+                    <!-- Elegant -->
+                    <div class="template-card" data-template="elegant">
+                        <div class="tpl-preview tpl-preview-elegant">
+                            <div class="tp-header-centered">
+                                <div class="tp-line-dark w50 centered"></div>
+                                <div class="tp-line-muted w40 centered"></div>
+                            </div>
+                            <div class="tp-divider"></div>
+                            <div class="tp-body-two">
+                                <div class="tp-col">
+                                    <div class="tp-line w80"></div>
+                                    <div class="tp-line w60"></div>
+                                    <div class="tp-line w70"></div>
+                                </div>
+                                <div class="tp-col">
+                                    <div class="tp-line w90"></div>
+                                    <div class="tp-line w70"></div>
+                                    <div class="tp-line w80"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span>Elegant</span>
+                    </div>
+                    <!-- Minimal -->
+                    <div class="template-card" data-template="minimal">
+                        <div class="tpl-preview tpl-preview-minimal">
+                            <div class="tp-header-minimal">
+                                <div class="tp-line-dark w70"></div>
+                                <div class="tp-line-muted w40"></div>
+                            </div>
+                            <div class="tp-body-single">
+                                <div class="tp-line w100"></div>
+                                <div class="tp-line w80"></div>
+                                <div class="tp-line w60"></div>
+                                <div class="tp-line w90"></div>
+                            </div>
+                        </div>
+                        <span>Minimal</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Bottom Toolbar -->
+            <div class="preview-toolbar">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn active" id="btnTemplate" title="Templates"><i
+                            class="fa-solid fa-table-columns"></i> <i class="fa-solid fa-caret-down"></i></button>
+                </div>
+
+                <div class="toolbar-group">
+                    <!-- Font Family -->
+                    <div class="toolbar-dropdown-wrap">
+                        <button class="toolbar-btn" id="btnFont" title="Font Family">Aa <i
+                                class="fa-solid fa-caret-down"></i></button>
+                        <div class="toolbar-dropdown" id="dropdownFont">
+                            <div class="dropdown-label">Font Family</div>
+                            <button class="dropdown-item active" data-font="Inter"
+                                style="font-family:Inter">Inter</button>
+                            <button class="dropdown-item" data-font="Roboto" style="font-family:Roboto">Roboto</button>
+                            <button class="dropdown-item" data-font="Open Sans" style="font-family:'Open Sans'">Open
+                                Sans</button>
+                            <button class="dropdown-item" data-font="Lato" style="font-family:Lato">Lato</button>
+                            <button class="dropdown-item" data-font="Merriweather"
+                                style="font-family:Merriweather">Merriweather</button>
+                            <button class="dropdown-item" data-font="Playfair Display"
+                                style="font-family:'Playfair Display'">Playfair Display</button>
+                        </div>
+                    </div>
+                    <!-- Font Size -->
+                    <div class="toolbar-dropdown-wrap">
+                        <button class="toolbar-btn" id="btnSize" title="Font Size"><span
+                                style="font-weight:700">T</span>T <i class="fa-solid fa-caret-down"></i></button>
+                        <div class="toolbar-dropdown" id="dropdownSize">
+                            <div class="dropdown-label">Font Size</div>
+                            <button class="dropdown-item" data-size="small">Small</button>
+                            <button class="dropdown-item active" data-size="medium">Medium</button>
+                            <button class="dropdown-item" data-size="large">Large</button>
+                        </div>
+                    </div>
+                    <!-- Color -->
+                    <div class="toolbar-dropdown-wrap">
+                        <button class="toolbar-btn" id="btnColor" title="Accent Color"><i
+                                class="fa-solid fa-palette"></i> <i class="fa-solid fa-caret-down"></i></button>
+                        <div class="toolbar-dropdown" id="dropdownColor">
+                            <div class="dropdown-label">Accent Color</div>
+                            <div class="color-grid">
+                                <button class="color-swatch active" data-color="#3B4BA6"
+                                    style="background:#3B4BA6"></button>
+                                <button class="color-swatch" data-color="#0F766E" style="background:#0F766E"></button>
+                                <button class="color-swatch" data-color="#7C3AED" style="background:#7C3AED"></button>
+                                <button class="color-swatch" data-color="#DC2626" style="background:#DC2626"></button>
+                                <button class="color-swatch" data-color="#D97706" style="background:#D97706"></button>
+                                <button class="color-swatch" data-color="#2563EB" style="background:#2563EB"></button>
+                                <button class="color-swatch" data-color="#059669" style="background:#059669"></button>
+                                <button class="color-swatch" data-color="#374151" style="background:#374151"></button>
+                                <button class="color-swatch" data-color="#BE185D" style="background:#BE185D"></button>
+                                <button class="color-swatch" data-color="#1E293B" style="background:#1E293B"></button>
+                            </div>
+                            <div class="color-custom-row">
+                                <label>Custom:</label>
+                                <input type="color" id="customColorPicker" value="#3B4BA6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" title="Fullscreen" id="btnFullscreen"><i
+                            class="fa-solid fa-expand"></i></button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Mobile FAB -->
+    <button class="mobile-fab" id="btnMobileFab"><i class="fa-solid fa-eye"></i></button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="cv-builder.js"></script>
+</body>
+
+</html>

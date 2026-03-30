@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Sign Up | Joblynk</title>
+    <meta name="description" content="Create a recruiter account and start posting jobs on Joblynk — South Africa's smart recruitment platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        /* ── Recruiter signup specific ── */
+        .signup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .signup-grid .full-width { grid-column: 1 / -1; }
+        .signup-grid label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted, #6B7280);
+            margin: 1.25rem 0 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid #E5E7EB;
+        }
+        .section-title:first-of-type { border-top: none; margin-top: 0; }
+
+        /* ── Package Cards ── */
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        .package-card {
+            background: #F8FAFC;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            position: relative;
+        }
+        .package-card:hover { border-color: var(--accent, #3B4BA6); }
+        .package-card.selected {
+            border-color: var(--accent, #3B4BA6);
+            background: #F0F0FF;
+            box-shadow: 0 0 0 2px rgba(59, 75, 166, 0.12);
+        }
+        .package-card input[type="radio"] { display: none; }
+        .package-card .pkg-name {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted, #6B7280);
+            letter-spacing: 0.4px;
+        }
+        .package-card .pkg-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text, #1E293B);
+            margin: 0.35rem 0;
+        }
+        .package-card .pkg-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary, #9CA3AF);
+        }
+        .package-card .pkg-badge {
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+        .package-card.popular .pkg-badge {
+            background: linear-gradient(135deg, var(--accent, #3B4BA6), #7C3AED);
+        }
+
+        /* ── T&C Checkbox ── */
+        .tc-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            margin: 1rem 0;
+            font-size: 0.82rem;
+            color: var(--text-secondary, #6B7280);
+            line-height: 1.5;
+        }
+        .tc-checkbox input[type="checkbox"] {
+            width: 18px; height: 18px;
+            margin-top: 2px;
+            accent-color: var(--accent, #3B4BA6);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .tc-checkbox a { color: var(--accent, #3B4BA6); text-decoration: underline; }
+
+        /* ── Error / Alert ── */
+        .form-alert {
+            padding: 0.85rem 1rem;
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.25);
+            color: #DC2626;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .form-alert.visible { display: block; }
+
+        @media (max-width: 640px) {
+            .signup-grid { grid-template-columns: 1fr; }
+            .package-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 420px) {
+            .package-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body class="auth-page">
+    <div class="auth-split-layout">
+        <!-- Left visual panel -->
+        <div class="auth-banner">
+            <a href="index.html" class="auth-banner-logo">Joblynk.</a>
+            <div class="auth-banner-content">
+                <h1>Find your next hire.</h1>
+                <p>Post jobs, track applicants, and connect with thousands of qualified South African candidates.</p>
+                <div class="auth-glass-card" style="animation: none;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fa-solid fa-quote-left" style="color: rgba(255,255,255,0.7);"></i>
+                    </div>
+                    <div class="auth-glass-text">
+                        <p>"Joblynk made recruiting so much easier. We filled 3 positions in under 2 weeks."</p>
+                        <h4 style="margin-top: 0.4rem;">— Elena R., TechScale HR</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right form panel -->
+        <div class="auth-main">
+            <a href="index.html" class="auth-mobile-logo">Joblynk.</a>
+            <div class="auth-main-inner" style="max-width: 560px;">
+                <div class="auth-header">
+                    <h2>Create Recruiter Account</h2>
+                    <p>Set up your company, choose a plan, and start hiring.</p>
+                </div>
+
+                <div class="form-alert" id="formAlert"></div>
+
+                <form id="recruiterSignupForm" novalidate>
+                    <!-- Company Info -->
+                    <div class="section-title">Company Information</div>
+                    <div class="signup-grid">
+                        <div class="full-width">
+                            <label>Company Name *</label>
+                            <input type="text" class="auth-input" id="companyName" required placeholder="e.g. Acme Corp">
+                        </div>
+                        <div>
+                            <label>Industry</label>
+                            <select class="auth-input" id="industry">
+                                <option value="">Select industry</option>
+                                <option>Technology</option>
+                                <option>Finance & Banking</option>
+                                <option>Healthcare</option>
+                                <option>Retail</option>
+                                <option>Manufacturing</option>
+                                <option>Education</option>
+                                <option>Consulting</option>
+                                <option>Marketing & Media</option>
+                                <option>Government</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Company Size</label>
+                            <select class="auth-input" id="companySize">
+                                <option value="">Select size</option>
+                                <option>1-10</option>
+                                <option>11-50</option>
+                                <option>51-200</option>
+                                <option>201-500</option>
+                                <option>500+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Personal Info -->
+                    <div class="section-title">Your Details</div>
+                    <div class="signup-grid">
+                        <div>
+                            <label>First Name *</label>
+                            <input type="text" class="auth-input" id="firstName" required placeholder="First name">
+                        </div>
+                        <div>
+                            <label>Last Name *</label>
+                            <input type="text" class="auth-input" id="lastName" required placeholder="Last name">
+                        </div>
+                        <div class="full-width">
+                            <label>Email Address *</label>
+                            <input type="email" class="auth-input" id="email" required placeholder="you@company.com">
+                        </div>
+                        <div class="full-width">
+                            <label>Password *</label>
+                            <input type="password" class="auth-input" id="password" required minlength="8" placeholder="Minimum 8 characters">
+                        </div>
+                    </div>
+
+                    <!-- Package Selection -->
+                    <div class="section-title">Choose Your Plan</div>
+                    <div class="package-grid">
+                        <label class="package-card" data-plan="intro" data-amount="750">
+                            <input type="radio" name="packageId" value="intro">
+                            <span class="pkg-badge">Limited Offer</span>
+                            <div class="pkg-name">Intro</div>
+                            <div class="pkg-price">R750</div>
+                            <div class="pkg-desc">1 job &middot; Ends 31 May</div>
+                        </label>
+
+                        <label class="package-card" data-plan="1job" data-amount="1300">
+                            <input type="radio" name="packageId" value="1job">
+                            <div class="pkg-name">Standard</div>
+                            <div class="pkg-price">R1,300</div>
+                            <div class="pkg-desc">1 job advert</div>
+                        </label>
+
+                        <label class="package-card" data-plan="2job" data-amount="2200">
+                            <input type="radio" name="packageId" value="2job">
+                            <div class="pkg-name">2-Job</div>
+                            <div class="pkg-price">R2,200</div>
+                            <div class="pkg-desc">Save R400</div>
+                        </label>
+
+                        <label class="package-card popular" data-plan="3job" data-amount="2950">
+                            <input type="radio" name="packageId" value="3job" checked>
+                            <span class="pkg-badge">Most Popular</span>
+                            <div class="pkg-name">3-Job</div>
+                            <div class="pkg-price">R2,950</div>
+                            <div class="pkg-desc">Save R950</div>
+                        </label>
+
+                        <label class="package-card" data-plan="4job" data-amount="3500">
+                            <input type="radio" name="packageId" value="4job">
+                            <div class="pkg-name">4-Job</div>
+                            <div class="pkg-price">R3,500</div>
+                            <div class="pkg-desc">Save R1,700</div>
+                        </label>
+
+                        <label class="package-card" data-plan="5job" data-amount="3900">
+                            <input type="radio" name="packageId" value="5job">
+                            <div class="pkg-name">5-Job</div>
+                            <div class="pkg-price">R3,900</div>
+                            <div class="pkg-desc">Save R2,600</div>
+                        </label>
+                    </div>
+
+                    <p style="font-size: 0.78rem; color: var(--text-secondary, #9CA3AF); margin: 0.5rem 0 0.25rem;">
+                        All prices include VAT. Each job advert is live for 30 days. Bundle purchases expire after 90 days. Introductory offer expires 30 days from purchase.
+                        <a href="recruiter-pricing.html" style="color: var(--accent, #3B4BA6);">View full pricing details</a>
+                    </p>
+
+                    <!-- T&C -->
+                    <div class="tc-checkbox">
+                        <input type="checkbox" id="tcAccept">
+                        <div>
+                            <label for="tcAccept">I agree to the </label><a href="terms-and-conditions.html" target="_blank">Terms &amp; Conditions</a>
+                            <label for="tcAccept"> and consent to Joblynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA.</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-btn" id="btnSubmit">
+                        <span class="btn-text">Create Account &amp; Pay</span>
+                        <span class="btn-spinner" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                </form>
+
+                <p class="auth-footer">
+                    Already have an account? <a href="sign-in.html" class="auth-link">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Package card selection UI ──
+        document.querySelectorAll('.package-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                card.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+        // Pre-select 3job
+        const preselected = document.querySelector('.package-card[data-plan="3job"]');
+        if (preselected) preselected.classList.add('selected');
+
+        // ── Form submission ──
+        const form = document.getElementById('recruiterSignupForm');
+        const alertBox = document.getElementById('formAlert');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        function showAlert(msg) {
+            alertBox.textContent = msg;
+            alertBox.classList.add('visible');
+        }
+        function hideAlert() { alertBox.classList.remove('visible'); }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const companyName = document.getElementById('companyName').value.trim();
+            const industry = document.getElementById('industry').value;
+            const companySize = document.getElementById('companySize').value;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const packageId = document.querySelector('input[name="packageId"]:checked')?.value;
+            const tcAccepted = document.getElementById('tcAccept').checked;
+
+            // Validate
+            if (!companyName) return showAlert('Company name is required.');
+            if (!firstName || !lastName) return showAlert('First and last name are required.');
+            if (!email) return showAlert('Email address is required.');
+            if (password.length < 8) return showAlert('Password must be at least 8 characters.');
+            if (!packageId) return showAlert('Please select a plan.');
+            if (!tcAccepted) return showAlert('Please accept the Terms & Conditions before continuing.');
+
+            // Show spinner
+            btnSubmit.disabled = true;
+            btnSubmit.querySelector('.btn-text').style.display = 'none';
+            btnSubmit.querySelector('.btn-spinner').style.display = 'inline-block';
+
+            try {
+                const res = await fetch('api/auth/recruiter-signup.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ companyName, industry, companySize, firstName, lastName, email, password, packageId }),
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    showAlert(data.message || 'Something went wrong.');
+                    btnSubmit.disabled = false;
+                    btnSubmit.querySelector('.btn-text').style.display = '';
+                    btnSubmit.querySelector('.btn-spinner').style.display = 'none';
+                    return;
+                }
+
+                // Auto-submit PayFast form
+                if (data.payfastUrl && data.payfastData) {
+                    const pfForm = document.createElement('form');
+                    pfForm.method = 'POST';
+                    pfForm.action = data.payfastUrl;
+                    for (const [key, val] of Object.entries(data.payfastData)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = val;
+                        pfForm.appendChild(input);
+                    }
+                    document.body.appendChild(pfForm);
+                    pfForm.submit();
+                }
+            } catch (err) {
+                showAlert('Network error. Please try again.');
+                btnSubmit.disabled = false;
+                btnSubmit.querySelector('.btn-text').style.display = '';
+                btnSubmit.querySelector('.btn-spinner').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

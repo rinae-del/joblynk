@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | Joblynk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-split-layout">
+        <!-- Visual Sidebar -->
+        <div class="auth-banner">
+            <a href="index.html" class="auth-banner-logo">Joblynk.</a>
+            
+            <div class="auth-banner-content">
+                <h1>Almost there!</h1>
+                <p>Just one more step to unlock your career potential. Check your inbox and verify your email.</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="auth-main">
+            <a href="index.html" class="auth-mobile-logo">Joblynk.</a>
+
+            <div class="auth-main-inner">
+                <!-- Default: Verification Pending -->
+                <div id="state-pending">
+                    <div class="auth-header" style="margin-bottom: 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fa-regular fa-envelope" style="color: var(--accent);"></i></div>
+                        <h2>Check your email</h2>
+                        <p style="margin-top: 0.5rem; line-height: 1.6;">
+                            We've sent a verification link to <strong id="userEmail">your email</strong>. 
+                            Click the link to activate your account.
+                        </p>
+                    </div>
+
+                    <div style="background: #F8FAFC; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #E2E8F0;">
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                            <i class="fa-solid fa-info-circle" style="color: var(--accent);"></i>
+                            Didn't receive the email? Check your spam folder, or click below to resend.
+                        </p>
+                    </div>
+
+                    <button type="button" class="auth-btn" id="btnResend" style="margin-bottom: 1.5rem;">
+                        <i class="fa-solid fa-rotate-right"></i> Resend verification email
+                    </button>
+
+                    <div id="resendMsg" style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem; display: none;"></div>
+                    
+                    <div style="text-align: center;">
+                        <a href="sign-in.html" class="auth-link" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Sign In
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Verifying state (when ?token= is present) -->
+                <div id="state-verifying" style="display: none;">
+                    <div class="auth-header">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-spinner fa-spin" style="color: var(--accent);"></i>
+                        </div>
+                        <h2>Verifying your email...</h2>
+                        <p>Please wait a moment.</p>
+                    </div>
+                </div>
+
+                <!-- Success state -->
+                <div id="state-success" style="display: none;">
+                    <div class="auth-header" style="margin-bottom: 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-circle-check" style="color: #059669;"></i>
+                        </div>
+                        <h2>Email verified!</h2>
+                        <p style="margin-top: 0.5rem; line-height: 1.6;">
+                            Your account is now active. You can sign in and start exploring.
+                        </p>
+                    </div>
+                    <a href="sign-in.html" class="auth-btn" style="display: block; text-align: center; text-decoration: none;">
+                        Sign In to Your Account
+                    </a>
+                </div>
+
+                <!-- Error state -->
+                <div id="state-error" style="display: none;">
+                    <div class="auth-header" style="margin-bottom: 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-circle-xmark" style="color: #EF4444;"></i>
+                        </div>
+                        <h2>Verification failed</h2>
+                        <p id="errorMessage" style="margin-top: 0.5rem; line-height: 1.6; color: var(--text-secondary);">
+                            The verification link is invalid or has expired.
+                        </p>
+                    </div>
+                    <button type="button" class="auth-btn" id="btnResendFromError" style="margin-bottom: 1rem;">
+                        Request a new verification link
+                    </button>
+                    <div style="text-align: center;">
+                        <a href="sign-up.html" class="auth-link">Create a new account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'api/auth';
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const emailFromSignup = params.get('email');
+
+        // Show stored email if available
+        if (emailFromSignup) {
+            document.getElementById('userEmail').textContent = emailFromSignup;
+        }
+
+        // If token is present, auto-verify
+        if (token) {
+            showState('verifying');
+            fetch(`${API_BASE}/verify-email.php?token=${encodeURIComponent(token)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        showState('success');
+                    } else {
+                        document.getElementById('errorMessage').textContent = data.message;
+                        showState('error');
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('errorMessage').textContent = 'Something went wrong. Please try again.';
+                    showState('error');
+                });
+        }
+
+        // Resend buttons
+        document.getElementById('btnResend').addEventListener('click', resendEmail);
+        document.getElementById('btnResendFromError')?.addEventListener('click', resendEmail);
+
+        function resendEmail() {
+            const email = emailFromSignup || prompt('Enter your email address:');
+            if (!email) return;
+
+            const btn = event.target.closest('button');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+            fetch(`${API_BASE}/resend-verification.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Resend verification email';
+                    const msg = document.getElementById('resendMsg');
+                    msg.style.display = 'block';
+                    msg.style.color = '#059669';
+                    msg.textContent = data.message;
+                    showState('pending');
+                })
+                .catch(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Resend verification email';
+                });
+        }
+
+        function showState(state) {
+            ['pending', 'verifying', 'success', 'error'].forEach(s => {
+                document.getElementById(`state-${s}`).style.display = s === state ? 'block' : 'none';
+            });
+        }
+    </script>
+
+</body>
+
+</html>

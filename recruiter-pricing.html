@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Pricing | Joblynk</title>
+    <meta name="description" content="Post your jobs on Joblynk — South Africa's smart recruitment platform. Choose a plan that fits your hiring needs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0F172A;
+            --card: #1E293B;
+            --card-hover: #253349;
+            --border: #334155;
+            --text: #F1F5F9;
+            --muted: #94A3B8;
+            --accent: #6366F1;
+            --accent-light: #818CF8;
+            --green: #10B981;
+            --orange: #F59E0B;
+            --red: #EF4444;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        .pricing-header {
+            text-align: center;
+            padding: 4rem 1.5rem 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .pricing-header .logo {
+            display: inline-block;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            margin-bottom: 2rem;
+        }
+        .pricing-header .logo span {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pricing-header h1 {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.75rem;
+        }
+        .pricing-header h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent), #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pricing-header p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ── Intro Banner ── */
+        .intro-banner {
+            max-width: 860px;
+            margin: 2rem auto 0;
+            padding: 1.25rem 1.75rem;
+            background: linear-gradient(135deg, #F59E0B22, #F59E0B08);
+            border: 1.5px solid #F59E0B44;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .intro-banner i {
+            font-size: 1.6rem;
+            color: var(--orange);
+            flex-shrink: 0;
+        }
+        .intro-banner .intro-text strong { color: var(--orange); }
+        .intro-banner .intro-text { font-size: 0.92rem; color: var(--muted); }
+        .intro-banner .intro-price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--orange);
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* ── Pricing Grid ── */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            max-width: 960px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+        .price-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            position: relative;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .price-card:hover {
+            background: var(--card-hover);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(99,102,241,0.12);
+        }
+        .price-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, #1E293B, #1a2540);
+        }
+        .price-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px; left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .price-card.intro {
+            border-color: var(--orange);
+            background: linear-gradient(180deg, #1E293B, #2a2218);
+        }
+        .price-card.intro::before {
+            content: '🔥 Limited Offer';
+            position: absolute;
+            top: -12px; left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--orange), #D97706);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+        .card-tier {
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+        .card-price {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.15rem;
+        }
+        .card-price small { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 1.25rem;
+        }
+        .card-savings {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .card-savings.green { background: #10B98120; color: #34D399; }
+        .card-savings.orange { background: #F59E0B20; color: #FBBF24; }
+        .card-features {
+            list-style: none;
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        .card-features li {
+            padding: 0.35rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .card-features li i { color: var(--green); font-size: 0.75rem; flex-shrink: 0; }
+        .card-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .card-btn.primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: #fff;
+        }
+        .card-btn.primary:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(99,102,241,.3); }
+        .card-btn.outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+        }
+        .card-btn.outline:hover { border-color: var(--accent); color: var(--accent-light); }
+        .card-btn.orange-btn {
+            background: linear-gradient(135deg, var(--orange), #D97706);
+            color: #fff;
+        }
+        .card-btn.orange-btn:hover { box-shadow: 0 6px 20px rgba(245,158,11,.3); }
+
+        /* ── T&C Checkbox ── */
+        .tc-section {
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            padding: 0 1.5rem;
+        }
+        .tc-box {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+        }
+        .tc-box input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+        .tc-box label {
+            font-size: 0.88rem;
+            color: var(--muted);
+            cursor: pointer;
+            line-height: 1.5;
+        }
+        .tc-box label a { color: var(--accent-light); text-decoration: underline; }
+
+        /* ── Important Notes ── */
+        .notes-section {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            padding: 0 1.5rem;
+        }
+        .notes-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.75rem;
+        }
+        .notes-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .notes-card h3 i { color: var(--accent-light); }
+        .notes-list {
+            list-style: none;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+        .notes-list li {
+            padding: 0.45rem 0;
+            display: flex;
+            align-items: baseline;
+            gap: 0.6rem;
+            border-bottom: 1px solid #334155aa;
+        }
+        .notes-list li:last-child { border-bottom: none; }
+        .notes-list li::before {
+            content: '•';
+            color: var(--accent-light);
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .notes-list li strong { color: var(--text); }
+
+        /* ── Footer ── */
+        .pricing-footer {
+            text-align: center;
+            padding: 2rem 1rem 3rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        .pricing-footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 680px) {
+            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .intro-banner { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ HEADER ═══ -->
+    <div class="pricing-header">
+        <a href="recruiter-dashboard.html" class="logo"><span>Joblynk</span></a>
+        <h1>Recruit <em>smarter</em>, not harder</h1>
+        <p>Choose a plan to post your jobs and connect with thousands of qualified South African candidates.</p>
+    </div>
+
+    <!-- ═══ INTRO OFFER BANNER ═══ -->
+    <div class="intro-banner" id="introBanner">
+        <i class="fa-solid fa-fire-flame-curved"></i>
+        <div class="intro-text">
+            <strong>1st Introductory Offer — Limited Time!</strong><br>
+            Post 1 job for only <strong>R750</strong>. Offer ends <strong>31 May 2026</strong>. You have 30 days from purchase to use this offer before it expires.
+        </div>
+        <span class="intro-price">R750</span>
+    </div>
+
+    <!-- ═══ PRICING CARDS ═══ -->
+    <div class="pricing-grid" id="pricingGrid">
+
+        <!-- Intro Offer -->
+        <div class="price-card intro">
+            <div class="card-tier">Introductory</div>
+            <div class="card-price">R750 <small>/ 1 job</small></div>
+            <div class="card-desc">Limited time introductory offer — post 1 job advert</div>
+            <span class="card-savings orange">Ends 31 May 2026</span>
+            <ul class="card-features">
+                <li><i class="fa-solid fa-check"></i> 1 job advert</li>
+                <li><i class="fa-solid fa-check"></i> 30 days live</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants</li>
+                <li><i class="fa-solid fa-check"></i> 30 days to use offer</li>
+            </ul>
+            <button class="card-btn orange-btn" onclick="selectPlan('intro', 750)">Get Intro Offer</button>
+        </div>
+
+        <!-- 1 Job Standard -->
+        <div class="price-card">
+            <div class="card-tier">Standard</div>
+            <div class="card-price">R1,300 <small>/ 1 job</small></div>
+            <div class="card-desc">Single job advert — standard pricing</div>
+            <ul class="card-features">
+                <li><i class="fa-solid fa-check"></i> 1 job advert</li>
+                <li><i class="fa-solid fa-check"></i> 30 days live</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants</li>
+            </ul>
+            <button class="card-btn outline" onclick="selectPlan('1job', 1300)">Select Plan</button>
+        </div>
+
+        <!-- 2 Job Bundle -->
+        <div class="price-card">
+            <div class="card-tier">2-Job Bundle</div>
+            <div class="card-price">R2,200 <small>/ 2 jobs</small></div>
+            <div class="card-desc">Save R400 compared to buying individually</div>
+            <span class="card-savings green">Save R400</span>
+            <ul class="card-features">
+                <li><i class="fa-solid fa-check"></i> 2 job adverts</li>
+                <li><i class="fa-solid fa-check"></i> 30 days / advert</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants</li>
+                <li><i class="fa-solid fa-check"></i> 90 days to use</li>
+            </ul>
+            <button class="card-btn outline" onclick="selectPlan('2job', 2200)">Select Plan</button>
+        </div>
+
+        <!-- 3 Job Bundle (Featured) -->
+        <div class="price-card featured">
+            <div class="card-tier">3-Job Bundle</div>
+            <div class="card-price">R2,950 <small>/ 3 jobs</small></div>
+            <div class="card-desc">Save R950 — most popular choice</div>
+            <span class="card-savings green">Save R950</span>
+            <ul class="card-features">
+                <li><i class="fa-solid fa-check"></i> 3 job adverts</li>
+                <li><i class="fa-solid fa-check"></i> 30 days / advert</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants</li>
+                <li><i class="fa-solid fa-check"></i> 90 days to use</li>
+            </ul>
+            <button class="card-btn primary" onclick="selectPlan('3job', 2950)">Select Plan</button>
+        </div>
+
+        <!-- 4 Job Bundle -->
+        <div class="price-card">
+            <div class="card-tier">4-Job Bundle</div>
+            <div class="card-price">R3,500 <small>/ 4 jobs</small></div>
+            <div class="card-desc">Save R1,700 — great for growing teams</div>
+            <span class="card-savings green">Save R1,700</span>
+            <ul class="card-features">
+                <li><i class="fa-solid fa-check"></i> 4 job adverts</li>
+                <li><i class="fa-solid fa-check"></i> 30 days / advert</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants</li>
+                <li><i class="fa-solid fa-check"></i> 90 days to use</li>
+            </ul>
+            <button class="card-btn outline" onclick="selectPlan('4job', 3500)">Select Plan</button>
+        </div>
+
+        <!-- 5 Job Bundle -->
+        <div class="price-card">
+            <div class="card-tier">5-Job Bundle</div>
+            <div class="card-price">R3,900 <small>/ 5 jobs</small></div>
+            <div class="card-desc">Save R2,600 — best value for agencies</div>
+            <span class="card-savings green">Save R2,600</span>
+            <ul class="card-features">
+                <li><i class="fa-solid fa-check"></i> 5 job adverts</li>
+                <li><i class="fa-solid fa-check"></i> 30 days / advert</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants</li>
+                <li><i class="fa-solid fa-check"></i> 90 days to use</li>
+            </ul>
+            <button class="card-btn outline" onclick="selectPlan('5job', 3900)">Select Plan</button>
+        </div>
+
+    </div>
+
+    <!-- ═══ TERMS CHECKBOX ═══ -->
+    <div class="tc-section">
+        <div class="tc-box">
+            <input type="checkbox" id="tcAccept">
+            <div style="font-size: 0.88rem; color: var(--muted); line-height: 1.5;">
+                <label for="tcAccept" style="display: inline; cursor: pointer; margin: 0; padding: 0; color: inherit; font-size: inherit; font-weight: normal;">I agree to the</label>
+                <a href="terms-and-conditions.html" target="_blank" style="color: var(--accent-light); text-decoration: underline; position: relative; z-index: 10;">Terms &amp; Conditions</a>
+                <label for="tcAccept" style="display: inline; cursor: pointer; margin: 0; padding: 0; color: inherit; font-size: inherit; font-weight: normal;">and consent to JobLynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA. All prices include VAT. Bundle purchases must be used within 90 days.</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ IMPORTANT NOTES ═══ -->
+    <div class="notes-section">
+        <div class="notes-card">
+            <h3><i class="fa-solid fa-circle-info"></i> Important Information</h3>
+            <ul class="notes-list">
+                <li><strong>Unlimited applicants</strong> on all plans — no cap on the number of candidates who can apply to your listing.</li>
+                <li>Each job advert is <strong>live for 30 days</strong> from the date it is posted.</li>
+                <li>Bundle purchases (2–5 jobs) must be used <strong>within 90 days</strong> of purchase before they expire.</li>
+                <li>The <strong>R750 introductory offer</strong> is valid for 1 month only (ends 31 May 2026) and must be used within <strong>30 days</strong> of purchase.</li>
+                <li><strong>All prices include VAT.</strong></li>
+                <li>You must accept our <strong>Terms and Conditions</strong> before purchasing.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ═══ FOOTER ═══ -->
+    <div class="pricing-footer">
+        <p>Questions? Contact us at <a href="mailto:support@joblynk.co.za">support@joblynk.co.za</a></p>
+        <p style="margin-top:0.5rem;"><a href="recruiter-dashboard.html">← Back to Dashboard</a></p>
+    </div>
+
+    <script>
+        // Load admin-set pricing from localStorage
+        (function loadAdminPricing() {
+            try {
+                const stored = localStorage.getItem('joblynk_pricing');
+                if (!stored) return;
+                const p = JSON.parse(stored);
+
+                const priceMap = {
+                    intro: { price: p.intro, cardIndex: 0 },
+                    '1job': { price: p.job1, cardIndex: 1 },
+                    '2job': { price: p.job2, cardIndex: 2 },
+                    '3job': { price: p.job3, cardIndex: 3 },
+                    '4job': { price: p.job4, cardIndex: 4 },
+                    '5job': { price: p.job5, cardIndex: 5 },
+                };
+
+                const cards = document.querySelectorAll('.price-card');
+                Object.entries(priceMap).forEach(([key, val]) => {
+                    if (!val.price || !cards[val.cardIndex]) return;
+                    const card = cards[val.cardIndex];
+                    const priceEl = card.querySelector('.card-price');
+                    if (priceEl) {
+                        const small = priceEl.querySelector('small');
+                        priceEl.innerHTML = `R${val.price.toLocaleString()} ${small ? small.outerHTML : ''}`;
+                    }
+                    const btn = card.querySelector('.card-btn');
+                    if (btn) btn.setAttribute('onclick', `selectPlan('${key}', ${val.price})`);
+                });
+
+                if (p.introActive === false) {
+                    const introCard = cards[0];
+                    if (introCard) introCard.style.display = 'none';
+                    const banner = document.getElementById('introBanner');
+                    if (banner) banner.style.display = 'none';
+                }
+
+                if (p.introExpiry) {
+                    const expiryDate = new Date(p.introExpiry);
+                    const formatted = expiryDate.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
+                    document.querySelectorAll('.intro-banner .intro-text strong').forEach(el => {
+                        if (el.textContent.includes('31 May')) el.textContent = formatted;
+                    });
+                }
+
+                if (p.job1) {
+                    const savings = {
+                        2: 2 * p.job1 - (p.job2 || 2200),
+                        3: 3 * p.job1 - (p.job3 || 2950),
+                        4: 4 * p.job1 - (p.job4 || 3500),
+                        5: 5 * p.job1 - (p.job5 || 3900),
+                    };
+                    [2,3,4,5].forEach(n => {
+                        const card = cards[n];
+                        if (!card) return;
+                        const sav = card.querySelector('.card-savings');
+                        const desc = card.querySelector('.card-desc');
+                        if (sav && savings[n] > 0) sav.textContent = `Save R${savings[n].toLocaleString()}`;
+                        if (desc && savings[n] > 0) desc.textContent = `Save R${savings[n].toLocaleString()} compared to buying individually`;
+                    });
+                }
+
+            } catch (e) { console.error('Error loading pricing:', e); }
+        })();
+
+        // ── Load user session for PayFast form data ──
+        (async function loadUserSession() {
+            try {
+                const res = await fetch('api/auth/session.php', { credentials: 'include' });
+                const data = await res.json();
+                if (data.loggedIn && data.user) {
+                    window.__joblynkUser = {
+                        id: data.user.id,
+                        name: (data.user.first_name || '') + ' ' + (data.user.last_name || ''),
+                        email: data.user.email || '',
+                    };
+                }
+            } catch (e) { console.warn('Could not load session:', e); }
+        })();
+
+        // ── PayFast Configuration (Sandbox) ──
+        const PAYFAST_MERCHANT_ID = '10000100';
+        const PAYFAST_MERCHANT_KEY = '46f0cd694581a';
+        const PAYFAST_PASSPHRASE = 'jt7NOE43FZPn';
+        const PAYFAST_URL = 'https://sandbox.payfast.co.za/eng/process';
+
+        const PLAN_NAMES = {
+            intro: 'Introductory Offer (1 Job)',
+            '1job': 'Standard (1 Job)',
+            '2job': '2-Job Bundle',
+            '3job': '3-Job Bundle',
+            '4job': '4-Job Bundle',
+            '5job': '5-Job Bundle',
+        };
+
+        function selectPlan(planId, amount) {
+            const cb = document.getElementById('tcAccept');
+            if (!cb.checked) {
+                cb.closest('.tc-box').style.borderColor = '#EF4444';
+                cb.closest('.tc-box').style.animation = 'shake 0.4s ease';
+                setTimeout(() => {
+                    cb.closest('.tc-box').style.borderColor = '';
+                    cb.closest('.tc-box').style.animation = '';
+                }, 600);
+                alert('Please accept the Terms and Conditions before purchasing.');
+                return;
+            }
+
+            // Get user info from auth session (if logged in)
+            const user = window.__joblynkUser || {};
+            const names = (user.name || '').split(' ');
+
+            // Build PayFast form data
+            const baseUrl = window.location.origin + window.location.pathname.replace('recruiter-pricing.html', '');
+            const pfData = {
+                merchant_id: PAYFAST_MERCHANT_ID,
+                merchant_key: PAYFAST_MERCHANT_KEY,
+                return_url: baseUrl + 'recruiter-pricing.html?payment=success',
+                cancel_url: baseUrl + 'recruiter-pricing.html?payment=cancelled',
+                notify_url: baseUrl + 'api/payments/notify.php',
+                name_first: names[0] || '',
+                name_last: names.slice(1).join(' ') || '',
+                email_address: user.email || '',
+                amount: amount.toFixed(2),
+                item_name: 'Joblynk Recruiter - ' + (PLAN_NAMES[planId] || planId),
+                custom_str1: planId,
+                custom_str2: user.email || '',
+                custom_int1: user.id || '0',
+            };
+
+            // Generate MD5 signature — skip empty values, use + for spaces (PHP urlencode style)
+            function pfEncode(str) {
+                return encodeURIComponent(str).replace(/%20/g, '+');
+            }
+            let sigString = '';
+            for (const key in pfData) {
+                const val = pfData[key].toString().trim();
+                if (val !== '') {
+                    sigString += key + '=' + pfEncode(val) + '&';
+                }
+            }
+            sigString = sigString.slice(0, -1); // Remove trailing &
+            sigString += '&passphrase=' + pfEncode(PAYFAST_PASSPHRASE);
+            pfData.signature = md5(sigString);
+
+            // Create and submit hidden form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = PAYFAST_URL;
+            for (const key in pfData) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = pfData[key];
+                form.appendChild(input);
+            }
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // ── Show payment result banner ──
+        (function checkPaymentResult() {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('payment');
+            if (!status) return;
+
+            const banner = document.createElement('div');
+            banner.style.cssText = 'max-width:860px; margin:1rem auto; padding:1rem 1.5rem; border-radius:12px; display:flex; align-items:center; gap:0.75rem; font-size:0.95rem; font-weight:600;';
+
+            if (status === 'success') {
+                banner.style.background = 'linear-gradient(135deg, #10B98122, #10B98108)';
+                banner.style.border = '1.5px solid #10B98144';
+                banner.style.color = '#34D399';
+                banner.innerHTML = '<i class="fa-solid fa-circle-check"></i> Payment successful! Your job credits have been activated.';
+            } else {
+                banner.style.background = 'linear-gradient(135deg, #EF444422, #EF444408)';
+                banner.style.border = '1.5px solid #EF444444';
+                banner.style.color = '#F87171';
+                banner.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Payment was cancelled. You can try again when ready.';
+            }
+
+            const header = document.querySelector('.pricing-header');
+            header.parentNode.insertBefore(banner, header.nextSibling);
+
+            // Clean URL
+            window.history.replaceState({}, '', window.location.pathname);
+        })();
+
+        // ── MD5 hash function ──
+        function md5(string) {
+            function md5cycle(x, k) {
+                var a = x[0], b = x[1], c = x[2], d = x[3];
+                a = ff(a,b,c,d,k[0],7,-680876936); d = ff(d,a,b,c,k[1],12,-389564586);
+                c = ff(c,d,a,b,k[2],17,606105819); b = ff(b,c,d,a,k[3],22,-1044525330);
+                a = ff(a,b,c,d,k[4],7,-176418897); d = ff(d,a,b,c,k[5],12,1200080426);
+                c = ff(c,d,a,b,k[6],17,-1473231341); b = ff(b,c,d,a,k[7],22,-45705983);
+                a = ff(a,b,c,d,k[8],7,1770035416); d = ff(d,a,b,c,k[9],12,-1958414417);
+                c = ff(c,d,a,b,k[10],17,-42063); b = ff(b,c,d,a,k[11],22,-1990404162);
+                a = ff(a,b,c,d,k[12],7,1804603682); d = ff(d,a,b,c,k[13],12,-40341101);
+                c = ff(c,d,a,b,k[14],17,-1502002290); b = ff(b,c,d,a,k[15],22,1236535329);
+                a = gg(a,b,c,d,k[1],5,-165796510); d = gg(d,a,b,c,k[6],9,-1069501632);
+                c = gg(c,d,a,b,k[11],14,643717713); b = gg(b,c,d,a,k[0],20,-373897302);
+                a = gg(a,b,c,d,k[5],5,-701558691); d = gg(d,a,b,c,k[10],9,38016083);
+                c = gg(c,d,a,b,k[15],14,-660478335); b = gg(b,c,d,a,k[4],20,-405537848);
+                a = gg(a,b,c,d,k[9],5,568446438); d = gg(d,a,b,c,k[14],9,-1019803690);
+                c = gg(c,d,a,b,k[3],14,-187363961); b = gg(b,c,d,a,k[8],20,1163531501);
+                a = gg(a,b,c,d,k[13],5,-1444681467); d = gg(d,a,b,c,k[2],9,-51403784);
+                c = gg(c,d,a,b,k[7],14,1735328473); b = gg(b,c,d,a,k[12],20,-1926607734);
+                a = hh(a,b,c,d,k[5],4,-378558); d = hh(d,a,b,c,k[8],11,-2022574463);
+                c = hh(c,d,a,b,k[11],16,1839030562); b = hh(b,c,d,a,k[14],23,-35309556);
+                a = hh(a,b,c,d,k[1],4,-1530992060); d = hh(d,a,b,c,k[4],11,1272893353);
+                c = hh(c,d,a,b,k[7],16,-155497632); b = hh(b,c,d,a,k[10],23,-1094730640);
+                a = hh(a,b,c,d,k[13],4,681279174); d = hh(d,a,b,c,k[0],11,-358537222);
+                c = hh(c,d,a,b,k[3],16,-722521979); b = hh(b,c,d,a,k[6],23,76029189);
+                a = hh(a,b,c,d,k[9],4,-640364487); d = hh(d,a,b,c,k[12],11,-421815835);
+                c = hh(c,d,a,b,k[15],16,530742520); b = hh(b,c,d,a,k[2],23,-995338651);
+                a = ii(a,b,c,d,k[0],6,-198630844); d = ii(d,a,b,c,k[7],10,1126891415);
+                c = ii(c,d,a,b,k[14],15,-1416354905); b = ii(b,c,d,a,k[5],21,-57434055);
+                a = ii(a,b,c,d,k[12],6,1700485571); d = ii(d,a,b,c,k[3],10,-1894986606);
+                c = ii(c,d,a,b,k[10],15,-1051523); b = ii(b,c,d,a,k[1],21,-2054922799);
+                a = ii(a,b,c,d,k[8],6,1873313359); d = ii(d,a,b,c,k[15],10,-30611744);
+                c = ii(c,d,a,b,k[6],15,-1560198380); b = ii(b,c,d,a,k[13],21,1309151649);
+                a = ii(a,b,c,d,k[4],6,-145523070); d = ii(d,a,b,c,k[11],10,-1120210379);
+                c = ii(c,d,a,b,k[2],15,718787259); b = ii(b,c,d,a,k[9],21,-343485551);
+                x[0] = add32(a,x[0]); x[1] = add32(b,x[1]); x[2] = add32(c,x[2]); x[3] = add32(d,x[3]);
+            }
+            function cmn(q,a,b,x,s,t) { a = add32(add32(a,q), add32(x,t)); return add32((a<<s)|(a>>>(32-s)),b); }
+            function ff(a,b,c,d,x,s,t) { return cmn((b&c)|((~b)&d),a,b,x,s,t); }
+            function gg(a,b,c,d,x,s,t) { return cmn((b&d)|(c&(~d)),a,b,x,s,t); }
+            function hh(a,b,c,d,x,s,t) { return cmn(b^c^d,a,b,x,s,t); }
+            function ii(a,b,c,d,x,s,t) { return cmn(c^(b|(~d)),a,b,x,s,t); }
+            function md51(s) {
+                var n = s.length, state = [1732584193,-271733879,-1732584194,271733878], i;
+                for (i=64; i<=n; i+=64) md5cycle(state, md5blk(s.substring(i-64,i)));
+                s = s.substring(i-64);
+                var tail = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                for (i=0; i<s.length; i++) tail[i>>2] |= s.charCodeAt(i)<<((i%4)<<3);
+                tail[i>>2] |= 0x80<<((i%4)<<3);
+                if (i>55) { md5cycle(state,tail); tail = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; }
+                tail[14] = n*8;
+                md5cycle(state,tail);
+                return state;
+            }
+            function md5blk(s) {
+                var md5blks = [], i;
+                for (i=0; i<64; i+=4) md5blks[i>>2] = s.charCodeAt(i)+(s.charCodeAt(i+1)<<8)+(s.charCodeAt(i+2)<<16)+(s.charCodeAt(i+3)<<24);
+                return md5blks;
+            }
+            var hex_chr = '0123456789abcdef'.split('');
+            function rhex(n) {
+                var s='', j=0;
+                for (; j<4; j++) s += hex_chr[(n>>(j*8+4))&0x0F] + hex_chr[(n>>(j*8))&0x0F];
+                return s;
+            }
+            function hex(x) { for (var i=0; i<x.length; i++) x[i] = rhex(x[i]); return x.join(''); }
+            function add32(a,b) { return (a+b) & 0xFFFFFFFF; }
+            if (hex(md51('hello')) !== '5d41402abc4b2a76b9719d911017c592') {
+                add32 = function(x,y) { var lsw = (x&0xFFFF)+(y&0xFFFF), msw = (x>>16)+(y>>16)+(lsw>>16); return (msw<<16)|(lsw&0xFFFF); };
+            }
+            return hex(md51(string));
+        }
+    </script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+    </style>
+</body>
+</html>

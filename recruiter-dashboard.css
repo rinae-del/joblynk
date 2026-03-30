@@ -1,0 +1,303 @@
+/* Recruiter Dashboard Specific Styles */
+
+/* Base overrides or additions if any for the recruiter view */
+.recruiter-gradient-text {
+    background: linear-gradient(135deg, #A855F7, #EC4899, #F43F5E);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.recruiter-hero {
+    background: linear-gradient(135deg, #1E293B 0%, #2A1B38 40%, #7E22CE 100%);
+}
+
+.recruiter-hero::before {
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+}
+
+.recruiter-hero::after {
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+}
+
+/* Sections */
+.dashboard-view-section {
+    display: none;
+}
+.dashboard-view-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.btn-submit {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3B4BA6 0%, #5B6BD6 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(59, 75, 166, 0.2);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 75, 166, 0.3);
+}
+
+/* Candidate table/list */
+.candidate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.candidate-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.candidate-item:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: #CDCDD8;
+}
+
+.candidate-info-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.candidate-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.candidate-details h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.candidate-details p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.candidate-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-action.view {
+    background: var(--bg);
+    color: var(--text);
+    border-color: var(--border);
+}
+.btn-action.view:hover {
+    background: #e2e2ea;
+}
+
+.btn-action.accept {
+    background: #ECFDF5;
+    color: #059669;
+    border-color: #A7F3D0;
+}
+.btn-action.accept:hover {
+    background: #D1FAE5;
+}
+
+.btn-action.reject {
+    background: #FEF2F2;
+    color: #DC2626;
+    border-color: #FECACA;
+}
+.btn-action.reject:hover {
+    background: #FEE2E2;
+}
+
+/* Job status badges */
+.job-status {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.job-status.active {
+    background: #ECFDF5;
+    color: #059669;
+}
+.job-status.closed {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+.job-status.draft {
+    background: #F3F4F6;
+    color: #4B5563;
+}
+
+/* Multi-step Form Wizard */
+.wizard-stepper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    position: relative;
+    padding: 0 10px;
+}
+
+.wizard-stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    right: 10px;
+    height: 3px;
+    background: var(--border);
+    z-index: 1;
+}
+
+.step-indicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: 3px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s;
+}
+
+.step-indicator.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+}
+
+.step-indicator.completed {
+    border-color: #059669;
+    background: #059669;
+    color: #fff;
+}
+
+.wizard-step {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.wizard-step.active {
+    display: block;
+}
+
+/* Checkbox Grid */
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.checkbox-item:hover {
+    background: #e2e2ea;
+    border-color: #CDCDD8;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+.checkbox-item span {
+    font-size: 0.85rem;
+    font-weight: 500;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signed Out | Joblynk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-split-layout">
+        <!-- Visual Sidebar -->
+        <div class="auth-banner">
+            <a href="index.html" class="auth-banner-logo">Joblynk.</a>
+            
+            <div class="auth-banner-content">
+                <h1>See you soon.</h1>
+                <p>Your session has been securely closed. We look forward to helping you grow your career during your next visit.</p>
+            </div>
+        </div>
+
+        <!-- Form Sidebar -->
+        <div class="auth-main">
+            <a href="index.html" class="auth-mobile-logo">Joblynk.</a>
+
+            <div class="auth-main-inner" style="align-items: center; text-align: center;">
+                <div class="auth-icon-large">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                
+                <div class="auth-header" style="margin-bottom: 2rem;">
+                    <h2>You've been signed out</h2>
+                    <p style="margin-top: 0.5rem;">Thank you for using Joblynk. Have a great day!</p>
+                </div>
+
+                <a href="sign-in.html" class="auth-btn" style="text-decoration: none; width: auto; padding-left: 2rem; padding-right: 2rem;">
+                    Return to Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    // Destroy session on load
+    fetch('api/auth/signout.php', { credentials: 'include' }).catch(() => {});
+</script>
+
+</html>

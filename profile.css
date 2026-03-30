@@ -1,0 +1,522 @@
+/* ================================================
+   Joblynk Profile Page Styles
+   ================================================ */
+
+:root {
+    --profile-bg: #F8FAFC;
+    --profile-card-bg: #FFFFFF;
+    --profile-border: #E2E8F0;
+    --profile-accent: #3B4BA6;
+    --profile-text: #1E293B;
+    --profile-text-muted: #64748B;
+    --profile-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --profile-radius: 12px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+}
+
+.profile-header h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--profile-text);
+    margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+    color: var(--profile-text-muted);
+    font-size: 1.1rem;
+}
+
+.btn-save-profile {
+    background: var(--profile-accent);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-save-profile:hover {
+    background: #2D3A8C;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 75, 166, 0.3);
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Sidebar Nav Card */
+.profile-nav-card {
+    background: var(--profile-card-bg);
+    border: 1px solid var(--profile-border);
+    border-radius: var(--profile-radius);
+    padding: 1.5rem;
+    box-shadow: var(--profile-shadow);
+    position: sticky;
+    top: 20px;
+}
+
+.profile-pic-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-pic-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+}
+
+.profile-pic-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--profile-accent);
+}
+
+.btn-change-pic {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: white;
+    border: 1px solid var(--profile-border);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--profile-accent);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-pic-section h3 {
+    font-size: 1.25rem;
+    color: var(--profile-text);
+    margin-bottom: 0.25rem;
+}
+
+.profile-pic-section p {
+    color: var(--profile-text-muted);
+    font-size: 0.9rem;
+}
+
+.inner-profile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.inner-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: var(--profile-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.inner-nav-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.inner-nav-item:hover {
+    background: #F1F5F9;
+    color: var(--profile-accent);
+}
+
+.inner-nav-item.active {
+    background: var(--profile-accent);
+    color: white;
+}
+
+/* Profile Cards */
+.profile-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.profile-card {
+    background: var(--profile-card-bg);
+    border: 1px solid var(--profile-border);
+    border-radius: var(--profile-radius);
+    overflow: hidden;
+    box-shadow: var(--profile-shadow);
+}
+
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--profile-border);
+    background: #FAFBFC;
+}
+
+.card-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--profile-text);
+}
+
+.card-header h2 i {
+    color: var(--profile-accent);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--profile-text);
+    margin-bottom: 0.5rem;
+}
+
+.label-required {
+    color: #ef4444;
+}
+
+.field-hint {
+    font-size: 0.78rem;
+    color: var(--profile-text-muted);
+    margin-top: 0.35rem;
+}
+
+.field-error {
+    font-size: 0.78rem;
+    color: #ef4444;
+    margin-top: 0.35rem;
+    font-weight: 500;
+    min-height: 1rem;
+}
+
+.profile-input.input-error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.profile-input.input-success {
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.profile-input, .profile-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--profile-border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-input:focus, .profile-textarea:focus {
+    outline: none;
+    border-color: var(--profile-accent);
+    box-shadow: 0 0 0 3px rgba(59, 75, 166, 0.1);
+}
+
+.profile-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.profile-hr {
+    border: 0;
+    border-top: 1px solid var(--profile-border);
+    margin: 2rem 0;
+}
+
+/* Skills */
+.profile-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.skill-tag {
+    background: #E0E7FF;
+    color: var(--profile-accent);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.skill-tag button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Security Toggle */
+.security-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.option-info strong {
+    display: block;
+    color: var(--profile-text);
+    margin-bottom: 0.25rem;
+}
+
+.option-info p {
+    color: var(--profile-text-muted);
+    font-size: 0.875rem;
+}
+
+/* Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--profile-accent);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Upload Zone */
+.profile-upload-zone {
+    border: 2px dashed var(--profile-border);
+    border-radius: var(--profile-radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-upload-zone:hover {
+    border-color: var(--profile-accent);
+    background: #f8fafc;
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    color: var(--profile-text-muted);
+    transition: color 0.2s;
+}
+
+.profile-upload-zone:hover .upload-icon {
+    color: var(--profile-accent);
+}
+
+.upload-content h4 {
+    font-size: 1.1rem;
+    color: var(--profile-text);
+    margin-bottom: 0.25rem;
+}
+
+.upload-content p {
+    font-size: 0.875rem;
+    color: var(--profile-text-muted);
+}
+
+/* File Preview Card */
+.file-preview-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--profile-border);
+    border-radius: 8px;
+    margin-top: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.file-info i {
+    font-size: 1.5rem;
+    color: #ef4444; /* PDF color */
+}
+
+.file-info span {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+#cvFileSize, #clFileSize {
+    color: var(--profile-text-muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.btn-remove-file {
+    background: none;
+    border: none;
+    color: var(--profile-text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn-remove-file:hover {
+    color: #ef4444;
+    background: #fef2f2;
+}
+
+/* Progress Bar Widget */
+.profile-progress-widget {
+    padding: 1.25rem 0;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid var(--profile-border);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.progress-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--profile-text);
+}
+
+.progress-percent {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--profile-accent);
+}
+
+.progress-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #E2E8F0;
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--profile-accent), #7C3AED);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-hint {
+    font-size: 0.75rem;
+    color: var(--profile-text-muted);
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-nav-card {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}

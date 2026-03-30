@@ -1,0 +1,424 @@
+/* ================================================
+   Joblynk Authentication Premium Theme
+   ================================================ */
+
+/* ── Core Layout ── */
+.auth-page {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: var(--font);
+    background: var(--bg-white);
+    color: var(--text);
+    overflow: hidden;
+}
+
+.auth-split-layout {
+    display: flex;
+    height: 100%;
+}
+
+/* ── Left Banner (Visuals) ── */
+.auth-banner {
+    width: 45%;
+    position: relative;
+    background: linear-gradient(145deg, var(--topbar) 0%, #2A367D 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem;
+    overflow: hidden;
+}
+
+/* Decorative abstract elements */
+.auth-banner::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59, 75, 166, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: 0;
+}
+
+.auth-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -15%;
+    left: -15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(15, 118, 110, 0.3) 0%, transparent 70%); /* Modern teal accent */
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: 0;
+}
+
+.auth-banner-content {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+}
+
+.auth-banner-logo {
+    position: absolute;
+    top: 2.5rem;
+    left: 4rem;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+    z-index: 2;
+}
+
+.auth-banner h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.03em;
+}
+
+.auth-banner p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 3rem;
+}
+
+/* Floating Glass Card in Banner */
+.auth-glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transform: translateY(0);
+    animation: floatCard 6s ease-in-out infinite;
+    max-width: 320px;
+}
+
+@keyframes floatCard {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.auth-glass-card img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.auth-glass-text h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.auth-glass-text p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+/* ── Right Panel (Form) ── */
+.auth-main {
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    position: relative;
+    background: var(--bg-white);
+}
+
+.auth-mobile-logo {
+    display: none;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+    padding: 1.5rem 2rem 0;
+}
+
+.auth-main-inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 3rem 2rem;
+}
+
+.auth-header {
+    margin-bottom: 2rem;
+}
+
+.auth-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.auth-header p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* ── Form Elements ── */
+.auth-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.auth-form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.auth-input::placeholder {
+    color: #9CA3AF;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(59, 75, 166, 0.1);
+}
+
+.auth-form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.auth-checkbox-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.auth-checkbox-wrap a {
+    position: relative;
+    z-index: 2;
+}
+
+.auth-checkbox {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.auth-checkbox:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.auth-checkbox:checked::after {
+    content: '\f00c';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: white;
+    font-size: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.auth-checkbox-wrap span {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.auth-link {
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+}
+
+/* ── Buttons ── */
+.auth-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auth-btn:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(59, 75, 166, 0.2);
+}
+
+/* Social Buttons */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.auth-divider::before { margin-right: 0.5em; }
+.auth-divider::after { margin-left: 0.5em; }
+
+.auth-social-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: #fff;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.2s;
+    margin-bottom: 0.75rem;
+}
+
+.auth-social-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.auth-social-btn:hover {
+    background: #F8F8FA;
+    border-color: #D1D5DB;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+/* ── Specific Overrides ── */
+.auth-icon-large {
+    width: 72px;
+    height: 72px;
+    background: rgba(15, 118, 110, 0.1);
+    color: #0F766E;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Name Row (for Sign Up) ── */
+.auth-form-row-multi {
+    display: flex;
+    gap: 1rem;
+}
+.auth-form-row-multi .auth-form-group {
+    flex: 1;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .auth-banner {
+        display: none;
+    }
+    
+    .auth-main {
+        width: 100%;
+        background: #F8F8FA; /* slight background for mobile contrast */
+    }
+    
+    .auth-mobile-logo {
+        display: block;
+    }
+    
+    .auth-main-inner {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 2.5rem 2rem;
+        margin: auto;
+        max-width: 440px;
+        height: auto;
+        flex: none;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Dashboard</title>
+    <meta name="description" content="Manage your CVs, job applications and more from your Joblynk dashboard.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="auth-guard.js"></script>
+</head>
+
+<body>
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-logo">
+                <span class="logo-text">Joblynk</span>
+                <button class="sidebar-help" title="Help"><i class="fa-regular fa-circle-question"></i></button>
+            </div>
+            <a href="cv-builder.html" class="sidebar-new-btn" id="btnNewDoc">
+                <i class="fa-solid fa-plus"></i> New CV
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active" id="navDashboard">
+                <i class="fa-solid fa-house"></i> <span>Dashboard</span>
+            </a>
+            <a href="#sectionCvs" class="nav-item" id="navCvs">
+                <i class="fa-regular fa-file-lines"></i> <span>CVs</span>
+            </a>
+            <a href="#sectionCoverLetters" class="nav-item" id="navCoverLetters">
+                <i class="fa-solid fa-envelope-open-text"></i> <span>Cover Letters</span>
+            </a>
+            <a href="#sectionJobs" class="nav-item" id="navJobs">
+                <i class="fa-solid fa-briefcase"></i> <span>Jobs</span>
+            </a>
+            <a href="#sectionApps" class="nav-item" id="navApps">
+                <i class="fa-regular fa-rectangle-list"></i> <span>Applications</span>
+            </a>
+            <a href="profile.html" class="nav-item" id="navProfile">
+                <i class="fa-solid fa-user-gear"></i> <span>My Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-user">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <span class="user-name" data-user-name>Loading...</span>
+                    <span class="user-email" data-user-email></span>
+                </div>
+            </div>
+            <a href="admin-dashboard.html" class="nav-item">
+                <i class="fa-solid fa-shield-halved"></i> <span>Super Admin</span>
+            </a>
+            <a href="recruiter-dashboard.html" class="nav-item">
+                <i class="fa-solid fa-user-tie"></i> <span>For Recruiters</span>
+            </a>
+            <a href="#" class="nav-item" id="navSignOut" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).then(()=>window.location.href='sign-out.html');">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sign Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Mobile hamburger -->
+    <button class="mobile-hamburger" id="btnHamburger"><i class="fa-solid fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-content">
+
+        <!-- ── Welcome Hero ── -->
+        <section class="welcome-hero">
+            <div class="welcome-text">
+                <h1>Welcome to <span class="gradient-text">Joblynk</span></h1>
+                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role — all in one place.</p>
+            </div>
+            <div class="welcome-actions">
+                <a href="cv-builder.html" class="welcome-btn primary"><i class="fa-solid fa-plus"></i> Create a CV</a>
+                <a href="cover-letter.html" class="welcome-btn primary" style="background: rgba(255,255,255,0.9);"><i class="fa-solid fa-envelope-open-text"></i> Create Cover Letter</a>
+                <a href="#sectionJobs" class="welcome-btn secondary"><i class="fa-solid fa-compass"></i> Browse Jobs</a>
+            </div>
+            <div class="welcome-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="statCvs">0</span>
+                    <span class="stat-label">CVs Created</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statCls">0</span>
+                    <span class="stat-label">Cover Letters</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statApps">0</span>
+                    <span class="stat-label">Applications</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statJobs">3</span>
+                    <span class="stat-label">Jobs Found</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Section: CVs ── -->
+        <section class="dash-section" id="sectionCvs">
+            <div class="section-title-row">
+                <h2><i class="fa-regular fa-file-lines section-icon"></i> My CVs</h2>
+                <button class="section-arrow" title="View all CVs"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="card-grid" id="cvCardGrid">
+                <!-- "Create new CV" card -->
+                <a href="cv-builder.html" class="doc-card doc-card-create" id="btnCreateCv">
+                    <div class="create-inner">
+                        <div class="create-icon"><i class="fa-solid fa-plus"></i></div>
+                        <span class="create-label">Create new CV</span>
+                        <span class="create-sub">Start from scratch</span>
+                    </div>
+                </a>
+                <!-- Dynamic CV cards inserted here by JS -->
+            </div>
+        </section>
+
+        <!-- ── Section: Cover Letters ── -->
+        <section class="dash-section" id="sectionCoverLetters">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-envelope-open-text section-icon"></i> My Cover Letters</h2>
+                <button class="section-arrow" title="View all Cover Letters"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="card-grid" id="clCardGrid">
+                <!-- "Create new Cover Letter" card -->
+                <a href="cover-letter.html" class="doc-card doc-card-create" id="btnCreateCl">
+                    <div class="create-inner">
+                        <div class="create-icon"><i class="fa-solid fa-plus"></i></div>
+                        <span class="create-label">Create Cover Letter</span>
+                        <span class="create-sub">AI-powered generation</span>
+                    </div>
+                </a>
+                <!-- Dynamic Cover Letter cards inserted here by JS -->
+            </div>
+        </section>
+
+        <!-- Two-column row for Jobs & Applications -->
+        <div class="dash-row">
+            <!-- ── Section: Jobs ── -->
+            <section class="dash-section dash-section-half" id="sectionJobs">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-briefcase section-icon"></i> Jobs</h2>
+                    <button class="section-arrow" title="View all Jobs"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="job-list" id="jobList">
+                    <!-- Dynamically populated by dashboard.js via jobs-store.js -->
+                </div>
+            </section>
+
+            <!-- ── Section: Applications ── -->
+            <section class="dash-section dash-section-half" id="sectionApps">
+                <div class="section-title-row">
+                    <h2><i class="fa-regular fa-rectangle-list section-icon"></i> Applications</h2>
+                    <button class="section-arrow" title="View all Applications"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="app-list" id="appList">
+                    <div class="app-empty">
+                        <i class="fa-regular fa-folder-open app-empty-icon"></i>
+                        <p>No applications yet</p>
+                        <span>Track your job applications here</span>
+                    </div>
+                    <button class="add-app-btn" id="btnAddApp">
+                        <i class="fa-solid fa-plus"></i> Add application
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ========== APPLICATION MODAL ========== -->
+    <div class="app-modal-overlay" id="appModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div class="app-modal" style="background:#fff; border-radius:16px; max-width:500px; width:90%; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation: scaleIn 0.2s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="font-size:1.3rem; font-weight:800; color:#1E293B;">Apply for this job</h2>
+                <button onclick="closeAppModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#94A3B8;">&times;</button>
+            </div>
+            <div id="appModalJobInfo" style="background:#F8FAFC; padding:1rem; border-radius:10px; margin-bottom:1.5rem; border:1px solid #E2E8F0;">
+                <div id="appModalTitle" style="font-weight:700; font-size:1.05rem; margin-bottom:4px;"></div>
+                <div id="appModalCompany" style="color:#64748B; font-size:0.9rem;"></div>
+            </div>
+            <div style="margin-bottom:1.25rem;">
+                <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:#1E293B;">Attach CV</label>
+                <select id="appCvSelect" style="width:100%; padding:0.7rem 1rem; border:1.5px solid #E2E8F0; border-radius:8px; font-family:inherit; font-size:0.95rem;">
+                    <option value="">-- Select a saved CV --</option>
+                </select>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:#1E293B;">Attach Cover Letter (optional)</label>
+                <select id="appClSelect" style="width:100%; padding:0.7rem 1rem; border:1.5px solid #E2E8F0; border-radius:8px; font-family:inherit; font-size:0.95rem;">
+                    <option value="">-- None --</option>
+                </select>
+            </div>
+            <div style="padding:0.75rem 1rem; background:#FFFBEB; border:1px solid #FEF3C7; border-radius:8px; color:#92400E; font-size:0.85rem; margin-bottom:1.5rem;">
+                <i class="fa-solid fa-circle-info"></i> By submitting, you agree to share your profile and documents with this employer.
+            </div>
+            <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+                <button onclick="closeAppModal()" style="padding:0.7rem 1.5rem; border:1.5px solid #E2E8F0; border-radius:8px; background:#fff; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button>
+                <button id="btnSubmitApp" onclick="submitJobApplication()" style="padding:0.7rem 1.5rem; border:none; border-radius:8px; background:#3B4BA6; color:#fff; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:0.5rem;">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Application
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="jobs-store.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

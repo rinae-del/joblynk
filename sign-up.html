@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Joblynk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-split-layout">
+        <!-- Visual Sidebar -->
+        <div class="auth-banner">
+            <a href="index.html" class="auth-banner-logo">Joblynk.</a>
+            
+            <div class="auth-banner-content">
+                <h1>Craft your future.</h1>
+                <p>Build an undeniable professional profile and get matched with top companies looking for your exact skills.</p>
+                
+                <div class="auth-glass-card">
+                    <img src="https://ui-avatars.com/api/?name=David+Kim&background=random" alt="Reviewer">
+                    <div class="auth-glass-text">
+                        <h4>"I found my dream job in a week"</h4>
+                        <p>David Kim, Software Engineer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Sidebar -->
+        <div class="auth-main">
+            <a href="index.html" class="auth-mobile-logo">Joblynk.</a>
+
+            <div class="auth-main-inner">
+                <div class="auth-header">
+                    <h2>Create an account</h2>
+                    <p>Join the Joblynk community today. It's free!</p>
+                </div>
+
+                <form id="signupForm">
+                    <div class="auth-form-row-multi">
+                        <div class="auth-form-group">
+                            <label for="fname">First Name</label>
+                            <input type="text" id="fname" class="auth-input" placeholder="e.g. Jane" required autofocus>
+                        </div>
+                        <div class="auth-form-group">
+                            <label for="lname">Last Name</label>
+                            <input type="text" id="lname" class="auth-input" placeholder="e.g. Doe" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" class="auth-input" placeholder="name@company.com" required>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="auth-input" placeholder="Create a strong password (min 8 chars)" required minlength="8">
+                    </div>
+
+                    <div class="auth-form-group" style="margin-bottom: 2rem;">
+                        <div class="auth-checkbox-wrap" style="align-items: flex-start; gap: 0.75rem;">
+                            <input type="checkbox" id="termsCheckReq" class="auth-checkbox" required style="margin-top: 0.2rem; cursor: pointer;">
+                            <div style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
+                                <label for="termsCheckReq" style="display: inline; cursor: pointer; margin: 0; padding: 0; font-weight: normal; color: inherit; text-transform: none;">I agree to the</label>
+                                <a href="terms-and-conditions.html" target="_blank" class="auth-link" style="position: relative; z-index: 10;">Terms &amp; Conditions</a>
+                                <label for="termsCheckReq" style="display: inline; cursor: pointer; margin: 0; padding: 0; font-weight: normal; color: inherit; text-transform: none;">and consent to JobLynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA.</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="formError" style="display: none; background: #FEF2F2; color: #DC2626; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+
+                    <button type="submit" class="auth-btn" id="btnSubmit">Create Account</button>
+                    
+
+                    <div class="auth-footer">
+                        Already have an account? <a href="sign-in.html" class="auth-link">Sign In</a>
+                    </div>
+                </form>
+
+                <script>
+                    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const btn = document.getElementById('btnSubmit');
+                        const errorEl = document.getElementById('formError');
+                        errorEl.style.display = 'none';
+
+                        const firstName = document.getElementById('fname').value.trim();
+                        const lastName = document.getElementById('lname').value.trim();
+                        const email = document.getElementById('email').value.trim();
+                        const password = document.getElementById('password').value;
+
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
+
+                        try {
+                            const res = await fetch('api/auth/signup.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ firstName, lastName, email, password })
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                                window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+                            } else {
+                                errorEl.textContent = data.message;
+                                errorEl.style.display = 'block';
+                                btn.disabled = false;
+                                btn.textContent = 'Create Account';
+                            }
+                        } catch (err) {
+                            errorEl.textContent = 'Something went wrong. Please try again.';
+                            errorEl.style.display = 'block';
+                            btn.disabled = false;
+                            btn.textContent = 'Create Account';
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

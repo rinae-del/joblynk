@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joblynk – Super Admin Dashboard</title>
+    <meta name="description"
+        content="Platform-wide administration dashboard for Joblynk. Manage users, recruiters, jobs, and system settings.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="admin-dashboard.css">
+    <script src="auth-guard.js" data-role="admin"></script>
+</head>
+
+<body>
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-logo">
+                <span class="logo-text">Joblynk</span>
+                <span class="admin-badge-logo">ADMIN</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" id="navOverview" onclick="switchView('overview')">
+                <i class="fa-solid fa-gauge-high"></i> <span>Overview</span>
+            </a>
+            <a href="#" class="nav-item" id="navUsers" onclick="switchView('users')">
+                <i class="fa-solid fa-users"></i> <span>Users</span>
+            </a>
+            <a href="#" class="nav-item" id="navRecruiters" onclick="switchView('recruiters')">
+                <i class="fa-solid fa-building"></i> <span>Recruiters</span>
+            </a>
+            <a href="#" class="nav-item" id="navJobs" onclick="switchView('jobs')">
+                <i class="fa-solid fa-briefcase"></i> <span>Job Listings</span>
+            </a>
+            <a href="#" class="nav-item" id="navApplications" onclick="switchView('applications')">
+                <i class="fa-solid fa-file-signature"></i> <span>Applications</span>
+            </a>
+            <a href="#" class="nav-item" id="navDocuments" onclick="switchView('documents')">
+                <i class="fa-solid fa-folder-open"></i> <span>Documents</span>
+            </a>
+            <a href="#" class="nav-item" id="navReports" onclick="switchView('reports')">
+                <i class="fa-solid fa-chart-line"></i> <span>Reports</span>
+            </a>
+            <a href="#" class="nav-item" id="navSettings" onclick="switchView('settings')">
+                <i class="fa-solid fa-gear"></i> <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-user">
+                <div class="user-avatar" style="background: rgba(220, 38, 38, 0.2); color: #FCA5A5;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" data-user-name>Loading...</span>
+                    <span class="user-email" data-user-email>loading...</span>
+                </div>
+            </div>
+            <a href="dashboard.html" class="nav-item">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Job Seeker View</span>
+            </a>
+            <a href="recruiter-dashboard.html" class="nav-item">
+                <i class="fa-solid fa-user-tie"></i> <span>Recruiter View</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Mobile hamburger -->
+    <button class="mobile-hamburger" id="btnHamburger"><i class="fa-solid fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-content">
+
+        <!-- ================= OVERVIEW VIEW ================= -->
+        <div id="view-overview" class="admin-view active">
+            <!-- Hero -->
+            <section class="welcome-hero admin-hero">
+                <div class="welcome-text">
+                    <h1>Platform <span class="admin-gradient-text">Command Center</span></h1>
+                    <p>Real-time overview of Joblynk's ecosystem. Monitor users, jobs, revenue, and platform health at a glance.</p>
+                </div>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="statTotalUsers" data-target="6">0</span>
+                        <span class="stat-label">Total Users</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="statTotalJobs" data-target="3">0</span>
+                        <span class="stat-label">Active Jobs</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="statTotalApps" data-target="0">0</span>
+                        <span class="stat-label">Applications</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="statTotalDocs" data-target="0">0</span>
+                        <span class="stat-label">Documents</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(59,130,246,0.1); color: #3B82F6;"><i class="fa-solid fa-user-plus"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" id="kpiNewUsers" data-target="0">0</span>
+                        <span class="kpi-label">New Users (30d)</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(126,34,206,0.1); color: #7E22CE;"><i class="fa-solid fa-building"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" id="kpiNewRecruiters" data-target="0">0</span>
+                        <span class="kpi-label">New Recruiters (30d)</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(5,150,105,0.1); color: #059669;"><i class="fa-solid fa-file-signature"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" id="kpiNewApps" data-target="0">0</span>
+                        <span class="kpi-label">Applications (30d)</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(220,38,38,0.1); color: #DC2626;"><i class="fa-solid fa-dollar-sign"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-value kpi-currency" id="kpiRevenue" data-target="0">0</span>
+                        <span class="kpi-label">Revenue (30d)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two-column row -->
+            <div class="dash-row">
+                <!-- Recent Activity -->
+                <section class="dash-section dash-section-half">
+                    <div class="section-title-row">
+                        <h2><i class="fa-solid fa-clock-rotate-left section-icon" style="color:#DC2626"></i> Recent Activity</h2>
+                    </div>
+                    <div class="activity-feed" id="activityFeed">
+                        <!-- Populated from API -->
+                    </div>
+                </section>
+
+                <!-- Platform Health -->
+                <section class="dash-section dash-section-half">
+                    <div class="section-title-row">
+                        <h2><i class="fa-solid fa-heart-pulse section-icon" style="color:#059669"></i> Platform Health</h2>
+                    </div>
+                    <div class="health-grid">
+                        <div class="health-item">
+                            <div class="health-indicator online"></div>
+                            <div class="health-info">
+                                <span class="health-name">API Server</span>
+                                <span class="health-status">Operational</span>
+                            </div>
+                            <span class="health-uptime">99.9%</span>
+                        </div>
+                        <div class="health-item">
+                            <div class="health-indicator online"></div>
+                            <div class="health-info">
+                                <span class="health-name">Database</span>
+                                <span class="health-status">Operational</span>
+                            </div>
+                            <span class="health-uptime">99.8%</span>
+                        </div>
+                        <div class="health-item">
+                            <div class="health-indicator online"></div>
+                            <div class="health-info">
+                                <span class="health-name">Email Service</span>
+                                <span class="health-status">Operational</span>
+                            </div>
+                            <span class="health-uptime">99.5%</span>
+                        </div>
+                        <div class="health-item">
+                            <div class="health-indicator warning"></div>
+                            <div class="health-info">
+                                <span class="health-name">Search Index</span>
+                                <span class="health-status" style="color:#F59E0B">Degraded</span>
+                            </div>
+                            <span class="health-uptime" style="color:#F59E0B">97.2%</span>
+                        </div>
+                        <div class="health-item">
+                            <div class="health-indicator online"></div>
+                            <div class="health-info">
+                                <span class="health-name">CDN / Assets</span>
+                                <span class="health-status">Operational</span>
+                            </div>
+                            <span class="health-uptime">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Mini Revenue Chart -->
+                    <div class="mini-chart-section">
+                        <h3 class="mini-chart-title">Revenue Trend (6 months)</h3>
+                        <div class="mini-bar-chart">
+                            <div class="bar-col">
+                                <div class="bar" style="height:45%"></div>
+                                <span class="bar-label">Oct</span>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height:55%"></div>
+                                <span class="bar-label">Nov</span>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height:40%"></div>
+                                <span class="bar-label">Dec</span>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height:65%"></div>
+                                <span class="bar-label">Jan</span>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height:78%"></div>
+                                <span class="bar-label">Feb</span>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar active-bar" style="height:90%"></div>
+                                <span class="bar-label">Mar</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ================= USERS VIEW ================= -->
+        <div id="view-users" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-users section-icon" style="color:#3B82F6"></i> User Management</h2>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="userSearch" placeholder="Search users..." oninput="filterTable('userSearch','usersTableBody')">
+                        </div>
+                        <select class="filter-select" id="userRoleFilter" onchange="filterTable('userSearch','usersTableBody')">
+                            <option value="">All Roles</option>
+                            <option value="Job Seeker">Job Seeker</option>
+                            <option value="Premium">Premium</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Dynamically populated from API -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span class="table-info" id="usersTableInfo">Loading users...</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= RECRUITERS VIEW ================= -->
+        <div id="view-recruiters" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-building section-icon" style="color:#7E22CE"></i> Recruiter Management</h2>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="recruiterSearch" placeholder="Search recruiters..." oninput="filterTable('recruiterSearch','recruitersTableBody')">
+                        </div>
+                        <select class="filter-select" id="recruiterStatusFilter" onchange="filterTable('recruiterSearch','recruitersTableBody')">
+                            <option value="">All Status</option>
+                            <option value="Verified">Verified</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Active Jobs</th>
+                                <th>Plan</th>
+                                <th>Verification</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recruitersTableBody">
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-avatar" style="background:rgba(126,34,206,0.1); color:#7E22CE;"><i class="fa-solid fa-building"></i></div>
+                                        <div>
+                                            <span>Tech Corp Inc.</span>
+                                            <small class="table-sub">hr@techcorp.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Sarah Williams</td>
+                                <td><strong>3</strong></td>
+                                <td><span class="role-tag premium">Premium</span></td>
+                                <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> Verified</span></td>
+                                <td class="actions-cell">
+                                    <button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="tbl-btn warn" title="Suspend"><i class="fa-solid fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-avatar" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fa-solid fa-building"></i></div>
+                                        <div>
+                                            <span>Acme Solutions (Pty) Ltd</span>
+                                            <small class="table-sub">recruit@acme.co.za</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>David Mokoena</td>
+                                <td><strong>7</strong></td>
+                                <td><span class="role-tag premium">Premium</span></td>
+                                <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> Verified</span></td>
+                                <td class="actions-cell">
+                                    <button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="tbl-btn warn" title="Suspend"><i class="fa-solid fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-avatar" style="background:rgba(234,179,8,0.1); color:#D97706;"><i class="fa-solid fa-building"></i></div>
+                                        <div>
+                                            <span>StartupXYZ</span>
+                                            <small class="table-sub">talent@startupxyz.io</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Fatima Khan</td>
+                                <td><strong>2</strong></td>
+                                <td><span class="role-tag seeker">Free</span></td>
+                                <td><span class="verification-badge pending"><i class="fa-solid fa-clock"></i> Pending</span></td>
+                                <td class="actions-cell">
+                                    <button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="tbl-btn" title="Verify" style="color:#059669"><i class="fa-solid fa-check"></i></button>
+                                    <button class="tbl-btn warn" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-avatar" style="background:rgba(220,38,38,0.1); color:#DC2626;"><i class="fa-solid fa-building"></i></div>
+                                        <div>
+                                            <span>Mega Recruitment SA</span>
+                                            <small class="table-sub">info@megarecruit.co.za</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>James van der Merwe</td>
+                                <td><strong>12</strong></td>
+                                <td><span class="role-tag premium">Premium</span></td>
+                                <td><span class="verification-badge verified"><i class="fa-solid fa-circle-check"></i> Verified</span></td>
+                                <td class="actions-cell">
+                                    <button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="tbl-btn warn" title="Suspend"><i class="fa-solid fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-avatar" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-building"></i></div>
+                                        <div>
+                                            <span>Cloud Nine Staffing</span>
+                                            <small class="table-sub">hire@cloudnine.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Maria Santos</td>
+                                <td><strong>5</strong></td>
+                                <td><span class="role-tag seeker">Free</span></td>
+                                <td><span class="verification-badge pending"><i class="fa-solid fa-clock"></i> Pending</span></td>
+                                <td class="actions-cell">
+                                    <button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="tbl-btn" title="Verify" style="color:#059669"><i class="fa-solid fa-check"></i></button>
+                                    <button class="tbl-btn warn" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span class="table-info">Showing 5 of 186 recruiters</span>
+                    <div class="table-pagination">
+                        <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="page-btn active-page">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <span class="page-dots">…</span>
+                        <button class="page-btn">31</button>
+                        <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= JOBS VIEW ================= -->
+        <div id="view-jobs" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-briefcase section-icon" style="color:#059669"></i> All Job Listings</h2>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="jobSearch" placeholder="Search jobs..." oninput="filterTable('jobSearch','jobsTableBody')">
+                        </div>
+                        <select class="filter-select" id="jobStatusFilter" onchange="filterTable('jobSearch','jobsTableBody')">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Flagged">Flagged</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Applicants</th>
+                                <th>Status</th>
+                                <th>Posted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsTableBody">
+                            <!-- Dynamically populated by admin-dashboard.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span class="table-info" id="jobsTableInfo">Showing 0 jobs</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= APPLICATIONS VIEW ================= -->
+        <div id="view-applications" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-file-signature section-icon" style="color:#059669"></i> All Applications</h2>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="appSearch" placeholder="Search applications..." oninput="filterTable('appSearch','appsTableBody')">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Job Applied For</th>
+                                <th>Company</th>
+                                <th>CV Attached</th>
+                                <th>Cover Letter</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appsTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span class="table-info" id="appsTableInfo">Showing 0 applications</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= DOCUMENTS VIEW ================= -->
+        <div id="view-documents" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-folder-open section-icon" style="color:#D97706"></i> All Documents</h2>
+                </div>
+
+                <!-- CVs Section -->
+                <div class="section-title-row" style="margin-top:20px;">
+                    <h3 style="font-size:1.05rem;"><i class="fa-solid fa-file-lines" style="color:#3B82F6; margin-right:8px;"></i>CVs / Resumes</h3>
+                </div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Owner</th>
+                                <th>Last Edited</th>
+                                <th>Accent Color</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cvsTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cover Letters Section -->
+                <div class="section-title-row" style="margin-top:32px;">
+                    <h3 style="font-size:1.05rem;"><i class="fa-solid fa-envelope-open-text" style="color:#7E22CE; margin-right:8px;"></i>Cover Letters</h3>
+                </div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Owner</th>
+                                <th>Last Edited</th>
+                                <th>Accent Color</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clsTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span class="table-info" id="docsTableInfo">Showing 0 documents</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= REPORTS VIEW ================= -->
+        <div id="view-reports" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-chart-line section-icon" style="color:#EC4899"></i> Reports & Analytics</h2>
+                    <div class="table-controls">
+                        <select class="filter-select">
+                            <option>Last 30 days</option>
+                            <option>Last 7 days</option>
+                            <option>Last 90 days</option>
+                            <option>All time</option>
+                        </select>
+                        <button class="welcome-btn primary" style="padding:8px 18px; font-size:0.8rem; color:#fff; background:linear-gradient(135deg,#DC2626,#F97316);">
+                            <i class="fa-solid fa-download"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Cards -->
+                <div class="report-cards" id="reportCards">
+                    <div class="report-card">
+                        <div class="report-card-icon" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-users"></i></div>
+                        <div class="report-card-data">
+                            <span class="report-card-value" id="reportTotalUsers">—</span>
+                            <span class="report-card-label">Total Registered Users</span>
+                        </div>
+                        <div class="report-card-detail">
+                            <div class="report-bar-row"><span>Verified</span><div class="report-bar"><div class="report-bar-fill" id="barVerified" style="width:0%; background:#059669;"></div></div><span id="pctVerified">0%</span></div>
+                            <div class="report-bar-row"><span>Unverified</span><div class="report-bar"><div class="report-bar-fill" id="barUnverified" style="width:0%; background:#F59E0B;"></div></div><span id="pctUnverified">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-icon" style="background:rgba(126,34,206,0.1); color:#7E22CE;"><i class="fa-solid fa-briefcase"></i></div>
+                        <div class="report-card-data">
+                            <span class="report-card-value" id="reportTotalJobs">—</span>
+                            <span class="report-card-label">Total Job Listings</span>
+                        </div>
+                        <div class="report-card-detail">
+                            <div class="report-bar-row"><span>Active</span><div class="report-bar"><div class="report-bar-fill" id="barJobsActive" style="width:0%; background:#059669;"></div></div><span id="pctJobsActive">0%</span></div>
+                            <div class="report-bar-row"><span>Closed</span><div class="report-bar"><div class="report-bar-fill" id="barJobsClosed" style="width:0%; background:#6B7280;"></div></div><span id="pctJobsClosed">0%</span></div>
+                            <div class="report-bar-row"><span>Draft</span><div class="report-bar"><div class="report-bar-fill" id="barJobsDraft" style="width:0%; background:#DC2626;"></div></div><span id="pctJobsDraft">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fa-solid fa-file-signature"></i></div>
+                        <div class="report-card-data">
+                            <span class="report-card-value" id="reportTotalApps">—</span>
+                            <span class="report-card-label">Total Applications</span>
+                        </div>
+                        <div class="report-card-detail">
+                            <div class="report-bar-row"><span>Reviewed</span><div class="report-bar"><div class="report-bar-fill" id="barAppsReviewed" style="width:0%; background:#3B82F6;"></div></div><span id="pctAppsReviewed">0%</span></div>
+                            <div class="report-bar-row"><span>Pending</span><div class="report-bar"><div class="report-bar-fill" id="barAppsPending" style="width:0%; background:#F59E0B;"></div></div><span id="pctAppsPending">0%</span></div>
+                            <div class="report-bar-row"><span>Rejected</span><div class="report-bar"><div class="report-bar-fill" id="barAppsRejected" style="width:0%; background:#DC2626;"></div></div><span id="pctAppsRejected">0%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="section-title-row" style="margin-top:36px;">
+                    <h2><i class="fa-solid fa-list-check section-icon" style="color:#F59E0B"></i> Audit Log</h2>
+                </div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action</th>
+                                <th>Performed By</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogBody">
+                            <!-- Populated from API -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= SETTINGS VIEW ================= -->
+        <div id="view-settings" class="admin-view">
+            <section class="dash-section">
+                <div class="section-title-row">
+                    <h2><i class="fa-solid fa-gear section-icon" style="color:#6B7280"></i> Platform Settings</h2>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- General -->
+                    <div class="settings-card">
+                        <h3 class="settings-card-title"><i class="fa-solid fa-globe"></i> General</h3>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Maintenance Mode</span>
+                                <span class="setting-desc">Put the platform into maintenance mode. Users will see a maintenance page.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleMaintenance">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">User Registration</span>
+                                <span class="setting-desc">Allow new users to register on the platform.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleRegistration" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Recruiter Self-Signup</span>
+                                <span class="setting-desc">Allow recruiters to register without admin approval.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleRecruiterSignup" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="settings-card">
+                        <h3 class="settings-card-title"><i class="fa-solid fa-bell"></i> Notifications</h3>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Email Alerts</span>
+                                <span class="setting-desc">Send email alerts for flagged content and system issues.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleEmailAlerts" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">New User Notifications</span>
+                                <span class="setting-desc">Receive a notification when a new user or recruiter registers.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleNewUser" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Weekly Summary Report</span>
+                                <span class="setting-desc">Receive a weekly email digest with platform performance stats.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleWeekly">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- AI / Integrations -->
+                    <div class="settings-card">
+                        <h3 class="settings-card-title"><i class="fa-solid fa-robot"></i> AI Integration</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">The DeepSeek API key is used for AI-powered cover letter generation. This key is stored securely on the server and is never exposed to users.</p>
+                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                            <span class="setting-name" style="font-size:0.8rem;">DeepSeek API Key</span>
+                            <div style="display:flex; gap:8px; width:100%;">
+                                <input type="password" id="deepseekApiKey" placeholder="sk-..." style="flex:1; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                                <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#059669,#10B981); padding:8px 16px; font-size:0.8rem; white-space:nowrap;" onclick="saveDeepSeekKey()">
+                                    <i class="fa-solid fa-key"></i> Save Key
+                                </button>
+                            </div>
+                            <span id="deepseekKeyStatus" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Moderation -->
+                    <div class="settings-card">
+                        <h3 class="settings-card-title"><i class="fa-solid fa-shield-halved"></i> Moderation</h3>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Auto-Flag Spam Jobs</span>
+                                <span class="setting-desc">Automatically flag job posts containing suspicious keywords.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleAutoFlag" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Require Job Approval</span>
+                                <span class="setting-desc">Jobs require admin approval before going live on the platform.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleJobApproval">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-name">Content Profanity Filter</span>
+                                <span class="setting-desc">Filter profanity from job descriptions and user profiles.</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleProfanity" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="settings-card" style="grid-column: 1 / -1;">
+                        <h3 class="settings-card-title"><i class="fa-solid fa-tag"></i> Pricing Management</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Update recruiter job posting prices. Changes take effect immediately on the pricing page.</p>
+                        
+                        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;">
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="setting-name" style="font-size:0.8rem;">🔥 Intro Offer (R)</span>
+                                <input type="number" id="priceIntro" value="750" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="setting-name" style="font-size:0.8rem;">1 Job Standard (R)</span>
+                                <input type="number" id="price1Job" value="1300" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="setting-name" style="font-size:0.8rem;">2-Job Bundle (R)</span>
+                                <input type="number" id="price2Job" value="2200" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="setting-name" style="font-size:0.8rem;">3-Job Bundle (R)</span>
+                                <input type="number" id="price3Job" value="2950" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="setting-name" style="font-size:0.8rem;">4-Job Bundle (R)</span>
+                                <input type="number" id="price4Job" value="3500" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                                <span class="setting-name" style="font-size:0.8rem;">5-Job Bundle (R)</span>
+                                <input type="number" id="price5Job" value="3900" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                            <div class="setting-row" style="flex:0 0 auto;">
+                                <div class="setting-info">
+                                    <span class="setting-name">Intro Offer Active</span>
+                                    <span class="setting-desc">Enable the R750 introductory offer on the pricing page.</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggleIntroOffer" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:4px; flex:0 0 auto;">
+                                <span class="setting-name" style="font-size:0.8rem;">Intro Offer Expiry Date</span>
+                                <input type="date" id="introExpiry" value="2026-05-31" style="padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-family:inherit;">
+                            </div>
+                            <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#6366F1,#818CF8); margin-top:auto;" onclick="savePricingSettings()">
+                                <i class="fa-solid fa-check"></i> Save Pricing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:28px; display:flex; gap:12px;">
+                    <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#DC2626,#F97316);" onclick="saveAllSettings()">
+                        <i class="fa-solid fa-check"></i> Save Changes
+                    </button>
+                    <button class="welcome-btn secondary" style="color:var(--text); border-color:var(--border); background:var(--bg);" onclick="resetSettingsDefaults()">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+                    </button>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <script src="jobs-store.js"></script>
+    <script src="admin-dashboard.js"></script>
+</body>
+
+</html>

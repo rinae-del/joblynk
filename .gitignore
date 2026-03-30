@@ -1,0 +1,28 @@
+# Environment & secrets
+.env
+.env.local
+.env.production
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Dependencies
+vendor/
+node_modules/
+
+# Logs
+*.log
+error_log
+
+# OS files
+desktop.ini
+
+# Seed/install scripts (dev only)
+seed-database.php
+install-mock-data.php
