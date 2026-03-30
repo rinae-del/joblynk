@@ -216,63 +216,59 @@ body {
     left: 0;
     right: 0;
     height: 56px;
-    background: rgba(30, 41, 59, .92);
-    backdrop-filter: blur(16px) saturate(1.6);
-    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    background: var(--sidebar-bg);
     z-index: 600;
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    box-shadow: 0 1px 8px rgba(0,0,0,.18);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
 
 .mobile-topbar .topbar-brand {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     min-width: 0;
 }
 
 .mobile-topbar .topbar-logo {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, #94A3B8 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #fff;
+    letter-spacing: -0.02em;
 }
 
 .mobile-topbar .topbar-badge {
     display: inline-flex;
     align-items: center;
-    padding: 4px 8px;
-    border-radius: 999px;
-    font-size: .62rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.6rem;
     font-weight: 700;
-    letter-spacing: .05em;
+    letter-spacing: .06em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, .9);
-    background: rgba(255, 255, 255, .14);
-    border: 1px solid rgba(255, 255, 255, .1);
+    color: #fff;
+    background: rgba(255, 255, 255, .15);
 }
 
 .mobile-topbar .topbar-hamburger {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 10px;
     background: rgba(255,255,255,.1);
     border: none;
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background var(--transition);
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-topbar .topbar-hamburger:hover {
-    background: rgba(255,255,255,.18);
+.mobile-topbar .topbar-hamburger:active {
+    background: rgba(255,255,255,.25);
 }
 
 /* Legacy hamburger (hidden when topbar present) */
@@ -284,15 +280,16 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, .5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 450;
-    transition: opacity var(--transition);
+    background: rgba(0, 0, 0, .45);
+    z-index: 640;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .sidebar-overlay.active {
     display: block;
+    opacity: 1;
 }
 
 /* ======================================
@@ -914,9 +911,9 @@ body {
 @media (max-width: 900px) {
     .sidebar {
         transform: translateX(-100%);
-        border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+        border-radius: 0 16px 16px 0;
         z-index: 650;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 4px 0 24px rgba(0,0,0,0.2);
     }
 
     .sidebar.open {
@@ -929,25 +926,42 @@ body {
 
     .main-content {
         margin-left: 0;
-        padding: 72px 20px 40px;
+        padding: 72px 16px 40px;
     }
 
     .dash-row {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .welcome-hero {
-        padding: 28px 24px 24px;
-        border-radius: var(--radius-lg);
+        padding: 24px 20px 22px;
+        border-radius: 16px;
+        margin-bottom: 24px;
     }
 
     .welcome-text h1 {
-        font-size: 1.35rem;
+        font-size: 1.3rem;
+    }
+
+    .welcome-text p {
+        font-size: 0.88rem;
     }
 
     .welcome-stats {
-        gap: 24px;
+        gap: 20px;
         flex-wrap: wrap;
+    }
+
+    .welcome-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .welcome-btn {
+        padding: 12px 20px;
+        font-size: 0.85rem;
+        border-radius: 12px;
     }
 
     .doc-card {
@@ -975,23 +989,29 @@ body {
     }
 
     .job-item {
-        padding: 12px 10px;
+        padding: 14px 12px;
+        border-radius: 12px;
     }
 
     .dash-section-half {
-        border-radius: var(--radius-lg);
+        border-radius: 16px;
+        padding: 20px 18px;
+    }
+
+    .dash-section {
+        margin-bottom: 20px;
     }
 }
 
 @media (max-width: 480px) {
     .main-content {
-        padding: 66px 14px 30px;
+        padding: 66px 12px 30px;
     }
 
     .welcome-hero {
-        padding: 22px 18px 20px;
-        border-radius: 12px;
-        margin-bottom: 28px;
+        padding: 20px 16px 18px;
+        border-radius: 14px;
+        margin-bottom: 20px;
     }
 
     .welcome-hero::before,
@@ -1000,12 +1020,13 @@ body {
     }
 
     .welcome-text h1 {
-        font-size: 1.15rem;
+        font-size: 1.12rem;
         line-height: 1.3;
     }
 
     .welcome-text p {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
+        line-height: 1.5;
     }
 
     .welcome-actions {
@@ -1015,8 +1036,9 @@ body {
 
     .welcome-btn {
         justify-content: center;
-        padding: 12px 20px;
+        padding: 13px 20px;
         font-size: 0.85rem;
+        border-radius: 12px;
     }
 
     .welcome-stats {
@@ -1027,6 +1049,10 @@ body {
 
     .stat-number {
         font-size: 1.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
     }
 
     .card-grid {
@@ -1055,7 +1081,7 @@ body {
     }
 
     .dash-section {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
     .section-title-row h2 {
@@ -1063,27 +1089,33 @@ body {
     }
 
     .dash-section-half {
-        padding: 18px 16px;
+        padding: 16px 14px;
+        border-radius: 14px;
     }
 
     .job-item {
         gap: 10px;
-        padding: 10px 8px;
+        padding: 12px 10px;
     }
 
     .job-avatar {
         width: 36px;
         height: 36px;
         font-size: 0.75rem;
+        border-radius: 10px;
     }
 
     .job-title {
         font-size: 0.82rem;
     }
 
+    .job-company {
+        font-size: 0.72rem;
+    }
+
     .job-badge {
         font-size: 0.6rem;
-        padding: 2px 6px;
+        padding: 3px 8px;
     }
 
     /* Sidebar user info truncation */
@@ -1092,6 +1124,12 @@ body {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    /* Section arrow on mobile */
+    .section-arrow {
+        width: 36px;
+        height: 36px;
     }
 }
 

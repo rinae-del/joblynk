@@ -506,14 +506,16 @@ input:checked + .slider:before {
     
     .profile-nav-card {
         position: static;
+        border-radius: 16px;
     }
 
     .inner-profile-nav {
         flex-direction: row;
         overflow-x: auto;
-        gap: 0.25rem;
+        gap: 6px;
         padding-bottom: 0.5rem;
         scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
     }
 
     .inner-profile-nav::-webkit-scrollbar {
@@ -522,9 +524,13 @@ input:checked + .slider:before {
 
     .inner-nav-item {
         white-space: nowrap;
-        padding: 0.6rem 0.9rem;
+        padding: 0.6rem 1rem;
         font-size: 0.82rem;
         border-radius: 20px;
+    }
+
+    .profile-card {
+        border-radius: 16px;
     }
 }
 
@@ -540,12 +546,19 @@ input:checked + .slider:before {
     }
 
     .profile-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+    }
+
+    .profile-header p {
+        font-size: 0.9rem;
     }
 
     .btn-save-profile {
         width: 100%;
         justify-content: center;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 0.92rem;
     }
 
     .profile-pic-container {
@@ -554,15 +567,26 @@ input:checked + .slider:before {
     }
 
     .card-header {
-        padding: 1.25rem;
+        padding: 1.15rem;
     }
 
     .card-body {
-        padding: 1.25rem;
+        padding: 1.15rem;
+    }
+
+    .profile-card {
+        border-radius: 14px;
+    }
+
+    .profile-input, .profile-textarea {
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
     }
 
     .profile-upload-zone {
         padding: 1.5rem 1rem;
+        border-radius: 14px;
     }
 
     .upload-icon {
@@ -573,5 +597,20 @@ input:checked + .slider:before {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
+    }
+
+    .skill-tag {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.82rem;
+        border-radius: 10px;
+    }
+
+    .profile-nav-card {
+        padding: 1rem;
+        border-radius: 14px;
+    }
+
+    .profile-sections {
+        gap: 1.25rem;
     }
 }

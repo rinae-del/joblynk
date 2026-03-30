@@ -362,44 +362,60 @@
 
 .search-box i {
     position: absolute;
-    left: 12px;
+    left: 14px;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .search-box input {
-    padding: 9px 14px 9px 34px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 11px 16px 11px 38px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
     font-family: var(--font);
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--text);
-    background: var(--bg-white);
-    width: 220px;
-    transition: all 0.2s;
+    background: var(--bg);
+    width: 260px;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
 }
 
 .search-box input:focus {
     outline: none;
-    border-color: #DC2626;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+    border-color: var(--accent, #3B4BA6);
+    background: var(--bg-white);
+    box-shadow: 0 0 0 4px rgba(59, 75, 166, 0.1), 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .filter-select {
-    padding: 9px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 11px 36px 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
     font-family: var(--font);
-    font-size: 0.82rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: var(--text);
-    background: var(--bg-white);
+    background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+    background-size: 12px;
+    appearance: none;
+    -webkit-appearance: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 .filter-select:focus {
     outline: none;
-    border-color: #DC2626;
+    border-color: var(--accent, #3B4BA6);
+    background-color: var(--bg-white);
+    box-shadow: 0 0 0 4px rgba(59, 75, 166, 0.1);
 }
 
 .admin-table-wrapper {
@@ -911,20 +927,46 @@
         font-size: 1.25rem;
     }
 
+    /* ── Mobile Search & Filters ── */
+    .section-title-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
     .table-controls {
         flex-direction: column;
         align-items: stretch;
-        gap: 8px;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
     }
 
     .search-box input {
         width: 100%;
+        padding: 14px 16px 14px 42px;
+        font-size: 0.95rem;
+        border-radius: 14px;
+        background: var(--bg-white);
+        border: 1.5px solid var(--border);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
-    .section-title-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+    .search-box i {
+        left: 16px;
+        font-size: 0.9rem;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 14px 40px 14px 16px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+        background-color: var(--bg-white);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     /* ── Mobile Card Tables ── */
@@ -951,17 +993,18 @@
     .admin-table tbody tr {
         background: var(--bg-white);
         border: 1px solid var(--border);
-        border-radius: var(--radius-lg, 16px);
-        padding: 16px;
-        margin-bottom: 12px;
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 14px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        transition: box-shadow var(--transition, .25s);
+        gap: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        transition: box-shadow 0.25s ease, transform 0.25s ease;
     }
 
-    .admin-table tbody tr:hover {
-        box-shadow: var(--shadow-md);
+    .admin-table tbody tr:active {
+        transform: scale(0.99);
     }
 
     .admin-table td {
@@ -970,23 +1013,26 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 0.85rem;
+        font-size: 0.88rem;
+        min-height: 24px;
     }
 
     .admin-table td::before {
         content: attr(data-label);
         font-weight: 600;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         flex-shrink: 0;
         margin-right: 12px;
     }
 
     .admin-table td:first-child {
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
     }
 
     .admin-table td:first-child::before {
@@ -997,16 +1043,31 @@
         gap: 10px;
     }
 
+    .table-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 0.85rem;
+    }
+
     .actions-cell {
-        justify-content: flex-end;
-        padding-top: 8px;
+        justify-content: flex-start;
+        padding-top: 10px;
         border-top: 1px solid var(--border);
+        gap: 8px;
+    }
+
+    .tbl-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 0.85rem;
     }
 
     .table-footer {
         flex-direction: column;
-        gap: 12px;
+        gap: 14px;
         align-items: center;
+        padding: 12px 0;
     }
 
     .table-pagination {
@@ -1014,7 +1075,17 @@
         justify-content: center;
     }
 
+    .page-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+    }
+
     /* Settings cards */
+    .settings-card {
+        border-radius: 16px;
+    }
+
     .setting-row {
         flex-direction: column;
         align-items: flex-start;
@@ -1023,6 +1094,16 @@
 
     .setting-info {
         padding-right: 0;
+    }
+
+    /* Report cards */
+    .report-cards {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .report-card {
+        border-radius: 16px;
     }
 }
 
@@ -1035,6 +1116,7 @@
     .kpi-card {
         flex-direction: row;
         padding: 16px 14px;
+        border-radius: 14px;
     }
 
     .kpi-icon {
@@ -1053,17 +1135,20 @@
     }
 
     .admin-table tbody tr {
-        padding: 14px;
-        margin-bottom: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border-radius: 14px;
     }
 
     .tbl-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
+        font-size: 0.85rem;
     }
 
     .report-card {
         padding: 18px;
+        border-radius: 14px;
     }
 
     .report-card-value {
@@ -1075,36 +1160,8 @@
     }
 
     .settings-card {
-        padding: 20px 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .kpi-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .kpi-card {
-        padding: 16px 18px;
-    }
-
-    .kpi-icon {
-        width: 42px;
-        height: 42px;
-        font-size: 1rem;
-    }
-
-    .kpi-value {
-        font-size: 1.25rem;
-    }
-
-    .report-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .settings-card {
-        padding: 20px 16px;
+        padding: 18px 14px;
+        border-radius: 14px;
     }
 
     .setting-row {
@@ -1117,11 +1174,35 @@
         padding-right: 0;
     }
 
-    .admin-table tbody tr {
-        padding: 14px;
+    /* Better mobile search styling for 480px */
+    .search-box input {
+        padding: 13px 14px 13px 40px;
+        font-size: 0.9rem;
+        border-radius: 12px;
     }
 
     .filter-select {
         width: 100%;
+        padding: 13px 36px 13px 14px;
+        font-size: 0.88rem;
+        border-radius: 12px;
+    }
+
+    .activity-item {
+        padding: 12px 0;
+        gap: 10px;
+    }
+
+    .activity-body p {
+        font-size: 0.82rem;
+    }
+
+    .health-item {
+        padding: 11px 0;
+        gap: 10px;
+    }
+
+    .health-name {
+        font-size: 0.82rem;
     }
 }

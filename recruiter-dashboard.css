@@ -310,9 +310,10 @@ textarea.form-control {
         flex-direction: column;
         align-items: flex-start;
         gap: 14px;
-        border-radius: var(--radius-lg, 16px);
+        border-radius: 16px;
         padding: 18px;
-        transition: box-shadow var(--transition, .25s);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        transition: box-shadow 0.25s ease;
     }
 
     .candidate-item:hover {
@@ -329,7 +330,9 @@ textarea.form-control {
     .btn-action {
         text-align: center;
         justify-content: center;
-        padding: 10px 8px;
+        padding: 12px 8px;
+        border-radius: 10px;
+        font-size: 0.82rem;
     }
 
     .checkbox-grid {
@@ -343,12 +346,116 @@ textarea.form-control {
     .form-control {
         font-size: 1rem;
         padding: 14px 16px;
+        border-radius: 12px;
+    }
+
+    /* Recruiter My Jobs table - mobile cards */
+    .recruiter-table,
+    .recruiter-table thead,
+    .recruiter-table tbody,
+    .recruiter-table th,
+    .recruiter-table td,
+    .recruiter-table tr {
+        display: block;
+    }
+
+    .recruiter-table thead {
+        display: none;
+    }
+
+    .recruiter-table tbody tr {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .recruiter-table td {
+        padding: 0 !important;
+        border-bottom: none !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.88rem;
+    }
+
+    .recruiter-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    .recruiter-table td:first-child {
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding-bottom: 4px !important;
+        border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+    }
+
+    .recruiter-table td:first-child::before {
+        display: none;
+    }
+
+    .recruiter-table .actions-cell {
+        justify-content: flex-start;
+        padding-top: 10px !important;
+        border-top: 1px solid var(--border) !important;
+    }
+
+    .recruiter-table .tbl-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+    }
+
+    /* Candidate filter select */
+    .filter-select {
+        width: 100% !important;
+        padding: 14px 40px 14px 16px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+        border: 1.5px solid var(--border);
+        background-color: var(--bg-white);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 12px;
+    }
+
+    /* Post job form improvements */
+    .dash-row {
+        gap: 16px !important;
+    }
+
+    .wizard-stepper::before {
+        top: 14px;
+    }
+
+    /* Messages empty state mobile */
+    [id="view-messages"] .dash-section > div {
+        padding: 32px 20px !important;
+        border-radius: 16px !important;
     }
 }
 
 @media (max-width: 480px) {
     .candidate-item {
-        padding: 14px;
+        padding: 16px;
+        border-radius: 14px;
     }
 
     .candidate-info-wrapper {
@@ -366,12 +473,12 @@ textarea.form-control {
     }
 
     .candidate-actions {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
 
     .btn-action {
-        padding: 10px 10px;
-        font-size: 0.75rem;
+        padding: 12px 10px;
+        font-size: 0.78rem;
     }
 
     .checkbox-grid {
@@ -380,13 +487,15 @@ textarea.form-control {
     }
 
     .checkbox-item {
-        padding: 8px 10px;
-        font-size: 0.8rem;
+        padding: 10px 12px;
+        font-size: 0.82rem;
+        border-radius: 10px;
     }
 
     .btn-submit {
         width: 100%;
         padding: 14px;
+        border-radius: 12px;
     }
 
     .form-group label {
@@ -401,6 +510,18 @@ textarea.form-control {
 
     .job-status {
         font-size: 0.65rem;
-        padding: 3px 8px;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .recruiter-table tbody tr {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    /* No credits banner mobile */
+    #noCreditsBanner > div {
+        padding: 28px 20px !important;
+        border-radius: 14px !important;
     }
 }

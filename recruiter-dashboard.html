@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="recruiter-dashboard.css">
+    <link rel="stylesheet" href="dashboard.css?v=3">
+    <link rel="stylesheet" href="recruiter-dashboard.css?v=3">
     <script src="auth-guard.js" data-role="recruiter"></script>
 </head>
 
@@ -352,85 +352,64 @@
                         onclick="switchView('post-job')"><i class="fa-solid fa-plus"></i> Post Job</button>
                 </div>
 
-                <div
-                    style="background: var(--bg-white); border-radius: 14px; border: 1px solid var(--border); overflow: hidden;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <div class="admin-table-wrapper">
+                    <table class="admin-table recruiter-table">
                         <thead>
-                            <tr style="background: var(--bg); border-bottom: 1px solid var(--border);">
-                                <th
-                                    style="padding: 16px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
-                                    Job Title</th>
-                                <th
-                                    style="padding: 16px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
-                                    Status</th>
-                                <th
-                                    style="padding: 16px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
-                                    Applicants</th>
-                                <th
-                                    style="padding: 16px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
-                                    Posted Date</th>
-                                <th
-                                    style="padding: 16px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
-                                    Actions</th>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Status</th>
+                                <th>Applicants</th>
+                                <th>Posted Date</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="myJobsTableBody">
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 16px;">
+                            <tr>
+                                <td data-label="">
                                     <div style="font-weight: 600;">Senior Frontend Developer</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Remote • Full-time</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Remote &bull; Full-time</div>
                                 </td>
-                                <td style="padding: 16px;"><span class="job-status active">Active</span></td>
-                                <td style="padding: 16px; font-weight: 600;">45</td>
-                                <td style="padding: 16px; font-size: 0.85rem; color: var(--text-muted);">Mar 09, 2026
-                                </td>
-                                <td style="padding: 16px;">
-                                    <button class="section-arrow" style="width: 30px; height: 30px;" title="Edit"><i
-                                            class="fa-solid fa-pen"></i></button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 16px;">
-                                    <div style="font-weight: 600;">UX UI Designer</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">New York, USA • Contract
-                                    </div>
-                                </td>
-                                <td style="padding: 16px;"><span class="job-status active">Active</span></td>
-                                <td style="padding: 16px; font-weight: 600;">32</td>
-                                <td style="padding: 16px; font-size: 0.85rem; color: var(--text-muted);">Mar 06, 2026
-                                </td>
-                                <td style="padding: 16px;">
-                                    <button class="section-arrow" style="width: 30px; height: 30px;" title="Edit"><i
-                                            class="fa-solid fa-pen"></i></button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 16px;">
-                                    <div style="font-weight: 600;">Backend DevOps Engineer</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">London, UK • Full-time
-                                    </div>
-                                </td>
-                                <td style="padding: 16px;"><span class="job-status active">Active</span></td>
-                                <td style="padding: 16px; font-weight: 600;">51</td>
-                                <td style="padding: 16px; font-size: 0.85rem; color: var(--text-muted);">Mar 04, 2026
-                                </td>
-                                <td style="padding: 16px;">
-                                    <button class="section-arrow" style="width: 30px; height: 30px;" title="Edit"><i
-                                            class="fa-solid fa-pen"></i></button>
+                                <td data-label="Status"><span class="job-status active">Active</span></td>
+                                <td data-label="Applicants"><strong>45</strong></td>
+                                <td data-label="Posted">Mar 09, 2026</td>
+                                <td data-label="" class="actions-cell">
+                                    <button class="tbl-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding: 16px;">
+                                <td data-label="">
+                                    <div style="font-weight: 600;">UX UI Designer</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">New York, USA &bull; Contract</div>
+                                </td>
+                                <td data-label="Status"><span class="job-status active">Active</span></td>
+                                <td data-label="Applicants"><strong>32</strong></td>
+                                <td data-label="Posted">Mar 06, 2026</td>
+                                <td data-label="" class="actions-cell">
+                                    <button class="tbl-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="">
+                                    <div style="font-weight: 600;">Backend DevOps Engineer</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">London, UK &bull; Full-time</div>
+                                </td>
+                                <td data-label="Status"><span class="job-status active">Active</span></td>
+                                <td data-label="Applicants"><strong>51</strong></td>
+                                <td data-label="Posted">Mar 04, 2026</td>
+                                <td data-label="" class="actions-cell">
+                                    <button class="tbl-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="">
                                     <div style="font-weight: 600; color: var(--text-muted);">Marketing Intern</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Remote • Internship</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Remote &bull; Internship</div>
                                 </td>
-                                <td style="padding: 16px;"><span class="job-status closed">Closed</span></td>
-                                <td style="padding: 16px; font-weight: 600; color: var(--text-muted);">112</td>
-                                <td style="padding: 16px; font-size: 0.85rem; color: var(--text-muted);">Feb 15, 2026
-                                </td>
-                                <td style="padding: 16px;">
-                                    <button class="section-arrow" style="width: 30px; height: 30px;" title="View"><i
-                                            class="fa-solid fa-eye"></i></button>
+                                <td data-label="Status"><span class="job-status closed">Closed</span></td>
+                                <td data-label="Applicants"><strong style="color: var(--text-muted);">112</strong></td>
+                                <td data-label="Posted">Feb 15, 2026</td>
+                                <td data-label="" class="actions-cell">
+                                    <button class="tbl-btn" title="View"><i class="fa-solid fa-eye"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -445,7 +424,7 @@
                 <div class="section-title-row">
                     <h2><i class="fa-solid fa-users section-icon" style="color:#059669"></i> Candidates</h2>
                     <div style="display: flex; gap: 10px;">
-                        <select id="candidateJobFilter" class="form-control" style="padding: 6px 12px; width: auto; font-size: 0.8rem;">
+                        <select id="candidateJobFilter" class="filter-select" style="width: auto; min-width: 160px;">
                             <option value="">Filter by Job: All</option>
                         </select>
                     </div>
