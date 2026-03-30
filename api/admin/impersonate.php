@@ -27,14 +27,15 @@ if (isset($_GET['revert'])) {
         unset($_SESSION['original_admin_id']);
     } else {
         // Not impersonating — just redirect
-        header('Location: ../../admin-dashboard.html');
+        header('Location: ' . APP_URL . '/admin-dashboard.html');
         exit;
     }
 
     // Regenerate session ID for security
     session_regenerate_id(true);
+    session_write_close();
 
-    header('Location: ../../admin-dashboard.html');
+    header('Location: ' . APP_URL . '/admin-dashboard.html');
     exit;
 }
 
@@ -82,11 +83,12 @@ if (isset($_GET['user_id'])) {
 
     // Regenerate session ID for security
     session_regenerate_id(true);
+    session_write_close();
 
     // Redirect to appropriate dashboard
     $dashboard = ($targetUser['role'] === 'recruiter')
-        ? '../../recruiter-dashboard.html'
-        : '../../dashboard.html';
+        ? APP_URL . '/recruiter-dashboard.html'
+        : APP_URL . '/dashboard.html';
     header('Location: ' . $dashboard);
     exit;
 }

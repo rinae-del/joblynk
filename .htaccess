@@ -55,4 +55,6 @@
     php_value max_execution_time 60
     php_value session.cookie_httponly 1
     php_value session.cookie_samesite "Lax"
+    php_value session.cookie_path "/"
+    php_value session.use_strict_mode 1
 </IfModule>
