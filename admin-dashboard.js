@@ -47,19 +47,18 @@ function switchView(viewName) {
 
 // ── Mobile Sidebar ──
 const btnHamburger = document.getElementById('btnHamburger');
+const btnHamburgerTop = document.getElementById('btnHamburgerTop');
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-if (btnHamburger) {
-    btnHamburger.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-        sidebarOverlay.classList.toggle('active');
-    });
+function toggleMobileSidebar() {
+    sidebar.classList.toggle('open');
+    sidebarOverlay.classList.toggle('active');
 }
 
-if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', closeMobileSidebar);
-}
+if (btnHamburger) btnHamburger.addEventListener('click', toggleMobileSidebar);
+if (btnHamburgerTop) btnHamburgerTop.addEventListener('click', toggleMobileSidebar);
+if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeMobileSidebar);
 
 function closeMobileSidebar() {
     sidebar.classList.remove('open');

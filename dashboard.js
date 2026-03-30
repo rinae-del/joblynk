@@ -11,15 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = $('sidebar');
     const overlay = $('sidebarOverlay');
     const hamburger = $('btnHamburger');
+    const hamburgerTop = $('btnHamburgerTop');
 
-    hamburger?.addEventListener('click', () => {
+    function toggleSidebar() {
         sidebar.classList.toggle('open');
         overlay.classList.toggle('active');
-    });
-    overlay?.addEventListener('click', () => {
+    }
+    function closeSidebar() {
         sidebar.classList.remove('open');
         overlay.classList.remove('active');
-    });
+    }
+
+    hamburger?.addEventListener('click', toggleSidebar);
+    hamburgerTop?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', closeSidebar);
 
     // ============================
     // SAVED CVs & COVER LETTERS

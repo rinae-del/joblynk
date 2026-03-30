@@ -164,26 +164,22 @@ async function loadCandidates() {
 document.addEventListener('DOMContentLoaded', () => {
     // Hamburger menu toggle
     const btnHamburger = document.getElementById('btnHamburger');
+    const btnHamburgerTop = document.getElementById('btnHamburgerTop');
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    if (btnHamburger && sidebar && sidebarOverlay) {
-        function toggleSidebar() {
-            const isActive = sidebar.classList.contains('active');
-            if (isActive) {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-                sidebar.style.transform = 'translateX(-100%)';
-            } else {
-                sidebar.classList.add('active');
-                sidebarOverlay.classList.add('active');
-                sidebar.style.transform = 'translateX(0)';
-            }
-        }
-
-        btnHamburger.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('active');
     }
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+    }
+
+    if (btnHamburger) btnHamburger.addEventListener('click', toggleSidebar);
+    if (btnHamburgerTop) btnHamburgerTop.addEventListener('click', toggleSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
     // Wizard Logic
     window.nextWizardStep = function(currentStep) {

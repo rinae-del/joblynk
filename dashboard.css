@@ -17,9 +17,11 @@
     --text-muted: #888;
     --border: #E2E2EA;
     --radius: 10px;
+    --radius-lg: 16px;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .05);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, .08);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, .1);
+    --transition: .25s cubic-bezier(.4,0,.2,1);
 }
 
 /* ======================================
@@ -204,34 +206,67 @@ body {
 }
 
 /* ======================================
-   MOBILE
+   MOBILE TOPBAR
    ====================================== */
-.mobile-hamburger {
+.mobile-topbar {
     display: none;
     position: fixed;
-    top: 16px;
-    left: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: rgba(30, 41, 59, .92);
+    backdrop-filter: blur(16px) saturate(1.6);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
     z-index: 600;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: var(--sidebar-bg);
-    color: #fff;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.18);
+}
+
+.mobile-topbar .topbar-logo {
+    font-size: 1.15rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.mobile-topbar .topbar-hamburger {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.1);
     border: none;
+    color: #fff;
     font-size: 1.1rem;
     cursor: pointer;
+    display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-md);
+    transition: background var(--transition);
+}
+
+.mobile-topbar .topbar-hamburger:hover {
+    background: rgba(255,255,255,.18);
+}
+
+/* Legacy hamburger (hidden when topbar present) */
+.mobile-hamburger {
+    display: none;
 }
 
 .sidebar-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, .45);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, .5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 450;
+    transition: opacity var(--transition);
 }
 
 .sidebar-overlay.active {
@@ -857,19 +892,20 @@ body {
 @media (max-width: 900px) {
     .sidebar {
         transform: translateX(-100%);
+        border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
     }
 
     .sidebar.open {
         transform: translateX(0);
     }
 
-    .mobile-hamburger {
+    .mobile-topbar {
         display: flex;
     }
 
     .main-content {
         margin-left: 0;
-        padding: 70px 20px 40px;
+        padding: 72px 20px 40px;
     }
 
     .dash-row {
@@ -878,6 +914,7 @@ body {
 
     .welcome-hero {
         padding: 28px 24px 24px;
+        border-radius: var(--radius-lg);
     }
 
     .welcome-text h1 {
@@ -899,6 +936,12 @@ body {
 
     .card-grid {
         gap: 14px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .card-grid > * {
+        scroll-snap-align: start;
     }
 
     .section-title-row {
@@ -909,6 +952,10 @@ body {
 
     .job-item {
         padding: 12px 10px;
+    }
+
+    .dash-section-half {
+        border-radius: var(--radius-lg);
     }
 }
 
@@ -921,6 +968,11 @@ body {
         padding: 22px 18px 20px;
         border-radius: 12px;
         margin-bottom: 28px;
+    }
+
+    .welcome-hero::before,
+    .welcome-hero::after {
+        display: none;
     }
 
     .welcome-text h1 {
@@ -944,8 +996,9 @@ body {
     }
 
     .welcome-stats {
-        flex-wrap: wrap;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 12px;
     }
 
     .stat-number {
@@ -1009,21 +1062,27 @@ body {
         padding: 2px 6px;
     }
 
-    /* Mobile hamburger polish */
-    .mobile-hamburger {
-        top: 12px;
-        left: 12px;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        font-size: 1rem;
-    }
-
     /* Sidebar user info truncation */
     .user-email {
         max-width: 140px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Safe-area (notch) support */
+@supports (padding: env(safe-area-inset-top)) {
+    .mobile-topbar {
+        padding-top: env(safe-area-inset-top);
+        height: calc(56px + env(safe-area-inset-top));
     }
 }

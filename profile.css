@@ -507,6 +507,25 @@ input:checked + .slider:before {
     .profile-nav-card {
         position: static;
     }
+
+    .inner-profile-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.25rem;
+        padding-bottom: 0.5rem;
+        scrollbar-width: none;
+    }
+
+    .inner-profile-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .inner-nav-item {
+        white-space: nowrap;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.82rem;
+        border-radius: 20px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -518,5 +537,41 @@ input:checked + .slider:before {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+    }
+
+    .profile-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .btn-save-profile {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .profile-pic-container {
+        width: 90px;
+        height: 90px;
+    }
+
+    .card-header {
+        padding: 1.25rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .profile-upload-zone {
+        padding: 1.5rem 1rem;
+    }
+
+    .upload-icon {
+        font-size: 2rem;
+    }
+
+    .security-option {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
     }
 }
