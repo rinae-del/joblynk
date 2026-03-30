@@ -461,7 +461,7 @@
 }
 
 .admin-table tbody tr:hover {
-    background: rgba(0, 0, 0, 0.015);
+    background: rgba(59, 75, 166, 0.03);
 }
 
 /* Table user cell */
@@ -993,14 +993,19 @@
     .admin-table tbody tr {
         background: var(--bg-white);
         border: 1px solid var(--border);
+        border-left: 4px solid var(--accent, #3B4BA6);
         border-radius: 16px;
-        padding: 18px;
+        padding: 18px 18px 18px 16px;
         margin-bottom: 14px;
         display: flex;
         flex-direction: column;
         gap: 12px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+
+    .admin-table tbody tr:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
 
     .admin-table tbody tr:active {
@@ -1029,10 +1034,11 @@
     }
 
     .admin-table td:first-child {
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.95rem;
-        padding-bottom: 4px;
-        border-bottom: 1px solid rgba(0,0,0,0.04);
+        padding-bottom: 6px;
+        margin-bottom: 2px;
+        border-bottom: 1px solid var(--border);
     }
 
     .admin-table td:first-child::before {
@@ -1047,11 +1053,17 @@
         width: 40px;
         height: 40px;
         font-size: 0.85rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .role-tag {
+        font-size: 0.72rem;
+        padding: 4px 12px;
     }
 
     .actions-cell {
         justify-content: flex-start;
-        padding-top: 10px;
+        padding-top: 12px;
         border-top: 1px solid var(--border);
         gap: 8px;
     }
@@ -1061,6 +1073,7 @@
         height: 40px;
         border-radius: 10px;
         font-size: 0.85rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
     .table-footer {

@@ -780,64 +780,133 @@ body {
 .job-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 12px;
 }
 
 .job-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-white);
     cursor: pointer;
-    transition: all .15s;
+    transition: all .25s ease;
+    position: relative;
 }
 
 .job-item:hover {
-    background: var(--bg);
+    border-color: #C7C7D4;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
 }
 
 .job-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: .85rem;
+    font-size: .9rem;
     font-weight: 700;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
 .job-info {
     flex: 1;
     overflow: hidden;
+    min-width: 0;
 }
 
 .job-title {
-    font-size: .86rem;
-    font-weight: 600;
+    font-size: .92rem;
+    font-weight: 700;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.job-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: .72rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg);
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.job-meta-pill i {
+    font-size: .65rem;
+    color: var(--text-muted);
 }
 
 .job-company {
-    font-size: .76rem;
+    font-size: .78rem;
     color: var(--text-muted);
     margin-top: 2px;
+    display: none;
+}
+
+.job-apply-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 16px;
+    font-size: .78rem;
+    font-weight: 600;
+    font-family: var(--font);
+    background: linear-gradient(135deg, var(--accent) 0%, #5B6BD6 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 2px 6px rgba(59,75,166,0.25);
+}
+
+.job-apply-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59,75,166,0.35);
+}
+
+.job-applied-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #059669;
 }
 
 .job-badge {
     font-size: .65rem;
     font-weight: 700;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: .04em;
     flex-shrink: 0;
+    position: absolute;
+    top: 12px;
+    right: 12px;
 }
 
 .job-badge.new {
@@ -989,8 +1058,14 @@ body {
     }
 
     .job-item {
-        padding: 14px 12px;
-        border-radius: 12px;
+        padding: 16px 14px;
+        border-radius: 14px;
+        gap: 12px;
+    }
+
+    .job-avatar {
+        width: 42px;
+        height: 42px;
     }
 
     .dash-section-half {
@@ -1095,27 +1170,36 @@ body {
 
     .job-item {
         gap: 10px;
-        padding: 12px 10px;
+        padding: 14px 12px;
+        border-radius: 12px;
     }
 
     .job-avatar {
-        width: 36px;
-        height: 36px;
-        font-size: 0.75rem;
+        width: 38px;
+        height: 38px;
+        font-size: 0.78rem;
         border-radius: 10px;
     }
 
     .job-title {
-        font-size: 0.82rem;
+        font-size: 0.85rem;
     }
 
-    .job-company {
-        font-size: 0.72rem;
+    .job-meta-pill {
+        font-size: 0.68rem;
+        padding: 2px 8px;
     }
 
     .job-badge {
         font-size: 0.6rem;
         padding: 3px 8px;
+        top: 10px;
+        right: 10px;
+    }
+
+    .job-apply-btn {
+        padding: 6px 14px;
+        font-size: 0.76rem;
     }
 
     /* Sidebar user info truncation */

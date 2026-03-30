@@ -349,10 +349,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="job-avatar" style="background:linear-gradient(135deg,${color},${lighterColor})">${letter}</div>
                 <div class="job-info">
                     <div class="job-title">${job.title}</div>
-                    <div class="job-company" style="margin-bottom:6px;">${job.company} • ${job.location || ''} • ${job.type || ''}</div>
+                    <div class="job-meta">
+                        <span class="job-meta-pill"><i class="fa-solid fa-building"></i> ${job.company}</span>
+                        ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>` : ''}
+                        ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${job.type}</span>` : ''}
+                    </div>
                     ${applied
-                        ? '<span style="font-size:0.78rem; color:#059669; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Application Submitted</span>'
-                        : `<button onclick="openAppModal('${job.id}')" class="welcome-btn primary" style="padding:5px 14px; font-size:0.78rem; display:inline-block; border-radius:6px;">Apply Now</button>`
+                        ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application Submitted</span>'
+                        : `<button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply Now</button>`
                     }
                 </div>
                 ${badge}
@@ -480,14 +484,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const item = document.createElement('div');
             item.className = 'job-item';
-            item.style.cssText = 'border:1px solid var(--border); margin-bottom:6px; border-radius:10px;';
             item.innerHTML = `
-                <div class="job-avatar" style="background:linear-gradient(135deg,${color},${color}88); width:36px; height:36px; font-size:0.8rem;">${letter}</div>
+                <div class="job-avatar" style="background:linear-gradient(135deg,${color},${color}88); width:38px; height:38px; font-size:0.82rem;">${letter}</div>
                 <div class="job-info">
-                    <div class="job-title" style="font-size:0.9rem;">${jobTitle}</div>
-                    <div class="job-company" style="font-size:0.78rem;">${jobCompany} • ${getTimeAgo(app.submittedAt)}</div>
+                    <div class="job-title">${jobTitle}</div>
+                    <div class="job-meta">
+                        <span class="job-meta-pill"><i class="fa-solid fa-building"></i> ${jobCompany}</span>
+                        <span class="job-meta-pill"><i class="fa-regular fa-clock"></i> ${getTimeAgo(app.submittedAt)}</span>
+                    </div>
                 </div>
-                <span class="job-badge" style="background:${st.bg}; color:${st.color}; font-size:0.7rem;">${st.text}</span>
+                <span class="job-badge" style="background:${st.bg}; color:${st.color}; position:static;">${st.text}</span>
             `;
             appList.appendChild(item);
         });
