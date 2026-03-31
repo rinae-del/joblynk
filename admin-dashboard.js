@@ -195,6 +195,37 @@ function renderReports(reports) {
     renderAuditLog(reports);
 }
 
+window.exportReportsCSV = function() {
+    var rows = [['Category', 'Metric', 'Value']];
+    var cards = document.querySelectorAll('#reportCards .report-card');
+    cards.forEach(function(card) {
+        var label = card.querySelector('.report-card-label');
+        var value = card.querySelector('.report-card-value');
+        var category = label ? label.textContent.trim() : 'Unknown';
+        rows.push([category, 'Total', value ? value.textContent.trim() : '0']);
+
+        card.querySelectorAll('.report-bar-row').forEach(function(bar) {
+            var spans = bar.querySelectorAll('span');
+            if (spans.length >= 3) {
+                rows.push([category, spans[0].textContent.trim(), spans[2].textContent.trim()]);
+            }
+        });
+    });
+
+    var csv = rows.map(function(r) {
+        return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
+    }).join('\n');
+
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'joblynk-reports-' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Report exported');
+};
+
 function setTextById(id, text) {
     var el = document.getElementById(id);
     if (el) el.textContent = text;

@@ -662,6 +662,13 @@
     box-shadow: var(--admin-shadow-sm);
 }
 
+.report-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
 .report-card-icon {
     width: 44px;
     height: 44px;
@@ -670,11 +677,14 @@
     align-items: center;
     justify-content: center;
     font-size: 1rem;
-    margin-bottom: 14px;
+    flex-shrink: 0;
 }
 
 .report-card-data {
-    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
 }
 
 .report-card-value {
@@ -732,6 +742,62 @@
     text-align: right;
     font-weight: 600;
     flex-shrink: 0;
+}
+
+/* Reports Toolbar */
+.reports-toolbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-gradient);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--admin-transition);
+    -webkit-tap-highlight-color: transparent;
+    margin-left: auto;
+}
+
+.export-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+}
+
+/* Audit Section Header */
+.audit-section-header {
+    margin-top: 28px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.audit-section-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.audit-section-label i {
+    color: #F59E0B;
+    font-size: 0.85rem;
 }
 
 /* Audit Action Tags */
@@ -1098,6 +1164,51 @@
     .report-cards {
         grid-template-columns: 1fr;
         gap: 12px;
+    }
+
+    .report-card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .report-card-header {
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .report-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .report-card-value { font-size: 1.3rem; }
+
+    .report-bar-row {
+        font-size: 0.75rem;
+    }
+
+    .report-bar-row > span:first-child {
+        width: 66px;
+    }
+
+    /* Reports toolbar */
+    .reports-toolbar-row {
+        width: 100%;
+    }
+
+    .reports-toolbar-row .filter-select {
+        flex: 1;
+    }
+
+    .export-btn {
+        padding: 10px 16px;
+        font-size: 0.8rem;
+    }
+
+    .audit-section-header {
+        margin-top: 20px;
+        margin-bottom: 12px;
     }
 
     /* ─── Mobile Card Tables ─── */
@@ -1473,11 +1584,36 @@
     }
 
     .report-card {
-        padding: 18px;
+        padding: 16px;
         border-radius: 14px;
     }
 
-    .report-card-value { font-size: 1.4rem; }
+    .report-card-value { font-size: 1.2rem; }
+
+    .report-card-header {
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .report-card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+
+    .reports-toolbar-row {
+        flex-direction: column;
+    }
+
+    .reports-toolbar-row .filter-select {
+        width: 100%;
+    }
+
+    .export-btn {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+    }
 
     .settings-card {
         padding: 16px;
