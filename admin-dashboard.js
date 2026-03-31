@@ -1255,85 +1255,258 @@ function closeRecruiterDrawer() {
 }
 
 // ── Render Admin Applications Table ──
-function renderAdminApplications() {
+// ── Render Admin Applications (paginated + filterable) ──
+const APPS_PER_PAGE = 10;
+let currentAppsPage = 1;
+
+async function renderAdminApplications() {
     const tbody = document.getElementById('appsTableBody');
     const info = document.getElementById('appsTableInfo');
     if (!tbody) return;
 
-    fetch('api/admin/applications.php', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !Array.isArray(data.applications)) {
-                throw new Error('Failed to load applications');
+    try {
+        const res = await fetch('api/admin/applications.php', { credentials: 'include' });
+        const data = await res.json();
+
+        if (!data.success || !Array.isArray(data.applications)) {
+            throw new Error('Failed to load applications');
+        }
+
+        adminState.applications = data.applications;
+        currentAppsPage = 1;
+        updateAppStats();
+        renderAppsPage();
+        updateOverviewStats();
+
+    } catch (err) {
+        adminState.applications = [];
+        console.error('Error fetching applications:', err);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load applications</td></tr>';
+        if (info) info.textContent = 'API unavailable';
+        updateOverviewStats();
+    }
+}
+
+function updateAppStats() {
+    const apps = adminState.applications;
+    const submitted = apps.filter(a => (a.status || 'submitted').toLowerCase() === 'submitted');
+    const reviewed = apps.filter(a => ['reviewed', 'shortlisted'].includes((a.status || '').toLowerCase()));
+    const rejected = apps.filter(a => (a.status || '').toLowerCase() === 'rejected');
+
+    setTextById('statTotalApps', apps.length.toString());
+    setTextById('statSubmittedApps', submitted.length.toString());
+    setTextById('statReviewedApps', reviewed.length.toString());
+    setTextById('statRejectedApps', rejected.length.toString());
+
+    var badge = document.getElementById('appCountBadge');
+    if (badge) badge.textContent = apps.length;
+}
+
+function getFilteredApps() {
+    const search = (document.getElementById('appSearch')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('appStatusFilter')?.value || '';
+
+    return adminState.applications.filter(app => {
+        const name = ((app.first_name || '') + ' ' + (app.last_name || '') + ' ' + (app.applicant_name || '')).toLowerCase();
+        const email = (app.email || '').toLowerCase();
+        const job = (app.job_title || '').toLowerCase();
+        const company = (app.job_company || '').toLowerCase();
+        const matchSearch = !search || name.includes(search) || email.includes(search) || job.includes(search) || company.includes(search);
+        const appStatus = (app.status || 'submitted').toLowerCase();
+        const matchStatus = !statusFilter || appStatus === statusFilter;
+        return matchSearch && matchStatus;
+    });
+}
+
+window.advancedFilterApps = function() {
+    currentAppsPage = 1;
+    renderAppsPage();
+};
+
+function renderAppsPage() {
+    const tbody = document.getElementById('appsTableBody');
+    const info = document.getElementById('appsTableInfo');
+    const pagDiv = document.getElementById('appsPagination');
+    if (!tbody) return;
+
+    const filtered = getFilteredApps();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / APPS_PER_PAGE));
+    if (currentAppsPage > totalPages) currentAppsPage = totalPages;
+    const start = (currentAppsPage - 1) * APPS_PER_PAGE;
+    const pageApps = filtered.slice(start, start + APPS_PER_PAGE);
+
+    // Update badge
+    var badge = document.getElementById('appCountBadge');
+    if (badge) badge.textContent = filtered.length;
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No applications match your filters</td></tr>';
+        if (info) info.textContent = 'No results';
+        if (pagDiv) pagDiv.innerHTML = '';
+        return;
+    }
+
+    pageApps.forEach(app => {
+        const applicantName = escapeHtml(`${app.first_name || ''} ${app.last_name || ''}`.trim() || app.applicant_name || 'Unknown');
+        const safeEmail = escapeHtml(app.email || '—');
+        const statusValue = (app.status || 'submitted').toLowerCase();
+        const statusClass = { submitted: 'is-submitted', reviewed: 'is-reviewed', shortlisted: 'is-shortlisted', rejected: 'is-rejected' }[statusValue] || 'is-submitted';
+        const statusLabel = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+        const statusIcons = { submitted: 'paper-plane', reviewed: 'eye', shortlisted: 'star', rejected: 'xmark' };
+        const statusIcon = statusIcons[statusValue] || 'circle';
+
+        const hasCV = !!app.cv_name;
+        const hasCL = !!app.cl_name;
+        const docCount = (hasCV ? 1 : 0) + (hasCL ? 1 : 0);
+        const appId = parseInt(app.id);
+
+        const tr = document.createElement('tr');
+        tr.className = 'card-row card-row-apps';
+        tr.innerHTML = `
+            <td data-label="Applicant">
+                <div class="table-user">
+                    <div class="table-avatar" style="background:#DBEAFE; color:#2563EB;">${(applicantName[0] || 'U').toUpperCase()}</div>
+                    <div class="entity-block">
+                        <span class="entity-title">${applicantName}</span>
+                        <span class="entity-sub">${safeEmail}</span>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Job"><span style="font-weight:600; font-size:0.85rem;">${escapeHtml(app.job_title || 'Unknown Job')}</span></td>
+            <td data-label="Company"><span>${escapeHtml(app.job_company || '\u2014')}</span></td>
+            <td data-label="Documents">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    ${hasCV ? '<span class="document-chip success"><i class="fa-solid fa-file-lines"></i> CV</span>' : ''}
+                    ${hasCL ? '<span class="document-chip accent"><i class="fa-solid fa-envelope-open-text"></i> CL</span>' : ''}
+                    ${!hasCV && !hasCL ? '<span class="document-chip muted">None</span>' : ''}
+                </div>
+            </td>
+            <td data-label="Status"><span class="verification-badge app-status-badge ${statusClass}"><i class="fa-solid fa-${statusIcon}"></i> ${escapeHtml(statusLabel)}</span></td>
+            <td data-label="Submitted">
+                <div class="table-value">
+                    <span>${formatDate(app.created_at)}</span>
+                    <span class="table-note">${timeAgo(app.created_at)}</span>
+                </div>
+            </td>
+            <td class="actions-cell" data-label="Actions">
+                <button class="tbl-btn" title="View Details" onclick="openAppDrawer(${appId})"><i class="fa-solid fa-eye"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Footer info
+    const from = start + 1;
+    const to = Math.min(start + APPS_PER_PAGE, filtered.length);
+    if (info) {
+        const filterNote = filtered.length < adminState.applications.length ? ` (filtered from ${adminState.applications.length})` : '';
+        info.textContent = `Showing ${from}\u2013${to} of ${filtered.length} application${filtered.length !== 1 ? 's' : ''}${filterNote}`;
+    }
+
+    // Pagination
+    if (pagDiv) {
+        pagDiv.innerHTML = '';
+        if (totalPages > 1) {
+            const prevBtn = createPageBtn('<i class="fa-solid fa-chevron-left"></i>', currentAppsPage <= 1);
+            prevBtn.onclick = function() { currentAppsPage--; renderAppsPage(); };
+            pagDiv.appendChild(prevBtn);
+
+            for (let p = 1; p <= totalPages; p++) {
+                if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentAppsPage) > 1) {
+                    if (p === 3 || p === totalPages - 2) {
+                        const dots = document.createElement('span');
+                        dots.className = 'page-dots';
+                        dots.textContent = '...';
+                        pagDiv.appendChild(dots);
+                    }
+                    continue;
+                }
+                const btn = createPageBtn(p.toString(), false);
+                if (p === currentAppsPage) btn.classList.add('active-page');
+                btn.onclick = (function(page) { return function() { currentAppsPage = page; renderAppsPage(); }; })(p);
+                pagDiv.appendChild(btn);
             }
 
-            adminState.applications = data.applications;
-            tbody.innerHTML = '';
+            const nextBtn = createPageBtn('<i class="fa-solid fa-chevron-right"></i>', currentAppsPage >= totalPages);
+            nextBtn.onclick = function() { currentAppsPage++; renderAppsPage(); };
+            pagDiv.appendChild(nextBtn);
+        }
+    }
+}
 
-            if (data.applications.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No applications submitted yet</td></tr>';
-                if (info) info.textContent = 'Showing 0 applications';
-                updateOverviewStats();
-                return;
-            }
+// ── Application Detail Drawer ──
+window.openAppDrawer = function(appId) {
+    const app = adminState.applications.find(a => parseInt(a.id) === appId);
+    if (!app) return;
 
-            data.applications.forEach(app => {
-                const applicantName = escapeHtml(`${app.first_name || ''} ${app.last_name || ''}`.trim() || app.applicant_name || 'Unknown');
-                const statusValue = String(app.status || 'submitted').toLowerCase();
-                const statusClass = {
-                    submitted: 'is-submitted',
-                    reviewed: 'is-reviewed',
-                    shortlisted: 'is-shortlisted',
-                    rejected: 'is-rejected'
-                }[statusValue] || 'is-submitted';
-                const statusLabel = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
-                const tr = document.createElement('tr');
-                tr.className = 'card-row card-row-apps';
-                tr.innerHTML = `
-                    <td data-label="Applicant">
-                        <div class="table-user">
-                            <div class="table-avatar" style="background:#DBEAFE; color:#2563EB;">${(applicantName[0] || 'U').toUpperCase()}</div>
-                            <div class="entity-block">
-                                <span class="entity-title">${applicantName}</span>
-                                <small class="table-sub">${escapeHtml(app.email || '—')}</small>
-                            </div>
-                        </div>
-                    </td>
-                    <td data-label="Job">
-                        <div class="table-value">
-                            <span class="entity-title">${escapeHtml(app.job_title || 'Unknown Job')}</span>
-                            <span class="table-note">Applied role</span>
-                        </div>
-                    </td>
-                    <td data-label="Company">
-                        <div class="table-value">
-                            <span>${escapeHtml(app.job_company || '—')}</span>
-                            <span class="table-note">Hiring company</span>
-                        </div>
-                    </td>
-                    <td data-label="CV">${app.cv_name ? '<span class="document-chip success"><i class="fa-solid fa-file-lines"></i> ' + escapeHtml(app.cv_name) + '</span>' : '<span class="document-chip muted">No CV</span>'}</td>
-                    <td data-label="Cover Letter">${app.cl_name ? '<span class="document-chip accent"><i class="fa-solid fa-envelope-open-text"></i> ' + escapeHtml(app.cl_name) + '</span>' : '<span class="document-chip muted">No cover letter</span>'}</td>
-                    <td data-label="Status"><span class="verification-badge app-status-badge ${statusClass}"><i class="fa-solid fa-circle-check"></i> ${escapeHtml(statusLabel)}</span></td>
-                    <td data-label="Date">
-                        <div class="table-value">
-                            <span>${formatDate(app.created_at)}</span>
-                            <span class="table-note">Submission date</span>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+    const drawer = document.getElementById('appDrawer');
+    const overlay = document.getElementById('appDrawerOverlay');
+    const body = document.getElementById('appDrawerBody');
+    if (!drawer || !body) return;
 
-            if (info) info.textContent = `Showing ${data.applications.length} application${data.applications.length !== 1 ? 's' : ''}`;
-            updateOverviewStats();
-        })
-        .catch(err => {
-            adminState.applications = [];
-            console.error('Error fetching applications:', err);
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load applications</td></tr>';
-            if (info) info.textContent = 'API unavailable';
-            updateOverviewStats();
-        });
+    const applicantName = escapeHtml(`${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Unknown');
+    const safeEmail = escapeHtml(app.email || '—');
+    const statusValue = (app.status || 'submitted').toLowerCase();
+    const statusClass = { submitted: 'is-submitted', reviewed: 'is-reviewed', shortlisted: 'is-shortlisted', rejected: 'is-rejected' }[statusValue] || 'is-submitted';
+    const statusLabel = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+    const recruiterName = escapeHtml(`${app.recruiter_first_name || ''} ${app.recruiter_last_name || ''}`.trim() || '—');
+
+    body.innerHTML = `
+        <div class="drawer-profile">
+            <div class="drawer-avatar" style="background:#DBEAFE; color:#2563EB;">
+                ${(applicantName[0] || 'U').toUpperCase()}
+            </div>
+            <div class="drawer-profile-name">${applicantName}</div>
+            <div class="drawer-profile-email">${safeEmail}</div>
+            <div style="margin-top:10px;">
+                <span class="verification-badge app-status-badge ${statusClass}">${escapeHtml(statusLabel)}</span>
+            </div>
+        </div>
+
+        <div class="drawer-details">
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-briefcase"></i> Job</span>
+                <span class="drawer-detail-value">${escapeHtml(app.job_title || '—')}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-building"></i> Company</span>
+                <span class="drawer-detail-value">${escapeHtml(app.job_company || '—')}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-user-tie"></i> Recruiter</span>
+                <span class="drawer-detail-value">${recruiterName}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-file-lines"></i> CV</span>
+                <span class="drawer-detail-value">${app.cv_name ? '<span class="document-chip success">' + escapeHtml(app.cv_name) + '</span>' : '<span style="color:var(--text-muted)">Not attached</span>'}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</span>
+                <span class="drawer-detail-value">${app.cl_name ? '<span class="document-chip accent">' + escapeHtml(app.cl_name) + '</span>' : '<span style="color:var(--text-muted)">Not attached</span>'}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-calendar"></i> Submitted</span>
+                <span class="drawer-detail-value">${formatDate(app.created_at)}</span>
+            </div>
+        </div>
+    `;
+
+    drawer.classList.add('drawer-open');
+    if (overlay) overlay.classList.add('drawer-active');
+    document.body.style.overflow = 'hidden';
+
+    if (overlay) overlay.onclick = closeAppDrawer;
+    document.getElementById('appDrawerClose').onclick = closeAppDrawer;
+};
+
+function closeAppDrawer() {
+    var drawer = document.getElementById('appDrawer');
+    var overlay = document.getElementById('appDrawerOverlay');
+    if (drawer) drawer.classList.remove('drawer-open');
+    if (overlay) overlay.classList.remove('drawer-active');
+    document.body.style.overflow = '';
 }
 
 // ── Render Admin Documents Table ──

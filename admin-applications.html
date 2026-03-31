@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css?v=10">
-    <link rel="stylesheet" href="admin-dashboard.css?v=11">
+    <link rel="stylesheet" href="admin-dashboard.css?v=12">
     <script src="auth-guard.js?v=8" data-role="admin"></script>
 </head>
 
@@ -21,33 +21,84 @@
     <main class="main-content">
         <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Applications"}]'></nav>
 
+        <!-- ── Application Stats Banner ── -->
+        <div class="user-stats-banner">
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalApps">0</span>
+                    <span class="user-stat-label">Total Applications</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-paper-plane"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statSubmittedApps">0</span>
+                    <span class="user-stat-label">Submitted</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(126,34,206,0.1); color:#7C3AED;"><i class="fa-solid fa-list-check"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statReviewedApps">0</span>
+                    <span class="user-stat-label">Reviewed</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(239,68,68,0.1); color:#EF4444;"><i class="fa-solid fa-xmark"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statRejectedApps">0</span>
+                    <span class="user-stat-label">Rejected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Filters + Controls ── -->
         <section class="dash-section">
-            <div class="section-title-row">
-                <h2><i class="fa-solid fa-file-signature section-icon" style="color:#059669"></i> All Applications</h2>
-                <div class="table-controls">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="appSearch" placeholder="Search applications..." oninput="filterTable('appSearch','appsTableBody')">
-                    </div>
+            <div class="users-toolbar">
+                <div class="search-box search-box-full">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="appSearch" placeholder="Search by applicant, job title or company..." oninput="advancedFilterApps()">
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select" id="appStatusFilter" onchange="advancedFilterApps()">
+                        <option value="">All Status</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="shortlisted">Shortlisted</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <span class="filter-result-count" id="appCountBadge">0</span>
                 </div>
             </div>
             <div class="admin-table-wrapper">
                 <table class="admin-table">
                     <thead>
-                        <tr><th>Applicant</th><th>Job Applied For</th><th>Company</th><th>CV Attached</th><th>Cover Letter</th><th>Status</th><th>Submitted</th></tr>
+                        <tr><th>Applicant</th><th>Job</th><th>Company</th><th>Documents</th><th>Status</th><th>Submitted</th><th>Actions</th></tr>
                     </thead>
                     <tbody id="appsTableBody"></tbody>
                 </table>
             </div>
             <div class="table-footer">
-                <span class="table-info" id="appsTableInfo">Showing 0 applications</span>
+                <span class="table-info" id="appsTableInfo">Loading applications...</span>
+                <div class="table-pagination" id="appsPagination"></div>
             </div>
         </section>
     </main>
 
+    <!-- ── Application Detail Drawer ── -->
+    <div class="drawer-overlay" id="appDrawerOverlay"></div>
+    <aside class="user-drawer" id="appDrawer">
+        <div class="drawer-header">
+            <h3>Application Details</h3>
+            <button class="drawer-close" id="appDrawerClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body" id="appDrawerBody"></div>
+    </aside>
+
     <script src="components.js?v=9"></script>
     <script src="jobs-store.js?v=7"></script>
-    <script src="admin-dashboard.js?v=10"></script>
+    <script src="admin-dashboard.js?v=12"></script>
 </body>
 
 </html>

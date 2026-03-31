@@ -685,6 +685,7 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    flex: 1;
 }
 
 .report-card-value {
@@ -693,6 +694,7 @@
     color: var(--text);
     letter-spacing: -0.02em;
     display: block;
+    line-height: 1.1;
 }
 
 .report-card-label {
@@ -701,6 +703,7 @@
     color: var(--text-muted);
     display: block;
     margin-top: 2px;
+    line-height: 1.2;
 }
 
 .report-card-detail {
@@ -759,7 +762,7 @@
     padding: 10px 20px;
     border: none;
     border-radius: var(--admin-radius-sm);
-    background: var(--admin-gradient);
+    background: linear-gradient(135deg, #DC2626, #F97316);
     color: #fff;
     font-family: inherit;
     font-size: 0.82rem;
@@ -768,6 +771,11 @@
     transition: all var(--admin-transition);
     -webkit-tap-highlight-color: transparent;
     margin-left: auto;
+    white-space: nowrap;
+    text-decoration: none;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
 }
 
 .export-btn:hover {
@@ -1330,7 +1338,8 @@
         font-size: 0.82rem;
     }
 
-    .card-row-users td[data-label="Joined"] .table-value {
+    .card-row-users td:not(:first-child):not(.actions-cell) .table-value {
+        align-items: flex-end;
         text-align: right;
     }
 
@@ -1368,7 +1377,92 @@
     }
 
     /* Color-coded side stripe per table type */
-    .card-row-apps::before    { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 4px 0 0 4px; background: linear-gradient(180deg, #7C3AED, #A78BFA); }
+    .card-row-apps::before { display: none !important; }
+
+    /* ─── Application Card: redesigned mobile layout ─── */
+    .card-row-apps {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+
+    .card-row-apps td:first-child {
+        padding: 16px 16px 12px !important;
+        border-bottom: 1px solid var(--admin-border) !important;
+        background: var(--admin-surface-alt);
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    .card-row-apps td:first-child::before { display: none; }
+
+    .card-row-apps td:first-child .table-user { width: 100%; }
+
+    .card-row-apps td:first-child .table-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        font-size: 0.82rem;
+    }
+
+    .card-row-apps td:first-child .entity-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+    .card-row-apps td:first-child .entity-sub {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    .card-row-apps td:not(:first-child):not(.actions-cell) {
+        padding: 10px 16px;
+        border-bottom: 1px solid #F1F5F9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-row-apps td:not(:first-child):not(.actions-cell)::before {
+        content: attr(data-label);
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+    }
+
+    .card-row-apps td:not(:first-child):not(.actions-cell) .table-value {
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .card-row-apps td[data-label="Job"] { font-size: 0.85rem; }
+    .card-row-apps td[data-label="Company"] { font-size: 0.85rem; }
+    .card-row-apps td[data-label="Documents"] .document-chip { font-size: 0.72rem; }
+    .card-row-apps td[data-label="Status"] { font-size: 0.82rem; }
+
+    .card-row-apps td[data-label="Submitted"] .table-value span:first-child { font-size: 0.82rem; }
+    .card-row-apps td[data-label="Submitted"] .table-note { font-size: 0.68rem; }
+
+    .card-row-apps td.actions-cell {
+        padding: 12px 16px !important;
+        background: var(--admin-surface-alt);
+        border-top: 1px solid var(--admin-border) !important;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end !important;
+    }
+
+    .card-row-apps td.actions-cell::before { display: none; }
+
+    .card-row-apps td.actions-cell .tbl-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 0.85rem;
+    }
 
     /* ─── Job Card: redesigned mobile layout ─── */
     .card-row-jobs {
@@ -1421,6 +1515,11 @@
         flex-shrink: 0;
     }
 
+    .card-row-jobs td:not(:first-child):not(.actions-cell) .table-value {
+        align-items: flex-end;
+        text-align: right;
+    }
+
     .card-row-jobs td[data-label="Company"] .table-value span:first-child { font-size: 0.85rem; font-weight: 600; }
     .card-row-jobs td[data-label="Company"] .table-note { font-size: 0.72rem; }
 
@@ -1429,7 +1528,6 @@
 
     .card-row-jobs td[data-label="Status"] .job-status { font-size: 0.72rem; }
 
-    .card-row-jobs td[data-label="Posted"] .table-value { text-align: right; }
     .card-row-jobs td[data-label="Posted"] .table-value span:first-child { font-size: 0.82rem; }
     .card-row-jobs td[data-label="Posted"] .table-note { font-size: 0.68rem; }
 
@@ -1512,7 +1610,11 @@
     .card-row-recruiters td[data-label="Active Jobs"] { font-size: 0.85rem; }
     .card-row-recruiters td[data-label="Status"] { font-size: 0.82rem; }
 
-    .card-row-recruiters td[data-label="Joined"] .table-value { text-align: right; }
+    .card-row-recruiters td:not(:first-child):not(.actions-cell) .table-value {
+        align-items: flex-end;
+        text-align: right;
+    }
+
     .card-row-recruiters td[data-label="Joined"] .table-value span:first-child { font-size: 0.82rem; }
     .card-row-recruiters td[data-label="Joined"] .table-note { font-size: 0.68rem; }
 
@@ -1544,7 +1646,7 @@
         gap: 8px;
     }
 
-    .admin-table tbody td:not(.card-row-users td):not(.card-row-jobs td):not(.card-row-recruiters td)::before {
+    .admin-table tbody td:not(.card-row-users td):not(.card-row-jobs td):not(.card-row-recruiters td):not(.card-row-apps td)::before {
         content: attr(data-label);
         font-size: 0.68rem;
         font-weight: 600;
@@ -1556,7 +1658,7 @@
     }
 
     /* First cell (entity cell) – full width — non-user/job tables */
-    .admin-table tbody td:first-child:not(.card-row-users td:first-child):not(.card-row-jobs td:first-child):not(.card-row-recruiters td:first-child) {
+    .admin-table tbody td:first-child:not(.card-row-users td:first-child):not(.card-row-jobs td:first-child):not(.card-row-recruiters td:first-child):not(.card-row-apps td:first-child) {
         flex-direction: column;
         align-items: flex-start;
         padding-bottom: 10px;
