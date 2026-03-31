@@ -1366,7 +1366,7 @@
     }
 
     /* Generic card stripe — keep for non-user tables */
-    .admin-table tbody tr:not(.card-row-users):not(.card-row-jobs):not(.card-row-recruiters):not(.card-row-apps)::before {
+    .admin-table tbody tr:not(.card-row-users):not(.card-row-jobs):not(.card-row-recruiters):not(.card-row-apps):not(.card-row-docs)::before {
         content: '';
         position: absolute;
         top: 0; left: 0;
@@ -1458,6 +1458,90 @@
     .card-row-apps td.actions-cell::before { display: none; }
 
     .card-row-apps td.actions-cell .tbl-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 0.85rem;
+    }
+
+    /* ─── Document Card: redesigned mobile layout ─── */
+    .card-row-docs::before { display: none !important; }
+
+    .card-row-docs {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+
+    .card-row-docs td:first-child {
+        padding: 16px 16px 12px !important;
+        border-bottom: 1px solid var(--admin-border) !important;
+        background: var(--admin-surface-alt);
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    .card-row-docs td:first-child::before { display: none; }
+
+    .card-row-docs td:first-child .table-user { width: 100%; }
+
+    .card-row-docs td:first-child .table-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 0.82rem;
+    }
+
+    .card-row-docs td:first-child .entity-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+    .card-row-docs td:first-child .entity-sub {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    .card-row-docs td:not(:first-child):not(.actions-cell) {
+        padding: 10px 16px;
+        border-bottom: 1px solid #F1F5F9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-row-docs td:not(:first-child):not(.actions-cell)::before {
+        content: attr(data-label);
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+    }
+
+    .card-row-docs td:not(:first-child):not(.actions-cell) .table-value {
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .card-row-docs td[data-label="Owner"] { font-size: 0.85rem; }
+    .card-row-docs td[data-label="Type"] .document-chip { font-size: 0.72rem; }
+    .card-row-docs td[data-label="Updated"] .table-value span:first-child { font-size: 0.82rem; }
+    .card-row-docs td[data-label="Updated"] .table-note { font-size: 0.68rem; }
+
+    .card-row-docs td.actions-cell {
+        padding: 12px 16px !important;
+        background: var(--admin-surface-alt);
+        border-top: 1px solid var(--admin-border) !important;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end !important;
+    }
+
+    .card-row-docs td.actions-cell::before { display: none; }
+
+    .card-row-docs td.actions-cell .tbl-btn {
         width: 40px;
         height: 40px;
         border-radius: 50%;

@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css?v=10">
-    <link rel="stylesheet" href="admin-dashboard.css?v=12">
+    <link rel="stylesheet" href="admin-dashboard.css?v=13">
     <script src="auth-guard.js?v=8" data-role="admin"></script>
 </head>
 
@@ -21,43 +21,82 @@
     <main class="main-content">
         <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Documents"}]'></nav>
 
+        <!-- ── Document Stats Banner ── -->
+        <div class="user-stats-banner">
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(217,119,6,0.1); color:#D97706;"><i class="fa-solid fa-folder-open"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalDocs">0</span>
+                    <span class="user-stat-label">Total Documents</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-file-lines"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalCVs">0</span>
+                    <span class="user-stat-label">CVs / Resumes</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(126,34,206,0.1); color:#7E22CE;"><i class="fa-solid fa-envelope-open-text"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalCLs">0</span>
+                    <span class="user-stat-label">Cover Letters</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fa-solid fa-users"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statDocOwners">0</span>
+                    <span class="user-stat-label">Unique Owners</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Filters + Controls ── -->
         <section class="dash-section">
-            <div class="section-title-row">
-                <h2><i class="fa-solid fa-folder-open section-icon" style="color:#D97706"></i> All Documents</h2>
-            </div>
-
-            <div class="section-title-row" style="margin-top:20px;">
-                <h3 style="font-size:1.05rem;"><i class="fa-solid fa-file-lines" style="color:#3B82F6; margin-right:8px;"></i>CVs / Resumes</h3>
-            </div>
-            <div class="admin-table-wrapper">
-                <table class="admin-table">
-                    <thead>
-                        <tr><th>Document Name</th><th>Owner</th><th>Last Edited</th><th>Accent Color</th></tr>
-                    </thead>
-                    <tbody id="cvsTableBody"></tbody>
-                </table>
-            </div>
-
-            <div class="section-title-row" style="margin-top:32px;">
-                <h3 style="font-size:1.05rem;"><i class="fa-solid fa-envelope-open-text" style="color:#7E22CE; margin-right:8px;"></i>Cover Letters</h3>
+            <div class="users-toolbar">
+                <div class="search-box search-box-full">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="docSearch" placeholder="Search by document name or owner..." oninput="advancedFilterDocs()">
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select" id="docTypeFilter" onchange="advancedFilterDocs()">
+                        <option value="">All Types</option>
+                        <option value="cv">CVs / Resumes</option>
+                        <option value="cl">Cover Letters</option>
+                    </select>
+                    <span class="filter-result-count" id="docCountBadge">0</span>
+                </div>
             </div>
             <div class="admin-table-wrapper">
                 <table class="admin-table">
                     <thead>
-                        <tr><th>Document Name</th><th>Owner</th><th>Last Edited</th><th>Accent Color</th></tr>
+                        <tr><th>Document</th><th>Owner</th><th>Type</th><th>Updated</th><th>Actions</th></tr>
                     </thead>
-                    <tbody id="clsTableBody"></tbody>
+                    <tbody id="docsTableBody"></tbody>
                 </table>
             </div>
             <div class="table-footer">
-                <span class="table-info" id="docsTableInfo">Showing 0 documents</span>
+                <span class="table-info" id="docsTableInfo">Loading documents...</span>
+                <div class="table-pagination" id="docsPagination"></div>
             </div>
         </section>
     </main>
 
+    <!-- ── Document Detail Drawer ── -->
+    <div class="drawer-overlay" id="docDrawerOverlay"></div>
+    <aside class="user-drawer" id="docDrawer">
+        <div class="drawer-header">
+            <h3>Document Details</h3>
+            <button class="drawer-close" id="docDrawerClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body" id="docDrawerBody"></div>
+    </aside>
+
     <script src="components.js?v=9"></script>
     <script src="jobs-store.js?v=7"></script>
-    <script src="admin-dashboard.js?v=12"></script>
+    <script src="admin-dashboard.js?v=13"></script>
 </body>
 
 </html>

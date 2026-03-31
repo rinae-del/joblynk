@@ -41,10 +41,7 @@
                 { key: 'settings',     icon: 'fa-solid fa-gear',           label: 'Settings',     href: 'admin-settings.html' },
             ],
             userIcon: { icon: 'fa-solid fa-shield-halved', bg: 'rgba(220,38,38,0.2)', color: '#FCA5A5' },
-            bottomLinks: [
-                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Job Seeker View', href: 'dashboard.html' },
-                { icon: 'fa-solid fa-user-tie',                 label: 'Recruiter View',  href: 'recruiter-overview.html' },
-            ],
+            bottomLinks: [],
             ctaButton: null,
         },
         recruiter: {

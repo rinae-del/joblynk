@@ -1510,74 +1510,251 @@ function closeAppDrawer() {
 }
 
 // ── Render Admin Documents Table ──
-function renderAdminDocuments() {
-    const cvsBody = document.getElementById('cvsTableBody');
-    const clsBody = document.getElementById('clsTableBody');
+// ── Render Admin Documents (paginated + filterable) ──
+const DOCS_PER_PAGE = 10;
+let currentDocsPage = 1;
+
+async function renderAdminDocuments() {
+    const tbody = document.getElementById('docsTableBody');
     const info = document.getElementById('docsTableInfo');
+    if (!tbody) return;
 
-    fetch('api/admin/documents.php', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !Array.isArray(data.documents)) {
-                throw new Error('Failed to load documents');
-            }
+    try {
+        const res = await fetch('api/admin/documents.php', { credentials: 'include' });
+        const data = await res.json();
 
-            adminState.documents = data.documents;
-            const cvs = data.documents.filter(doc => doc.doc_type === 'cv');
-            const cls = data.documents.filter(doc => doc.doc_type === 'cl');
+        if (!data.success || !Array.isArray(data.documents)) {
+            throw new Error('Failed to load documents');
+        }
 
-            if (cvsBody) {
-                cvsBody.innerHTML = '';
-                if (cvs.length === 0) {
-                    cvsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No CVs created yet</td></tr>';
-                } else {
-                    cvs.forEach(cv => {
-                        const accent = escapeHtml(cv.accent_color || '#3B4BA6');
-                        const ownerName = escapeHtml(`${cv.first_name || ''} ${cv.last_name || ''}`.trim() || 'Unknown');
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="font-weight:600;">${escapeHtml(cv.name || 'Untitled CV')}</td>
-                            <td data-label="Owner">${ownerName}</td>
-                            <td data-label="Updated">${formatDate(cv.updated_at || cv.created_at)}</td>
-                            <td data-label="Color"><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${accent}; vertical-align:middle;"></span> <code style="font-size:0.8rem;">${accent}</code></td>
-                        `;
-                        cvsBody.appendChild(tr);
-                    });
+        adminState.documents = data.documents;
+        currentDocsPage = 1;
+        updateDocStats();
+        renderDocsPage();
+        updateOverviewStats();
+
+    } catch (err) {
+        adminState.documents = [];
+        console.error('Error fetching documents:', err);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load documents</td></tr>';
+        if (info) info.textContent = 'API unavailable';
+        updateOverviewStats();
+    }
+}
+
+function updateDocStats() {
+    const docs = adminState.documents;
+    const cvs = docs.filter(d => d.doc_type === 'cv');
+    const cls = docs.filter(d => d.doc_type === 'cl');
+    const owners = new Set(docs.map(d => d.email)).size;
+
+    setTextById('statTotalDocs', docs.length.toString());
+    setTextById('statTotalCVs', cvs.length.toString());
+    setTextById('statTotalCLs', cls.length.toString());
+    setTextById('statDocOwners', owners.toString());
+
+    var badge = document.getElementById('docCountBadge');
+    if (badge) badge.textContent = docs.length;
+}
+
+function getFilteredDocs() {
+    const search = (document.getElementById('docSearch')?.value || '').toLowerCase();
+    const typeFilter = document.getElementById('docTypeFilter')?.value || '';
+
+    return adminState.documents.filter(doc => {
+        const name = (doc.name || '').toLowerCase();
+        const owner = ((doc.first_name || '') + ' ' + (doc.last_name || '')).toLowerCase();
+        const email = (doc.email || '').toLowerCase();
+        const matchSearch = !search || name.includes(search) || owner.includes(search) || email.includes(search);
+        const matchType = !typeFilter || doc.doc_type === typeFilter;
+        return matchSearch && matchType;
+    });
+}
+
+window.advancedFilterDocs = function() {
+    currentDocsPage = 1;
+    renderDocsPage();
+};
+
+function renderDocsPage() {
+    const tbody = document.getElementById('docsTableBody');
+    const info = document.getElementById('docsTableInfo');
+    const pagDiv = document.getElementById('docsPagination');
+    if (!tbody) return;
+
+    const filtered = getFilteredDocs();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / DOCS_PER_PAGE));
+    if (currentDocsPage > totalPages) currentDocsPage = totalPages;
+    const start = (currentDocsPage - 1) * DOCS_PER_PAGE;
+    const pageDocs = filtered.slice(start, start + DOCS_PER_PAGE);
+
+    var badge = document.getElementById('docCountBadge');
+    if (badge) badge.textContent = filtered.length;
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No documents match your filters</td></tr>';
+        if (info) info.textContent = 'No results';
+        if (pagDiv) pagDiv.innerHTML = '';
+        return;
+    }
+
+    const typeStyles = {
+        cv: { icon: 'fa-solid fa-file-lines', bg: 'rgba(59,130,246,0.1)', color: '#3B82F6', label: 'CV / Resume' },
+        cl: { icon: 'fa-solid fa-envelope-open-text', bg: 'rgba(126,34,206,0.1)', color: '#7E22CE', label: 'Cover Letter' },
+    };
+
+    pageDocs.forEach(doc => {
+        const docName = escapeHtml(doc.name || 'Untitled');
+        const ownerName = escapeHtml(`${doc.first_name || ''} ${doc.last_name || ''}`.trim() || 'Unknown');
+        const safeEmail = escapeHtml(doc.email || '—');
+        const accent = escapeHtml(doc.accent_color || (doc.doc_type === 'cv' ? '#3B4BA6' : '#0F766E'));
+        const ts = typeStyles[doc.doc_type] || typeStyles.cv;
+        const docId = parseInt(doc.id);
+
+        const tr = document.createElement('tr');
+        tr.className = 'card-row card-row-docs';
+        tr.innerHTML = `
+            <td data-label="Document">
+                <div class="table-user">
+                    <div class="table-avatar" style="background:${ts.bg}; color:${ts.color};"><i class="${ts.icon}"></i></div>
+                    <div class="entity-block">
+                        <span class="entity-title">${docName}</span>
+                        <span class="entity-sub"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${accent}; vertical-align:middle; margin-right:4px;"></span>${accent}</span>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Owner">
+                <div class="table-value">
+                    <span>${ownerName}</span>
+                    <span class="table-note">${safeEmail}</span>
+                </div>
+            </td>
+            <td data-label="Type"><span class="document-chip ${doc.doc_type === 'cv' ? 'success' : 'accent'}"><i class="${ts.icon}" style="font-size:0.7rem;"></i> ${ts.label}</span></td>
+            <td data-label="Updated">
+                <div class="table-value">
+                    <span>${formatDate(doc.updated_at || doc.created_at)}</span>
+                    <span class="table-note">${timeAgo(doc.updated_at || doc.created_at)}</span>
+                </div>
+            </td>
+            <td class="actions-cell" data-label="Actions">
+                <button class="tbl-btn" title="View Details" onclick="openDocDrawer(${docId})"><i class="fa-solid fa-eye"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Footer info
+    const from = start + 1;
+    const to = Math.min(start + DOCS_PER_PAGE, filtered.length);
+    if (info) {
+        const filterNote = filtered.length < adminState.documents.length ? ` (filtered from ${adminState.documents.length})` : '';
+        info.textContent = `Showing ${from}\u2013${to} of ${filtered.length} document${filtered.length !== 1 ? 's' : ''}${filterNote}`;
+    }
+
+    // Pagination
+    if (pagDiv) {
+        pagDiv.innerHTML = '';
+        if (totalPages > 1) {
+            const prevBtn = createPageBtn('<i class="fa-solid fa-chevron-left"></i>', currentDocsPage <= 1);
+            prevBtn.onclick = function() { currentDocsPage--; renderDocsPage(); };
+            pagDiv.appendChild(prevBtn);
+
+            for (let p = 1; p <= totalPages; p++) {
+                if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentDocsPage) > 1) {
+                    if (p === 3 || p === totalPages - 2) {
+                        const dots = document.createElement('span');
+                        dots.className = 'page-dots';
+                        dots.textContent = '...';
+                        pagDiv.appendChild(dots);
+                    }
+                    continue;
                 }
+                const btn = createPageBtn(p.toString(), false);
+                if (p === currentDocsPage) btn.classList.add('active-page');
+                btn.onclick = (function(page) { return function() { currentDocsPage = page; renderDocsPage(); }; })(p);
+                pagDiv.appendChild(btn);
             }
 
-            if (clsBody) {
-                clsBody.innerHTML = '';
-                if (cls.length === 0) {
-                    clsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No cover letters created yet</td></tr>';
-                } else {
-                    cls.forEach(cl => {
-                        const accent = escapeHtml(cl.accent_color || '#0F766E');
-                        const ownerName = escapeHtml(`${cl.first_name || ''} ${cl.last_name || ''}`.trim() || 'Unknown');
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="font-weight:600;">${escapeHtml(cl.name || 'Untitled Cover Letter')}</td>
-                            <td data-label="Owner">${ownerName}</td>
-                            <td data-label="Updated">${formatDate(cl.updated_at || cl.created_at)}</td>
-                            <td data-label="Color"><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${accent}; vertical-align:middle;"></span> <code style="font-size:0.8rem;">${accent}</code></td>
-                        `;
-                        clsBody.appendChild(tr);
-                    });
-                }
-            }
+            const nextBtn = createPageBtn('<i class="fa-solid fa-chevron-right"></i>', currentDocsPage >= totalPages);
+            nextBtn.onclick = function() { currentDocsPage++; renderDocsPage(); };
+            pagDiv.appendChild(nextBtn);
+        }
+    }
+}
 
-            const total = data.documents.length;
-            if (info) info.textContent = `Showing ${total} document${total !== 1 ? 's' : ''} (${cvs.length} CV${cvs.length !== 1 ? 's' : ''}, ${cls.length} cover letter${cls.length !== 1 ? 's' : ''})`;
-            updateOverviewStats();
-        })
-        .catch(err => {
-            adminState.documents = [];
-            console.error('Error fetching documents:', err);
-            if (cvsBody) cvsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:#DC2626;">Failed to load documents</td></tr>';
-            if (clsBody) clsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:#DC2626;">Failed to load documents</td></tr>';
-            if (info) info.textContent = 'API unavailable';
-            updateOverviewStats();
-        });
+// ── Document Detail Drawer ──
+window.openDocDrawer = function(docId) {
+    const doc = adminState.documents.find(d => parseInt(d.id) === docId);
+    if (!doc) return;
+
+    const drawer = document.getElementById('docDrawer');
+    const overlay = document.getElementById('docDrawerOverlay');
+    const body = document.getElementById('docDrawerBody');
+    if (!drawer || !body) return;
+
+    const docName = escapeHtml(doc.name || 'Untitled');
+    const ownerName = escapeHtml(`${doc.first_name || ''} ${doc.last_name || ''}`.trim() || 'Unknown');
+    const safeEmail = escapeHtml(doc.email || '—');
+    const accent = escapeHtml(doc.accent_color || (doc.doc_type === 'cv' ? '#3B4BA6' : '#0F766E'));
+    const isCV = doc.doc_type === 'cv';
+    const typeLabel = isCV ? 'CV / Resume' : 'Cover Letter';
+    const typeIcon = isCV ? 'fa-solid fa-file-lines' : 'fa-solid fa-envelope-open-text';
+    const typeBg = isCV ? 'rgba(59,130,246,0.1)' : 'rgba(126,34,206,0.1)';
+    const typeColor = isCV ? '#3B82F6' : '#7E22CE';
+
+    body.innerHTML = `
+        <div class="drawer-profile">
+            <div class="drawer-avatar" style="background:${typeBg}; color:${typeColor}; border-radius:14px;">
+                <i class="${typeIcon}" style="font-size:1.3rem;"></i>
+            </div>
+            <div class="drawer-profile-name">${docName}</div>
+            <div class="drawer-profile-email">${typeLabel}</div>
+        </div>
+
+        <div class="drawer-details">
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-fingerprint"></i> ID</span>
+                <span class="drawer-detail-value">#${parseInt(doc.id)}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-user"></i> Owner</span>
+                <span class="drawer-detail-value">${ownerName}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-envelope"></i> Email</span>
+                <span class="drawer-detail-value">${safeEmail}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-palette"></i> Accent Color</span>
+                <span class="drawer-detail-value"><span style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${accent}; vertical-align:middle; margin-right:6px; border:1px solid rgba(0,0,0,0.1);"></span>${accent}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-calendar-plus"></i> Created</span>
+                <span class="drawer-detail-value">${formatDate(doc.created_at)}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-clock-rotate-left"></i> Last Updated</span>
+                <span class="drawer-detail-value">${formatDate(doc.updated_at || doc.created_at)}</span>
+            </div>
+        </div>
+    `;
+
+    drawer.classList.add('drawer-open');
+    if (overlay) overlay.classList.add('drawer-active');
+    document.body.style.overflow = 'hidden';
+
+    if (overlay) overlay.onclick = closeDocDrawer;
+    document.getElementById('docDrawerClose').onclick = closeDocDrawer;
+};
+
+function closeDocDrawer() {
+    var drawer = document.getElementById('docDrawer');
+    var overlay = document.getElementById('docDrawerOverlay');
+    if (drawer) drawer.classList.remove('drawer-open');
+    if (overlay) overlay.classList.remove('drawer-active');
+    document.body.style.overflow = '';
 }
 
 // ── Admin User Management ──
