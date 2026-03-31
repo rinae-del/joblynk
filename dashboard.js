@@ -6,25 +6,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const $ = id => document.getElementById(id);
 
     // ============================
-    // SIDEBAR MOBILE TOGGLE
+    // SMOOTH SCROLL NAV (for hash links in sidebar)
     // ============================
-    const sidebar = $('sidebar');
-    const overlay = $('sidebarOverlay');
-    const hamburger = $('btnHamburger');
-    const hamburgerTop = $('btnHamburgerTop');
+    document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (typeof window.closeMobileSidebar === 'function') window.closeMobileSidebar();
+            }
+        });
+    });
 
-    function toggleSidebar() {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('active');
-    }
-    function closeSidebar() {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-    }
-
-    hamburger?.addEventListener('click', toggleSidebar);
-    hamburgerTop?.addEventListener('click', toggleSidebar);
-    overlay?.addEventListener('click', closeSidebar);
+    // Also handle bottom tab bar hash links
+    document.addEventListener('click', (e) => {
+        const tabLink = e.target.closest('.btab-item[href^="#"]');
+        if (tabLink) {
+            const target = document.querySelector(tabLink.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    });
 
     // ============================
     // SAVED CVs & COVER LETTERS
@@ -289,21 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close action menus on outside click
     document.addEventListener('click', () => {
         document.querySelectorAll('.card-action-menu.open').forEach(m => m.classList.remove('open'));
-    });
-
-    // ============================
-    // SMOOTH SCROLL NAV
-    // ============================
-    document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const target = document.querySelector(link.getAttribute('href'));
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-            }
-        });
     });
 
     // ============================

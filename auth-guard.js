@@ -14,7 +14,8 @@ const _authScript = document.currentScript || document.querySelector('script[src
 (async function authGuard() {
     try {
         const res = await fetch('api/auth/session.php', {
-            credentials: 'include'
+            credentials: 'include',
+            cache: 'no-store'
         });
 
         if (!res.ok) {

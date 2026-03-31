@@ -904,6 +904,14 @@ textarea.form-control {
     width: 40%;
 }
 
+.cv-mini-line.w30 {
+    width: 30%;
+}
+
+.cv-mini-line.w90 {
+    width: 90%;
+}
+
 .cv-mini-line.w100 {
     width: 100%;
 }
@@ -1724,7 +1732,139 @@ textarea.form-control {
 
     .main-content {
         margin-left: 0;
-        padding: 72px 20px 40px;
+        padding: 72px 20px 100px;
+    }
+
+    /* ── Bottom Tab Bar (seeker dashboard) ── */
+    .btab-bar {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+        border-top: 1px solid rgba(255,255,255,.06);
+        z-index: 800;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 8px;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .btab-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 8px 12px;
+        color: rgba(255,255,255,.45);
+        text-decoration: none;
+        font-size: 0.62rem;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all .2s;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: var(--font);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btab-item i {
+        font-size: 1.1rem;
+    }
+
+    .btab-item.btab-active {
+        color: #818CF8;
+    }
+
+    .btab-item.btab-active i {
+        filter: drop-shadow(0 0 6px rgba(129,140,248,.4));
+    }
+
+    /* More sheet */
+    .btab-more-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 850;
+    }
+
+    .btab-more-overlay.btab-overlay-active {
+        display: block;
+    }
+
+    .btab-more-sheet {
+        display: block;
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        background: #1E293B;
+        border-radius: 20px 20px 0 0;
+        z-index: 860;
+        padding: 20px 20px 32px;
+        transition: bottom .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    .btab-more-sheet.btab-sheet-open {
+        bottom: 0;
+    }
+
+    .btab-more-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        color: rgba(255,255,255,.85);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .btab-more-close {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.08);
+        border: none;
+        color: rgba(255,255,255,.6);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .9rem;
+    }
+
+    .btab-more-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .btab-more-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 8px;
+        background: rgba(255,255,255,.06);
+        border-radius: 14px;
+        color: rgba(255,255,255,.6);
+        text-decoration: none;
+        font-size: .75rem;
+        font-weight: 600;
+        transition: all .2s;
+    }
+
+    .btab-more-item i {
+        font-size: 1.2rem;
+    }
+
+    .btab-more-item.btab-more-active {
+        background: rgba(129,140,248,.15);
+        color: #818CF8;
     }
 
     .dash-row {

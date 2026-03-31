@@ -1,104 +1,39 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joblynk â€“ Dashboard</title>
+    <title>Joblynk – Dashboard</title>
     <meta name="description" content="Manage your CVs, job applications and more from your Joblynk dashboard.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=10">
-    <script src="auth-guard.js?v=8"></script>
+    <link rel="stylesheet" href="dashboard.css?v=11">
+    <script src="auth-guard.js?v=9"></script>
 </head>
 
 <body>
-    <!-- ========== SIDEBAR ========== -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-top">
-            <div class="sidebar-logo">
-                <span class="logo-text">Joblynk</span>
-                <button class="sidebar-help" title="Help"><i class="fa-regular fa-circle-question"></i></button>
-            </div>
-            <a href="cv-builder.html" class="sidebar-new-btn" id="btnNewDoc">
-                <i class="fa-solid fa-plus"></i> New CV
-            </a>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item active" id="navDashboard">
-                <i class="fa-solid fa-house"></i> <span>Dashboard</span>
-            </a>
-            <a href="#sectionCvs" class="nav-item" id="navCvs">
-                <i class="fa-regular fa-file-lines"></i> <span>CVs</span>
-            </a>
-            <a href="#sectionCoverLetters" class="nav-item" id="navCoverLetters">
-                <i class="fa-solid fa-envelope-open-text"></i> <span>Cover Letters</span>
-            </a>
-            <a href="#sectionJobs" class="nav-item" id="navJobs">
-                <i class="fa-solid fa-briefcase"></i> <span>Jobs</span>
-            </a>
-            <a href="#sectionApps" class="nav-item" id="navApps">
-                <i class="fa-regular fa-rectangle-list"></i> <span>Applications</span>
-            </a>
-            <a href="profile.html" class="nav-item" id="navProfile">
-                <i class="fa-solid fa-user-gear"></i> <span>My Profile</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-bottom">
-            <div class="sidebar-user">
-                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
-                <div class="user-info">
-                    <span class="user-name" data-user-name>Loading...</span>
-                    <span class="user-email" data-user-email></span>
-                </div>
-            </div>
-            <a href="admin-overview.html" class="nav-item">
-                <i class="fa-solid fa-shield-halved"></i> <span>Super Admin</span>
-            </a>
-            <a href="recruiter-overview.html" class="nav-item">
-                <i class="fa-solid fa-user-tie"></i> <span>For Recruiters</span>
-            </a>
-            <a href="#" class="nav-item" id="navSignOut" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).then(()=>window.location.href='sign-out.html');">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sign Out</span>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Mobile hamburger -->
-    <button class="mobile-hamburger" id="btnHamburger"><i class="fa-solid fa-bars"></i></button>
-    <div class="mobile-topbar" id="mobileTopbar">
-        <div class="topbar-brand">
-            <span class="topbar-logo">Joblynk</span>
-            <span class="topbar-badge">Dashboard</span>
-        </div>
-        <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>
-    </div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Component placeholders — rendered by components.js -->
+    <div id="app-sidebar" data-role="seeker" data-active="dashboard"></div>
+    <div id="app-topbar" data-label="Dashboard"></div>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
 
         <!-- Breadcrumb -->
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-            <a href="index.html" class="breadcrumb-link">Home</a>
-            <span class="breadcrumb-sep">/</span>
-            <span class="breadcrumb-current">Dashboard</span>
-        </nav>
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Home","href":"index.html"},{"label":"Dashboard"}]'></nav>
 
-        <!-- â”€â”€ Welcome Hero â”€â”€ -->
+        <!-- ── Welcome Hero ── -->
         <section class="welcome-hero">
             <div class="welcome-text">
                 <h1>Welcome to <span class="gradient-text">Joblynk</span></h1>
-                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role â€” all in one place.</p>
+                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role — all in one place.</p>
             </div>
             <div class="welcome-actions">
                 <a href="cv-builder.html" class="welcome-btn primary"><i class="fa-solid fa-plus"></i> Create a CV</a>
                 <a href="cover-letter.html" class="welcome-btn primary"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</a>
                 <a href="#sectionJobs" class="welcome-btn secondary"><i class="fa-solid fa-compass"></i> Browse Jobs</a>
-            </div>
             </div>
             <div class="welcome-stats">
                 <div class="stat-item">
@@ -120,7 +55,7 @@
             </div>
         </section>
 
-        <!-- â”€â”€ Section: CVs â”€â”€ -->
+        <!-- ── Section: CVs ── -->
         <section class="dash-section" id="sectionCvs">
             <div class="section-title-row">
                 <h2><i class="fa-regular fa-file-lines section-icon"></i> My CVs</h2>
@@ -139,7 +74,7 @@
             </div>
         </section>
 
-        <!-- â”€â”€ Section: Cover Letters â”€â”€ -->
+        <!-- ── Section: Cover Letters ── -->
         <section class="dash-section" id="sectionCoverLetters">
             <div class="section-title-row">
                 <h2><i class="fa-solid fa-envelope-open-text section-icon"></i> My Cover Letters</h2>
@@ -160,7 +95,7 @@
 
         <!-- Two-column row for Jobs & Applications -->
         <div class="dash-row">
-            <!-- â”€â”€ Section: Jobs â”€â”€ -->
+            <!-- ── Section: Jobs ── -->
             <section class="dash-section dash-section-half" id="sectionJobs">
                 <div class="section-title-row">
                     <h2><i class="fa-solid fa-briefcase section-icon"></i> Jobs</h2>
@@ -172,7 +107,7 @@
                 </div>
             </section>
 
-            <!-- â”€â”€ Section: Applications â”€â”€ -->
+            <!-- ── Section: Applications ── -->
             <section class="dash-section dash-section-half" id="sectionApps">
                 <div class="section-title-row">
                     <h2><i class="fa-regular fa-rectangle-list section-icon"></i> Applications</h2>
@@ -228,8 +163,9 @@
         </div>
     </div>
 
+    <script src="components.js?v=10"></script>
     <script src="jobs-store.js?v=9"></script>
-    <script src="dashboard.js?v=9"></script>
+    <script src="dashboard.js?v=10"></script>
 </body>
 
 </html>

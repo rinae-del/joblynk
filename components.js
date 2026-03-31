@@ -13,6 +13,34 @@
 
     // ── Navigation definitions ──
     const NAV = {
+        seeker: {
+            badge: null,
+            sidebarClass: '',
+            topbarLabel: 'Dashboard',
+            items: [
+                { id: 'navDashboard',    key: 'dashboard',     icon: 'fa-solid fa-house',               label: 'Dashboard',      href: 'dashboard.html' },
+                { id: 'navCvs',          key: 'cvs',           icon: 'fa-regular fa-file-lines',        label: 'CVs',            href: '#sectionCvs' },
+                { id: 'navCoverLetters', key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text',  label: 'Cover Letters',  href: '#sectionCoverLetters' },
+                { id: 'navJobs',         key: 'jobs',          icon: 'fa-solid fa-briefcase',           label: 'Jobs',           href: '#sectionJobs' },
+                { id: 'navApps',         key: 'applications',  icon: 'fa-regular fa-rectangle-list',    label: 'Applications',   href: '#sectionApps' },
+                { id: 'navProfile',      key: 'profile',       icon: 'fa-solid fa-user-gear',           label: 'My Profile',     href: 'profile.html' },
+            ],
+            tabBarItems: [
+                { key: 'dashboard',     icon: 'fa-solid fa-house',              label: 'Home',     href: 'dashboard.html' },
+                { key: 'cvs',           icon: 'fa-regular fa-file-lines',       label: 'CVs',      href: '#sectionCvs' },
+                { key: 'jobs',          icon: 'fa-solid fa-briefcase',          label: 'Jobs',     href: '#sectionJobs' },
+                { key: 'applications',  icon: 'fa-regular fa-rectangle-list',   label: 'Apps',     href: '#sectionApps' },
+            ],
+            moreItems: [
+                { key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text', label: 'Cover Letters', href: '#sectionCoverLetters' },
+                { key: 'profile',       icon: 'fa-solid fa-user-gear',          label: 'My Profile',    href: 'profile.html' },
+            ],
+            userIcon: { icon: 'fa-solid fa-user', bg: 'rgba(79,70,229,0.15)', color: '#818CF8' },
+            bottomLinks: [
+                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Sign Out', href: '#', id: 'navSignOut', signOut: true },
+            ],
+            ctaButton: { icon: 'fa-solid fa-plus', label: 'New CV', href: 'cv-builder.html', id: 'btnNewDoc' },
+        },
         admin: {
             badge: { text: 'ADMIN', class: 'admin-badge-logo' },
             sidebarClass: 'admin-sidebar',
@@ -103,20 +131,27 @@
             `<a href="${esc(item.href)}" class="nav-item${item.key === activeKey ? ' active' : ''}" id="${item.id}"><i class="${item.icon}"></i> <span>${esc(item.label)}</span></a>`
         ).join('\n            ');
 
-        const bottomLinks = cfg.bottomLinks.map(link =>
-            `<a href="${esc(link.href)}" class="nav-item"><i class="${link.icon}"></i> <span>${esc(link.label)}</span></a>`
-        ).join('\n            ');
+        const bottomLinks = cfg.bottomLinks.map(link => {
+            if (link.signOut) {
+                return `<a href="#" class="nav-item" id="${link.id || ''}" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).then(()=>window.location.href='sign-out.html');"><i class="${link.icon}"></i> <span>${esc(link.label)}</span></a>`;
+            }
+            return `<a href="${esc(link.href)}" class="nav-item"${link.id ? ' id="' + link.id + '"' : ''}><i class="${link.icon}"></i> <span>${esc(link.label)}</span></a>`;
+        }).join('\n            ');
 
         const ctaHtml = cfg.ctaButton
             ? `<a href="${esc(cfg.ctaButton.href)}" class="sidebar-new-btn" id="${cfg.ctaButton.id}"><i class="${cfg.ctaButton.icon}"></i> ${esc(cfg.ctaButton.label)}</a>`
             : '';
 
+        const badgeHtml = cfg.badge
+            ? `<span class="${cfg.badge.class}">${esc(cfg.badge.text)}</span>`
+            : '';
+
         const html = `
-    <aside class="sidebar ${cfg.sidebarClass}" id="sidebar">
+    <aside class="sidebar ${cfg.sidebarClass}" id="sidebar" data-role="${esc(role)}">
         <div class="sidebar-top">
             <div class="sidebar-logo">
                 <span class="logo-text">Joblynk</span>
-                <span class="${cfg.badge.class}">${esc(cfg.badge.text)}</span>
+                ${badgeHtml}
             </div>
             ${ctaHtml}
         </div>
@@ -163,7 +198,8 @@
         const sidebarEl = document.getElementById('sidebar');
         if (!sidebarEl) return;
 
-        const role = sidebarEl.classList.contains('admin-sidebar') ? 'admin' : 'recruiter';
+        const role = sidebarEl.classList.contains('admin-sidebar') ? 'admin'
+                   : sidebarEl.dataset.role || 'recruiter';
         const cfg = NAV[role];
         if (!cfg || !cfg.tabBarItems) return;
 
