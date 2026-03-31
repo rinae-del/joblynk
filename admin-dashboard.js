@@ -548,7 +548,6 @@ function renderUsersPage() {
         const role = roleMap[user.role] || { label: escapeHtml(user.role), cls: 'seeker' };
 
         const verified = parseInt(user.email_verified);
-        const statusDot = verified ? 'active' : 'suspended';
         const statusText = verified ? 'Verified' : 'Unverified';
 
         const isSelfOrAdmin = user.role === 'admin';
@@ -573,7 +572,7 @@ function renderUsersPage() {
                 </div>
             </td>
             <td data-label="Role"><span class="role-tag ${role.cls}">${role.label}</span></td>
-            <td data-label="Status"><span class="status-dot ${statusDot}"></span> ${statusText}</td>
+            <td data-label="Status"><span class="verification-badge ${verified ? 'verified' : 'pending'}"><i class="fa-solid fa-${verified ? 'circle-check' : 'clock'}"></i> ${statusText}</span></td>
             <td data-label="Joined">
                 <div class="table-value">
                     <span>${formatDate(user.created_at)}</span>
@@ -664,86 +663,251 @@ function formatDate(dateStr) {
     return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 }
 
-// ── Render Admin Jobs Table ──
-function renderAdminJobs() {
+// ── Render Admin Jobs Table (with pagination + advanced filter) ──
+const JOBS_PER_PAGE = 10;
+let currentJobsPage = 1;
+
+async function renderAdminJobs() {
     const tbody = document.getElementById('jobsTableBody');
     const info = document.getElementById('jobsTableInfo');
     if (!tbody) return;
 
-    fetch('api/admin/jobs.php', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !Array.isArray(data.jobs)) {
-                throw new Error('Failed to load jobs');
-            }
+    try {
+        const res = await fetch('api/admin/jobs.php', { credentials: 'include' });
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.jobs)) {
+            throw new Error('Failed to load jobs');
+        }
 
-            adminState.jobs = data.jobs;
-            tbody.innerHTML = '';
-
-            if (data.jobs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No job listings yet</td></tr>';
-                if (info) info.textContent = 'Showing 0 jobs';
-                updateOverviewStats();
-                return;
-            }
-
-            data.jobs.forEach(job => {
-                const statusClass = job.status === 'active' ? 'active' : 'closed';
-                const recruiterName = escapeHtml(`${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown recruiter');
-                const jobId = parseInt(job.id);
-                const applicantCount = parseInt(job.applicant_count, 10) || 0;
-                const tr = document.createElement('tr');
-                tr.className = 'card-row card-row-jobs';
-                tr.innerHTML = `
-                    <td data-label="Job">
-                        <div class="entity-block">
-                            <span class="entity-title">${escapeHtml(job.title)}</span>
-                            <div class="entity-meta">
-                                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || 'Remote')}</span>
-                                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escapeHtml(job.type || 'Full-time')}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td data-label="Company">
-                        <div class="table-value">
-                            <span>${escapeHtml(job.company || '—')}</span>
-                            <span class="table-note">${recruiterName}</span>
-                        </div>
-                    </td>
-                    <td data-label="Applicants">
-                        <div class="table-value">
-                            <span class="table-metric">${applicantCount}</span>
-                            <span class="table-note">candidate${applicantCount === 1 ? '' : 's'}</span>
-                        </div>
-                    </td>
-                    <td data-label="Status"><span class="job-status ${statusClass}">${job.status === 'active' ? 'Active' : 'Closed'}</span></td>
-                    <td data-label="Posted">
-                        <div class="table-value">
-                            <span>${formatDate(job.created_at)}</span>
-                            <span class="table-note">Recruiter listing</span>
-                        </div>
-                    </td>
-                    <td class="actions-cell" data-label="Actions">
-                        <button class="tbl-btn" title="View" onclick="adminViewJob(${jobId})"><i class="fa-solid fa-eye"></i></button>
-                        <button class="tbl-btn danger" title="Remove" onclick="adminDeleteJob(${jobId})"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            if (info) info.textContent = `Showing ${data.jobs.length} job${data.jobs.length !== 1 ? 's' : ''}`;
-            updateOverviewStats();
-        })
-        .catch(err => {
-            adminState.jobs = [];
-            console.error('Error fetching jobs:', err);
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load jobs</td></tr>';
-            if (info) info.textContent = 'API unavailable';
-            updateOverviewStats();
-        });
+        adminState.jobs = data.jobs;
+        updateJobPageStats();
+        renderJobsPage();
+        updateOverviewStats();
+    } catch (err) {
+        adminState.jobs = [];
+        console.error('Error fetching jobs:', err);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load jobs</td></tr>';
+        if (info) info.textContent = 'API unavailable';
+        updateOverviewStats();
+    }
 }
 
-window.adminViewJob = function(jobId) {
+function updateJobPageStats() {
+    const jobs = adminState.jobs;
+    const active = jobs.filter(j => j.status === 'active');
+    const closed = jobs.filter(j => j.status !== 'active');
+    const totalApplicants = jobs.reduce((sum, j) => sum + (parseInt(j.applicant_count, 10) || 0), 0);
+
+    setTextById('statTotalJobs', jobs.length.toString());
+    setTextById('statActiveJobs', active.length.toString());
+    setTextById('statClosedJobs', closed.length.toString());
+    setTextById('statTotalApplicants', totalApplicants.toString());
+
+    var badge = document.getElementById('jobCountBadge');
+    if (badge) badge.textContent = jobs.length;
+}
+
+function getFilteredJobs() {
+    const search = (document.getElementById('jobSearch')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('jobStatusFilter')?.value || '';
+    const typeFilter = document.getElementById('jobTypeFilter')?.value || '';
+
+    return adminState.jobs.filter(job => {
+        const title = (job.title || '').toLowerCase();
+        const company = (job.company || '').toLowerCase();
+        const location = (job.location || '').toLowerCase();
+        const matchSearch = !search || title.includes(search) || company.includes(search) || location.includes(search);
+        const matchStatus = !statusFilter || job.status === statusFilter;
+        const matchType = !typeFilter || (job.type || 'Full-time') === typeFilter;
+        return matchSearch && matchStatus && matchType;
+    });
+}
+
+function advancedFilterJobs() {
+    currentJobsPage = 1;
+    renderJobsPage();
+}
+
+function renderJobsPage() {
+    const tbody = document.getElementById('jobsTableBody');
+    const info = document.getElementById('jobsTableInfo');
+    const pagDiv = document.getElementById('jobsPagination');
+    if (!tbody) return;
+
+    const filtered = getFilteredJobs();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / JOBS_PER_PAGE));
+    if (currentJobsPage > totalPages) currentJobsPage = totalPages;
+    const start = (currentJobsPage - 1) * JOBS_PER_PAGE;
+    const pageJobs = filtered.slice(start, start + JOBS_PER_PAGE);
+
+    // Update badge count
+    var badge = document.getElementById('jobCountBadge');
+    if (badge) badge.textContent = filtered.length;
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No jobs match your filters</td></tr>';
+        if (info) info.textContent = 'No results';
+        if (pagDiv) pagDiv.innerHTML = '';
+        return;
+    }
+
+    pageJobs.forEach(job => {
+        const statusClass = job.status === 'active' ? 'active' : 'closed';
+        const recruiterName = escapeHtml(`${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown recruiter');
+        const jobId = parseInt(job.id);
+        const applicantCount = parseInt(job.applicant_count, 10) || 0;
+        const tr = document.createElement('tr');
+        tr.className = 'card-row card-row-jobs';
+        tr.innerHTML = `
+            <td data-label="Job">
+                <div class="entity-block">
+                    <span class="entity-title">${escapeHtml(job.title)}</span>
+                    <div class="entity-meta">
+                        <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || 'Remote')}</span>
+                        <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escapeHtml(job.type || 'Full-time')}</span>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Company">
+                <div class="table-value">
+                    <span>${escapeHtml(job.company || '—')}</span>
+                    <span class="table-note">${recruiterName}</span>
+                </div>
+            </td>
+            <td data-label="Applicants">
+                <div class="table-value">
+                    <span class="table-metric">${applicantCount}</span>
+                    <span class="table-note">candidate${applicantCount === 1 ? '' : 's'}</span>
+                </div>
+            </td>
+            <td data-label="Status"><span class="job-status ${statusClass}">${job.status === 'active' ? 'Active' : 'Closed'}</span></td>
+            <td data-label="Posted">
+                <div class="table-value">
+                    <span>${formatDate(job.created_at)}</span>
+                    <span class="table-note">${timeAgo(job.created_at)}</span>
+                </div>
+            </td>
+            <td class="actions-cell" data-label="Actions">
+                <button class="tbl-btn" title="View Details" onclick="openJobDrawer(${jobId})"><i class="fa-solid fa-eye"></i></button>
+                <button class="tbl-btn danger" title="Remove" onclick="adminDeleteJob(${jobId})"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Footer info
+    const from = start + 1;
+    const to = Math.min(start + JOBS_PER_PAGE, filtered.length);
+    if (info) {
+        const filterNote = filtered.length < adminState.jobs.length ? ` (filtered from ${adminState.jobs.length})` : '';
+        info.textContent = `Showing ${from}\u2013${to} of ${filtered.length} job${filtered.length !== 1 ? 's' : ''}${filterNote}`;
+    }
+
+    // Pagination
+    if (pagDiv) {
+        pagDiv.innerHTML = '';
+        if (totalPages > 1) {
+            var prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.disabled = currentJobsPage === 1;
+            prevBtn.onclick = function() { currentJobsPage--; renderJobsPage(); };
+            pagDiv.appendChild(prevBtn);
+
+            for (var p = 1; p <= totalPages; p++) {
+                var btn = document.createElement('button');
+                btn.className = 'page-btn' + (p === currentJobsPage ? ' active' : '');
+                btn.textContent = p;
+                btn.onclick = (function(page) { return function() { currentJobsPage = page; renderJobsPage(); }; })(p);
+                pagDiv.appendChild(btn);
+            }
+
+            var nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.disabled = currentJobsPage === totalPages;
+            nextBtn.onclick = function() { currentJobsPage++; renderJobsPage(); };
+            pagDiv.appendChild(nextBtn);
+        }
+    }
+}
+
+// ── Job Detail Drawer ──
+window.openJobDrawer = function(jobId) {
+    const job = adminState.jobs.find(j => parseInt(j.id) === jobId);
+    if (!job) return;
+
+    const overlay = document.getElementById('jobDrawerOverlay');
+    const drawer = document.getElementById('jobDrawer');
+    const body = document.getElementById('jobDrawerBody');
+    if (!overlay || !drawer || !body) {
+        // Fallback for pages without the drawer markup
+        adminViewJobAlert(jobId);
+        return;
+    }
+
+    const recruiterName = escapeHtml(`${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown');
+    const applicantCount = parseInt(job.applicant_count, 10) || 0;
+    const statusClass = job.status === 'active' ? 'active' : 'closed';
+
+    body.innerHTML = `
+        <div class="drawer-profile" style="border-bottom:1px solid var(--admin-border); padding-bottom:20px; margin-bottom:20px;">
+            <div class="drawer-avatar" style="background:rgba(5,150,105,0.1); color:#059669; width:56px; height:56px; border-radius:14px;"><i class="fa-solid fa-briefcase" style="font-size:1.3rem;"></i></div>
+            <div class="drawer-profile-name" style="margin-top:12px;">${escapeHtml(job.title)}</div>
+            <div class="drawer-profile-email">${escapeHtml(job.company || '—')}</div>
+        </div>
+        <div class="drawer-details">
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-location-dot"></i> Location</span>
+                <span class="drawer-detail-value">${escapeHtml(job.location || 'Remote')}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-regular fa-clock"></i> Type</span>
+                <span class="drawer-detail-value">${escapeHtml(job.type || 'Full-time')}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-signal"></i> Status</span>
+                <span class="drawer-detail-value"><span class="job-status ${statusClass}">${job.status === 'active' ? 'Active' : 'Closed'}</span></span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-users"></i> Applicants</span>
+                <span class="drawer-detail-value">${applicantCount}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-user-tie"></i> Recruiter</span>
+                <span class="drawer-detail-value">${recruiterName}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-envelope"></i> Email</span>
+                <span class="drawer-detail-value">${escapeHtml(job.email || '—')}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-calendar"></i> Posted</span>
+                <span class="drawer-detail-value">${formatDate(job.created_at)}</span>
+            </div>
+        </div>
+        <div class="drawer-actions" style="margin-top:20px;">
+            <button class="drawer-action-btn btn-delete" onclick="adminDeleteJob(${parseInt(job.id)}); closeJobDrawer();"><i class="fa-solid fa-trash"></i> Remove Listing</button>
+        </div>
+    `;
+
+    overlay.classList.add('drawer-active');
+    drawer.classList.add('drawer-open');
+
+    overlay.onclick = closeJobDrawer;
+    document.getElementById('jobDrawerClose').onclick = closeJobDrawer;
+};
+
+function closeJobDrawer() {
+    var overlay = document.getElementById('jobDrawerOverlay');
+    var drawer = document.getElementById('jobDrawer');
+    if (overlay) overlay.classList.remove('drawer-active');
+    if (drawer) drawer.classList.remove('drawer-open');
+}
+
+function adminViewJobAlert(jobId) {
     const job = adminState.jobs.find(j => parseInt(j.id) === jobId);
     if (!job) return;
     const recruiterName = `${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown';
@@ -759,7 +923,7 @@ window.adminViewJob = function(jobId) {
         `Posted: ${formatDate(job.created_at)}`,
     ];
     alert(details.join('\n'));
-};
+}
 
 window.adminDeleteJob = async function(jobId) {
     if (!confirm('Are you sure you want to remove this job listing?')) return;

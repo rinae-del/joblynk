@@ -21,20 +21,59 @@
     <main class="main-content">
         <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Job Listings"}]'></nav>
 
+        <!-- ── Job Stats Banner ── -->
+        <div class="user-stats-banner">
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalJobs">0</span>
+                    <span class="user-stat-label">Total Jobs</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(16,185,129,0.1); color:#10B981;"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statActiveJobs">0</span>
+                    <span class="user-stat-label">Active</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(107,114,128,0.1); color:#6B7280;"><i class="fa-solid fa-circle-xmark"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statClosedJobs">0</span>
+                    <span class="user-stat-label">Closed</span>
+                </div>
+            </div>
+            <div class="user-stat-card">
+                <div class="user-stat-icon" style="background:rgba(59,130,246,0.1); color:#3B82F6;"><i class="fa-solid fa-users"></i></div>
+                <div class="user-stat-content">
+                    <span class="user-stat-value" id="statTotalApplicants">0</span>
+                    <span class="user-stat-label">Applicants</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Filters + Controls ── -->
         <section class="dash-section">
-            <div class="section-title-row">
-                <h2><i class="fa-solid fa-briefcase section-icon" style="color:#059669"></i> All Job Listings</h2>
-                <div class="table-controls">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="jobSearch" placeholder="Search jobs..." oninput="filterTable('jobSearch','jobsTableBody')">
-                    </div>
-                    <select class="filter-select" id="jobStatusFilter" onchange="filterTable('jobSearch','jobsTableBody')">
+            <div class="users-toolbar">
+                <div class="search-box search-box-full">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="jobSearch" placeholder="Search jobs by title, company or location..." oninput="advancedFilterJobs()">
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select" id="jobStatusFilter" onchange="advancedFilterJobs()">
                         <option value="">All Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Closed">Closed</option>
-                        <option value="Flagged">Flagged</option>
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
                     </select>
+                    <select class="filter-select" id="jobTypeFilter" onchange="advancedFilterJobs()">
+                        <option value="">All Types</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                    </select>
+                    <span class="filter-result-count" id="jobCountBadge">0</span>
                 </div>
             </div>
             <div class="admin-table-wrapper">
@@ -46,14 +85,25 @@
                 </table>
             </div>
             <div class="table-footer">
-                <span class="table-info" id="jobsTableInfo">Showing 0 jobs</span>
+                <span class="table-info" id="jobsTableInfo">Loading jobs...</span>
+                <div class="table-pagination" id="jobsPagination"></div>
             </div>
         </section>
     </main>
 
+    <!-- ── Job Detail Drawer ── -->
+    <div class="drawer-overlay" id="jobDrawerOverlay"></div>
+    <aside class="user-drawer" id="jobDrawer">
+        <div class="drawer-header">
+            <h3>Job Details</h3>
+            <button class="drawer-close" id="jobDrawerClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body" id="jobDrawerBody"></div>
+    </aside>
+
     <script src="components.js?v=9"></script>
     <script src="jobs-store.js?v=7"></script>
-    <script src="admin-dashboard.js?v=9"></script>
+    <script src="admin-dashboard.js?v=10"></script>
 </body>
 
 </html>
