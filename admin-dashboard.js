@@ -292,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animateCounters();
     fetchAndRenderUsers();
     renderAdminJobs();
+    fetchAndRenderRecruiters();
     renderAdminApplications();
     renderAdminDocuments();
     updateOverviewStats();
@@ -976,6 +977,282 @@ window.adminDeleteJob = async function(jobId) {
         showToast('Failed to remove job listing');
     }
 };
+
+// ── Render Admin Recruiters (derived from users + jobs) ──
+const RECRUITERS_PER_PAGE = 10;
+let currentRecruitersPage = 1;
+
+async function fetchAndRenderRecruiters() {
+    const tbody = document.getElementById('recruitersTableBody');
+    if (!tbody) return;
+
+    try {
+        // Fetch users if not yet loaded
+        if (adminState.users.length === 0) {
+            const res = await fetch('api/admin/users.php', { credentials: 'include' });
+            const data = await res.json();
+            if (data.success && data.users) adminState.users = data.users;
+        }
+        // Fetch jobs if not yet loaded
+        if (adminState.jobs.length === 0) {
+            const res = await fetch('api/admin/jobs.php', { credentials: 'include' });
+            const data = await res.json();
+            if (data.success && data.jobs) adminState.jobs = data.jobs;
+        }
+        currentRecruitersPage = 1;
+        renderRecruitersPage();
+    } catch (err) {
+        console.error('Error fetching recruiter data:', err);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#DC2626;"><i class="fa-solid fa-triangle-exclamation"></i> Could not load recruiter data</td></tr>';
+    }
+}
+
+function getRecruiterJobCounts() {
+    const counts = {};
+    adminState.jobs.forEach(j => {
+        if (j.status === 'active' && j.user_id) {
+            counts[j.user_id] = (counts[j.user_id] || 0) + 1;
+        }
+    });
+    return counts;
+}
+
+function getFilteredRecruiters() {
+    const search = (document.getElementById('recruiterSearch')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('recruiterStatusFilter')?.value || '';
+
+    return adminState.users.filter(u => {
+        if (u.role !== 'recruiter') return false;
+        const fullName = ((u.first_name || '') + ' ' + (u.last_name || '')).toLowerCase();
+        const email = (u.email || '').toLowerCase();
+        const company = (u.company_name || '').toLowerCase();
+        const matchSearch = !search || fullName.includes(search) || email.includes(search) || company.includes(search);
+        const verified = parseInt(u.email_verified);
+        const matchStatus = !statusFilter ||
+            (statusFilter === 'verified' && verified) ||
+            (statusFilter === 'unverified' && !verified);
+        return matchSearch && matchStatus;
+    });
+}
+
+window.advancedFilterRecruiters = function() {
+    currentRecruitersPage = 1;
+    renderRecruitersPage();
+};
+
+function updateRecruiterStats() {
+    const recruiters = adminState.users.filter(u => u.role === 'recruiter');
+    const verified = recruiters.filter(u => parseInt(u.email_verified));
+    const pending = recruiters.filter(u => !parseInt(u.email_verified));
+    const jobCounts = getRecruiterJobCounts();
+    let totalActiveJobs = 0;
+    recruiters.forEach(r => { totalActiveJobs += (jobCounts[r.id] || 0); });
+
+    setTextById('statTotalRecruiters', recruiters.length.toString());
+    setTextById('statVerifiedRecruiters', verified.length.toString());
+    setTextById('statPendingRecruiters', pending.length.toString());
+    setTextById('statRecruiterJobs', totalActiveJobs.toString());
+
+    var badge = document.getElementById('recruiterCountBadge');
+    if (badge) badge.textContent = recruiters.length;
+}
+
+function renderRecruitersPage() {
+    const tbody = document.getElementById('recruitersTableBody');
+    const info = document.getElementById('recruitersTableInfo');
+    const pagDiv = document.getElementById('recruitersPagination');
+    if (!tbody) return;
+
+    updateRecruiterStats();
+
+    const filtered = getFilteredRecruiters();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / RECRUITERS_PER_PAGE));
+    if (currentRecruitersPage > totalPages) currentRecruitersPage = totalPages;
+    const start = (currentRecruitersPage - 1) * RECRUITERS_PER_PAGE;
+    const pageRecruiters = filtered.slice(start, start + RECRUITERS_PER_PAGE);
+
+    const jobCounts = getRecruiterJobCounts();
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No recruiters match your filters</td></tr>';
+        if (info) info.textContent = 'No results';
+        if (pagDiv) pagDiv.innerHTML = '';
+        return;
+    }
+
+    const avatarColors = [
+        { bg: '#EDE9FE', fg: '#7C3AED' },
+        { bg: '#DBEAFE', fg: '#2563EB' },
+        { bg: '#F0FDF4', fg: '#16A34A' },
+        { bg: '#FEF3C7', fg: '#D97706' },
+        { bg: '#FFF1F2', fg: '#E11D48' },
+        { bg: '#ECFDF5', fg: '#059669' },
+        { bg: '#FCE7F3', fg: '#DB2777' },
+        { bg: '#FEF9C3', fg: '#CA8A04' },
+    ];
+
+    pageRecruiters.forEach((rec, idx) => {
+        const fullName = escapeHtml(`${rec.first_name || ''} ${rec.last_name || ''}`.trim() || 'Unknown');
+        const safeEmail = escapeHtml(rec.email);
+        const companyName = escapeHtml(rec.company_name || '—');
+        const color = avatarColors[(start + idx) % avatarColors.length];
+        const verified = parseInt(rec.email_verified);
+        const activeJobs = jobCounts[rec.id] || 0;
+        const recId = parseInt(rec.id);
+
+        const tr = document.createElement('tr');
+        tr.className = 'card-row card-row-recruiters';
+        tr.innerHTML = `
+            <td data-label="Recruiter">
+                <div class="table-user">
+                    <div class="table-avatar" style="background:${color.bg}; color:${color.fg};"><i class="fa-solid fa-building"></i></div>
+                    <div class="entity-block">
+                        <span class="entity-title">${fullName}</span>
+                        <span class="entity-sub">${safeEmail}</span>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Company"><span class="table-value">${companyName}</span></td>
+            <td data-label="Active Jobs"><strong>${activeJobs}</strong></td>
+            <td data-label="Status"><span class="verification-badge ${verified ? 'verified' : 'pending'}"><i class="fa-solid fa-${verified ? 'circle-check' : 'clock'}"></i> ${verified ? 'Verified' : 'Pending'}</span></td>
+            <td data-label="Joined">
+                <div class="table-value">
+                    <span>${formatDate(rec.created_at)}</span>
+                    <span class="table-note">${timeAgo(rec.created_at)}</span>
+                </div>
+            </td>
+            <td class="actions-cell" data-label="Actions">
+                <button class="tbl-btn" title="View Details" onclick="openRecruiterDrawer(${recId})"><i class="fa-solid fa-eye"></i></button>
+                <button class="tbl-btn warn" title="${verified ? 'Suspend' : 'Verify'}" onclick="adminToggleUser(${recId}, ${verified ? 0 : 1})"><i class="fa-solid fa-${verified ? 'ban' : 'check'}"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Footer info
+    const from = start + 1;
+    const to = Math.min(start + RECRUITERS_PER_PAGE, filtered.length);
+    const allRecruiters = adminState.users.filter(u => u.role === 'recruiter');
+    if (info) {
+        const filterNote = filtered.length < allRecruiters.length ? ` (filtered from ${allRecruiters.length})` : '';
+        info.textContent = `Showing ${from}\u2013${to} of ${filtered.length} recruiter${filtered.length !== 1 ? 's' : ''}${filterNote}`;
+    }
+
+    // Pagination
+    if (pagDiv) {
+        pagDiv.innerHTML = '';
+        if (totalPages > 1) {
+            const prevBtn = createPageBtn('<i class="fa-solid fa-chevron-left"></i>', currentRecruitersPage <= 1);
+            prevBtn.onclick = function() { currentRecruitersPage--; renderRecruitersPage(); };
+            pagDiv.appendChild(prevBtn);
+
+            for (let p = 1; p <= totalPages; p++) {
+                if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentRecruitersPage) > 1) {
+                    if (p === 3 || p === totalPages - 2) {
+                        const dots = document.createElement('span');
+                        dots.className = 'page-dots';
+                        dots.textContent = '...';
+                        pagDiv.appendChild(dots);
+                    }
+                    continue;
+                }
+                const btn = createPageBtn(p.toString(), false);
+                if (p === currentRecruitersPage) btn.classList.add('active-page');
+                btn.onclick = (function(page) { return function() { currentRecruitersPage = page; renderRecruitersPage(); }; })(p);
+                pagDiv.appendChild(btn);
+            }
+
+            const nextBtn = createPageBtn('<i class="fa-solid fa-chevron-right"></i>', currentRecruitersPage >= totalPages);
+            nextBtn.onclick = function() { currentRecruitersPage++; renderRecruitersPage(); };
+            pagDiv.appendChild(nextBtn);
+        }
+    }
+}
+
+window.openRecruiterDrawer = function(recId) {
+    const rec = adminState.users.find(u => parseInt(u.id) === recId);
+    if (!rec) return;
+
+    const drawer = document.getElementById('recruiterDrawer');
+    const overlay = document.getElementById('recruiterDrawerOverlay');
+    const body = document.getElementById('recruiterDrawerBody');
+    if (!drawer || !body) return;
+
+    const fullName = escapeHtml(`${rec.first_name || ''} ${rec.last_name || ''}`.trim() || 'Unknown');
+    const safeEmail = escapeHtml(rec.email);
+    const companyName = escapeHtml(rec.company_name || '—');
+    const verified = parseInt(rec.email_verified);
+    const jobCounts = getRecruiterJobCounts();
+    const activeJobs = jobCounts[rec.id] || 0;
+    const recIdNum = parseInt(rec.id);
+
+    const avatarColors = [
+        { bg: '#EDE9FE', fg: '#7C3AED' },
+        { bg: '#DBEAFE', fg: '#2563EB' },
+        { bg: '#F0FDF4', fg: '#16A34A' },
+        { bg: '#FEF3C7', fg: '#D97706' },
+    ];
+    const color = avatarColors[recIdNum % avatarColors.length];
+
+    body.innerHTML = `
+        <div class="drawer-profile">
+            <div class="drawer-avatar" style="background:${color.bg}; color:${color.fg};">
+                <i class="fa-solid fa-building"></i>
+                <span class="drawer-avatar-badge ${verified ? 'verified' : 'unverified'}">
+                    <i class="fa-solid fa-${verified ? 'check' : 'clock'}"></i>
+                </span>
+            </div>
+            <div class="drawer-profile-name">${fullName}</div>
+            <div class="drawer-profile-email">${safeEmail}</div>
+        </div>
+
+        <div class="drawer-details">
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-fingerprint"></i> ID</span>
+                <span class="drawer-detail-value">#${recIdNum}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-building"></i> Company</span>
+                <span class="drawer-detail-value">${companyName}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-briefcase"></i> Active Jobs</span>
+                <span class="drawer-detail-value"><strong>${activeJobs}</strong></span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-envelope"></i> Verified</span>
+                <span class="drawer-detail-value">${verified ? '<span style="color:#10B981">Yes</span>' : '<span style="color:#F59E0B">Pending</span>'}</span>
+            </div>
+            <div class="drawer-detail-row">
+                <span class="drawer-detail-label"><i class="fa-solid fa-calendar"></i> Joined</span>
+                <span class="drawer-detail-value">${formatDate(rec.created_at)}</span>
+            </div>
+        </div>
+
+        <div class="drawer-actions">
+            <button class="drawer-action-btn btn-impersonate" onclick="window.location.href='api/admin/impersonate.php?user_id=${recIdNum}'"><i class="fa-solid fa-user-secret"></i> Impersonate</button>
+            ${!verified ? `<button class="drawer-action-btn btn-verify" onclick="adminToggleUser(${recIdNum}, 1); closeRecruiterDrawer();"><i class="fa-solid fa-circle-check"></i> Verify Recruiter</button>` : ''}
+            ${verified ? `<button class="drawer-action-btn btn-suspend" onclick="adminToggleUser(${recIdNum}, 0); closeRecruiterDrawer();"><i class="fa-solid fa-ban"></i> Suspend Recruiter</button>` : ''}
+        </div>
+    `;
+
+    drawer.classList.add('drawer-open');
+    if (overlay) overlay.classList.add('drawer-active');
+    document.body.style.overflow = 'hidden';
+
+    overlay.onclick = closeRecruiterDrawer;
+    document.getElementById('recruiterDrawerClose').onclick = closeRecruiterDrawer;
+};
+
+function closeRecruiterDrawer() {
+    var drawer = document.getElementById('recruiterDrawer');
+    var overlay = document.getElementById('recruiterDrawerOverlay');
+    if (drawer) drawer.classList.remove('drawer-open');
+    if (overlay) overlay.classList.remove('drawer-active');
+    document.body.style.overflow = '';
+}
 
 // ── Render Admin Applications Table ──
 function renderAdminApplications() {
