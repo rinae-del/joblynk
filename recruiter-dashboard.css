@@ -1,5 +1,55 @@
 /* Recruiter Dashboard Specific Styles */
 
+/* ── Recruiter Table (desktop base styles) ── */
+.admin-table-wrapper {
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+}
+
+.admin-table.recruiter-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.admin-table.recruiter-table thead {
+    background: var(--bg);
+}
+
+.admin-table.recruiter-table thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.admin-table.recruiter-table tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #F1F5F9;
+    vertical-align: middle;
+    color: var(--text);
+}
+
+.admin-table.recruiter-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.admin-table.recruiter-table tbody tr:hover {
+    background: var(--bg);
+}
+
+.admin-table.recruiter-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
 /* Base overrides or additions if any for the recruiter view */
 .recruiter-gradient-text {
     background: linear-gradient(135deg, #A855F7, #EC4899, #F43F5E);

@@ -430,45 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.editMyJob = async function(jobId) {
-        try {
-            var res = await fetch('api/jobs/index.php?id=' + encodeURIComponent(jobId), { credentials: 'include' });
-            var data = await res.json();
-            if (!data.success || !data.job) {
-                alert('Could not load job details.');
-                return;
-            }
-            var job = data.job;
-
-            // Pre-fill wizard fields
-            var f = document.getElementById;
-            document.getElementById('wizJobTitle').value = job.title || '';
-            document.getElementById('wizCompany').value = job.company || '';
-            document.getElementById('wizLocation').value = job.location || '';
-            document.getElementById('wizType').value = job.type || 'Full-time';
-            if (document.getElementById('wizDesc')) document.getElementById('wizDesc').value = job.description || '';
-            if (document.getElementById('wizReqs')) document.getElementById('wizReqs').value = job.requirements || '';
-            if (document.getElementById('wizSkills')) document.getElementById('wizSkills').value = job.skills || '';
-            if (document.getElementById('wizSalaryFrom')) document.getElementById('wizSalaryFrom').value = job.salary_from || '';
-            if (document.getElementById('wizSalaryTo')) document.getElementById('wizSalaryTo').value = job.salary_to || '';
-            if (document.getElementById('wizSalaryPeriod')) document.getElementById('wizSalaryPeriod').value = job.salary_period || 'Per Month';
-            if (document.getElementById('wizDate')) document.getElementById('wizDate').value = job.closing_date || '';
-
-            // Set benefit checkboxes
-            var benefits = Array.isArray(job.benefits) ? job.benefits : [];
-            document.querySelectorAll('.checkbox-grid input[type="checkbox"]').forEach(function(cb) {
-                cb.checked = benefits.indexOf(cb.value) !== -1;
-            });
-
-            // Store editing job ID on the form
-            var form = document.getElementById('postJobFormWizard');
-            if (form) form.dataset.editingJobId = jobId;
-
-            // Switch to post-job view
-            switchView('post-job');
-        } catch (e) {
-            console.error('Error loading job for edit:', e);
-            alert('Failed to load job for editing.');
-        }
+        // Redirect to post-job page with edit parameter
+        window.location.href = 'recruiter-post-job.html?edit=' + encodeURIComponent(jobId);
     };
 
     window.reviewCandidate = function(applicationId) {

@@ -70,12 +70,17 @@ const _authScript = document.currentScript || document.querySelector('script[src
         // Impersonation Banner
         if (data.user.is_impersonating) {
             const banner = document.createElement('div');
-            banner.style.cssText = 'background: #FEF2F2; color: #DC2626; padding: 10px; text-align: center; font-weight: 600; font-size: 0.9rem; position: sticky; top: 0; z-index: 9999; border-bottom: 1px solid #FCA5A5; display: flex; justify-content: center; gap: 15px; align-items: center;';
+            banner.style.cssText = 'background: #FEF2F2; color: #DC2626; padding: 10px 16px; text-align: center; font-weight: 600; font-size: 0.9rem; z-index: 9999; border: 1px solid #FCA5A5; border-radius: 8px; display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 16px;';
             banner.innerHTML = `
                 <span><i class="fa-solid fa-user-secret"></i> You are impersonating <strong>${data.user.name}</strong> (${data.user.email}).</span>
                 <button onclick="window.location.href='api/admin/impersonate.php?revert=1'" style="background: #DC2626; color: white; border: none; padding: 4px 12px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">Return to Admin</button>
             `;
-            document.body.prepend(banner);
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.prepend(banner);
+            } else {
+                document.body.prepend(banner);
+            }
         }
 
         // Populate user name in any element with data-user-name attribute

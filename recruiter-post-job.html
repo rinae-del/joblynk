@@ -187,8 +187,12 @@
                 const banner = document.getElementById('noCreditsBanner');
                 const form = document.getElementById('postJobSection');
                 if (remaining <= 0) {
-                    if (banner) banner.style.display = '';
-                    if (form) form.style.display = 'none';
+                    // If editing, still show the form
+                    const params = new URLSearchParams(window.location.search);
+                    if (!params.get('edit')) {
+                        if (banner) banner.style.display = '';
+                        if (form) form.style.display = 'none';
+                    }
                 } else {
                     if (banner) banner.style.display = 'none';
                     if (form) form.style.display = '';
@@ -196,6 +200,67 @@
             }
         } catch (e) {
             console.warn('Failed to load credits:', e);
+        }
+    })();
+
+    // Load job for editing if ?edit=ID is present
+    (async function loadJobForEdit() {
+        const params = new URLSearchParams(window.location.search);
+        const editId = params.get('edit');
+        if (!editId) return;
+
+        try {
+            const res = await fetch('api/jobs/index.php?id=' + encodeURIComponent(editId), { credentials: 'include' });
+            const data = await res.json();
+            if (!data.success || !data.job) {
+                alert('Could not load job details.');
+                return;
+            }
+            const job = data.job;
+
+            // Update page title
+            const titleRow = document.querySelector('#postJobSection .section-title-row h2');
+            if (titleRow) titleRow.innerHTML = '<i class="fa-solid fa-pen-to-square section-icon" style="color:#7E22CE"></i> Edit Job';
+
+            // Pre-fill wizard fields
+            document.getElementById('wizJobTitle').value = job.title || '';
+            const companySelect = document.getElementById('wizCompany');
+            if (companySelect) {
+                // Add the company as an option if not present
+                let found = false;
+                for (const opt of companySelect.options) {
+                    if (opt.value === job.company) { found = true; break; }
+                }
+                if (!found) {
+                    const opt = document.createElement('option');
+                    opt.value = job.company;
+                    opt.textContent = job.company;
+                    companySelect.prepend(opt);
+                }
+                companySelect.value = job.company || '';
+            }
+            document.getElementById('wizLocation').value = job.location || '';
+            document.getElementById('wizType').value = job.type || 'Full-time';
+            if (document.getElementById('wizDesc')) document.getElementById('wizDesc').value = job.description || '';
+            if (document.getElementById('wizReqs')) document.getElementById('wizReqs').value = job.requirements || '';
+            if (document.getElementById('wizSkills')) document.getElementById('wizSkills').value = job.skills || '';
+            if (document.getElementById('wizSalaryFrom')) document.getElementById('wizSalaryFrom').value = job.salary_from || '';
+            if (document.getElementById('wizSalaryTo')) document.getElementById('wizSalaryTo').value = job.salary_to || '';
+            if (document.getElementById('wizSalaryPeriod')) document.getElementById('wizSalaryPeriod').value = job.salary_period || 'Per Month';
+            if (document.getElementById('wizDate')) document.getElementById('wizDate').value = job.closing_date || '';
+
+            // Set benefit checkboxes
+            const benefits = Array.isArray(job.benefits) ? job.benefits : [];
+            document.querySelectorAll('.checkbox-grid input[type="checkbox"]').forEach(function(cb) {
+                cb.checked = benefits.indexOf(cb.value) !== -1;
+            });
+
+            // Store editing job ID on the form
+            const form = document.getElementById('postJobFormWizard');
+            if (form) form.dataset.editingJobId = editId;
+        } catch (e) {
+            console.error('Error loading job for edit:', e);
+            alert('Failed to load job for editing.');
         }
     })();
     </script>
