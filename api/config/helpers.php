@@ -56,6 +56,13 @@ function generateToken(int $length = 32): string {
 }
 
 /**
+ * Whether email verification is required for account access.
+ */
+function isEmailVerificationRequired(): bool {
+    return filter_var(env('EMAIL_VERIFICATION_REQUIRED', '1'), FILTER_VALIDATE_BOOLEAN);
+}
+
+/**
  * Send an email using the Resend API (via cURL).
  */
 function sendResendEmail(string $to, string $subject, string $htmlBody): bool {

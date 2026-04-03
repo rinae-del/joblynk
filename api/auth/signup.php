@@ -1,7 +1,7 @@
 <?php
 /**
  * POST /api/auth/signup.php
- * Register a new user and send email verification.
+ * Register a new user and optionally send email verification.
  * Body: { firstName, lastName, email, password }
  */
 
@@ -35,6 +35,8 @@ if ($errors) {
 }
 
 $pdo = getDB();
+$emailVerificationRequired = isEmailVerificationRequired();
+$emailVerified = $emailVerificationRequired ? 0 : 1;
 
 // ── Check duplicate email ──
 $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
@@ -45,36 +47,43 @@ if ($stmt->fetch()) {
 
 // ── Create user ──
 $hash = password_hash($password, PASSWORD_BCRYPT);
-$stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)');
-$stmt->execute([$firstName, $lastName, $email, $hash, 'job_seeker']);
+$stmt = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password_hash, role, email_verified) VALUES (?, ?, ?, ?, ?, ?)');
+$stmt->execute([$firstName, $lastName, $email, $hash, 'job_seeker', $emailVerified]);
 $userId = $pdo->lastInsertId();
 
-// ── Generate verification token ──
-$token = generateToken();
-$expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
-$stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, token, type, expires_at) VALUES (?, ?, ?, ?)');
-$stmt->execute([$userId, $token, 'verification', $expiresAt]);
+$message = 'Account created! Please check your email to verify your account.';
 
-// ── Send verification email ──
-$verifyUrl = APP_URL . '/verify-email.html?token=' . $token;
-$emailBody = '
-    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
-        Hi ' . htmlspecialchars($firstName) . ', welcome to ' . APP_NAME . '! Please verify your email address to get started.
-    </p>
-    <div style="text-align:center;margin:32px 0;">
-        <a href="' . $verifyUrl . '" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:16px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
-            Verify Email Address
-        </a>
-    </div>
-    <p style="margin:0;font-size:14px;color:#94A3B8;">
-        This link expires in 24 hours. If you didn\'t create an account, please ignore this email.
-    </p>';
+if ($emailVerificationRequired) {
+    // ── Generate verification token ──
+    $token = generateToken();
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
+    $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, token, type, expires_at) VALUES (?, ?, ?, ?)');
+    $stmt->execute([$userId, $token, 'verification', $expiresAt]);
 
-$emailHtml = buildEmailTemplate('Verify your email', $emailBody);
-sendResendEmail($email, 'Verify your email – ' . APP_NAME, $emailHtml);
+    // ── Send verification email ──
+    $verifyUrl = APP_URL . '/verify-email.html?token=' . $token;
+    $emailBody = '
+        <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
+            Hi ' . htmlspecialchars($firstName) . ', welcome to ' . APP_NAME . '! Please verify your email address to get started.
+        </p>
+        <div style="text-align:center;margin:32px 0;">
+            <a href="' . $verifyUrl . '" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:16px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                Verify Email Address
+            </a>
+        </div>
+        <p style="margin:0;font-size:14px;color:#94A3B8;">
+            This link expires in 24 hours. If you didn\'t create an account, please ignore this email.
+        </p>';
+
+    $emailHtml = buildEmailTemplate('Verify your email', $emailBody);
+    sendResendEmail($email, 'Verify your email – ' . APP_NAME, $emailHtml);
+} else {
+    $message = 'Account created! Email verification is disabled for testing, so you can sign in immediately.';
+}
 
 jsonResponse([
     'success' => true,
-    'message' => 'Account created! Please check your email to verify your account.',
-    'email'   => $email
+    'message' => $message,
+    'email'   => $email,
+    'verificationRequired' => $emailVerificationRequired
 ], 201);

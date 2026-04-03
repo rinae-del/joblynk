@@ -61,6 +61,8 @@ if (!isset($packages[$packageId])) {
 $expectedAmount = $packages[$packageId];
 
 $pdo = getDB();
+$emailVerificationRequired = isEmailVerificationRequired();
+$emailVerified = $emailVerificationRequired ? 0 : 1;
 
 // ── Check if email exists ──
 $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
@@ -80,15 +82,17 @@ try {
 
     // 2. Create User
     $hash = password_hash($password, PASSWORD_BCRYPT);
-    $stmtU = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password_hash, company_id, role) VALUES (?, ?, ?, ?, ?, ?)');
-    $stmtU->execute([$firstName, $lastName, $email, $hash, $companyId, 'recruiter']);
+    $stmtU = $pdo->prepare('INSERT INTO users (first_name, last_name, email, password_hash, company_id, role, email_verified) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmtU->execute([$firstName, $lastName, $email, $hash, $companyId, 'recruiter', $emailVerified]);
     $userId = $pdo->lastInsertId();
 
-    // 3. Generate Email Verification Token
-    $token = generateToken();
-    $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
-    $stmtV = $pdo->prepare('INSERT INTO email_verifications (user_id, token, type, expires_at) VALUES (?, ?, ?, ?)');
-    $stmtV->execute([$userId, $token, 'verification', $expiresAt]);
+    if ($emailVerificationRequired) {
+        // 3. Generate Email Verification Token
+        $token = generateToken();
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
+        $stmtV = $pdo->prepare('INSERT INTO email_verifications (user_id, token, type, expires_at) VALUES (?, ?, ?, ?)');
+        $stmtV->execute([$userId, $token, 'verification', $expiresAt]);
+    }
 
     $pdo->commit();
 
@@ -97,23 +101,25 @@ try {
     jsonResponse(['success' => false, 'message' => 'Database error: ' . $e->getMessage()], 500);
 }
 
-// ── Send Verification Email ──
-$verifyUrl = APP_URL . '/verify-email.html?token=' . $token;
-$emailBody = '
-    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
-        Hi ' . htmlspecialchars($firstName) . ', welcome to ' . APP_NAME . ' for Employers!<br>
-        Please verify your email address to activate your account. 
-        Your payment will be processed via PayFast.
-    </p>
-    <div style="text-align:center;margin:32px 0;">
-        <a href="' . $verifyUrl . '" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:16px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
-            Verify Email Address
-        </a>
-    </div>
-';
+if ($emailVerificationRequired) {
+    // ── Send Verification Email ──
+    $verifyUrl = APP_URL . '/verify-email.html?token=' . $token;
+    $emailBody = '
+        <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
+            Hi ' . htmlspecialchars($firstName) . ', welcome to ' . APP_NAME . ' for Employers!<br>
+            Please verify your email address to activate your account. 
+            Your payment will be processed via PayFast.
+        </p>
+        <div style="text-align:center;margin:32px 0;">
+            <a href="' . $verifyUrl . '" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:16px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                Verify Email Address
+            </a>
+        </div>
+    ';
 
-$emailHtml = buildEmailTemplate('Verify your recruiter account', $emailBody);
-sendResendEmail($email, 'Verify your email – Joblynk Recruiter', $emailHtml);
+    $emailHtml = buildEmailTemplate('Verify your recruiter account', $emailBody);
+    sendResendEmail($email, 'Verify your email – Joblynk Recruiter', $emailHtml);
+}
 
 // ── Build PayFast form data for frontend redirect ──
 $pfData = [
@@ -148,8 +154,11 @@ $pfData['signature'] = md5($sigString);
 
 jsonResponse([
     'success'    => true,
-    'message'    => 'Account created! Redirecting to PayFast for payment.',
+    'message'    => $emailVerificationRequired
+        ? 'Account created! Redirecting to PayFast for payment.'
+        : 'Account created! Email verification is disabled for testing. Redirecting to PayFast for payment.',
     'email'      => $email,
     'payfastUrl' => PAYFAST_URL,
     'payfastData' => $pfData,
+    'verificationRequired' => $emailVerificationRequired,
 ], 201);

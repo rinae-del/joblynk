@@ -127,6 +127,13 @@
                             btn.textContent = 'Sign In';
                         }
                     });
+
+                    const signInParams = new URLSearchParams(window.location.search);
+                    if (signInParams.get('signup') === 'success') {
+                        const infoEl = document.getElementById('formInfo');
+                        infoEl.textContent = 'Account created successfully. Email verification is disabled for testing, so you can sign in immediately.';
+                        infoEl.style.display = 'block';
+                    }
                 </script>
 
                     <div class="auth-footer" style="margin-top:1.5rem; font-size:0.78rem; color:#94A3B8;">

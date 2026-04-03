@@ -21,6 +21,13 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     jsonResponse(['success' => false, 'message' => 'Valid email is required.'], 422);
 }
 
+if (!isEmailVerificationRequired()) {
+    jsonResponse([
+        'success' => true,
+        'message' => 'Email verification is currently disabled for testing. You can sign in directly.'
+    ]);
+}
+
 $pdo = getDB();
 
 // ── Find user ──

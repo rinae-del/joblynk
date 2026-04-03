@@ -118,7 +118,11 @@
                             const data = await res.json();
 
                             if (data.success) {
-                                window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+                                if (data.verificationRequired === false) {
+                                    window.location.href = 'sign-in.html?signup=success';
+                                } else {
+                                    window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+                                }
                             } else {
                                 errorEl.textContent = data.message;
                                 errorEl.style.display = 'block';
