@@ -353,9 +353,161 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+/* ── Candidate Document Tabs & Preview ── */
+
+.candidate-doc-tabs {
+    display: flex;
+    gap: 0;
+    margin-top: 16px;
+    border-bottom: 2px solid var(--border);
+}
+
+.candidate-doc-tab {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.candidate-doc-tab:hover {
+    color: var(--text);
+    background: var(--bg);
+}
+
+.candidate-doc-tab.active {
+    color: #7E22CE;
+    border-bottom-color: #7E22CE;
+}
+
+.candidate-doc-panel {
+    margin-top: 0;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #FCFBFF;
+}
+
+.doc-preview-card {
+    padding: 20px;
+}
+
+.doc-preview-header {
+    border-bottom: 2px solid #E9E2F8;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+}
+
+.doc-preview-header h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+.doc-preview-subtitle {
+    font-size: 0.85rem;
+    color: #7E22CE;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.doc-preview-contact {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.doc-preview-section {
+    margin-bottom: 16px;
+}
+
+.doc-preview-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #7E22CE;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #EAE7F5;
+}
+
+.doc-preview-section p {
+    font-size: 0.84rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.doc-preview-entry {
+    margin-bottom: 12px;
+    padding-left: 12px;
+    border-left: 2px solid #E9E2F8;
+}
+
+.doc-preview-entry-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.doc-preview-entry-meta {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.doc-preview-entry-desc {
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.doc-preview-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.doc-preview-chip {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #F5F3FF;
+    border: 1px solid #DDD6FE;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #7C3AED;
+}
+
+.doc-preview-letter-body p {
+    text-indent: 0;
+    margin-bottom: 10px;
+}
     gap: 12px;
     font-size: 0.76rem;
     color: var(--text-muted);
+}
+
+/* Post-job wizard: override .dash-row from grid → flex for form field rows */
+.wizard-step .dash-row {
+    display: flex;
+    animation: none;
 }
 
 /* Multi-step Form Wizard */
@@ -637,6 +789,10 @@
         gap: 16px !important;
     }
 
+    .wizard-step .dash-row {
+        flex-direction: column;
+    }
+
     .wizard-stepper::before {
         top: 14px;
     }
@@ -733,4 +889,152 @@
         padding: 28px 20px !important;
         border-radius: 14px !important;
     }
+}
+
+/* ═══════════════════════════
+   Custom Screening Questions Builder
+   ═══════════════════════════ */
+.custom-fields-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.custom-field-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.custom-field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border);
+}
+
+.custom-field-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #7E22CE;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.custom-field-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+}
+
+.custom-field-remove:hover {
+    color: #DC2626;
+    background: #FEE2E2;
+}
+
+.custom-field-body {
+    padding: 14px;
+}
+
+.custom-field-body .dash-row {
+    display: flex;
+    gap: 12px;
+}
+
+.custom-field-body .form-group {
+    margin-bottom: 8px;
+}
+
+.custom-field-body .form-group label {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+.btn-add-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 10px 18px;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    background: none;
+    color: #7E22CE;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font);
+}
+
+.btn-add-field:hover {
+    border-color: #7E22CE;
+    background: #F5F3FF;
+}
+
+@media (max-width: 600px) {
+    .custom-field-body .dash-row {
+        flex-direction: column;
+    }
+}
+
+/* ═══════════════════════
+   Candidate Responses View
+   ═══════════════════════ */
+.candidate-responses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+}
+
+.candidate-response-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.candidate-response-q {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.candidate-response-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #7E22CE;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.candidate-response-a {
+    font-size: 0.88rem;
+    color: var(--text);
+    padding-left: 28px;
+    line-height: 1.5;
 }

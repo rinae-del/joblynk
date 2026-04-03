@@ -47,6 +47,9 @@ if ($method === 'GET') {
         ');
         $stmt->execute([$jobId, $userId]);
         $apps = $stmt->fetchAll();
+        foreach ($apps as &$a) {
+            $a['form_responses'] = json_decode($a['form_responses'] ?? 'null', true);
+        }
         jsonResponse(['success' => true, 'applications' => $apps]);
     }
 
@@ -66,6 +69,9 @@ if ($method === 'GET') {
         ');
         $stmt->execute([$userId]);
         $apps = $stmt->fetchAll();
+        foreach ($apps as &$a) {
+            $a['form_responses'] = json_decode($a['form_responses'] ?? 'null', true);
+        }
         jsonResponse(['success' => true, 'applications' => $apps]);
     }
 
@@ -87,7 +93,10 @@ if ($method === 'GET') {
 // POST — Submit or update status
 // ═══════════════════════════
 if ($method === 'POST') {
-    $body = getJsonBody();
+    // Support both JSON and multipart/form-data (file uploads)
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+    $isMultipart = stripos($contentType, 'multipart/form-data') !== false;
+    $body = $isMultipart ? $_POST : getJsonBody();
 
     // Recruiter: update application status
     if (isset($body['application_id']) && isset($body['status'])) {
@@ -126,6 +135,12 @@ if ($method === 'POST') {
     $cvId  = $body['cv_id'] ?? null;
     $clId  = $body['cl_id'] ?? null;
     $note  = trim($body['note'] ?? '');
+    $formResponses = $body['form_responses'] ?? null;
+    // If form_responses came as JSON string (from FormData), decode it
+    if (is_string($formResponses)) {
+        $formResponses = json_decode($formResponses, true);
+    }
+    $formResponsesJson = $formResponses ? json_encode($formResponses) : null;
 
     if (!$jobId) jsonResponse(['success' => false, 'message' => 'Job ID is required.'], 422);
 
@@ -143,14 +158,68 @@ if ($method === 'POST') {
         jsonResponse(['success' => false, 'message' => 'You have already applied to this job.'], 409);
     }
 
+    // Handle file uploads (CV and/or Cover Letter)
+    $allowedMimes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    $allowedExts = ['pdf', 'doc', 'docx'];
+    $maxFileSize = 5 * 1024 * 1024; // 5MB
+    $uploadsDir = __DIR__ . '/../../uploads';
+    if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
+
+    foreach (['cv_file', 'cl_file'] as $fileKey) {
+        if (!isset($_FILES[$fileKey]) || $_FILES[$fileKey]['error'] === UPLOAD_ERR_NO_FILE) continue;
+
+        $file = $_FILES[$fileKey];
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            jsonResponse(['success' => false, 'message' => 'File upload error.'], 422);
+        }
+        if ($file['size'] > $maxFileSize) {
+            jsonResponse(['success' => false, 'message' => 'File too large. Max 5MB.'], 422);
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowedExts)) {
+            jsonResponse(['success' => false, 'message' => 'Invalid file type. Allowed: PDF, DOC, DOCX.'], 422);
+        }
+
+        // Verify MIME type
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($file['tmp_name']);
+        if (!in_array($mime, $allowedMimes)) {
+            jsonResponse(['success' => false, 'message' => 'Invalid file content type.'], 422);
+        }
+
+        $docType = ($fileKey === 'cv_file') ? 'cv' : 'cl';
+        $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', pathinfo($file['name'], PATHINFO_FILENAME));
+        $storedName = $docType . '_' . $userId . '_' . time() . '_' . $safeName . '.' . $ext;
+        $destPath = $uploadsDir . '/' . $storedName;
+
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            jsonResponse(['success' => false, 'message' => 'Failed to save uploaded file.'], 500);
+        }
+
+        // Create a document record for the uploaded file
+        $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
+        $fileData = json_encode(['uploaded_file' => $storedName, 'original_name' => $file['name'], 'mime_type' => $mime]);
+        $stmt = $pdo->prepare('INSERT INTO documents (user_id, doc_type, name, data) VALUES (?, ?, ?, ?)');
+        $stmt->execute([$userId, $docType, $originalName, $fileData]);
+        $newDocId = (int)$pdo->lastInsertId();
+
+        if ($docType === 'cv') $cvId = $newDocId;
+        else $clId = $newDocId;
+    }
+
     // Get applicant name
     $stmt = $pdo->prepare('SELECT first_name, last_name FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
     $applicantName = ($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '');
 
-    $stmt = $pdo->prepare('INSERT INTO applications (job_id, user_id, cv_id, cl_id, applicant_name, note) VALUES (?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, trim($applicantName), $note]);
+    $stmt = $pdo->prepare('INSERT INTO applications (job_id, user_id, cv_id, cl_id, applicant_name, note, form_responses) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, trim($applicantName), $note, $formResponsesJson]);
 
     jsonResponse(['success' => true, 'id' => (int)$pdo->lastInsertId(), 'message' => 'Application submitted!'], 201);
 }

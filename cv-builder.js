@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.innerHTML = `
                 <div class="input-group">
                     <label>${optionalLabels[field]}</label>
-                    <input type="text" data-cv="${field}" value="${cvData[field] || ''}">
+                    <input type="text" data-cv="${field}" value="${cvData[field] || ''}" autocomplete="off">
                 </div>
                 <button class="btn-remove-field" data-field="${field}"><i class="fa-solid fa-xmark"></i></button>
             `;
@@ -403,15 +403,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.experience.length-1?'open':''}" id="exp-${exp.id}">
                     <div class="form-row">
-                        <div class="input-group"><label>Job title</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="jobTitle" value="${exp.jobTitle}"></div>
-                        <div class="input-group"><label>Employer</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="employer" value="${exp.employer}"></div>
+                        <div class="input-group"><label>Job title</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="jobTitle" value="${exp.jobTitle}" autocomplete="off"></div>
+                        <div class="input-group"><label>Employer</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="employer" value="${exp.employer}" autocomplete="off"></div>
                     </div>
                     <div class="form-row">
                         <div class="input-group"><label>Start date</label><input type="date" class="dyn" data-arr="experience" data-id="${exp.id}" data-key="startDate" value="${exp.startDate}"></div>
                         <div class="input-group"><label>End date</label><input type="date" class="dyn" data-arr="experience" data-id="${exp.id}" data-key="endDate" value="${exp.endDate}"></div>
                     </div>
                     <div class="form-row">
-                        <div class="input-group"><label>City</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="city" value="${exp.city}"></div>
+                        <div class="input-group"><label>City</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="city" value="${exp.city}" autocomplete="off"></div>
                     </div>
                     <div class="form-row">
                         <div class="input-group full-width"><label>Description</label><textarea class="dyn" data-arr="experience" data-id="${exp.id}" data-key="description" rows="3">${exp.description}</textarea></div>
@@ -438,8 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.education.length-1?'open':''}" id="edu-${edu.id}">
                     <div class="form-row">
-                        <div class="input-group"><label>School</label><input class="dyn" data-arr="education" data-id="${edu.id}" data-key="school" value="${edu.school}"></div>
-                        <div class="input-group"><label>Degree</label><input class="dyn" data-arr="education" data-id="${edu.id}" data-key="degree" value="${edu.degree}"></div>
+                        <div class="input-group"><label>School</label><input class="dyn" data-arr="education" data-id="${edu.id}" data-key="school" value="${edu.school}" autocomplete="off"></div>
+                        <div class="input-group"><label>Degree</label><input class="dyn" data-arr="education" data-id="${edu.id}" data-key="degree" value="${edu.degree}" autocomplete="off"></div>
                     </div>
                     <div class="form-row">
                         <div class="input-group"><label>Start date</label><input type="date" class="dyn" data-arr="education" data-id="${edu.id}" data-key="startDate" value="${edu.startDate}"></div>
@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.skills.length-1?'open':''}" id="sk-${s.id}">
                     <div class="form-row">
-                        <div class="input-group full-width"><label>Skill</label><input class="dyn" data-arr="skills" data-id="${s.id}" data-key="name" value="${s.name}"></div>
+                        <div class="input-group full-width"><label>Skill</label><input class="dyn" data-arr="skills" data-id="${s.id}" data-key="name" value="${s.name}" autocomplete="off"></div>
                     </div>
                 </div>
             </div>
@@ -491,8 +491,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.languages.length-1?'open':''}" id="lng-${l.id}">
                     <div class="form-row">
-                        <div class="input-group"><label>Language</label><input class="dyn" data-arr="languages" data-id="${l.id}" data-key="name" value="${l.name}"></div>
-                        <div class="input-group"><label>Level</label><input class="dyn" data-arr="languages" data-id="${l.id}" data-key="level" value="${l.level}" placeholder="e.g. Native, Fluent"></div>
+                        <div class="input-group"><label>Language</label><input class="dyn" data-arr="languages" data-id="${l.id}" data-key="name" value="${l.name}" autocomplete="off"></div>
+                        <div class="input-group"><label>Level</label><input class="dyn" data-arr="languages" data-id="${l.id}" data-key="level" value="${l.level}" placeholder="e.g. Native, Fluent" autocomplete="off"></div>
                     </div>
                 </div>
             </div>

@@ -5,6 +5,11 @@ const recruiterState = {
     applications: [],
 };
 
+function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function formatRecruiterDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {
         month: 'short',
@@ -261,6 +266,103 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ── Custom Screening Questions Builder ──
+    let _customFieldCounter = 0;
+
+    window.addCustomField = function(prefill) {
+        const list = document.getElementById('customFieldsList');
+        if (!list) return;
+
+        _customFieldCounter++;
+        const idx = _customFieldCounter;
+        const label = (prefill && prefill.label) || '';
+        const type = (prefill && prefill.type) || 'text';
+        const required = prefill ? !!prefill.required : true;
+        const options = (prefill && Array.isArray(prefill.options)) ? prefill.options.join(', ') : '';
+
+        const item = document.createElement('div');
+        item.className = 'custom-field-item';
+        item.dataset.idx = idx;
+        item.innerHTML = `
+            <div class="custom-field-header">
+                <span class="custom-field-num">${list.children.length + 1}</span>
+                <button type="button" class="custom-field-remove" onclick="removeCustomField(this)" title="Remove question">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+            <div class="custom-field-body">
+                <div class="dash-row" style="gap: 12px;">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Question</label>
+                        <input type="text" class="form-control cf-label" value="${escAttr(label)}" placeholder="e.g. Do you have a valid driver's license?">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Answer Type</label>
+                        <select class="form-control cf-type" onchange="onFieldTypeChange(this)">
+                            <option value="text" ${type === 'text' ? 'selected' : ''}>Short Text</option>
+                            <option value="textarea" ${type === 'textarea' ? 'selected' : ''}>Long Text</option>
+                            <option value="select" ${type === 'select' ? 'selected' : ''}>Dropdown</option>
+                            <option value="yesno" ${type === 'yesno' ? 'selected' : ''}>Yes / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="cf-options-row" style="${type === 'select' ? '' : 'display:none;'}">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Dropdown Options <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(comma separated)</span></label>
+                        <input type="text" class="form-control cf-options" value="${escAttr(options)}" placeholder="e.g. 0-1 years, 2-5 years, 5+ years">
+                    </div>
+                </div>
+                <label class="checkbox-item" style="display:inline-flex; width:auto; border:none; background:none; padding:4px 0 0;">
+                    <input type="checkbox" class="cf-required" ${required ? 'checked' : ''}>
+                    <span style="font-weight:500; font-size:0.85rem;">Required</span>
+                </label>
+            </div>
+        `;
+        list.appendChild(item);
+    };
+
+    window.removeCustomField = function(btn) {
+        const item = btn.closest('.custom-field-item');
+        if (item) {
+            item.remove();
+            // Re-number
+            document.querySelectorAll('#customFieldsList .custom-field-num').forEach((el, i) => {
+                el.textContent = i + 1;
+            });
+        }
+    };
+
+    window.onFieldTypeChange = function(sel) {
+        const row = sel.closest('.custom-field-body').querySelector('.cf-options-row');
+        row.style.display = sel.value === 'select' ? '' : 'none';
+    };
+
+    function escAttr(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    }
+
+    function escapeHtml(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function collectCustomFields() {
+        const items = document.querySelectorAll('#customFieldsList .custom-field-item');
+        const fields = [];
+        items.forEach(item => {
+            const label = item.querySelector('.cf-label')?.value.trim();
+            if (!label) return;
+            const type = item.querySelector('.cf-type')?.value || 'text';
+            const required = item.querySelector('.cf-required')?.checked || false;
+            const field = { label, type, required };
+            if (type === 'select') {
+                const raw = item.querySelector('.cf-options')?.value || '';
+                field.options = raw.split(',').map(o => o.trim()).filter(Boolean);
+            }
+            fields.push(field);
+        });
+        return fields;
+    }
+
     // Form submission — save to jobs-store
     const postJobFormWizard = document.getElementById('postJobFormWizard');
     if (postJobFormWizard) {
@@ -293,7 +395,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 title, company, location, type,
                 description, requirements, skills,
                 salaryFrom, salaryTo, salaryPeriod,
-                benefits, closingDate
+                benefits, closingDate,
+                customFields: collectCustomFields()
             };
 
             if (editingId) {
@@ -426,6 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCandidatesView();
         } catch (e) {
             console.warn('Failed to load jobs from API:', e);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">Failed to load jobs. Please refresh the page.</td></tr>';
         }
     }
 
@@ -448,6 +552,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const statusColor = statusColors[app.status] || '#6B7280';
 
+        const responses = Array.isArray(app.form_responses) ? app.form_responses : [];
+        const hasResponses = responses.length > 0;
+
         const body = document.getElementById('candidateModalBody');
         body.innerHTML = `
             <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
@@ -467,19 +574,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div style="font-weight:600; font-size:0.9rem; color:${statusColor};">${(app.status || 'submitted').charAt(0).toUpperCase() + (app.status || 'submitted').slice(1)}</div>
                 </div>
                 <div style="background:var(--bg); padding:12px; border-radius:10px;">
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">CV</div>
-                    <div style="font-weight:600; font-size:0.9rem;">${app.cv_name ? '<i class="fa-solid fa-check-circle" style="color:#059669;"></i> ' + app.cv_name : '<span style="color:var(--text-muted);">None attached</span>'}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Applied On</div>
+                    <div style="font-weight:600; font-size:0.9rem;">${formatRecruiterDate(app.created_at)}</div>
                 </div>
                 <div style="background:var(--bg); padding:12px; border-radius:10px;">
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Cover Letter</div>
-                    <div style="font-weight:600; font-size:0.9rem;">${app.cl_name ? '<i class="fa-solid fa-check-circle" style="color:#7E22CE;"></i> ' + app.cl_name : '<span style="color:var(--text-muted);">None attached</span>'}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Applicant Note</div>
+                    <div style="font-weight:500; font-size:0.85rem;">${app.note || '<span style="color:var(--text-muted);">No note</span>'}</div>
                 </div>
             </div>
-            <div style="background:var(--bg); padding:12px; border-radius:10px;">
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Applied On</div>
-                <div style="font-weight:600; font-size:0.9rem;">${formatRecruiterDate(app.created_at)}</div>
+
+            <!-- Document tabs -->
+            <div class="candidate-doc-tabs">
+                <button class="candidate-doc-tab active" data-tab="cv" onclick="switchCandidateDocTab('cv')">
+                    <i class="fa-regular fa-file-lines"></i> CV ${app.cv_name ? '' : '<span style="opacity:0.5;">(None)</span>'}
+                </button>
+                <button class="candidate-doc-tab" data-tab="cl" onclick="switchCandidateDocTab('cl')">
+                    <i class="fa-solid fa-envelope-open-text"></i> Cover Letter ${app.cl_name ? '' : '<span style="opacity:0.5;">(None)</span>'}
+                </button>
+                ${hasResponses ? '<button class="candidate-doc-tab" data-tab="responses" onclick="switchCandidateDocTab(\'responses\')"><i class="fa-solid fa-clipboard-question"></i> Responses</button>' : ''}
+            </div>
+            <div class="candidate-doc-panel" id="candidateDocPanel">
+                ${app.cv_id
+                    ? '<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.2rem;"></i><div style="margin-top:8px; font-size:0.85rem;">Loading CV...</div></div>'
+                    : '<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-regular fa-file-lines" style="font-size:2rem; margin-bottom:8px; display:block; opacity:0.3;"></i>No CV was attached to this application.</div>'
+                }
             </div>
         `;
+
+        // Store app reference for tab switching
+        window._currentReviewApp = app;
+        window._docCache = {};
 
         const actions = document.getElementById('candidateModalActions');
         const isTerminal = app.status === 'rejected' || app.status === 'hired';
@@ -490,7 +614,204 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const modal = document.getElementById('candidateModal');
         modal.style.display = 'flex';
+
+        // Auto-load CV tab
+        if (app.cv_id) {
+            loadCandidateDocument(app, 'cv');
+        }
     };
+
+    window.switchCandidateDocTab = function(tab) {
+        document.querySelectorAll('.candidate-doc-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.candidate-doc-tab[data-tab="${tab}"]`).classList.add('active');
+
+        const app = window._currentReviewApp;
+        if (!app) return;
+
+        const panel = document.getElementById('candidateDocPanel');
+
+        // Handle responses tab
+        if (tab === 'responses') {
+            const responses = Array.isArray(app.form_responses) ? app.form_responses : [];
+            if (responses.length === 0) {
+                panel.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-solid fa-clipboard-question" style="font-size:2rem; margin-bottom:8px; display:block; opacity:0.3;"></i>No screening responses.</div>';
+                return;
+            }
+            let html = '<div class="candidate-responses-list">';
+            responses.forEach((r, i) => {
+                const answer = r.answer || '<span style="color:var(--text-muted); font-style:italic;">No answer</span>';
+                html += `
+                    <div class="candidate-response-item">
+                        <div class="candidate-response-q"><span class="candidate-response-num">${i + 1}</span> ${escapeHtml(r.question || 'Question')}</div>
+                        <div class="candidate-response-a">${escapeHtml(r.answer || '') || '<span style="color:var(--text-muted); font-style:italic;">No answer</span>'}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            panel.innerHTML = html;
+            return;
+        }
+
+        const docId = tab === 'cv' ? app.cv_id : app.cl_id;
+        const docName = tab === 'cv' ? app.cv_name : app.cl_name;
+        const docLabel = tab === 'cv' ? 'CV' : 'Cover Letter';
+        const docIcon = tab === 'cv' ? 'fa-regular fa-file-lines' : 'fa-solid fa-envelope-open-text';
+
+        if (!docId) {
+            panel.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="${docIcon}" style="font-size:2rem; margin-bottom:8px; display:block; opacity:0.3;"></i>No ${docLabel.toLowerCase()} was attached to this application.</div>`;
+            return;
+        }
+
+        // Check cache
+        if (window._docCache[docId]) {
+            renderDocumentInPanel(window._docCache[docId], tab, app.id);
+            return;
+        }
+
+        panel.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.2rem;"></i><div style="margin-top:8px; font-size:0.85rem;">Loading ${docLabel}...</div></div>`;
+        loadCandidateDocument(app, tab);
+    };
+
+    async function loadCandidateDocument(app, tab) {
+        const docId = tab === 'cv' ? app.cv_id : app.cl_id;
+        if (!docId) return;
+
+        try {
+            const res = await fetch(`api/documents/index.php?id=${encodeURIComponent(docId)}&application_id=${encodeURIComponent(app.id)}`, { credentials: 'include' });
+            const result = await res.json();
+            if (!result.success || !result.document) {
+                document.getElementById('candidateDocPanel').innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);">Failed to load document.</div>`;
+                return;
+            }
+            window._docCache[docId] = result.document;
+            renderDocumentInPanel(result.document, tab, app.id);
+        } catch (e) {
+            console.warn('Error loading document:', e);
+            document.getElementById('candidateDocPanel').innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);">Failed to load document.</div>`;
+        }
+    }
+
+    function renderDocumentInPanel(doc, tab, appId) {
+        const panel = document.getElementById('candidateDocPanel');
+        const data = doc.data || {};
+
+        // Uploaded file — show PDF embed or download link
+        if (data.uploaded_file) {
+            const serveUrl = `api/documents/serve.php?id=${encodeURIComponent(doc.id)}&application_id=${encodeURIComponent(appId)}`;
+            const isPdf = (data.mime_type || '').indexOf('pdf') !== -1;
+            const originalName = escHtml(data.original_name || data.uploaded_file);
+            let html = `<div class="doc-preview-card">`;
+            html += `<div class="doc-preview-header"><h4>${escHtml(doc.name || 'Uploaded Document')}</h4><div class="doc-preview-contact">${originalName}</div></div>`;
+            if (isPdf) {
+                html += `<div class="doc-preview-section"><iframe src="${serveUrl}" style="width:100%; height:500px; border:1px solid var(--border); border-radius:8px;" title="${originalName}"></iframe></div>`;
+            } else {
+                html += `<div class="doc-preview-section" style="text-align:center; padding:32px;"><i class="fa-solid fa-file-word" style="font-size:3rem; color:#2563EB; margin-bottom:12px; display:block;"></i><p style="margin-bottom:12px;">This document is a Word file and cannot be previewed inline.</p><a href="${serveUrl}" target="_blank" class="btn-action btn-shortlist" style="display:inline-flex; text-decoration:none;"><i class="fa-solid fa-download"></i> Download ${originalName}</a></div>`;
+            }
+            html += `</div>`;
+            panel.innerHTML = html;
+            return;
+        }
+
+        // System-built document — render from JSON data
+        if (tab === 'cv') {
+            panel.innerHTML = renderCVPreview(data, doc.name);
+        } else {
+            panel.innerHTML = renderCLPreview(data, doc.name);
+        }
+    }
+
+    function renderCVPreview(d, docName) {
+        const fullName = escHtml(`${d.firstName || ''} ${d.lastName || ''}`.trim()) || 'Unnamed';
+        const contactParts = [d.email, d.phone, d.address, [d.postCode, d.city].filter(Boolean).join(' ')].filter(Boolean).map(escHtml);
+
+        let html = `<div class="doc-preview-card">`;
+        html += `<div class="doc-preview-header"><h4>${fullName}</h4>`;
+        if (d.jobTitle) html += `<div class="doc-preview-subtitle">${escHtml(d.jobTitle)}</div>`;
+        if (contactParts.length) html += `<div class="doc-preview-contact">${contactParts.join(' &bull; ')}</div>`;
+        html += `</div>`;
+
+        if (d.summary) {
+            html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Professional Summary</div><p>${escHtml(d.summary)}</p></div>`;
+        }
+
+        if (d.experience && d.experience.length) {
+            html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Experience</div>`;
+            d.experience.forEach(e => {
+                html += `<div class="doc-preview-entry">`;
+                html += `<div class="doc-preview-entry-title">${escHtml(e.jobTitle) || 'Untitled'}${e.employer ? ' at ' + escHtml(e.employer) : ''}</div>`;
+                const dates = [escHtml(e.startDate), escHtml(e.endDate) || 'Present'].filter(Boolean).join(' — ');
+                if (dates || e.city) html += `<div class="doc-preview-entry-meta">${dates}${e.city ? ' &bull; ' + escHtml(e.city) : ''}</div>`;
+                if (e.description) html += `<div class="doc-preview-entry-desc">${escHtml(e.description)}</div>`;
+                html += `</div>`;
+            });
+            html += `</div>`;
+        }
+
+        if (d.education && d.education.length) {
+            html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Education</div>`;
+            d.education.forEach(e => {
+                html += `<div class="doc-preview-entry">`;
+                html += `<div class="doc-preview-entry-title">${escHtml(e.degree) || 'Untitled'}${e.school ? ' at ' + escHtml(e.school) : ''}</div>`;
+                const dates = [escHtml(e.startDate), escHtml(e.endDate) || 'Present'].filter(Boolean).join(' — ');
+                if (dates || e.city) html += `<div class="doc-preview-entry-meta">${dates}${e.city ? ' &bull; ' + escHtml(e.city) : ''}</div>`;
+                if (e.description) html += `<div class="doc-preview-entry-desc">${escHtml(e.description)}</div>`;
+                html += `</div>`;
+            });
+            html += `</div>`;
+        }
+
+        if (d.skills && d.skills.length) {
+            html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Skills</div><div class="doc-preview-chips">`;
+            d.skills.forEach(s => { html += `<span class="doc-preview-chip">${escHtml(s.name || s)}</span>`; });
+            html += `</div></div>`;
+        }
+
+        if (d.languages && d.languages.length) {
+            html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Languages</div><div class="doc-preview-chips">`;
+            d.languages.forEach(l => { html += `<span class="doc-preview-chip">${escHtml(l.name || l)}${l.level ? ' — ' + escHtml(l.level) : ''}</span>`; });
+            html += `</div></div>`;
+        }
+
+        if (d.hobbies) {
+            html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Hobbies & Interests</div><p>${escHtml(d.hobbies)}</p></div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    function renderCLPreview(d, docName) {
+        const fullName = escHtml(`${d.firstName || ''} ${d.lastName || ''}`.trim()) || 'Unnamed';
+        const contactParts = [d.email, d.phone, d.address].filter(Boolean).map(escHtml);
+
+        let html = `<div class="doc-preview-card">`;
+        html += `<div class="doc-preview-header"><h4>${fullName}</h4>`;
+        if (contactParts.length) html += `<div class="doc-preview-contact">${contactParts.join(' &bull; ')}</div>`;
+        html += `</div>`;
+
+        if (d.companyName || d.hiringManager) {
+            html += `<div class="doc-preview-section">`;
+            if (d.hiringManager) html += `<p>Dear ${escHtml(d.hiringManager)},</p>`;
+            else if (d.companyName) html += `<p>Dear Hiring Manager at ${escHtml(d.companyName)},</p>`;
+            html += `</div>`;
+        }
+
+        if (d.letterContent) {
+            html += `<div class="doc-preview-section doc-preview-letter-body">`;
+            const paragraphs = d.letterContent.split('\n').filter(p => p.trim());
+            paragraphs.forEach(p => { html += `<p>${escHtml(p.trim())}</p>`; });
+            html += `</div>`;
+        } else {
+            html += `<div class="doc-preview-section" style="color:var(--text-muted); text-align:center; padding:20px;">No cover letter content available.</div>`;
+        }
+
+        if (d.letterContent) {
+            html += `<div class="doc-preview-section"><p>Sincerely,<br><strong>${fullName}</strong></p></div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
 
     window.closeCandidateModal = function() {
         var modal = document.getElementById('candidateModal');

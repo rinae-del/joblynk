@@ -57,6 +57,7 @@ const JobsStore = (() => {
             salaryPeriod: j.salary_period || j.salaryPeriod || 'Per Month',
             benefits: j.benefits || [],
             closingDate: j.closing_date || j.closingDate || '',
+            customFields: j.custom_fields || j.customFields || [],
             status: j.status || 'active',
             postedAt: j.created_at || j.postedAt || new Date().toISOString(),
             applicants: j.applicant_count || j.applicants || 0,
@@ -184,6 +185,7 @@ const JobsStore = (() => {
                 cv_id: applicationData.cvId || null,
                 cl_id: applicationData.clId || null,
                 note: applicationData.note || '',
+                form_responses: applicationData.formResponses || null,
             };
             const result = await apiFetch(API_APPS, { method: 'POST', body: payload });
             if (result.success) {

@@ -135,22 +135,74 @@
                 <h2>Apply for this job</h2>
                 <button onclick="closeAppModal()" class="app-modal-close" aria-label="Close">&times;</button>
             </div>
+
+            <!-- Job details section -->
             <div class="app-modal-job-info" id="appModalJobInfo">
                 <div class="app-modal-title" id="appModalTitle"></div>
                 <div class="app-modal-company" id="appModalCompany"></div>
             </div>
-            <div class="app-modal-field">
-                <label for="appCvSelect">Attach CV</label>
-                <select id="appCvSelect" class="app-modal-select">
-                    <option value="">-- Select a saved CV --</option>
-                </select>
+            <div class="app-modal-details" id="appModalDetails" style="display:none;">
+                <button type="button" class="app-modal-details-toggle" id="btnToggleDetails" onclick="toggleJobDetails()">
+                    <i class="fa-solid fa-chevron-down"></i> View job details
+                </button>
+                <div class="app-modal-details-body" id="appModalDetailsBody" style="display:none;"></div>
             </div>
+
+            <!-- CV attachment -->
             <div class="app-modal-field">
-                <label for="appClSelect">Attach Cover Letter (optional)</label>
-                <select id="appClSelect" class="app-modal-select">
-                    <option value="">-- None --</option>
-                </select>
+                <label>Attach CV</label>
+                <div class="app-doc-source-tabs">
+                    <button type="button" class="app-doc-tab active" data-target="cv" data-source="system" onclick="switchDocSource('cv','system')"><i class="fa-solid fa-file-lines"></i> My CVs</button>
+                    <button type="button" class="app-doc-tab" data-target="cv" data-source="upload" onclick="switchDocSource('cv','upload')"><i class="fa-solid fa-upload"></i> Upload File</button>
+                </div>
+                <div id="cvSourceSystem" class="app-doc-source-panel">
+                    <select id="appCvSelect" class="app-modal-select">
+                        <option value="">-- Select a saved CV --</option>
+                    </select>
+                </div>
+                <div id="cvSourceUpload" class="app-doc-source-panel" style="display:none;">
+                    <label class="app-file-upload-box" id="cvUploadBox">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Click to upload your CV</span>
+                        <span class="upload-hint">PDF, DOC, or DOCX — max 5 MB</span>
+                        <input type="file" id="appCvFile" accept=".pdf,.doc,.docx" style="display:none;" onchange="onFileSelected('cv', this)">
+                    </label>
+                    <div id="cvFileName" class="app-file-name" style="display:none;"></div>
+                </div>
             </div>
+
+            <!-- Cover Letter attachment -->
+            <div class="app-modal-field">
+                <label>Attach Cover Letter (optional)</label>
+                <div class="app-doc-source-tabs">
+                    <button type="button" class="app-doc-tab active" data-target="cl" data-source="system" onclick="switchDocSource('cl','system')"><i class="fa-solid fa-file-lines"></i> My Letters</button>
+                    <button type="button" class="app-doc-tab" data-target="cl" data-source="upload" onclick="switchDocSource('cl','upload')"><i class="fa-solid fa-upload"></i> Upload File</button>
+                </div>
+                <div id="clSourceSystem" class="app-doc-source-panel">
+                    <select id="appClSelect" class="app-modal-select">
+                        <option value="">-- None --</option>
+                    </select>
+                </div>
+                <div id="clSourceUpload" class="app-doc-source-panel" style="display:none;">
+                    <label class="app-file-upload-box" id="clUploadBox">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Click to upload your Cover Letter</span>
+                        <span class="upload-hint">PDF, DOC, or DOCX — max 5 MB</span>
+                        <input type="file" id="appClFile" accept=".pdf,.doc,.docx" style="display:none;" onchange="onFileSelected('cl', this)">
+                    </label>
+                    <div id="clFileName" class="app-file-name" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Applicant note -->
+            <div class="app-modal-field">
+                <label for="appNote">Note to recruiter (optional)</label>
+                <textarea id="appNote" class="app-modal-select" rows="3" style="resize:vertical; min-height:60px;" placeholder="Why are you a great fit for this role?"></textarea>
+            </div>
+
+            <!-- Custom screening questions (populated by JS) -->
+            <div id="appCustomQuestions" style="display:none;"></div>
+
             <div class="app-modal-notice">
                 <i class="fa-solid fa-circle-info"></i> By submitting, you agree to share your profile and documents with this employer.
             </div>

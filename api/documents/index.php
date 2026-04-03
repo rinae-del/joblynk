@@ -21,6 +21,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
+$userRole = $_SESSION['user_role'] ?? 'job_seeker';
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = getDB();
 
@@ -30,8 +31,41 @@ $pdo = getDB();
 if ($method === 'GET') {
 
     $docId = $_GET['id'] ?? null;
+    $appId = $_GET['application_id'] ?? null;
 
-    // Single document
+    // Recruiter: view applicant's document via application
+    if ($docId && $appId && ($userRole === 'recruiter' || $userRole === 'admin')) {
+        // Verify the recruiter owns the job this application belongs to
+        $stmt = $pdo->prepare('
+            SELECT a.cv_id, a.cl_id FROM applications a
+            JOIN jobs j ON a.job_id = j.id
+            WHERE a.id = ? AND j.user_id = ?
+        ');
+        $stmt->execute([$appId, $userId]);
+        $application = $stmt->fetch();
+
+        if (!$application) {
+            jsonResponse(['success' => false, 'message' => 'Application not found or not authorized.'], 404);
+        }
+
+        // Ensure the requested doc is either the CV or CL from this application
+        if ((int)$docId !== (int)$application['cv_id'] && (int)$docId !== (int)$application['cl_id']) {
+            jsonResponse(['success' => false, 'message' => 'Document does not belong to this application.'], 403);
+        }
+
+        $stmt = $pdo->prepare('SELECT * FROM documents WHERE id = ?');
+        $stmt->execute([$docId]);
+        $doc = $stmt->fetch();
+
+        if (!$doc) {
+            jsonResponse(['success' => false, 'message' => 'Document not found.'], 404);
+        }
+
+        $doc['data'] = json_decode($doc['data'], true);
+        jsonResponse(['success' => true, 'document' => $doc]);
+    }
+
+    // Single document (own)
     if ($docId) {
         $stmt = $pdo->prepare('SELECT * FROM documents WHERE id = ? AND user_id = ?');
         $stmt->execute([$docId, $userId]);

@@ -36,6 +36,7 @@ if ($method === 'GET') {
         $job = $stmt->fetch();
         if (!$job) jsonResponse(['success' => false, 'message' => 'Job not found.'], 404);
         $job['benefits'] = json_decode($job['benefits'], true) ?: [];
+        $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
         jsonResponse(['success' => true, 'job' => $job]);
     }
 
@@ -44,14 +45,20 @@ if ($method === 'GET') {
         $stmt = $pdo->prepare('SELECT j.*, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j WHERE j.user_id = ? ORDER BY j.created_at DESC');
         $stmt->execute([$userId]);
         $jobs = $stmt->fetchAll();
-        foreach ($jobs as &$j) $j['benefits'] = json_decode($j['benefits'], true) ?: [];
+        foreach ($jobs as &$j) {
+            $j['benefits'] = json_decode($j['benefits'], true) ?: [];
+            $j['custom_fields'] = json_decode($j['custom_fields'] ?? '[]', true) ?: [];
+        }
         jsonResponse(['success' => true, 'jobs' => $jobs]);
     }
 
     // All active jobs
     $stmt = $pdo->query('SELECT j.*, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j WHERE j.status = "active" ORDER BY j.created_at DESC');
     $jobs = $stmt->fetchAll();
-    foreach ($jobs as &$j) $j['benefits'] = json_decode($j['benefits'], true) ?: [];
+    foreach ($jobs as &$j) {
+        $j['benefits'] = json_decode($j['benefits'], true) ?: [];
+        $j['custom_fields'] = json_decode($j['custom_fields'] ?? '[]', true) ?: [];
+    }
     jsonResponse(['success' => true, 'jobs' => $jobs]);
 }
 
@@ -87,14 +94,17 @@ if ($method === 'POST') {
 
     $benefitsJson = json_encode(is_array($benefits) ? $benefits : []);
 
+    $customFields = $body['customFields'] ?? $body['custom_fields'] ?? [];
+    $customFieldsJson = json_encode(is_array($customFields) ? $customFields : []);
+
     if ($jobId) {
         // Update — verify ownership
         $stmt = $pdo->prepare('SELECT id FROM jobs WHERE id = ? AND user_id = ?');
         $stmt->execute([$jobId, $userId]);
         if (!$stmt->fetch()) jsonResponse(['success' => false, 'message' => 'Job not found or not authorized.'], 404);
 
-        $stmt = $pdo->prepare('UPDATE jobs SET title=?, company=?, location=?, type=?, description=?, requirements=?, skills=?, salary_from=?, salary_to=?, salary_period=?, benefits=?, closing_date=?, status=?, color=? WHERE id=? AND user_id=?');
-        $stmt->execute([$title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $benefitsJson, $closingDate ?: null, $status, $color, $jobId, $userId]);
+        $stmt = $pdo->prepare('UPDATE jobs SET title=?, company=?, location=?, type=?, description=?, requirements=?, skills=?, salary_from=?, salary_to=?, salary_period=?, benefits=?, closing_date=?, custom_fields=?, status=?, color=? WHERE id=? AND user_id=?');
+        $stmt->execute([$title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color, $jobId, $userId]);
 
         jsonResponse(['success' => true, 'id' => (int)$jobId, 'message' => 'Job updated.']);
     }
@@ -113,8 +123,8 @@ if ($method === 'POST') {
     $cnt = $pdo->query('SELECT COUNT(*) FROM jobs')->fetchColumn();
     $color = $colors[$cnt % count($colors)];
 
-    $stmt = $pdo->prepare('INSERT INTO jobs (user_id, title, company, location, type, description, requirements, skills, salary_from, salary_to, salary_period, benefits, closing_date, status, color) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
-    $stmt->execute([$userId, $title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $benefitsJson, $closingDate ?: null, $status, $color]);
+    $stmt = $pdo->prepare('INSERT INTO jobs (user_id, title, company, location, type, description, requirements, skills, salary_from, salary_to, salary_period, benefits, closing_date, custom_fields, status, color) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+    $stmt->execute([$userId, $title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color]);
     $newId = (int)$pdo->lastInsertId();
 
     // Decrement credit (recruiter only)
