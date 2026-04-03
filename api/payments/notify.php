@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $pfData = $_POST;
 
 // Strip signature from data for verification — skip empty values per PayFast spec
+$pfPassphrase = trim(PAYFAST_PASSPHRASE);
 $pfParamString = '';
 foreach ($pfData as $key => $val) {
     if ($key !== 'signature' && $val !== '') {
@@ -31,8 +32,8 @@ foreach ($pfData as $key => $val) {
 $pfParamString = rtrim($pfParamString, '&');
 
 // Add passphrase if set
-if (defined('PAYFAST_PASSPHRASE') && PAYFAST_PASSPHRASE !== '') {
-    $pfParamString .= '&passphrase=' . urlencode(PAYFAST_PASSPHRASE);
+if ($pfPassphrase !== '') {
+    $pfParamString .= '&passphrase=' . urlencode($pfPassphrase);
 }
 
 // ── 2. Verify Signature ──

@@ -44,14 +44,14 @@ if ($errors) {
     jsonResponse(['success' => false, 'message' => implode(' ', $errors)], 422);
 }
 
-// ── Define Expected Prices (in ZAR) ──
+// ── Define Expected Prices (in ZAR) — TEST PRICES ──
 $packages = [
-    'intro' => 750.00,
-    '1job'  => 1300.00,
-    '2job'  => 2200.00,
-    '3job'  => 2950.00,
-    '4job'  => 3500.00,
-    '5job'  => 3900.00,
+    'intro' => 1.00,
+    '1job'  => 1.00,
+    '2job'  => 1.00,
+    '3job'  => 1.00,
+    '4job'  => 1.00,
+    '5job'  => 1.00,
 ];
 
 if (!isset($packages[$packageId])) {
@@ -133,15 +133,16 @@ $pfData = [
 ];
 
 // Generate signature — skip empty values per PayFast spec
+$pfPassphrase = trim(PAYFAST_PASSPHRASE);
 $sigString = '';
 foreach ($pfData as $key => $val) {
     if ($val !== '') {
-        $sigString .= $key . '=' . urlencode(trim($val)) . '&';
+        $sigString .= $key . '=' . urlencode(trim((string)$val)) . '&';
     }
 }
 $sigString = rtrim($sigString, '&');
-if (PAYFAST_PASSPHRASE) {
-    $sigString .= '&passphrase=' . urlencode(PAYFAST_PASSPHRASE);
+if ($pfPassphrase !== '') {
+    $sigString .= '&passphrase=' . urlencode($pfPassphrase);
 }
 $pfData['signature'] = md5($sigString);
 
