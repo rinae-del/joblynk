@@ -4,7 +4,8 @@
  * Check if the user is logged in. Returns user data if so.
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
+startSecureSession();
 require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();

@@ -7,7 +7,8 @@
  * The actual payment verification happens via ITN callback (api/payments/notify.php).
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
+startSecureSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 require_once __DIR__ . '/../config/payfast.php';

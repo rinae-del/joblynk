@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Terms & Conditions | Joblynk</title>
+    <meta name="description" content="JobLynk Terms and Conditions for Recruiters, Employers and Clients using the Joblynk recruitment platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: #F8FAFC;
+            color: #1E293B;
+            line-height: 1.75;
+            min-height: 100vh;
+        }
+        .tc-page {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 4rem;
+        }
+        .tc-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6366F1;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        .tc-back:hover { text-decoration: underline; }
+        .tc-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1E293B;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+        .tc-logo span { color: #6366F1; }
+        .tc-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366F1, #818CF8);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+            color: #0F172A;
+        }
+        .tc-subtitle {
+            font-size: 1rem;
+            color: #64748B;
+            margin-bottom: 2rem;
+        }
+        .tc-updated {
+            font-size: 0.82rem;
+            color: #94A3B8;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        /* Content Sections */
+        .tc-section {
+            margin-bottom: 2rem;
+        }
+        .tc-section h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tc-section h2 .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #EEF2FF;
+            color: #6366F1;
+            font-size: 0.8rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .tc-section p, .tc-section li {
+            font-size: 0.92rem;
+            color: #475569;
+            line-height: 1.75;
+        }
+        .tc-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+        }
+        .tc-section ul li {
+            padding: 0.3rem 0 0.3rem 1.4rem;
+            position: relative;
+        }
+        .tc-section ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.85rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #6366F1;
+        }
+        .tc-section ul.cross li::before {
+            content: '\f00d';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.6rem;
+            background: transparent;
+            color: #EF4444;
+            top: 0.55rem;
+        }
+        .tc-section ul.check li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.6rem;
+            background: transparent;
+            color: #059669;
+            top: 0.55rem;
+        }
+        .tc-section strong { color: #1E293B; }
+
+        /* Sub-label */
+        .tc-sublabel {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0.8rem 0 0.2rem;
+        }
+
+        /* Highlight Box */
+        .tc-highlight {
+            background: #EEF2FF;
+            border: 1px solid #C7D2FE;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+            color: #3730A3;
+            line-height: 1.65;
+        }
+        .tc-highlight strong { color: #312E81; }
+
+        .tc-warning {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin: 0.75rem 0;
+            font-size: 0.9rem;
+            color: #991B1B;
+            line-height: 1.65;
+        }
+
+        /* Footer */
+        .tc-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #E2E8F0;
+            text-align: center;
+            color: #94A3B8;
+            font-size: 0.82rem;
+        }
+        .tc-footer a { color: #6366F1; text-decoration: none; }
+        .tc-footer a:hover { text-decoration: underline; }
+        .tc-footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tc-page">
+        <a href="javascript:history.back()" class="tc-back"><i class="fa-solid fa-arrow-left"></i> Back</a>
+
+        <div class="tc-logo"><span>Joblynk</span></div>
+        <span class="tc-badge">Legal Document</span>
+
+        <h1>Terms &amp; Conditions</h1>
+        <p class="tc-subtitle">Recruiters &amp; Clients</p>
+        <p class="tc-updated"><i class="fa-regular fa-calendar"></i> Last updated: 3 April 2026</p>
+
+        <!-- Section 1 -->
+        <div class="tc-section">
+            <h2><span class="num">1</span> Introduction</h2>
+            <p>These Terms and Conditions ("Agreement") govern the use of the JobLynk platform by recruiters, employers, and clients ("Users"). By registering, accessing, or using JobLynk, you agree to be bound by this Agreement.</p>
+            <p style="margin-top:0.5rem;">JobLynk is an online recruitment platform that enables employers and recruiters to advertise job vacancies and access candidate profiles.</p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="tc-section">
+            <h2><span class="num">2</span> Definitions</h2>
+            <ul>
+                <li><strong>"Platform"</strong> refers to JobLynk's website and services</li>
+                <li><strong>"User"</strong> refers to any recruiter, employer, or client using the Platform</li>
+                <li><strong>"Candidate"</strong> refers to individuals who create profiles or upload CVs</li>
+                <li><strong>"Services"</strong> refers to job advertisements, candidate database access, and related offerings</li>
+            </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="tc-section">
+            <h2><span class="num">3</span> User Eligibility</h2>
+            <p>Users must:</p>
+            <ul>
+                <li>Be at least 18 years old</li>
+                <li>Be legally authorised to represent a business or entity</li>
+                <li>Provide accurate and complete registration information</li>
+            </ul>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="tc-section">
+            <h2><span class="num">4</span> Account Registration</h2>
+            <ul>
+                <li>Users must create an account to access services</li>
+                <li>Users are responsible for maintaining confidentiality of login details</li>
+                <li>JobLynk reserves the right to suspend or terminate accounts for misuse</li>
+            </ul>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="tc-section">
+            <h2><span class="num">5</span> Services Provided</h2>
+            <p>JobLynk provides:</p>
+            <ul class="check">
+                <li>Job advertisement listings</li>
+                <li>Access to candidate database (subject to subscription/payment)</li>
+                <li>Recruitment-related tools and features</li>
+            </ul>
+            <p class="tc-sublabel">JobLynk does <strong>not</strong> guarantee:</p>
+            <ul class="cross">
+                <li>Candidate suitability</li>
+                <li>Number of applications</li>
+                <li>Successful hires</li>
+            </ul>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="tc-section">
+            <h2><span class="num">6</span> Payment Terms</h2>
+            <ul>
+                <li>All services are payable upfront unless otherwise agreed</li>
+                <li>Payments are processed via secure third-party payment gateways</li>
+                <li>Prices are subject to change without prior notice</li>
+                <li>No refunds will be issued once a job advert has been published or for unused Bundles or job adverts</li>
+            </ul>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="tc-section">
+            <h2><span class="num">7</span> Use of Platform</h2>
+            <p>Users agree <strong>NOT</strong> to:</p>
+            <ul class="cross">
+                <li>Post false, misleading, or fraudulent job listings</li>
+                <li>Discriminate unlawfully in job advertisements</li>
+                <li>Use candidate data for purposes other than recruitment</li>
+                <li>Share or resell candidate data</li>
+            </ul>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="tc-section">
+            <h2><span class="num">8</span> Data Protection &amp; POPIA Compliance</h2>
+            <p>JobLynk complies with the Protection of Personal Information Act (POPIA). By using the Platform, Users agree that:</p>
+            <ul>
+                <li>Candidate data may only be used for lawful recruitment purposes</li>
+                <li>Personal information must be handled securely and confidentially</li>
+                <li>Users act as responsible parties when accessing candidate data</li>
+            </ul>
+            <p class="tc-sublabel">JobLynk:</p>
+            <ul class="check">
+                <li>Collects and processes personal information lawfully</li>
+                <li>Implements reasonable security safeguards</li>
+                <li>Does not sell personal data to third parties</li>
+            </ul>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="tc-section">
+            <h2><span class="num">9</span> Candidate Data Usage</h2>
+            <p class="tc-sublabel">Users may:</p>
+            <ul class="check">
+                <li>View candidate profiles</li>
+                <li>Contact candidates for job opportunities</li>
+            </ul>
+            <p class="tc-sublabel">Users may <strong>NOT</strong>:</p>
+            <ul class="cross">
+                <li>Store, distribute, or misuse candidate data</li>
+                <li>Use data for marketing unrelated to recruitment</li>
+                <li>Contact candidates for non-employment purposes</li>
+            </ul>
+        </div>
+
+        <!-- Section 10 -->
+        <div class="tc-section">
+            <h2><span class="num">10</span> Intellectual Property</h2>
+            <p>All content, trademarks, and platform design remain the property of JobLynk.</p>
+            <p class="tc-sublabel">Users may not:</p>
+            <ul class="cross">
+                <li>Copy, reproduce, or distribute platform content without permission</li>
+            </ul>
+        </div>
+
+        <!-- Section 11 -->
+        <div class="tc-section">
+            <h2><span class="num">11</span> Limitation of Liability</h2>
+            <p>JobLynk shall not be liable for:</p>
+            <ul class="cross">
+                <li>Any hiring decisions made by Users</li>
+                <li>Loss of business, revenue, or data</li>
+                <li>Platform downtime or technical issues</li>
+            </ul>
+            <div class="tc-warning" style="margin-top:0.75rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Use of the Platform is at the User's own risk.
+            </div>
+        </div>
+
+        <!-- Section 12 -->
+        <div class="tc-section">
+            <h2><span class="num">12</span> Termination</h2>
+            <p>JobLynk reserves the right to:</p>
+            <ul>
+                <li>Suspend or terminate accounts</li>
+                <li>Remove job listings</li>
+                <li>Restrict access for breach of terms</li>
+            </ul>
+        </div>
+
+        <!-- Section 13 -->
+        <div class="tc-section">
+            <h2><span class="num">13</span> Governing Law</h2>
+            <p>This Agreement is governed by the laws of the Republic of South Africa.</p>
+        </div>
+
+        <!-- Section 14 -->
+        <div class="tc-section">
+            <h2><span class="num">14</span> Amendments</h2>
+            <p>JobLynk reserves the right to update these Terms at any time. Continued use of the Platform constitutes acceptance of updated Terms.</p>
+        </div>
+
+        <!-- Section 15 -->
+        <div class="tc-section">
+            <h2><span class="num">15</span> Contact Information</h2>
+            <p>For queries, please contact: <a href="mailto:info@joblynk.co.za" style="color:#6366F1;font-weight:600;">info@joblynk.co.za</a></p>
+        </div>
+
+        <!-- Acceptance highlight -->
+        <div class="tc-highlight">
+            <strong><i class="fa-solid fa-shield-halved"></i> Acceptance</strong><br>
+            By using JobLynk, you confirm that you have read, understood, and agree to these Terms and Conditions.
+        </div>
+
+        <div class="tc-footer">
+            <p>JobLynk &copy; 2026. All rights reserved.</p>
+            <div class="tc-footer-links">
+                <a href="terms-and-conditions.html">POPIA &amp; Data Policy</a>
+                <a href="recruiter-terms.html">Recruiter Terms</a>
+                <a href="mailto:info@joblynk.co.za">info@joblynk.co.za</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

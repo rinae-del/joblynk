@@ -9,7 +9,8 @@
  * Settings are stored in a `settings` table (auto-created if missing).
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
+startSecureSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 

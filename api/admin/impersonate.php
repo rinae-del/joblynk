@@ -7,7 +7,8 @@
  * GET ?revert=1   — Revert back to original admin session
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
+startSecureSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 

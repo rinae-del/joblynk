@@ -8,7 +8,8 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();
-session_start();
+require_once __DIR__ . '/../config/session.php';
+startSecureSession();
 
 if (!isset($_SESSION['user_id'])) {
     jsonResponse(['success' => false, 'error' => 'Unauthorized'], 401);

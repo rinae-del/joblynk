@@ -4,7 +4,8 @@
  * Destroy the user session.
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
+startSecureSession();
 require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();

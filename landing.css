@@ -518,6 +518,14 @@ body.landing-page {
     background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, transparent 100%);
 }
 
+.how-it-works .features-header h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+}
+
+.how-it-works .features-header p {
+    font-size: 1.05rem;
+}
+
 .steps-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -528,7 +536,17 @@ body.landing-page {
 
 .step-item {
     text-align: center;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: transform .3s, background .3s, box-shadow .3s;
+}
+
+.step-item:hover {
+    transform: translateY(-4px);
+    background: rgba(99,102,241,0.08);
+    box-shadow: 0 8px 32px rgba(99,102,241,0.12);
 }
 
 .step-img-wrap {
