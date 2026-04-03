@@ -738,6 +738,7 @@ body.landing-page {
 
 .cta-half h2,
 .cta-half p,
+.cta-half ul,
 .cta-half .btn-landing {
     margin-left: 2rem;
     margin-right: 2rem;
@@ -774,40 +775,185 @@ body.landing-page {
     line-height: 1.65;
 }
 
-/* Recruiter pricing pills */
-.cta-pricing-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+.cta-recruiter-points {
+    list-style: none;
+    display: grid;
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
 }
 
-.cta-pill {
-    background: rgba(5, 150, 105, 0.1);
-    border: 1px solid rgba(5, 150, 105, 0.3);
+.cta-recruiter-points li {
+    position: relative;
+    padding-left: 1.4rem;
     color: var(--text);
-    font-size: 0.82rem;
-    padding: 0.3rem 0.65rem;
+    font-size: 0.9rem;
+}
+
+.cta-recruiter-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green-light);
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
+}
+
+.recruiter-pricing-section {
+    padding: 5rem 0 0;
+}
+
+.recruiter-pricing-header {
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+}
+
+.recruiter-pricing-header .hero-tag {
+    margin-bottom: 1rem;
+}
+
+.recruiter-pricing-header h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    margin-bottom: 1rem;
+}
+
+.recruiter-pricing-header p {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+.recruiter-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.recruiter-price-card {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.98));
+    border: 1.5px solid var(--border);
     border-radius: 20px;
+    padding: 1.5rem;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.recruiter-price-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(52, 211, 153, 0.35);
+    box-shadow: 0 16px 40px rgba(5, 150, 105, 0.12);
+}
+
+.recruiter-price-card.is-featured {
+    border-color: rgba(52, 211, 153, 0.55);
+    box-shadow: 0 18px 44px rgba(5, 150, 105, 0.16);
+}
+
+.recruiter-price-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.recruiter-price-name {
+    color: var(--green-light);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.recruiter-price-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(5, 150, 105, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.24);
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 600;
     white-space: nowrap;
 }
 
-.cta-pill strong {
-    color: #059669;
+.recruiter-price-card h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 0.45rem;
 }
 
-.cta-vat-note {
-    font-size: 0.8rem !important;
-    color: var(--muted) !important;
-    margin-bottom: 1.25rem !important;
+.recruiter-price-jobs {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.85rem;
+}
+
+.recruiter-price-copy {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.recruiter-pricing-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+}
+
+.recruiter-pricing-benefits span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(5, 150, 105, 0.08);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    color: var(--text);
+    font-size: 0.84rem;
+}
+
+.recruiter-pricing-benefits i {
+    color: var(--green-light);
+}
+
+.recruiter-pricing-cta {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 22px;
+    border: 1.5px solid rgba(52, 211, 153, 0.18);
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(15, 23, 42, 0.95));
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    justify-content: space-between;
+    gap: 1.25rem;
 }
 
-.cta-vat-note i {
-    color: #059669;
-    font-size: 0.85rem;
+.recruiter-pricing-cta h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+
+.recruiter-pricing-cta p {
+    color: var(--muted);
+    max-width: 560px;
+}
+
+.recruiter-pricing-cta .btn-landing {
+    flex-shrink: 0;
 }
 
 /* ── Footer ── */
@@ -968,6 +1114,19 @@ body.landing-page {
         padding: 0 1.5rem;
     }
 
+    .recruiter-pricing-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .recruiter-pricing-cta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .recruiter-pricing-cta .btn-landing {
+        width: 100%;
+    }
+
     .footer-grid {
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
@@ -997,6 +1156,14 @@ body.landing-page {
 @media (max-width: 480px) {
     .landing-nav {
         padding: 1rem 1.25rem;
+    }
+
+    .recruiter-pricing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recruiter-pricing-benefits {
+        justify-content: flex-start;
     }
 
     .footer-grid {
