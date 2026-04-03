@@ -20,16 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // ── 1. Get POST data ──
 $pfData = $_POST;
 
-// Strip signature from data for verification — skip empty values per PayFast spec
-$pfPassphrase = trim(PAYFAST_PASSPHRASE);
-$pfParamString = '';
-foreach ($pfData as $key => $val) {
-    if ($key !== 'signature' && $val !== '') {
-        $pfParamString .= $key . '=' . urlencode(trim($val)) . '&';
-    }
+foreach ($pfData as $key => $value) {
+    $pfData[$key] = stripslashes((string) $value);
 }
-// Remove trailing &
-$pfParamString = rtrim($pfParamString, '&');
+
+// Build parameter string for ITN verification using all posted fields up to signature.
+$pfPassphrase = trim(PAYFAST_PASSPHRASE);
+$pfParamString = buildPayFastParameterString($pfData, false, true, false);
 
 // Add passphrase if set
 if ($pfPassphrase !== '') {

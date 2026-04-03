@@ -133,24 +133,12 @@ $pfData = [
     'email_address' => $email,
     'amount'       => number_format($expectedAmount, 2, '.', ''),
     'item_name'    => 'Joblynk Recruiter - ' . ucfirst($packageId) . ' Plan',
+    'custom_int1'  => $userId,
     'custom_str1'  => $packageId,
     'custom_str2'  => $email,
-    'custom_int1'  => $userId,
 ];
 
-// Generate signature — skip empty values per PayFast spec
-$pfPassphrase = trim(PAYFAST_PASSPHRASE);
-$sigString = '';
-foreach ($pfData as $key => $val) {
-    if ($val !== '') {
-        $sigString .= $key . '=' . urlencode(trim((string)$val)) . '&';
-    }
-}
-$sigString = rtrim($sigString, '&');
-if ($pfPassphrase !== '') {
-    $sigString .= '&passphrase=' . urlencode($pfPassphrase);
-}
-$pfData['signature'] = md5($sigString);
+$pfData['signature'] = generatePayFastSignature($pfData, PAYFAST_PASSPHRASE);
 
 jsonResponse([
     'success'    => true,
