@@ -131,6 +131,12 @@ try {
 
     $pdo->commit();
 
+    // ── Log the recruiter in immediately so session persists through PayFast redirect ──
+    $_SESSION['user_id']    = $userId;
+    $_SESSION['user_email'] = $email;
+    $_SESSION['user_role']  = 'recruiter';
+    $_SESSION['user_name']  = $firstName . ' ' . $lastName;
+
 } catch (Exception $e) {
     $pdo->rollBack();
     jsonResponse(['success' => false, 'message' => 'Database error: ' . $e->getMessage()], 500);
@@ -225,7 +231,7 @@ $pfData = buildRecruiterPayFastData([
     'packageLabel' => $packagePayFastLabel,
     'itemName' => 'JobLynk Recruiter - ' . $packagePayFastLabel,
     'userId' => $userId,
-    'returnUrl' => APP_URL . '/recruiter-overview.html?payment=success',
+    'returnUrl' => APP_URL . '/recruiter-post-job.html?payment=success',
     'cancelUrl' => APP_URL . '/recruiter-pricing.html?payment=cancelled',
 ]);
 

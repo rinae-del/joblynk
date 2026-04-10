@@ -252,6 +252,22 @@
     <script src="jobs-store.js?v=7"></script>
     <script src="recruiter-dashboard.js?v=7"></script>
     <script>
+    // Show welcome banner after successful payment
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('payment') === 'success') {
+            const banner = document.createElement('div');
+            banner.style.cssText = 'background: linear-gradient(135deg, #059669, #10B981); color: #fff; padding: 16px 24px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(16,185,129,0.25);';
+            banner.innerHTML = '<i class="fa-solid fa-circle-check" style="font-size:1.4rem;"></i><div><strong>Payment successful!</strong> Your account is ready. Post your first job below.</div>';
+            const main = document.querySelector('.main-content');
+            const breadcrumb = document.getElementById('app-breadcrumb');
+            if (main && breadcrumb) breadcrumb.after(banner);
+            else if (main) main.prepend(banner);
+            // Clean URL without reload
+            history.replaceState(null, '', window.location.pathname);
+        }
+    })();
+
     (async function loadCredits() {
         try {
             const res = await fetch('api/credits/index.php', { credentials: 'include' });
