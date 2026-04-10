@@ -222,6 +222,11 @@ if ($paymentMethod === 'invoice') {
     ], 201);
 }
 
+// Build signed return URL so the recruiter is auto-logged-in after PayFast redirect
+$returnTs  = time();
+$returnSig = hash_hmac('sha256', $userId . ':' . $returnTs, PAYFAST_PASSPHRASE);
+$returnUrl = APP_URL . '/api/auth/payment-return.php?uid=' . $userId . '&ts=' . $returnTs . '&sig=' . $returnSig;
+
 $pfData = buildRecruiterPayFastData([
     'firstName' => $firstName,
     'lastName' => $lastName,
@@ -231,7 +236,7 @@ $pfData = buildRecruiterPayFastData([
     'packageLabel' => $packagePayFastLabel,
     'itemName' => 'JobLynk Recruiter - ' . $packagePayFastLabel,
     'userId' => $userId,
-    'returnUrl' => APP_URL . '/recruiter-post-job.html?payment=success',
+    'returnUrl' => $returnUrl,
     'cancelUrl' => APP_URL . '/recruiter-pricing.html?payment=cancelled',
 ]);
 
