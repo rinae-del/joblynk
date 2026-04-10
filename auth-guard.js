@@ -1,5 +1,5 @@
 /**
- * Joblynk Auth Guard
+ * JobLynk Auth Guard
  * Include this script on protected pages (dashboard, profile, etc.)
  * It checks the session and redirects to sign-in if not logged in.
  * 
@@ -57,7 +57,7 @@ const _authScript = document.currentScript || document.querySelector('script[src
         }
 
         // Store user data for page scripts to use
-        window.__joblynkUser = data.user;
+        window.__JobLynkUser = data.user;
 
         // Wait for body to be available before DOM operations
         if (!document.body) {

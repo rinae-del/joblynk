@@ -1,5 +1,5 @@
 /**
- * Joblynk – Shared UI Components
+ * JobLynk – Shared UI Components
  * Renders sidebar, mobile topbar, bottom tab-bar, and breadcrumb.
  *
  * Usage:
@@ -69,7 +69,9 @@
                 { key: 'settings',     icon: 'fa-solid fa-gear',           label: 'Settings',     href: 'admin-settings.html' },
             ],
             userIcon: { icon: 'fa-solid fa-shield-halved', bg: 'rgba(220,38,38,0.2)', color: '#FCA5A5' },
-            bottomLinks: [],
+            bottomLinks: [
+                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Sign Out', href: '#', id: 'navSignOut', signOut: true },
+            ],
             ctaButton: null,
         },
         recruiter: {
@@ -94,8 +96,7 @@
             ],
             userIcon: { icon: 'fa-solid fa-building', bg: 'rgba(126,34,206,0.2)', color: '#c084fc' },
             bottomLinks: [
-                { icon: 'fa-solid fa-shield-halved',            label: 'Super Admin',           href: 'admin-overview.html' },
-                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Switch to Job Seeker',  href: 'dashboard.html' },
+                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Sign Out', href: '#', id: 'navSignOut', signOut: true },
             ],
             ctaButton: { icon: 'fa-solid fa-plus', label: 'Post a Job', href: 'recruiter-post-job.html', id: 'btnPostJobSidebar' },
         },
@@ -150,7 +151,7 @@
     <aside class="sidebar ${cfg.sidebarClass}" id="sidebar" data-role="${esc(role)}">
         <div class="sidebar-top">
             <div class="sidebar-logo">
-                <span class="logo-text">Joblynk</span>
+                <span class="logo-text">JobLynk</span>
                 ${badgeHtml}
             </div>
             ${ctaHtml}
@@ -185,7 +186,7 @@
     <button class="mobile-hamburger" id="btnHamburger"><i class="fa-solid fa-bars"></i></button>
     <div class="mobile-topbar" id="mobileTopbar">
         <div class="topbar-brand">
-            <span class="topbar-logo">Joblynk</span>
+            <span class="topbar-logo">JobLynk</span>
             <span class="topbar-badge">${esc(label)}</span>
         </div>
         <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>

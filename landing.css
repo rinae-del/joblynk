@@ -200,6 +200,15 @@ body.landing-page {
     color: var(--green-light);
 }
 
+.hero-tag-featured {
+    font-size: 1.1rem;
+    font-weight: 800;
+    padding: 0.5rem 1.5rem;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(129, 140, 248, 0.15));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
 .hero-title {
     font-size: clamp(2.2rem, 5vw, 3.4rem);
     font-weight: 800;

@@ -10,6 +10,7 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 require_once __DIR__ . '/../config/payfast.php';
+require_once __DIR__ . '/../config/recruiter-payments.php';
 
 // Only respond to POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -64,6 +65,7 @@ $paymentStatus = $pfData['payment_status'];
 $amountGross = (float) $pfData['amount_gross'];
 $customStr1  = $pfData['custom_str1'] ?? '';  // plan ID (e.g. "intro", "3job")
 $customStr2  = $pfData['custom_str2'] ?? '';  // user email stored at checkout
+$customStr3  = $pfData['custom_str3'] ?? '';  // invoice token for invoice payments
 $customInt1  = $pfData['custom_int1'] ?? 0;   // user_id if logged in
 
 if ($paymentStatus !== 'COMPLETE') {
@@ -105,22 +107,26 @@ try {
     $stmt->execute([$userId, $paymentId, $amountGross, $customStr1, 'success']);
     $paymentDbId = $pdo->lastInsertId();
 
-    // Activate job credits based on package
-    $creditMap = [
-        'intro' => 1,
-        '1job'  => 1,
-        '2job'  => 2,
-        '3job'  => 3,
-        '4job'  => 4,
-        '5job'  => 5,
-    ];
-    $totalCredits = $creditMap[$customStr1] ?? 1;
-    // Intro offer: 30-day expiry; all bundles: 90-day expiry
-    $expiryDays = ($customStr1 === 'intro') ? 30 : 90;
+    $package = getRecruiterPackage($customStr1);
+    $totalCredits = (int) ($package['credits'] ?? 1);
+    $expiryDays = (int) ($package['expiry_days'] ?? 90);
     $expiresAt = date('Y-m-d H:i:s', strtotime("+{$expiryDays} days"));
 
-    $stmt = $pdo->prepare('INSERT INTO job_credits (user_id, payment_id, package_id, total_credits, used_credits, purchased_at, expires_at) VALUES (?, ?, ?, ?, 0, NOW(), ?)');
-    $stmt->execute([$userId, $paymentDbId, $customStr1, $totalCredits, $expiresAt]);
+    // Link pre-allocated credits to this payment (created at signup with payment_id = NULL)
+    $stmt = $pdo->prepare('UPDATE job_credits SET payment_id = ? WHERE user_id = ? AND package_id = ? AND payment_id IS NULL LIMIT 1');
+    $stmt->execute([$paymentDbId, $userId, $customStr1]);
+
+    // If no pre-allocated row was found (edge case), create credits now
+    if ($stmt->rowCount() === 0) {
+        $stmt = $pdo->prepare('INSERT INTO job_credits (user_id, payment_id, package_id, total_credits, used_credits, purchased_at, expires_at) VALUES (?, ?, ?, ?, 0, NOW(), ?)');
+        $stmt->execute([$userId, $paymentDbId, $customStr1, $totalCredits, $expiresAt]);
+    }
+
+    if ($customStr3 !== '') {
+        ensurePaymentInvoicesTable($pdo);
+        $stmt = $pdo->prepare("UPDATE payment_invoices SET status = 'paid', payfast_payment_id = ?, paid_at = NOW() WHERE invoice_token = ? AND status = 'pending'");
+        $stmt->execute([$paymentId, $customStr3]);
+    }
 
     error_log("PayFast ITN: Payment $paymentId recorded for user $userId — R$amountGross ($customStr1) — $totalCredits credits activated, expires $expiresAt");
     http_response_code(200);

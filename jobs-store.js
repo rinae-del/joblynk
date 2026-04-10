@@ -1,13 +1,13 @@
 /**
- * Joblynk Jobs Store
+ * JobLynk Jobs Store
  * API-backed utility for job postings and applications.
  * Falls back to localStorage when the API is unavailable.
  * Used by both recruiter-dashboard.js and dashboard.js
  */
 
 const JobsStore = (() => {
-    const JOBS_KEY = 'joblynk_jobs';
-    const APPS_KEY = 'joblynk_applications';
+    const JOBS_KEY = 'JobLynk_jobs';
+    const APPS_KEY = 'JobLynk_applications';
     const API_JOBS = 'api/jobs/index.php';
     const API_APPS = 'api/applications/index.php';
 

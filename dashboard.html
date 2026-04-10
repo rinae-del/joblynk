@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joblynk – Dashboard</title>
-    <meta name="description" content="Manage your CVs, job applications and more from your Joblynk dashboard.">
+    <title>JobLynk – Dashboard</title>
+    <meta name="description" content="Manage your CVs, job applications and more from your JobLynk dashboard.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -27,7 +27,7 @@
         <!-- ── Welcome Hero ── -->
         <section class="welcome-hero">
             <div class="welcome-text">
-                <h1>Welcome to <span class="gradient-text">Joblynk</span></h1>
+                <h1>Welcome to <span class="gradient-text">JobLynk</span></h1>
                 <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role — all in one place.</p>
             </div>
             <div class="welcome-actions">
@@ -148,50 +148,27 @@
                 <div class="app-modal-details-body" id="appModalDetailsBody" style="display:none;"></div>
             </div>
 
-            <!-- CV attachment -->
+            <!-- Documents -->
             <div class="app-modal-field">
-                <label>Attach CV</label>
-                <div class="app-doc-source-tabs">
-                    <button type="button" class="app-doc-tab active" data-target="cv" data-source="system" onclick="switchDocSource('cv','system')"><i class="fa-solid fa-file-lines"></i> My CVs</button>
-                    <button type="button" class="app-doc-tab" data-target="cv" data-source="upload" onclick="switchDocSource('cv','upload')"><i class="fa-solid fa-upload"></i> Upload File</button>
-                </div>
-                <div id="cvSourceSystem" class="app-doc-source-panel">
-                    <select id="appCvSelect" class="app-modal-select">
-                        <option value="">-- Select a saved CV --</option>
-                    </select>
-                </div>
-                <div id="cvSourceUpload" class="app-doc-source-panel" style="display:none;">
-                    <label class="app-file-upload-box" id="cvUploadBox">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Click to upload your CV</span>
-                        <span class="upload-hint">PDF, DOC, or DOCX — max 5 MB</span>
-                        <input type="file" id="appCvFile" accept=".pdf,.doc,.docx" style="display:none;" onchange="onFileSelected('cv', this)">
-                    </label>
-                    <div id="cvFileName" class="app-file-name" style="display:none;"></div>
-                </div>
-            </div>
+                <label><i class="fa-solid fa-paperclip" style="margin-right:4px;color:var(--accent,#4F46E5);"></i> Attach Documents</label>
+                <p style="font-size:0.78rem;color:var(--text-muted,#6b7280);margin:-4px 0 10px;">Select from your saved documents and/or upload new files. You can attach multiple.</p>
 
-            <!-- Cover Letter attachment -->
-            <div class="app-modal-field">
-                <label>Attach Cover Letter (optional)</label>
-                <div class="app-doc-source-tabs">
-                    <button type="button" class="app-doc-tab active" data-target="cl" data-source="system" onclick="switchDocSource('cl','system')"><i class="fa-solid fa-file-lines"></i> My Letters</button>
-                    <button type="button" class="app-doc-tab" data-target="cl" data-source="upload" onclick="switchDocSource('cl','upload')"><i class="fa-solid fa-upload"></i> Upload File</button>
+                <!-- Saved documents (checkboxes) -->
+                <div id="appSavedDocs" style="margin-bottom:12px;">
+                    <div id="appSavedDocsList" class="app-docs-checklist"></div>
+                    <div id="appNoSavedDocs" style="display:none;font-size:0.82rem;color:var(--text-muted,#6b7280);padding:12px;text-align:center;background:#F8FAFC;border-radius:10px;border:1px solid var(--border,#e5e7eb);">
+                        <i class="fa-regular fa-folder-open" style="margin-right:4px;"></i> No saved documents yet
+                    </div>
                 </div>
-                <div id="clSourceSystem" class="app-doc-source-panel">
-                    <select id="appClSelect" class="app-modal-select">
-                        <option value="">-- None --</option>
-                    </select>
-                </div>
-                <div id="clSourceUpload" class="app-doc-source-panel" style="display:none;">
-                    <label class="app-file-upload-box" id="clUploadBox">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Click to upload your Cover Letter</span>
-                        <span class="upload-hint">PDF, DOC, or DOCX — max 5 MB</span>
-                        <input type="file" id="appClFile" accept=".pdf,.doc,.docx" style="display:none;" onchange="onFileSelected('cl', this)">
-                    </label>
-                    <div id="clFileName" class="app-file-name" style="display:none;"></div>
-                </div>
+
+                <!-- Upload new files -->
+                <label class="app-file-upload-box" id="multiUploadBox">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Click to upload documents</span>
+                    <span class="upload-hint">PDF, DOC, or DOCX — max 5 MB each — select multiple files</span>
+                    <input type="file" id="appFileUpload" accept=".pdf,.doc,.docx" multiple style="display:none;" onchange="onMultiFilesSelected(this)">
+                </label>
+                <div id="appUploadedFilesList" class="app-uploaded-files" style="display:none;"></div>
             </div>
 
             <!-- Applicant note -->

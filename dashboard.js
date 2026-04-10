@@ -1,5 +1,5 @@
 /* ======================================
-   JOBLYNK DASHBOARD – Script
+   JobLynk DASHBOARD – Script
    ====================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -100,8 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.warn('API failed, using localStorage:', e);
-            getSavedData('joblynk_cvs').forEach(d => cvs.push(normalizeDoc(d, 'local')));
-            getSavedData('joblynk_cls').forEach(d => cls.push(normalizeDoc(d, 'local')));
+            getSavedData('JobLynk_cvs').forEach(d => cvs.push(normalizeDoc(d, 'local')));
+            getSavedData('JobLynk_cls').forEach(d => cls.push(normalizeDoc(d, 'local')));
         }
 
         // CVs
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { console.warn('API duplicate failed:', e); }
 
         // Fallback
-        const key = type === 'cv' ? 'joblynk_cvs' : 'joblynk_cls';
+        const key = type === 'cv' ? 'JobLynk_cvs' : 'JobLynk_cls';
         const docs = getSavedData(key);
         const original = docs.find(c => String(c.id) === String(id));
         if (!original) return;
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { console.warn('API rename failed:', e); }
 
         // Fallback
-        const key = type === 'cv' ? 'joblynk_cvs' : 'joblynk_cls';
+        const key = type === 'cv' ? 'JobLynk_cvs' : 'JobLynk_cls';
         const docs = getSavedData(key);
         const doc = docs.find(c => String(c.id) === String(id));
         if (!doc) return;
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { console.warn('API delete failed:', e); }
 
         // Fallback
-        const key = type === 'cv' ? 'joblynk_cvs' : 'joblynk_cls';
+        const key = type === 'cv' ? 'JobLynk_cvs' : 'JobLynk_cls';
         let docs = getSavedData(key);
         docs = docs.filter(c => String(c.id) !== String(id));
         localStorage.setItem(key, JSON.stringify(docs));
@@ -425,37 +425,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Application Modal
-    let _appDocSource = { cv: 'system', cl: 'system' };
+    let _uploadedFiles = []; // staged file uploads
 
-    window.switchDocSource = function(docType, source) {
-        _appDocSource[docType] = source;
-        const systemPanel = $(docType + 'SourceSystem');
-        const uploadPanel = $(docType + 'SourceUpload');
-        if (source === 'system') {
-            systemPanel.style.display = '';
-            uploadPanel.style.display = 'none';
-        } else {
-            systemPanel.style.display = 'none';
-            uploadPanel.style.display = '';
+    window.onMultiFilesSelected = function(input) {
+        if (!input.files) return;
+        for (const file of input.files) {
+            if (file.size > 5 * 1024 * 1024) { alert(`${file.name} exceeds 5 MB limit.`); continue; }
+            _uploadedFiles.push(file);
         }
-        // Update tab active state
-        document.querySelectorAll(`.app-doc-tab[data-target="${docType}"]`).forEach(t => {
-            t.classList.toggle('active', t.getAttribute('data-source') === source);
-        });
+        input.value = ''; // allow re-selecting same files
+        renderUploadedFiles();
     };
 
-    window.onFileSelected = function(docType, input) {
-        const nameEl = $(docType + 'FileName');
-        const box = $(docType + 'UploadBox');
-        if (input.files && input.files[0]) {
-            nameEl.textContent = input.files[0].name;
-            nameEl.style.display = '';
-            box.classList.add('has-file');
-        } else {
-            nameEl.style.display = 'none';
-            box.classList.remove('has-file');
-        }
+    window.removeUploadedFile = function(idx) {
+        _uploadedFiles.splice(idx, 1);
+        renderUploadedFiles();
     };
+
+    function renderUploadedFiles() {
+        const list = $('appUploadedFilesList');
+        const box = $('multiUploadBox');
+        if (_uploadedFiles.length === 0) {
+            list.style.display = 'none';
+            list.innerHTML = '';
+            if (box) box.classList.remove('has-file');
+            return;
+        }
+        if (box) box.classList.add('has-file');
+        list.style.display = '';
+        list.innerHTML = _uploadedFiles.map((f, i) =>
+            `<div class="app-uploaded-file-item">
+                <i class="fa-solid fa-file-circle-check"></i>
+                <span class="file-name">${escText(f.name)}</span>
+                <button type="button" class="file-remove" onclick="removeUploadedFile(${i})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+            </div>`
+        ).join('');
+    }
+
+    function toggleDocCheckItem(el) {
+        const cb = el.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        el.classList.toggle('checked', cb.checked);
+    }
 
     window.toggleJobDetails = function() {
         const body = $('appModalDetailsBody');
@@ -516,63 +527,55 @@ document.addEventListener('DOMContentLoaded', () => {
             detailsSection.style.display = 'none';
         }
 
-        // Reset doc source tabs
-        _appDocSource = { cv: 'system', cl: 'system' };
-        switchDocSource('cv', 'system');
-        switchDocSource('cl', 'system');
-
-        // Clear file inputs
-        const cvFile = $('appCvFile'); if (cvFile) cvFile.value = '';
-        const clFile = $('appClFile'); if (clFile) clFile.value = '';
-        $('cvFileName').style.display = 'none';
-        $('clFileName').style.display = 'none';
-        const cvBox = $('cvUploadBox'); if (cvBox) cvBox.classList.remove('has-file');
-        const clBox = $('clUploadBox'); if (clBox) clBox.classList.remove('has-file');
+        // Reset document selections
+        _uploadedFiles = [];
+        renderUploadedFiles();
+        const fileInput = $('appFileUpload'); if (fileInput) fileInput.value = '';
+        const uploadBox = $('multiUploadBox'); if (uploadBox) uploadBox.classList.remove('has-file');
 
         // Clear note
         const noteEl = $('appNote'); if (noteEl) noteEl.value = '';
 
-        // Populate document dropdowns
-        const cvSelect = $('appCvSelect');
-        cvSelect.innerHTML = '<option value="">-- Select a saved CV --</option>';
-        const clSelect = $('appClSelect');
-        clSelect.innerHTML = '<option value="">-- None --</option>';
-
-        let hasSavedCvs = false;
-        let hasSavedCls = false;
+        // Populate saved documents checklist
+        const docsList = $('appSavedDocsList');
+        const noDocsMsg = $('appNoSavedDocs');
+        docsList.innerHTML = '';
+        let hasAnyDocs = false;
 
         try {
             const res = await fetch('api/documents/index.php', { credentials: 'include' });
             const result = await res.json();
-            if (result.success && result.documents) {
+            if (result.success && result.documents && result.documents.length) {
+                hasAnyDocs = true;
                 result.documents.forEach(doc => {
-                    const opt = `<option value="${doc.id}">${doc.name || 'Untitled'}</option>`;
-                    if (doc.doc_type === 'cv') { cvSelect.innerHTML += opt; hasSavedCvs = true; }
-                    else if (doc.doc_type === 'cl') { clSelect.innerHTML += opt; hasSavedCls = true; }
+                    const typeClass = doc.doc_type === 'cv' ? 'cv' : 'cl';
+                    const typeLabel = doc.doc_type === 'cv' ? 'CV' : 'Cover Letter';
+                    const icon = doc.doc_type === 'cv' ? 'fa-file-lines' : 'fa-envelope-open-text';
+                    const item = document.createElement('label');
+                    item.className = 'app-doc-check-item';
+                    item.innerHTML = `
+                        <input type="checkbox" name="app_doc_ids" value="${doc.id}" data-doc-type="${doc.doc_type}">
+                        <div class="doc-icon ${typeClass}"><i class="fa-solid ${icon}"></i></div>
+                        <span class="doc-name">${escText(doc.name || 'Untitled')}</span>
+                        <span class="doc-type-label ${typeClass}">${typeLabel}</span>`;
+                    item.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'INPUT') {
+                            this.classList.toggle('checked', e.target.checked);
+                        }
+                    });
+                    docsList.appendChild(item);
                 });
             }
         } catch (e) {
             console.warn('Docs API failed:', e);
-            getSavedData('joblynk_cvs').forEach(cv => {
-                cvSelect.innerHTML += `<option value="${cv.id}">${cv.name || 'Untitled CV'}</option>`;
-                hasSavedCvs = true;
-            });
-            getSavedData('joblynk_cls').forEach(cl => {
-                clSelect.innerHTML += `<option value="${cl.id}">${cl.name || 'Untitled Cover Letter'}</option>`;
-                hasSavedCls = true;
-            });
         }
 
-        // Auto-switch to upload tab when user has no saved documents
-        if (!hasSavedCvs) {
-            _appDocSource.cv = 'upload';
-            switchDocSource('cv', 'upload');
-            cvSelect.innerHTML = '<option value="">No saved CVs yet — use Upload</option>';
-        }
-        if (!hasSavedCls) {
-            _appDocSource.cl = 'upload';
-            switchDocSource('cl', 'upload');
-            clSelect.innerHTML = '<option value="">No saved letters yet — use Upload</option>';
+        if (hasAnyDocs) {
+            docsList.style.display = '';
+            noDocsMsg.style.display = 'none';
+        } else {
+            docsList.style.display = 'none';
+            noDocsMsg.style.display = '';
         }
 
         $('appModalOverlay').style.display = 'flex';
@@ -618,22 +621,23 @@ document.addEventListener('DOMContentLoaded', () => {
     window.submitJobApplication = async function() {
         if (!currentApplyJobId) return;
 
-        // Determine CV source
-        let cvId = null, cvFile = null;
-        if (_appDocSource.cv === 'system') {
-            cvId = $('appCvSelect').value;
-            if (!cvId) { alert('Please select a CV to attach.'); return; }
-        } else {
-            cvFile = $('appCvFile').files[0];
-            if (!cvFile) { alert('Please upload a CV file.'); return; }
-        }
+        // Collect selected saved document IDs
+        const selectedDocIds = [...document.querySelectorAll('input[name="app_doc_ids"]:checked')].map(cb => cb.value);
 
-        // Determine CL source
-        let clId = null, clFile = null;
-        if (_appDocSource.cl === 'system') {
-            clId = $('appClSelect').value || null;
-        } else {
-            clFile = $('appClFile').files[0] || null;
+        // Separate first CV and CL for backward compatibility
+        let cvId = null, clId = null;
+        const allDocIds = [];
+        document.querySelectorAll('input[name="app_doc_ids"]:checked').forEach(cb => {
+            const docType = cb.dataset.docType;
+            if (docType === 'cv' && !cvId) cvId = cb.value;
+            else if (docType === 'cl' && !clId) clId = cb.value;
+            allDocIds.push(cb.value);
+        });
+
+        // Must have at least one document (saved or uploaded)
+        if (allDocIds.length === 0 && _uploadedFiles.length === 0) {
+            alert('Please select or upload at least one document.');
+            return;
         }
 
         const note = ($('appNote')?.value || '').trim();
@@ -668,37 +672,27 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
 
         try {
-            // Use FormData if there are file uploads
-            if (cvFile || clFile) {
-                const fd = new FormData();
-                fd.append('job_id', currentApplyJobId);
-                if (cvId) fd.append('cv_id', cvId);
-                if (cvFile) fd.append('cv_file', cvFile);
-                if (clId) fd.append('cl_id', clId);
-                if (clFile) fd.append('cl_file', clFile);
-                if (note) fd.append('note', note);
-                if (formResponses.length) fd.append('form_responses', JSON.stringify(formResponses));
+            // Always use FormData to support file uploads
+            const fd = new FormData();
+            fd.append('job_id', currentApplyJobId);
+            if (cvId) fd.append('cv_id', cvId);
+            if (clId) fd.append('cl_id', clId);
+            if (allDocIds.length) fd.append('document_ids', JSON.stringify(allDocIds));
+            _uploadedFiles.forEach(file => fd.append('extra_files[]', file));
+            if (note) fd.append('note', note);
+            if (formResponses.length) fd.append('form_responses', JSON.stringify(formResponses));
 
-                const res = await fetch('api/applications/index.php', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: fd
-                });
-                const result = await res.json();
-                if (!result.success) throw new Error(result.message || 'Submit failed');
+            const res = await fetch('api/applications/index.php', {
+                method: 'POST',
+                credentials: 'include',
+                body: fd
+            });
+            const result = await res.json();
+            if (!result.success) throw new Error(result.message || 'Submit failed');
 
-                // Refresh caches
-                await JobsStore.fetchApplications();
-                await JobsStore.fetchJobs();
-            } else {
-                await JobsStore.submitApplication(currentApplyJobId, {
-                    cvId: cvId || null,
-                    clId: clId || null,
-                    note: note,
-                    formResponses: formResponses.length ? formResponses : null,
-                    applicantName: document.querySelector('[data-user-name]')?.textContent || 'Guest User'
-                });
-            }
+            // Refresh caches
+            await JobsStore.fetchApplications();
+            await JobsStore.fetchJobs();
 
             btn.innerHTML = '<i class="fa-solid fa-check"></i> Submitted!';
             btn.style.background = '#059669';

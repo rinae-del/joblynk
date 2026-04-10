@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joblynk – Post a Job</title>
-    <meta name="description" content="Post a new job listing on Joblynk.">
+    <title>JobLynk – Post a Job</title>
+    <meta name="description" content="Post a new job listing on JobLynk.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -171,12 +171,81 @@
 
                         <div style="display: flex; justify-content: space-between; margin-top: 24px;">
                             <button type="button" class="welcome-btn secondary" style="color: var(--text); border-color: var(--border);" onclick="prevWizardStep(4)">Back</button>
-                            <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #059669, #10B981);"><i class="fa-solid fa-paper-plane"></i> Publish Job</button>
+                            <div style="display:flex; gap:12px;">
+                                <button type="button" class="btn-submit" style="background: linear-gradient(135deg, #4F46E5, #7C3AED);" onclick="previewJobAd()"><i class="fa-solid fa-eye"></i> Preview Ad</button>
+                                <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #059669, #10B981);"><i class="fa-solid fa-paper-plane"></i> Publish Job</button>
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
         </section>
+
+        <!-- Job Preview Modal -->
+        <div id="jobPreviewOverlay" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); overflow-y:auto; padding:40px 16px;">
+            <div style="max-width:720px; margin:0 auto; background:var(--bg-white,#fff); border-radius:16px; border:1px solid var(--border,#e5e7eb); box-shadow:0 25px 50px rgba(0,0,0,0.15); overflow:hidden;">
+                <!-- Header bar -->
+                <div style="background:linear-gradient(135deg,#4F46E5,#7C3AED); padding:20px 28px; display:flex; align-items:center; justify-content:space-between;">
+                    <span style="color:#fff; font-weight:700; font-size:1rem;"><i class="fa-solid fa-eye"></i> Job Ad Preview</span>
+                    <button onclick="closeJobPreview()" style="background:rgba(255,255,255,0.2); border:none; color:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1rem;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <!-- Body -->
+                <div style="padding:28px;">
+                    <!-- Company & badge row -->
+                    <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+                        <div id="prevAvatar" style="width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:#fff; background:linear-gradient(135deg,#4F46E5,#818cf8);"></div>
+                        <div style="flex:1;">
+                            <div id="prevCompany" style="font-size:0.85rem; color:var(--text-muted,#6b7280); font-weight:600;"></div>
+                            <div id="prevTitle" style="font-size:1.25rem; font-weight:800; color:var(--text,#1e293b);"></div>
+                        </div>
+                        <span style="background:#ECFDF5; color:#059669; font-size:0.75rem; font-weight:700; padding:4px 12px; border-radius:20px;">Open</span>
+                    </div>
+                    <!-- Meta pills -->
+                    <div id="prevMeta" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+                    <hr style="border:none; border-top:1px solid var(--border,#e5e7eb); margin:0 0 20px;">
+                    <!-- Description -->
+                    <div style="margin-bottom:20px;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-align-left" style="color:#7C3AED; margin-right:6px;"></i>Role Description</h4>
+                        <div id="prevDesc" style="font-size:0.88rem; line-height:1.7; color:var(--text-muted,#475569); white-space:pre-wrap;"></div>
+                    </div>
+                    <!-- Requirements -->
+                    <div style="margin-bottom:20px;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-list-check" style="color:#7C3AED; margin-right:6px;"></i>Requirements</h4>
+                        <div id="prevReqs" style="font-size:0.88rem; line-height:1.7; color:var(--text-muted,#475569); white-space:pre-wrap;"></div>
+                    </div>
+                    <!-- Skills -->
+                    <div id="prevSkillsSection" style="margin-bottom:20px; display:none;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-tags" style="color:#7C3AED; margin-right:6px;"></i>Skills</h4>
+                        <div id="prevSkills" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+                    </div>
+                    <!-- Salary -->
+                    <div id="prevSalarySection" style="margin-bottom:20px; display:none;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-wallet" style="color:#7C3AED; margin-right:6px;"></i>Compensation</h4>
+                        <div id="prevSalary" style="font-size:0.95rem; font-weight:600; color:var(--text,#1e293b);"></div>
+                    </div>
+                    <!-- Benefits -->
+                    <div id="prevBenefitsSection" style="margin-bottom:20px; display:none;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-gift" style="color:#7C3AED; margin-right:6px;"></i>Benefits</h4>
+                        <div id="prevBenefits" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+                    <!-- Screening Questions -->
+                    <div id="prevQuestionsSection" style="margin-bottom:20px; display:none;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-clipboard-question" style="color:#7C3AED; margin-right:6px;"></i>Screening Questions</h4>
+                        <ol id="prevQuestions" style="margin:0; padding-left:20px; font-size:0.88rem; color:var(--text-muted,#475569); line-height:1.8;"></ol>
+                    </div>
+                    <!-- Closing date -->
+                    <div style="margin-bottom:8px;">
+                        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; color:var(--text,#1e293b);"><i class="fa-solid fa-calendar" style="color:#7C3AED; margin-right:6px;"></i>Closing Date</h4>
+                        <div id="prevClosingDate" style="font-size:0.88rem; color:var(--text-muted,#475569);"></div>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div style="padding:16px 28px; border-top:1px solid var(--border,#e5e7eb); display:flex; justify-content:flex-end; gap:12px;">
+                    <button onclick="closeJobPreview()" class="welcome-btn secondary" style="color:var(--text); border-color:var(--border);">Close</button>
+                    <button onclick="closeJobPreview(); document.getElementById('postJobFormWizard').requestSubmit();" class="btn-submit" style="background:linear-gradient(135deg,#059669,#10B981);"><i class="fa-solid fa-paper-plane"></i> Publish Job</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="components.js?v=9"></script>
@@ -207,6 +276,113 @@
             console.warn('Failed to load credits:', e);
         }
     })();
+
+    // ── Job Preview ──
+    function escHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+    window.previewJobAd = function() {
+        const title = document.getElementById('wizJobTitle').value.trim();
+        const company = document.getElementById('wizCompany').value || 'Your Company';
+        const location = document.getElementById('wizLocation').value.trim();
+        const type = document.getElementById('wizType').value;
+        const desc = document.getElementById('wizDesc').value.trim();
+        const reqs = document.getElementById('wizReqs').value.trim();
+        const skills = document.getElementById('wizSkills').value.trim();
+        const salaryFrom = document.getElementById('wizSalaryFrom').value;
+        const salaryTo = document.getElementById('wizSalaryTo').value;
+        const salaryPeriod = document.getElementById('wizSalaryPeriod').value;
+        const closingDate = document.getElementById('wizDate').value;
+
+        // Avatar
+        const letter = company ? company[0].toUpperCase() : 'J';
+        document.getElementById('prevAvatar').textContent = letter;
+
+        // Header
+        document.getElementById('prevCompany').textContent = company;
+        document.getElementById('prevTitle').textContent = title || 'Untitled Position';
+
+        // Meta pills
+        const metaEl = document.getElementById('prevMeta');
+        metaEl.innerHTML = '';
+        const pillStyle = 'display:inline-flex;align-items:center;gap:5px;background:var(--bg-body,#f8fafc);border:1px solid var(--border,#e5e7eb);border-radius:20px;padding:5px 14px;font-size:0.8rem;color:var(--text-muted,#475569);font-weight:500;';
+        if (location) metaEl.innerHTML += `<span style="${pillStyle}"><i class="fa-solid fa-location-dot"></i> ${escHtml(location)}</span>`;
+        if (type) metaEl.innerHTML += `<span style="${pillStyle}"><i class="fa-solid fa-clock"></i> ${escHtml(type)}</span>`;
+
+        // Salary
+        const salarySection = document.getElementById('prevSalarySection');
+        if (salaryFrom || salaryTo) {
+            let salaryText = '';
+            const fmt = n => 'R ' + parseInt(n).toLocaleString('en-ZA');
+            if (salaryFrom && salaryTo) salaryText = fmt(salaryFrom) + ' – ' + fmt(salaryTo);
+            else if (salaryFrom) salaryText = 'From ' + fmt(salaryFrom);
+            else salaryText = 'Up to ' + fmt(salaryTo);
+            salaryText += ' ' + salaryPeriod;
+            document.getElementById('prevSalary').textContent = salaryText;
+            metaEl.innerHTML += `<span style="${pillStyle}"><i class="fa-solid fa-wallet"></i> ${escHtml(salaryText)}</span>`;
+            salarySection.style.display = '';
+        } else {
+            salarySection.style.display = 'none';
+        }
+
+        // Description & Requirements
+        document.getElementById('prevDesc').textContent = desc || '—';
+        document.getElementById('prevReqs').textContent = reqs || '—';
+
+        // Skills
+        const skillsSection = document.getElementById('prevSkillsSection');
+        const skillsEl = document.getElementById('prevSkills');
+        if (skills) {
+            skillsEl.innerHTML = skills.split(',').map(s => s.trim()).filter(Boolean).map(s =>
+                `<span style="background:#EEF2FF;color:#4F46E5;font-size:0.78rem;font-weight:600;padding:4px 12px;border-radius:20px;">${escHtml(s)}</span>`
+            ).join('');
+            skillsSection.style.display = '';
+        } else {
+            skillsSection.style.display = 'none';
+        }
+
+        // Benefits
+        const benefitsSection = document.getElementById('prevBenefitsSection');
+        const benefitsEl = document.getElementById('prevBenefits');
+        const checkedBenefits = [...document.querySelectorAll('.checkbox-grid input[type="checkbox"]:checked')].map(cb => cb.value);
+        if (checkedBenefits.length) {
+            benefitsEl.innerHTML = checkedBenefits.map(b =>
+                `<span style="background:#F0FDF4;color:#16a34a;font-size:0.78rem;font-weight:600;padding:4px 12px;border-radius:20px;"><i class="fa-solid fa-check" style="margin-right:4px;"></i>${escHtml(b)}</span>`
+            ).join('');
+            benefitsSection.style.display = '';
+        } else {
+            benefitsSection.style.display = 'none';
+        }
+
+        // Screening Questions
+        const questionsSection = document.getElementById('prevQuestionsSection');
+        const questionsEl = document.getElementById('prevQuestions');
+        const questions = [...document.querySelectorAll('.custom-field-item')].map(item => {
+            const label = item.querySelector('.cf-label')?.value?.trim();
+            return label || null;
+        }).filter(Boolean);
+        if (questions.length) {
+            questionsEl.innerHTML = questions.map(q => `<li>${escHtml(q)}</li>`).join('');
+            questionsSection.style.display = '';
+        } else {
+            questionsSection.style.display = 'none';
+        }
+
+        // Closing Date
+        document.getElementById('prevClosingDate').textContent = closingDate ? new Date(closingDate + 'T00:00:00').toLocaleDateString('en-ZA', { year:'numeric', month:'long', day:'numeric' }) : 'Not set';
+
+        // Show overlay
+        document.getElementById('jobPreviewOverlay').style.display = '';
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeJobPreview = function() {
+        document.getElementById('jobPreviewOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+    };
+
+    document.getElementById('jobPreviewOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeJobPreview();
+    });
 
     // Load job for editing if ?edit=ID is present
     (async function loadJobForEdit() {

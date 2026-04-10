@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruiter Sign Up | Joblynk</title>
-    <meta name="description" content="Create a recruiter account and start posting jobs on Joblynk — South Africa's smart recruitment platform.">
+    <title>Recruiter Sign Up | JobLynk</title>
+    <meta name="description" content="Create a recruiter account and start posting jobs on JobLynk — South Africa's smart recruitment platform.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -39,6 +39,65 @@
             border-top: 1px solid #E5E7EB;
         }
         .section-title:first-of-type { border-top: none; margin-top: 0; }
+
+        /* ── Stepper ── */
+        .checkout-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 2rem;
+        }
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: default;
+        }
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 2px solid #D1D5DB;
+            color: #9CA3AF;
+            background: #fff;
+            transition: all 0.3s;
+        }
+        .step-indicator.active .step-number {
+            border-color: var(--accent, #3B4BA6);
+            background: var(--accent, #3B4BA6);
+            color: #fff;
+        }
+        .step-indicator.completed .step-number {
+            border-color: #059669;
+            background: #059669;
+            color: #fff;
+        }
+        .step-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #9CA3AF;
+            transition: color 0.3s;
+        }
+        .step-indicator.active .step-label,
+        .step-indicator.completed .step-label { color: var(--text, #1E293B); }
+        .step-connector {
+            width: 48px;
+            height: 2px;
+            background: #D1D5DB;
+            margin: 0 0.75rem;
+            transition: background 0.3s;
+        }
+        .step-connector.done { background: #059669; }
+
+        /* ── Step Panels ── */
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
 
         /* ── Package Cards ── */
         .package-grid {
@@ -97,6 +156,137 @@
             background: linear-gradient(135deg, var(--accent, #3B4BA6), #7C3AED);
         }
 
+        /* ── Basket Summary ── */
+        .basket-summary {
+            background: #F8FAFC;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1.25rem;
+        }
+        .basket-summary h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text, #1E293B);
+        }
+        .basket-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            padding: 0.35rem 0;
+            color: var(--text-secondary, #6B7280);
+        }
+        .basket-row.total {
+            border-top: 1.5px solid #D1D5DB;
+            margin-top: 0.5rem;
+            padding-top: 0.65rem;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text, #1E293B);
+        }
+
+        /* ── Promo Code ── */
+        .promo-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .promo-row input {
+            flex: 1;
+            padding: 0.55rem 0.75rem;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        .promo-row button {
+            padding: 0.55rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent, #3B4BA6);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+
+        /* ── Review Summary ── */
+        .review-block {
+            background: #F8FAFC;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .review-block h4 {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted, #6B7280);
+            margin-bottom: 0.75rem;
+        }
+        .review-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            padding: 0.3rem 0;
+            color: var(--text, #1E293B);
+        }
+        .review-row span:first-child {
+            color: var(--text-secondary, #6B7280);
+        }
+
+        .payment-method-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .payment-method-card {
+            display: block;
+            background: #F8FAFC;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .payment-method-card input[type="radio"] {
+            display: none;
+        }
+        .payment-method-card:hover {
+            border-color: var(--accent, #3B4BA6);
+        }
+        .payment-method-card.selected {
+            border-color: var(--accent, #3B4BA6);
+            background: #F0F0FF;
+            box-shadow: 0 0 0 2px rgba(59, 75, 166, 0.12);
+        }
+        .payment-method-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent, #3B4BA6), #7C3AED);
+        }
+        .payment-method-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text, #1E293B);
+            margin-bottom: 0.35rem;
+        }
+        .payment-method-copy {
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: var(--text-secondary, #6B7280);
+        }
+
         /* ── T&C Checkbox ── */
         .tc-checkbox {
             display: flex;
@@ -116,6 +306,28 @@
         }
         .tc-checkbox a { color: var(--accent, #3B4BA6); text-decoration: underline; }
 
+        /* ── Step Navigation Buttons ── */
+        .step-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        .step-nav .btn-back {
+            padding: 0.75rem 1.5rem;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--text, #1E293B);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .step-nav .btn-back:hover { border-color: var(--accent, #3B4BA6); }
+        .step-nav .btn-next {
+            flex: 1;
+        }
+
         /* ── Error / Alert ── */
         .form-alert {
             padding: 0.85rem 1rem;
@@ -132,6 +344,10 @@
         @media (max-width: 640px) {
             .signup-grid { grid-template-columns: 1fr; }
             .package-grid { grid-template-columns: 1fr 1fr; }
+            .payment-method-grid { grid-template-columns: 1fr; }
+            .checkout-stepper { gap: 0; }
+            .step-label { display: none; }
+            .step-connector { width: 32px; }
         }
         @media (max-width: 420px) {
             .package-grid { grid-template-columns: 1fr; }
@@ -143,7 +359,7 @@
     <div class="auth-split-layout">
         <!-- Left visual panel -->
         <div class="auth-banner">
-            <a href="index.html" class="auth-banner-logo">Joblynk.</a>
+            <a href="index.html" class="auth-banner-logo">JobLynk.</a>
             <div class="auth-banner-content">
                 <h1>Find your next hire.</h1>
                 <p>Post jobs, track applicants, and connect with thousands of qualified South African candidates.</p>
@@ -152,7 +368,7 @@
                         <i class="fa-solid fa-quote-left" style="color: rgba(255,255,255,0.7);"></i>
                     </div>
                     <div class="auth-glass-text">
-                        <p>"Joblynk made recruiting so much easier. We filled 3 positions in under 2 weeks."</p>
+                        <p>"JobLynk made recruiting so much easier. We filled 3 positions in under 2 weeks."</p>
                         <h4 style="margin-top: 0.4rem;">— Elena R., TechScale HR</h4>
                     </div>
                 </div>
@@ -161,213 +377,592 @@
 
         <!-- Right form panel -->
         <div class="auth-main">
-            <a href="index.html" class="auth-mobile-logo">Joblynk.</a>
+            <a href="index.html" class="auth-mobile-logo">JobLynk.</a>
             <div class="auth-main-inner" style="max-width: 560px;">
                 <div class="auth-header">
                     <h2>Create Recruiter Account</h2>
-                    <p>Set up your company, choose a plan, and start hiring.</p>
+                    <p>Already have an account? <a href="sign-in.html" class="auth-link">Login now!</a></p>
+                </div>
+
+                <!-- Stepper -->
+                <div class="checkout-stepper">
+                    <div class="step-indicator active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Choose Plan</span>
+                    </div>
+                    <div class="step-connector" id="conn1"></div>
+                    <div class="step-indicator" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Company Details</span>
+                    </div>
+                    <div class="step-connector" id="conn2"></div>
+                    <div class="step-indicator" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Payment</span>
+                    </div>
                 </div>
 
                 <div class="form-alert" id="formAlert"></div>
 
                 <form id="recruiterSignupForm" novalidate>
-                    <!-- Company Info -->
-                    <div class="section-title">Company Information</div>
-                    <div class="signup-grid">
-                        <div class="full-width">
-                            <label>Company Name *</label>
-                            <input type="text" class="auth-input" id="companyName" required placeholder="e.g. Acme Corp">
+
+                    <!-- ══ STEP 1: Choose Plan ══ -->
+                    <div class="step-panel active" id="step1">
+                        <div class="section-title" style="border-top:none;margin-top:0;">Choose Your Plan</div>
+                        <p style="font-size:0.85rem;color:#6B7280;margin-bottom:1.25rem;">Select the package you want to sign up with before entering your company details.</p>
+
+                        <div class="package-grid">
+                            <label class="package-card" data-plan="intro" data-amount="750" data-jobs="1">
+                                <input type="radio" name="packageId" value="intro">
+                                <span class="pkg-badge">Limited Offer</span>
+                                <div class="pkg-name">Intro</div>
+                                <div class="pkg-price">R750</div>
+                                <div class="pkg-desc">1 job &middot; Ends 31 May</div>
+                            </label>
+
+                            <label class="package-card" data-plan="1job" data-amount="1300" data-jobs="1">
+                                <input type="radio" name="packageId" value="1job">
+                                <div class="pkg-name">Standard</div>
+                                <div class="pkg-price">R1,300</div>
+                                <div class="pkg-desc">1 job advert</div>
+                            </label>
+
+                            <label class="package-card" data-plan="2job" data-amount="2200" data-jobs="2">
+                                <input type="radio" name="packageId" value="2job">
+                                <div class="pkg-name">2-Job</div>
+                                <div class="pkg-price">R2,200</div>
+                                <div class="pkg-desc">Save R400</div>
+                            </label>
+
+                            <label class="package-card popular" data-plan="3job" data-amount="2950" data-jobs="3">
+                                <input type="radio" name="packageId" value="3job" checked>
+                                <span class="pkg-badge">Most Popular</span>
+                                <div class="pkg-name">3-Job</div>
+                                <div class="pkg-price">R2,950</div>
+                                <div class="pkg-desc">Save R950</div>
+                            </label>
+
+                            <label class="package-card" data-plan="4job" data-amount="3500" data-jobs="4">
+                                <input type="radio" name="packageId" value="4job">
+                                <div class="pkg-name">4-Job</div>
+                                <div class="pkg-price">R3,500</div>
+                                <div class="pkg-desc">Save R1,700</div>
+                            </label>
+
+                            <label class="package-card" data-plan="5job" data-amount="3900" data-jobs="5">
+                                <input type="radio" name="packageId" value="5job">
+                                <div class="pkg-name">5-Job</div>
+                                <div class="pkg-price">R3,900</div>
+                                <div class="pkg-desc">Save R2,600</div>
+                            </label>
                         </div>
-                        <div>
-                            <label>Industry</label>
-                            <select class="auth-input" id="industry">
-                                <option value="">Select industry</option>
-                                <option>Technology</option>
-                                <option>Finance & Banking</option>
-                                <option>Healthcare</option>
-                                <option>Retail</option>
-                                <option>Manufacturing</option>
-                                <option>Education</option>
-                                <option>Consulting</option>
-                                <option>Marketing & Media</option>
-                                <option>Government</option>
-                                <option>Other</option>
-                            </select>
+
+                        <div class="basket-summary">
+                            <h4><i class="fa-solid fa-basket-shopping"></i> Your Basket</h4>
+                            <div class="basket-row">
+                                <span id="basketItemName">3-Job Listing</span>
+                                <span id="basketItemQty">1</span>
+                                <span id="basketItemTotal">R 2,950.00</span>
+                            </div>
+                            <div class="basket-row">
+                                <span>Subtotal (VAT excl.)</span>
+                                <span id="basketSubtotal">R 2,565.22</span>
+                            </div>
+                            <div class="basket-row">
+                                <span>VAT (15%)</span>
+                                <span id="basketVat">R 384.78</span>
+                            </div>
+                            <div class="basket-row total">
+                                <span>Total</span>
+                                <span id="basketTotal">R 2,950.00</span>
+                            </div>
+
+                            <div class="promo-row">
+                                <input type="text" id="promoCode" placeholder="Promotional Code? Apply here">
+                                <button type="button" id="btnApplyPromo">Apply</button>
+                            </div>
                         </div>
-                        <div>
-                            <label>Company Size</label>
-                            <select class="auth-input" id="companySize">
-                                <option value="">Select size</option>
-                                <option>1-10</option>
-                                <option>11-50</option>
-                                <option>51-200</option>
-                                <option>201-500</option>
-                                <option>500+</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <!-- Personal Info -->
-                    <div class="section-title">Your Details</div>
-                    <div class="signup-grid">
-                        <div>
-                            <label>First Name *</label>
-                            <input type="text" class="auth-input" id="firstName" required placeholder="First name">
-                        </div>
-                        <div>
-                            <label>Last Name *</label>
-                            <input type="text" class="auth-input" id="lastName" required placeholder="Last name">
-                        </div>
-                        <div class="full-width">
-                            <label>Email Address *</label>
-                            <input type="email" class="auth-input" id="email" required placeholder="you@company.com">
-                        </div>
-                        <div class="full-width">
-                            <label>Password *</label>
-                            <input type="password" class="auth-input" id="password" required minlength="8" placeholder="Minimum 8 characters">
-                        </div>
-                    </div>
+                        <p style="font-size:0.78rem;color:#9CA3AF;margin:0.75rem 0 0.25rem;">
+                            All prices include VAT. Each job advert is live for 30 days. Bundle purchases expire after 90 days.
+                        </p>
 
-                    <!-- Package Selection -->
-                    <div class="section-title">Choose Your Plan</div>
-                    <div class="package-grid">
-                        <label class="package-card" data-plan="intro" data-amount="750">
-                            <input type="radio" name="packageId" value="intro">
-                            <span class="pkg-badge">Limited Offer</span>
-                            <div class="pkg-name">Intro</div>
-                            <div class="pkg-price">R750</div>
-                            <div class="pkg-desc">1 job &middot; Ends 31 May</div>
-                        </label>
-
-                        <label class="package-card" data-plan="1job" data-amount="1300">
-                            <input type="radio" name="packageId" value="1job">
-                            <div class="pkg-name">Standard</div>
-                            <div class="pkg-price">R1,300</div>
-                            <div class="pkg-desc">1 job advert</div>
-                        </label>
-
-                        <label class="package-card" data-plan="2job" data-amount="2200">
-                            <input type="radio" name="packageId" value="2job">
-                            <div class="pkg-name">2-Job</div>
-                            <div class="pkg-price">R2,200</div>
-                            <div class="pkg-desc">Save R400</div>
-                        </label>
-
-                        <label class="package-card popular" data-plan="3job" data-amount="2950">
-                            <input type="radio" name="packageId" value="3job" checked>
-                            <span class="pkg-badge">Most Popular</span>
-                            <div class="pkg-name">3-Job</div>
-                            <div class="pkg-price">R2,950</div>
-                            <div class="pkg-desc">Save R950</div>
-                        </label>
-
-                        <label class="package-card" data-plan="4job" data-amount="3500">
-                            <input type="radio" name="packageId" value="4job">
-                            <div class="pkg-name">4-Job</div>
-                            <div class="pkg-price">R3,500</div>
-                            <div class="pkg-desc">Save R1,700</div>
-                        </label>
-
-                        <label class="package-card" data-plan="5job" data-amount="3900">
-                            <input type="radio" name="packageId" value="5job">
-                            <div class="pkg-name">5-Job</div>
-                            <div class="pkg-price">R3,900</div>
-                            <div class="pkg-desc">Save R2,600</div>
-                        </label>
-                    </div>
-
-                    <p style="font-size: 0.78rem; color: var(--text-secondary, #9CA3AF); margin: 0.5rem 0 0.25rem;">
-                        All prices include VAT. Each job advert is live for 30 days. Bundle purchases expire after 90 days. Introductory offer expires 30 days from purchase.
-                        <a href="recruiter-pricing.html" style="color: var(--accent, #3B4BA6);">View full pricing details</a>
-                    </p>
-
-                    <!-- T&C -->
-                    <div class="tc-checkbox">
-                        <input type="checkbox" id="tcAccept">
-                        <div>
-                            <label for="tcAccept">I agree to the </label><a href="terms-and-conditions.html" target="_blank">Terms &amp; Conditions</a>
-                            <label for="tcAccept"> and consent to Joblynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA.</label>
+                        <div class="step-nav">
+                            <button type="button" class="auth-btn btn-next" id="btnStep1Next">
+                                Continue to Company Details <i class="fa-solid fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <button type="submit" class="auth-btn" id="btnSubmit">
-                        <span class="btn-text">Create Account &amp; Pay</span>
-                        <span class="btn-spinner" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i></span>
-                    </button>
+                    <!-- ══ STEP 2: Company Details ══ -->
+                    <div class="step-panel" id="step2">
+                        <div class="section-title" style="border-top:none;margin-top:0;">Create Your JobLynk Account</div>
+                        <p style="font-size:0.85rem;color:#6B7280;margin-bottom:1.25rem;">Fields marked with * are mandatory.</p>
+
+                        <div class="signup-grid">
+                            <div class="full-width">
+                                <label>Title *</label>
+                                <select class="auth-input" id="title" required>
+                                    <option value="">Select</option>
+                                    <option value="Mr">Mr</option>
+                                    <option value="Mrs">Mrs</option>
+                                    <option value="Ms">Ms</option>
+                                    <option value="Dr">Dr</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>First Name *</label>
+                                <input type="text" class="auth-input" id="firstName" required placeholder="First name">
+                            </div>
+                            <div>
+                                <label>Last Name *</label>
+                                <input type="text" class="auth-input" id="lastName" required placeholder="Last name">
+                            </div>
+                            <div class="full-width">
+                                <label>E-Mail *</label>
+                                <input type="email" class="auth-input" id="email" required placeholder="you@company.com">
+                            </div>
+                            <div class="full-width">
+                                <label>Phone Number *</label>
+                                <input type="tel" class="auth-input" id="phone" required placeholder="e.g. 082 123 4567">
+                            </div>
+                            <div class="full-width">
+                                <label>Company Name *</label>
+                                <input type="text" class="auth-input" id="companyName" required placeholder="e.g. Acme Corp">
+                            </div>
+                            <div>
+                                <label>Industry</label>
+                                <select class="auth-input" id="industry">
+                                    <option value="">Select industry</option>
+                                    <option>Technology</option>
+                                    <option>Finance & Banking</option>
+                                    <option>Healthcare</option>
+                                    <option>Retail</option>
+                                    <option>Manufacturing</option>
+                                    <option>Education</option>
+                                    <option>Consulting</option>
+                                    <option>Marketing & Media</option>
+                                    <option>Recruiting</option>
+                                    <option>Government</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Company Size</label>
+                                <select class="auth-input" id="companySize">
+                                    <option value="">Select size</option>
+                                    <option>1-10</option>
+                                    <option>11-50</option>
+                                    <option>51-200</option>
+                                    <option>201-500</option>
+                                    <option>500+</option>
+                                </select>
+                            </div>
+                            <div class="full-width">
+                                <label>VAT Number</label>
+                                <input type="text" class="auth-input" id="vatNumber" placeholder="e.g. 4123456789">
+                            </div>
+                        </div>
+
+                        <div class="section-title">Billing Address</div>
+                        <div class="signup-grid">
+                            <div class="full-width">
+                                <label>Street Address *</label>
+                                <input type="text" class="auth-input" id="addressLine1" required placeholder="Street address, P.O. box">
+                            </div>
+                            <div class="full-width">
+                                <label>Address Line 2</label>
+                                <input type="text" class="auth-input" id="addressLine2" placeholder="Suite, unit, building, floor, etc.">
+                            </div>
+                            <div>
+                                <label>City *</label>
+                                <input type="text" class="auth-input" id="city" required placeholder="e.g. Johannesburg">
+                            </div>
+                            <div>
+                                <label>Province *</label>
+                                <select class="auth-input" id="province" required>
+                                    <option value="">Select province</option>
+                                    <option>Eastern Cape</option>
+                                    <option>Free State</option>
+                                    <option>Gauteng</option>
+                                    <option>KwaZulu-Natal</option>
+                                    <option>Limpopo</option>
+                                    <option>Mpumalanga</option>
+                                    <option>North West</option>
+                                    <option>Northern Cape</option>
+                                    <option>Western Cape</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Postal Code *</label>
+                                <input type="text" class="auth-input" id="postalCode" required placeholder="e.g. 2000">
+                            </div>
+                            <div>
+                                <label>Country</label>
+                                <select class="auth-input" id="country">
+                                    <option value="South Africa" selected>South Africa</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="section-title">Account Security</div>
+                        <div class="signup-grid">
+                            <div class="full-width">
+                                <label>Password *</label>
+                                <input type="password" class="auth-input" id="password" required minlength="8" placeholder="Minimum 8 characters">
+                            </div>
+                        </div>
+
+                        <p style="font-size:0.78rem;color:#9CA3AF;margin-top:0.75rem;">
+                            By signing up I agree to JobLynk's <a href="terms-and-conditions.html" style="color:var(--accent,#3B4BA6);">Terms</a> and <a href="terms-and-conditions.html" style="color:var(--accent,#3B4BA6);">Privacy Policy</a>.
+                        </p>
+
+                        <div class="step-nav">
+                            <button type="button" class="btn-back" id="btnStep2Back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button type="button" class="auth-btn btn-next" id="btnStep2Next">
+                                Continue to Payment Options <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ══ STEP 3: Payment ══ -->
+                    <div class="step-panel" id="step3">
+                        <div class="section-title" style="border-top:none;margin-top:0;">Review &amp; Pay</div>
+
+                        <!-- Account Summary -->
+                        <div class="review-block">
+                            <h4>Account Details</h4>
+                            <div class="review-row"><span>Name</span><span id="revName">—</span></div>
+                            <div class="review-row"><span>Email</span><span id="revEmail">—</span></div>
+                            <div class="review-row"><span>Phone</span><span id="revPhone">—</span></div>
+                            <div class="review-row"><span>Company</span><span id="revCompany">—</span></div>
+                            <div class="review-row"><span>VAT Number</span><span id="revVatNumber">—</span></div>
+                        </div>
+
+                        <!-- Billing Address -->
+                        <div class="review-block">
+                            <h4>Billing Address</h4>
+                            <div class="review-row"><span>Address</span><span id="revAddress">—</span></div>
+                            <div class="review-row"><span>City</span><span id="revCity">—</span></div>
+                            <div class="review-row"><span>Province</span><span id="revProvince">—</span></div>
+                            <div class="review-row"><span>Postal Code</span><span id="revPostalCode">—</span></div>
+                            <div class="review-row"><span>Country</span><span id="revCountry">—</span></div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="review-block">
+                            <h4>Order Summary</h4>
+                            <div class="review-row"><span>Package</span><span id="revPackage">—</span></div>
+                            <div class="review-row"><span>Subtotal (excl. VAT)</span><span id="revSubtotal">—</span></div>
+                            <div class="review-row"><span>VAT (15%)</span><span id="revVat">—</span></div>
+                            <div class="review-row" style="font-weight:800;font-size:1rem;"><span>Total</span><span id="revTotal">—</span></div>
+                        </div>
+
+                        <p style="font-size:0.82rem;color:#6B7280;margin-bottom:0.5rem;">
+                            Choose whether you want to pay immediately with PayFast or receive an invoice by email with a secure payment link.
+                        </p>
+
+                        <div class="review-block">
+                            <h4>Payment Method</h4>
+                            <div class="payment-method-grid">
+                                <label class="payment-method-card selected" data-payment-method="payfast">
+                                    <input type="radio" name="paymentMethod" value="payfast" checked>
+                                    <div class="payment-method-icon"><i class="fa-solid fa-credit-card"></i></div>
+                                    <div class="payment-method-title">Pay now with PayFast</div>
+                                    <div class="payment-method-copy">Go straight to secure checkout after creating the account.</div>
+                                </label>
+                                <label class="payment-method-card" data-payment-method="invoice">
+                                    <input type="radio" name="paymentMethod" value="invoice">
+                                    <div class="payment-method-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                                    <div class="payment-method-title">Email me an invoice</div>
+                                    <div class="payment-method-copy">We will email an invoice with a PayFast payment link you can use later.</div>
+                                </label>
+                            </div>
+                            <div class="review-row"><span>Selected method</span><span id="revPaymentMethod">PayFast</span></div>
+                            <p id="paymentMethodHint" style="font-size:0.82rem;color:#6B7280;margin:0.75rem 0 0;">You will be redirected to PayFast to complete payment immediately.</p>
+                        </div>
+
+                        <!-- T&C -->
+                        <div class="tc-checkbox">
+                            <input type="checkbox" id="tcAccept">
+                            <div>
+                                <label for="tcAccept">I agree to the </label><a href="terms-and-conditions.html" target="_blank">Terms &amp; Conditions</a>
+                                <label for="tcAccept"> and consent to JobLynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA.</label>
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <button type="button" class="btn-back" id="btnStep3Back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button type="submit" class="auth-btn btn-next" id="btnSubmit">
+                                <span class="btn-text">Create Account &amp; Pay</span>
+                                <span class="btn-spinner" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                            </button>
+                        </div>
+                    </div>
+
                 </form>
 
                 <p class="auth-footer">
-                    Already have an account? <a href="sign-in.html" class="auth-link">Sign In</a>
+                    <a href="recruiter-terms.html" class="auth-link">Recruiter Terms</a> &middot;
+                    <a href="terms-and-conditions.html" class="auth-link">Privacy Statement</a>
                 </p>
             </div>
         </div>
     </div>
 
     <script>
+        // ── State ──
+        let currentStep = 1;
+        const PLAN_LABELS = { intro: 'Intro Listing', '1job': 'Standard Listing', '2job': '2-Job Bundle', '3job': '3-Job Bundle', '4job': '4-Job Bundle', '5job': '5-Job Bundle' };
+        const PAYMENT_LABELS = { payfast: 'PayFast', invoice: 'Invoice by email' };
+
         // ── Package card selection UI ──
-        document.querySelectorAll('.package-card').forEach(card => {
+        function selectPackageCard(card) {
+            document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.querySelector('input[type="radio"]').checked = true;
+            updateBasket();
+        }
+
+        const packageCards = Array.from(document.querySelectorAll('.package-card'));
+
+        packageCards.forEach(card => {
+            card.addEventListener('click', () => selectPackageCard(card));
+        });
+
+        const requestedPlan = new URLSearchParams(window.location.search).get('plan');
+        const preselected = packageCards.find(card => card.dataset.plan === requestedPlan)
+            || packageCards.find(card => card.dataset.plan === '3job');
+        if (preselected) selectPackageCard(preselected);
+
+        // ── Basket calculation ──
+        function getSelectedPackage() {
+            const card = document.querySelector('.package-card.selected');
+            if (!card) return null;
+            return {
+                plan: card.dataset.plan,
+                amount: parseFloat(card.dataset.amount),
+                jobs: card.dataset.jobs,
+                label: PLAN_LABELS[card.dataset.plan] || card.dataset.plan
+            };
+        }
+
+        function updateBasket() {
+            const pkg = getSelectedPackage();
+            if (!pkg) return;
+            const total = pkg.amount;
+            const subtotal = (total / 1.15).toFixed(2);
+            const vat = (total - parseFloat(subtotal)).toFixed(2);
+
+            document.getElementById('basketItemName').textContent = pkg.label;
+            document.getElementById('basketItemQty').textContent = pkg.jobs;
+            document.getElementById('basketItemTotal').textContent = 'R ' + total.toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+            document.getElementById('basketSubtotal').textContent = 'R ' + parseFloat(subtotal).toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+            document.getElementById('basketVat').textContent = 'R ' + parseFloat(vat).toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+            document.getElementById('basketTotal').textContent = 'R ' + total.toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+        }
+        updateBasket();
+
+        // ── Stepper navigation ──
+        function goToStep(step) {
+            if (step < 1 || step > 3) return;
+            hideAlert();
+            currentStep = step;
+
+            // Update panels
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+
+            // Update stepper indicators
+            document.querySelectorAll('.step-indicator').forEach(ind => {
+                const s = parseInt(ind.dataset.step);
+                ind.classList.remove('active', 'completed');
+                if (s === step) ind.classList.add('active');
+                else if (s < step) ind.classList.add('completed');
+            });
+
+            // Update connectors
+            document.getElementById('conn1').classList.toggle('done', step > 1);
+            document.getElementById('conn2').classList.toggle('done', step > 2);
+
+            // Populate review if going to step 3
+            if (step === 3) populateReview();
+        }
+
+        // ── Step 1 validation ──
+        document.getElementById('btnStep1Next').addEventListener('click', () => {
+            const pkg = getSelectedPackage();
+            if (!pkg) return showAlert('Please select a plan.');
+
+            goToStep(2);
+        });
+
+        // ── Step 2 validation ──
+        document.getElementById('btnStep2Next').addEventListener('click', () => {
+            const title = document.getElementById('title').value;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const companyName = document.getElementById('companyName').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!title) return showAlert('Please select a title.');
+            if (!firstName || !lastName) return showAlert('First and last name are required.');
+            if (!email) return showAlert('Email address is required.');
+            if (!phone) return showAlert('Phone number is required.');
+            if (!companyName) return showAlert('Company name is required.');
+
+            const addressLine1 = document.getElementById('addressLine1').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const province = document.getElementById('province').value;
+            const postalCode = document.getElementById('postalCode').value.trim();
+            if (!addressLine1) return showAlert('Street address is required.');
+            if (!city) return showAlert('City is required.');
+            if (!province) return showAlert('Please select a province.');
+            if (!postalCode) return showAlert('Postal code is required.');
+
+            if (password.length < 8) return showAlert('Password must be at least 8 characters.');
+
+            goToStep(3);
+        });
+
+        // ── Back buttons ──
+        document.getElementById('btnStep2Back').addEventListener('click', () => goToStep(1));
+        document.getElementById('btnStep3Back').addEventListener('click', () => goToStep(2));
+
+        function getSelectedPaymentMethod() {
+            return document.querySelector('input[name="paymentMethod"]:checked')?.value || 'payfast';
+        }
+
+        function syncPaymentMethodState() {
+            const method = getSelectedPaymentMethod();
+            const submitLabel = document.querySelector('#btnSubmit .btn-text');
+
+            document.querySelectorAll('.payment-method-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.paymentMethod === method);
+            });
+
+            document.getElementById('revPaymentMethod').textContent = PAYMENT_LABELS[method];
+
+            if (method === 'invoice') {
+                document.getElementById('paymentMethodHint').textContent = 'We will email your invoice with a secure PayFast payment link after the account is created.';
+                submitLabel.textContent = 'Create Account & Email Invoice';
+                return;
+            }
+
+            document.getElementById('paymentMethodHint').textContent = 'You will be redirected to PayFast to complete payment immediately.';
+            submitLabel.textContent = 'Create Account & Pay Now';
+        }
+
+        document.querySelectorAll('.payment-method-card').forEach(card => {
             card.addEventListener('click', () => {
-                document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                card.querySelector('input[type="radio"]').checked = true;
+                const radio = card.querySelector('input[type="radio"]');
+                radio.checked = true;
+                syncPaymentMethodState();
             });
         });
-        // Pre-select 3job
-        const preselected = document.querySelector('.package-card[data-plan="3job"]');
-        if (preselected) preselected.classList.add('selected');
 
-        // ── Form submission ──
-        const form = document.getElementById('recruiterSignupForm');
+        syncPaymentMethodState();
+
+        // ── Populate review ──
+        function populateReview() {
+            const title = document.getElementById('title').value;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            document.getElementById('revName').textContent = title + ' ' + firstName + ' ' + lastName;
+            document.getElementById('revEmail').textContent = document.getElementById('email').value.trim();
+            document.getElementById('revPhone').textContent = document.getElementById('phone').value.trim();
+            document.getElementById('revCompany').textContent = document.getElementById('companyName').value.trim();
+            document.getElementById('revVatNumber').textContent = document.getElementById('vatNumber').value.trim() || '—';
+
+            const addr1 = document.getElementById('addressLine1').value.trim();
+            const addr2 = document.getElementById('addressLine2').value.trim();
+            document.getElementById('revAddress').textContent = addr2 ? addr1 + ', ' + addr2 : addr1;
+            document.getElementById('revCity').textContent = document.getElementById('city').value.trim();
+            document.getElementById('revProvince').textContent = document.getElementById('province').value;
+            document.getElementById('revPostalCode').textContent = document.getElementById('postalCode').value.trim();
+            document.getElementById('revCountry').textContent = document.getElementById('country').value;
+
+            const pkg = getSelectedPackage();
+            if (pkg) {
+                const total = pkg.amount;
+                const subtotal = (total / 1.15).toFixed(2);
+                const vat = (total - parseFloat(subtotal)).toFixed(2);
+                document.getElementById('revPackage').textContent = pkg.label + ' (' + pkg.jobs + ' job' + (pkg.jobs > 1 ? 's' : '') + ')';
+                document.getElementById('revSubtotal').textContent = 'R ' + parseFloat(subtotal).toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+                document.getElementById('revVat').textContent = 'R ' + parseFloat(vat).toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+                document.getElementById('revTotal').textContent = 'R ' + total.toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+            }
+
+            syncPaymentMethodState();
+        }
+
+        // ── Alert helpers ──
         const alertBox = document.getElementById('formAlert');
-        const btnSubmit = document.getElementById('btnSubmit');
-
         function showAlert(msg) {
             alertBox.textContent = msg;
             alertBox.classList.add('visible');
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         function hideAlert() { alertBox.classList.remove('visible'); }
+
+        // ── Form submission ──
+        const form = document.getElementById('recruiterSignupForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        function setSubmitLoading(isLoading) {
+            btnSubmit.disabled = isLoading;
+            btnSubmit.querySelector('.btn-text').style.display = isLoading ? 'none' : '';
+            btnSubmit.querySelector('.btn-spinner').style.display = isLoading ? 'inline-block' : 'none';
+        }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideAlert();
 
+            const tcAccepted = document.getElementById('tcAccept').checked;
+            if (!tcAccepted) return showAlert('Please accept the Terms & Conditions before continuing.');
+
             const companyName = document.getElementById('companyName').value.trim();
             const industry = document.getElementById('industry').value;
             const companySize = document.getElementById('companySize').value;
+            const title = document.getElementById('title').value;
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
             const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
+            const vatNumber = document.getElementById('vatNumber').value.trim();
+            const addressLine1 = document.getElementById('addressLine1').value.trim();
+            const addressLine2 = document.getElementById('addressLine2').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const province = document.getElementById('province').value;
+            const postalCode = document.getElementById('postalCode').value.trim();
+            const country = document.getElementById('country').value;
             const packageId = document.querySelector('input[name="packageId"]:checked')?.value;
-            const tcAccepted = document.getElementById('tcAccept').checked;
-
-            // Validate
-            if (!companyName) return showAlert('Company name is required.');
-            if (!firstName || !lastName) return showAlert('First and last name are required.');
-            if (!email) return showAlert('Email address is required.');
-            if (password.length < 8) return showAlert('Password must be at least 8 characters.');
-            if (!packageId) return showAlert('Please select a plan.');
-            if (!tcAccepted) return showAlert('Please accept the Terms & Conditions before continuing.');
+            const paymentMethod = getSelectedPaymentMethod();
 
             // Show spinner
-            btnSubmit.disabled = true;
-            btnSubmit.querySelector('.btn-text').style.display = 'none';
-            btnSubmit.querySelector('.btn-spinner').style.display = 'inline-block';
+            setSubmitLoading(true);
 
             try {
                 const res = await fetch('api/auth/recruiter-signup.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ companyName, industry, companySize, firstName, lastName, email, password, packageId }),
+                    body: JSON.stringify({ companyName, industry, companySize, title, firstName, lastName, email, phone, password, vatNumber, addressLine1, addressLine2, city, province, postalCode, country, packageId, paymentMethod }),
                 });
                 const data = await res.json();
 
                 if (!data.success) {
                     showAlert(data.message || 'Something went wrong.');
-                    btnSubmit.disabled = false;
-                    btnSubmit.querySelector('.btn-text').style.display = '';
-                    btnSubmit.querySelector('.btn-spinner').style.display = 'none';
+                    setSubmitLoading(false);
+                    return;
+                }
+
+                if (data.paymentMethod === 'invoice' && data.invoiceUrl) {
+                    window.location.href = data.invoiceUrl;
                     return;
                 }
 
@@ -385,12 +980,14 @@
                     }
                     document.body.appendChild(pfForm);
                     pfForm.submit();
+                    return;
                 }
+
+                showAlert(data.message || 'Account created successfully.');
+                setSubmitLoading(false);
             } catch (err) {
                 showAlert('Network error. Please try again.');
-                btnSubmit.disabled = false;
-                btnSubmit.querySelector('.btn-text').style.display = '';
-                btnSubmit.querySelector('.btn-spinner').style.display = 'none';
+                setSubmitLoading(false);
             }
         });
     </script>

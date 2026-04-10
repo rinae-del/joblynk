@@ -1,5 +1,5 @@
 /**
- * Joblynk Profile Page Logic
+ * JobLynk Profile Page Logic
  * Includes: progress bar, localStorage persistence, skills, file uploads, inner nav
  */
 
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================
 // API + LOCALSTORAGE PERSISTENCE
 // ============================
-const PROFILE_KEY = 'joblynk_profile';
+const PROFILE_KEY = 'JobLynk_profile';
 const PROFILE_API = 'api/profile/index.php';
 
 function getProfileData() {
@@ -128,8 +128,8 @@ async function loadProfileData() {
 
     // Populate from auth user data if fields are still empty
     function tryPopulateFromAuth() {
-        if (!window.__joblynkUser) return;
-        const user = window.__joblynkUser;
+        if (!window.__JobLynkUser) return;
+        const user = window.__JobLynkUser;
         const nameEl = document.getElementById('profFirstName');
         const emailEl = document.getElementById('profEmail');
         if (nameEl && !nameEl.value && user.name) {
@@ -145,7 +145,7 @@ async function loadProfileData() {
     }
 
     tryPopulateFromAuth();
-    if (!window.__joblynkUser) {
+    if (!window.__JobLynkUser) {
         setTimeout(tryPopulateFromAuth, 1500);
     }
 }

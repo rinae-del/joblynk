@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fallback to localStorage
         try {
-            const stored = localStorage.getItem('joblynk_cls');
+            const stored = localStorage.getItem('JobLynk_cls');
             if (stored) {
                 const cls = JSON.parse(stored);
                 const ex = cls.find(c => String(c.id) === String(docId));
@@ -111,13 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Fallback to localStorage
                 console.warn('API save failed, using localStorage:', e);
                 try {
-                    const stored = localStorage.getItem('joblynk_cls');
+                    const stored = localStorage.getItem('JobLynk_cls');
                     let cls = stored ? JSON.parse(stored) : [];
                     const fallbackId = serverDocId || docId;
                     const idx = cls.findIndex(c => String(c.id) === String(fallbackId));
                     const record = { id: fallbackId, name: title || 'Untitled Cover Letter', lastEdited: new Date().toISOString(), type: 'cl', accentColor: currentAccentColor, data: { ...clData } };
                     if (idx >= 0) cls[idx] = record; else cls.push(record);
-                    localStorage.setItem('joblynk_cls', JSON.stringify(cls));
+                    localStorage.setItem('JobLynk_cls', JSON.stringify(cls));
                 } catch (e2) { console.error('localStorage save failed:', e2); }
             }
 

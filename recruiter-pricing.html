@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruiter Pricing | Joblynk</title>
-    <meta name="description" content="Post your jobs on Joblynk — South Africa's smart recruitment platform. Choose a plan that fits your hiring needs.">
+    <title>Recruiter Pricing | JobLynk</title>
+    <meta name="description" content="Post your jobs on JobLynk — South Africa's smart recruitment platform. Choose a plan that fits your hiring needs.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -330,7 +330,7 @@
 
     <!-- ═══ HEADER ═══ -->
     <div class="pricing-header">
-        <a href="recruiter-overview.html" class="logo"><span>Joblynk</span></a>
+        <a href="recruiter-overview.html" class="logo"><span>JobLynk</span></a>
         <h1>Recruit <em>smarter</em>, not harder</h1>
         <p>Choose a plan to post your jobs and connect with thousands of qualified South African candidates.</p>
     </div>
@@ -475,7 +475,7 @@
         // Load admin-set pricing from localStorage
         (function loadAdminPricing() {
             try {
-                const stored = localStorage.getItem('joblynk_pricing');
+                const stored = localStorage.getItem('JobLynk_pricing');
                 if (!stored) return;
                 const p = JSON.parse(stored);
 
@@ -542,7 +542,7 @@
                 const res = await fetch('api/auth/session.php', { credentials: 'include' });
                 const data = await res.json();
                 if (data.loggedIn && data.user) {
-                    window.__joblynkUser = {
+                    window.__JobLynkUser = {
                         id: data.user.id,
                         name: (data.user.first_name || '') + ' ' + (data.user.last_name || ''),
                         email: data.user.email || '',
@@ -580,7 +580,7 @@
             }
 
             // Get user info from auth session (if logged in)
-            const user = window.__joblynkUser || {};
+            const user = window.__JobLynkUser || {};
             const names = (user.name || '').split(' ');
 
             // Build PayFast form data
@@ -595,7 +595,7 @@
                 name_last: names.slice(1).join(' ') || '',
                 email_address: user.email || '',
                 amount: amount.toFixed(2),
-                item_name: 'Joblynk Recruiter - ' + (PLAN_NAMES[planId] || planId),
+                item_name: 'JobLynk Recruiter - ' + (PLAN_NAMES[planId] || planId),
                 custom_str1: planId,
                 custom_str2: user.email || '',
                 custom_int1: user.id || '0',

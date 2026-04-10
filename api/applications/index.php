@@ -143,6 +143,17 @@ if ($method === 'POST') {
     }
     $formResponsesJson = $formResponses ? json_encode($formResponses) : null;
 
+    // Document IDs from saved documents (JSON array from FormData)
+    $documentIds = $body['document_ids'] ?? null;
+    if (is_string($documentIds)) {
+        $documentIds = json_decode($documentIds, true);
+    }
+    if (!is_array($documentIds)) $documentIds = [];
+
+    // Ensure cv_id and cl_id are included in the list
+    if ($cvId && !in_array($cvId, $documentIds)) $documentIds[] = $cvId;
+    if ($clId && !in_array($clId, $documentIds)) $documentIds[] = $clId;
+
     if (!$jobId) jsonResponse(['success' => false, 'message' => 'Job ID is required.'], 422);
 
     // Check job exists and is active
@@ -159,7 +170,7 @@ if ($method === 'POST') {
         jsonResponse(['success' => false, 'message' => 'You have already applied to this job.'], 409);
     }
 
-    // Handle file uploads (CV and/or Cover Letter)
+    // Handle file uploads (multiple files via extra_files[])
     $allowedMimes = [
         'application/pdf',
         'application/msword',
@@ -170,6 +181,7 @@ if ($method === 'POST') {
     $uploadsDir = __DIR__ . '/../../uploads';
     if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
 
+    // Legacy single-file keys (cv_file, cl_file) + new multi-file key (extra_files)
     foreach (['cv_file', 'cl_file'] as $fileKey) {
         if (!isset($_FILES[$fileKey]) || $_FILES[$fileKey]['error'] === UPLOAD_ERR_NO_FILE) continue;
 
@@ -186,7 +198,6 @@ if ($method === 'POST') {
             jsonResponse(['success' => false, 'message' => 'Invalid file type. Allowed: PDF, DOC, DOCX.'], 422);
         }
 
-        // Verify MIME type
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mime = $finfo->file($file['tmp_name']);
         if (!in_array($mime, $allowedMimes)) {
@@ -202,7 +213,6 @@ if ($method === 'POST') {
             jsonResponse(['success' => false, 'message' => 'Failed to save uploaded file.'], 500);
         }
 
-        // Create a document record for the uploaded file
         $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
         $fileData = json_encode(['uploaded_file' => $storedName, 'original_name' => $file['name'], 'mime_type' => $mime]);
         $stmt = $pdo->prepare('INSERT INTO documents (user_id, doc_type, name, data) VALUES (?, ?, ?, ?)');
@@ -211,7 +221,54 @@ if ($method === 'POST') {
 
         if ($docType === 'cv') $cvId = $newDocId;
         else $clId = $newDocId;
+        $documentIds[] = $newDocId;
     }
+
+    // Handle multiple extra file uploads
+    if (isset($_FILES['extra_files'])) {
+        $extraFiles = $_FILES['extra_files'];
+        $fileCount = is_array($extraFiles['name']) ? count($extraFiles['name']) : 0;
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($extraFiles['error'][$i] === UPLOAD_ERR_NO_FILE) continue;
+            if ($extraFiles['error'][$i] !== UPLOAD_ERR_OK) {
+                jsonResponse(['success' => false, 'message' => 'File upload error.'], 422);
+            }
+            if ($extraFiles['size'][$i] > $maxFileSize) {
+                jsonResponse(['success' => false, 'message' => 'File "' . $extraFiles['name'][$i] . '" exceeds 5MB limit.'], 422);
+            }
+
+            $ext = strtolower(pathinfo($extraFiles['name'][$i], PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowedExts)) {
+                jsonResponse(['success' => false, 'message' => 'Invalid file type for "' . $extraFiles['name'][$i] . '". Allowed: PDF, DOC, DOCX.'], 422);
+            }
+
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mime = $finfo->file($extraFiles['tmp_name'][$i]);
+            if (!in_array($mime, $allowedMimes)) {
+                jsonResponse(['success' => false, 'message' => 'Invalid file content type for "' . $extraFiles['name'][$i] . '".'], 422);
+            }
+
+            $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', pathinfo($extraFiles['name'][$i], PATHINFO_FILENAME));
+            $storedName = 'doc_' . $userId . '_' . time() . '_' . $i . '_' . $safeName . '.' . $ext;
+            $destPath = $uploadsDir . '/' . $storedName;
+
+            if (!move_uploaded_file($extraFiles['tmp_name'][$i], $destPath)) {
+                jsonResponse(['success' => false, 'message' => 'Failed to save uploaded file.'], 500);
+            }
+
+            $originalName = pathinfo($extraFiles['name'][$i], PATHINFO_FILENAME);
+            $fileData = json_encode(['uploaded_file' => $storedName, 'original_name' => $extraFiles['name'][$i], 'mime_type' => $mime]);
+            $stmt = $pdo->prepare('INSERT INTO documents (user_id, doc_type, name, data) VALUES (?, ?, ?, ?)');
+            $stmt->execute([$userId, 'cv', $originalName, $fileData]);
+            $newDocId = (int)$pdo->lastInsertId();
+
+            // Use first uploaded file as cv_id if none set
+            if (!$cvId) $cvId = $newDocId;
+            $documentIds[] = $newDocId;
+        }
+    }
+
+    $documentIdsJson = !empty($documentIds) ? json_encode(array_values(array_unique($documentIds))) : null;
 
     // Get applicant name
     $stmt = $pdo->prepare('SELECT first_name, last_name FROM users WHERE id = ?');
@@ -219,8 +276,8 @@ if ($method === 'POST') {
     $user = $stmt->fetch();
     $applicantName = ($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '');
 
-    $stmt = $pdo->prepare('INSERT INTO applications (job_id, user_id, cv_id, cl_id, applicant_name, note, form_responses) VALUES (?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, trim($applicantName), $note, $formResponsesJson]);
+    $stmt = $pdo->prepare('INSERT INTO applications (job_id, user_id, cv_id, cl_id, document_ids, applicant_name, note, form_responses) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, $documentIdsJson, trim($applicantName), $note, $formResponsesJson]);
 
     jsonResponse(['success' => true, 'id' => (int)$pdo->lastInsertId(), 'message' => 'Application submitted!'], 201);
 }

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Invoice | JobLynk</title>
+    <meta name="description" content="View and pay your JobLynk recruiter invoice securely with PayFast.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #F3F6FF;
+            --surface: #FFFFFF;
+            --surface-soft: #F8FAFC;
+            --text: #172033;
+            --muted: #64748B;
+            --accent: #3B4BA6;
+            --accent-soft: rgba(59, 75, 166, 0.08);
+            --border: #E2E8F0;
+            --success: #059669;
+            --warning: #B45309;
+            --danger: #DC2626;
+            --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(59, 75, 166, 0.18), transparent 34%),
+                radial-gradient(circle at top right, rgba(14, 165, 233, 0.14), transparent 30%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        a { color: inherit; }
+
+        .page {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 20px 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            text-decoration: none;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--accent);
+        }
+
+        .topbar-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .invoice-shell {
+            overflow: hidden;
+        }
+
+        .invoice-head {
+            padding: 28px 28px 22px;
+            background: linear-gradient(135deg, #172554, #3B4BA6 56%, #2563EB);
+            color: #fff;
+        }
+
+        .invoice-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .invoice-head h1 {
+            margin: 14px 0 8px;
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+        }
+
+        .invoice-head p {
+            margin: 0;
+            max-width: 48ch;
+            font-size: 0.96rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.84);
+        }
+
+        .invoice-body {
+            padding: 28px;
+        }
+
+        .banner {
+            display: none;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .banner.visible { display: flex; }
+        .banner.info { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; }
+        .banner.success { background: #ECFDF5; border-color: #A7F3D0; color: #047857; }
+        .banner.warning { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
+        .banner.error { background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
+
+        .invoice-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+            gap: 18px;
+        }
+
+        .panel {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .panel h2,
+        .panel h3 {
+            margin: 0 0 14px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .detail-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            font-size: 0.92rem;
+        }
+
+        .detail-row span:first-child {
+            color: var(--muted);
+        }
+
+        .detail-row strong {
+            text-align: right;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stack {
+            display: grid;
+            gap: 6px;
+        }
+
+        .invoice-number {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .status-pill.paid { background: #ECFDF5; color: var(--success); }
+        .status-pill.expired { background: #FEF2F2; color: var(--danger); }
+        .status-pill.pending { background: #EFF6FF; color: #1D4ED8; }
+
+        .summary-card {
+            padding: 24px;
+            position: sticky;
+            top: 24px;
+        }
+
+        .summary-card h2 {
+            margin: 0 0 8px;
+            font-size: 1.25rem;
+            letter-spacing: -0.03em;
+        }
+
+        .summary-card p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 0.92rem;
+        }
+
+        .summary-rows {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .summary-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            font-size: 0.94rem;
+        }
+
+        .summary-row span:first-child {
+            color: var(--muted);
+        }
+
+        .summary-row.total {
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            font-weight: 800;
+            font-size: 1.06rem;
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 14px;
+            font: inherit;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, #3B4BA6, #2563EB);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+        }
+
+        .cta:disabled {
+            cursor: wait;
+            opacity: 0.72;
+        }
+
+        .secondary-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+            padding: 13px 18px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+            background: #fff;
+            border: 1px solid var(--border);
+        }
+
+        .empty-state {
+            padding: 28px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 920px) {
+            .hero,
+            .invoice-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                position: static;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page { padding: 22px 14px 32px; }
+            .topbar { flex-direction: column; align-items: flex-start; }
+            .invoice-head, .invoice-body, .summary-card { padding: 20px; }
+            .detail-row, .summary-row { font-size: 0.88rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="topbar">
+            <a href="index.html" class="brand">JobLynk.</a>
+            <div class="topbar-links">
+                <a href="recruiter-signup.html">Back to Signup</a>
+                <a href="sign-in.html">Sign In</a>
+            </div>
+        </div>
+
+        <div class="hero">
+            <section class="card invoice-shell">
+                <div class="invoice-head">
+                    <div class="invoice-kicker"><i class="fa-solid fa-file-invoice"></i> Recruiter Invoice</div>
+                    <h1>Secure your job posting credits</h1>
+                    <p>Review the invoice below and use the secure PayFast link when you are ready to complete payment.</p>
+                </div>
+
+                <div class="invoice-body">
+                    <div id="banner" class="banner"></div>
+
+                    <div id="loadingState" class="loading">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Loading invoice details...</span>
+                    </div>
+
+                    <div id="invoiceContent" style="display:none;">
+                        <div class="invoice-grid">
+                            <div class="stack" style="gap:18px;">
+                                <div class="panel">
+                                    <h2>Invoice Details</h2>
+                                    <div class="stack">
+                                        <span id="invoiceNumber" class="invoice-number">—</span>
+                                        <span id="invoiceStatus" class="status-pill pending">Pending</span>
+                                    </div>
+                                    <div class="detail-list" style="margin-top:16px;">
+                                        <div class="detail-row"><span>Issued</span><strong id="invoiceCreatedAt">—</strong></div>
+                                        <div class="detail-row"><span>Due</span><strong id="invoiceExpiresAt">—</strong></div>
+                                        <div class="detail-row"><span>Package</span><strong id="invoicePackage">—</strong></div>
+                                        <div class="detail-row"><span>Credits</span><strong id="invoiceJobs">—</strong></div>
+                                    </div>
+                                </div>
+
+                                <div class="panel">
+                                    <h3>Billing Contact</h3>
+                                    <div class="detail-list">
+                                        <div class="detail-row"><span>Name</span><strong id="contactName">—</strong></div>
+                                        <div class="detail-row"><span>Email</span><strong id="contactEmail">—</strong></div>
+                                        <div class="detail-row"><span>Company</span><strong id="companyName">—</strong></div>
+                                        <div class="detail-row"><span>VAT Number</span><strong id="vatNumber">—</strong></div>
+                                    </div>
+                                </div>
+
+                                <div class="panel">
+                                    <h3>Billing Address</h3>
+                                    <div class="detail-list">
+                                        <div class="detail-row"><span>Address</span><strong id="addressLine">—</strong></div>
+                                        <div class="detail-row"><span>City</span><strong id="city">—</strong></div>
+                                        <div class="detail-row"><span>Province</span><strong id="province">—</strong></div>
+                                        <div class="detail-row"><span>Postal Code</span><strong id="postalCode">—</strong></div>
+                                        <div class="detail-row"><span>Country</span><strong id="country">—</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <aside class="card summary-card">
+                                <h2>Order Summary</h2>
+                                <p id="summaryCopy">Your invoice remains available until the due date shown below.</p>
+
+                                <div class="summary-rows">
+                                    <div class="summary-row"><span>Subtotal</span><strong id="summarySubtotal">—</strong></div>
+                                    <div class="summary-row"><span>VAT (15%)</span><strong id="summaryVat">—</strong></div>
+                                    <div class="summary-row total"><span>Total</span><strong id="summaryTotal">—</strong></div>
+                                </div>
+
+                                <button id="payButton" class="cta" type="button">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Pay with PayFast</span>
+                                </button>
+
+                                <a class="secondary-cta" href="sign-in.html">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                                    <span>Go to Sign In</span>
+                                </a>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <div id="errorState" class="empty-state" style="display:none;">
+                        <p id="errorMessage">We could not load this invoice.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const loadingState = document.getElementById('loadingState');
+        const invoiceContent = document.getElementById('invoiceContent');
+        const errorState = document.getElementById('errorState');
+        const errorMessage = document.getElementById('errorMessage');
+        const payButton = document.getElementById('payButton');
+        const banner = document.getElementById('banner');
+        let payfastUrl = null;
+        let payfastData = null;
+
+        function formatDate(dateString) {
+            if (!dateString) return '—';
+            const date = new Date(dateString.replace(' ', 'T'));
+            if (Number.isNaN(date.getTime())) return '—';
+            return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function setBanner(type, text) {
+            banner.className = 'banner visible ' + type;
+            banner.innerHTML = '<i class="fa-solid fa-circle-info"></i><div>' + text + '</div>';
+        }
+
+        function setStatus(status) {
+            const statusLabel = document.getElementById('invoiceStatus');
+            const normalized = status || 'pending';
+            statusLabel.className = 'status-pill ' + normalized;
+
+            if (normalized === 'paid') {
+                statusLabel.innerHTML = '<i class="fa-solid fa-circle-check"></i> Paid';
+                return;
+            }
+
+            if (normalized === 'expired') {
+                statusLabel.innerHTML = '<i class="fa-solid fa-clock"></i> Expired';
+                return;
+            }
+
+            statusLabel.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Pending';
+        }
+
+        function submitPayFastForm() {
+            if (!payfastUrl || !payfastData) return;
+
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Redirecting to PayFast...</span>';
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = payfastUrl;
+
+            Object.entries(payfastData).forEach(([key, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        async function loadInvoice() {
+            if (!token) {
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                errorMessage.textContent = 'This invoice link is missing its token.';
+                return;
+            }
+
+            try {
+                const response = await fetch('api/payments/invoice.php?token=' + encodeURIComponent(token), {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                loadingState.style.display = 'none';
+
+                if (!data.success || !data.invoice) {
+                    errorState.style.display = 'block';
+                    errorMessage.textContent = data.message || 'We could not load this invoice.';
+                    return;
+                }
+
+                const invoice = data.invoice;
+                payfastUrl = data.payfastUrl || null;
+                payfastData = data.payfastData || null;
+
+                document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber;
+                document.getElementById('invoiceCreatedAt').textContent = formatDate(invoice.createdAt);
+                document.getElementById('invoiceExpiresAt').textContent = formatDate(invoice.expiresAt);
+                document.getElementById('invoicePackage').textContent = invoice.packageLabel;
+                document.getElementById('invoiceJobs').textContent = invoice.jobs + ' credit' + (invoice.jobs === 1 ? '' : 's');
+                document.getElementById('contactName').textContent = invoice.contactName || '—';
+                document.getElementById('contactEmail').textContent = invoice.contactEmail || '—';
+                document.getElementById('companyName').textContent = invoice.companyName || '—';
+                document.getElementById('vatNumber').textContent = invoice.vatNumber || '—';
+                document.getElementById('addressLine').textContent = invoice.addressLine || '—';
+                document.getElementById('city').textContent = invoice.city || '—';
+                document.getElementById('province').textContent = invoice.province || '—';
+                document.getElementById('postalCode').textContent = invoice.postalCode || '—';
+                document.getElementById('country').textContent = invoice.country || '—';
+                document.getElementById('summarySubtotal').textContent = invoice.currencySubtotal;
+                document.getElementById('summaryVat').textContent = invoice.currencyVat;
+                document.getElementById('summaryTotal').textContent = invoice.currencyAmount;
+
+                setStatus(invoice.status);
+                invoiceContent.style.display = 'block';
+
+                if (params.get('emailed') === '1') {
+                    setBanner('info', 'A copy of this invoice has been emailed to ' + (invoice.contactEmail || 'your inbox') + '.');
+                }
+
+                if (params.get('payment') === 'success') {
+                    setBanner('success', 'Your payment was submitted to PayFast. We will update your recruiter credits as soon as the payment confirmation arrives.');
+                    payButton.style.display = 'none';
+                } else if (params.get('payment') === 'cancelled') {
+                    setBanner('warning', 'Payment was cancelled. Your invoice is still available below if you want to try again.');
+                }
+
+                if (invoice.status === 'paid') {
+                    document.getElementById('summaryCopy').textContent = 'This invoice has already been settled. You can sign in once your account is ready.';
+                    payButton.style.display = 'none';
+                    if (!banner.classList.contains('visible')) {
+                        setBanner('success', 'This invoice has already been paid.');
+                    }
+                    return;
+                }
+
+                if (invoice.status === 'expired') {
+                    document.getElementById('summaryCopy').textContent = 'This invoice has expired. Please start a new recruiter signup if you still need posting credits.';
+                    payButton.style.display = 'none';
+                    if (!banner.classList.contains('visible')) {
+                        setBanner('error', 'This invoice has expired and can no longer be paid.');
+                    }
+                    return;
+                }
+
+                document.getElementById('summaryCopy').textContent = 'Pay securely with PayFast before ' + formatDate(invoice.expiresAt) + ' to activate your recruiter credits.';
+            } catch (error) {
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                errorMessage.textContent = 'We could not load this invoice right now. Please try again later.';
+            }
+        }
+
+        payButton.addEventListener('click', submitPayFastForm);
+        loadInvoice();
+    </script>
+</body>
+
+</html>

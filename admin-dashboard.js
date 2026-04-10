@@ -220,7 +220,7 @@ window.exportReportsCSV = function() {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'joblynk-reports-' + new Date().toISOString().split('T')[0] + '.csv';
+    a.download = 'JobLynk-reports-' + new Date().toISOString().split('T')[0] + '.csv';
     a.click();
     URL.revokeObjectURL(url);
     showToast('Report exported');
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Pricing Settings (API-backed) ──
-const PRICING_KEY = 'joblynk_pricing';
+const PRICING_KEY = 'JobLynk_pricing';
 
 window.savePricingSettings = async function() {
     const pricing = {
