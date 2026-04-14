@@ -56,6 +56,12 @@ const _authScript = document.currentScript || document.querySelector('script[src
             return;
         }
 
+        // Redirect unverified recruiters to verification page (unless already there)
+        if (data.user.role === 'recruiter' && data.user.email_verified === false && !path.includes('recruiter-verify')) {
+            window.location.replace('recruiter-verify.html');
+            return;
+        }
+
         // Store user data for page scripts to use
         window.__JobLynkUser = data.user;
 

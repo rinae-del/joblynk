@@ -76,6 +76,33 @@
                 </form>
 
                 <script>
+                    async function linkGuestCv() {
+                        try {
+                            const raw = localStorage.getItem('JobLynk_guest_cv');
+                            if (!raw) return;
+                            const guest = JSON.parse(raw);
+                            if (!guest.data) return;
+
+                            const res = await fetch('api/documents/index.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    doc_type: 'cv',
+                                    name: guest.name || 'Untitled CV',
+                                    accent_color: guest.accentColor || '#3B4BA6',
+                                    data: guest.data
+                                })
+                            });
+                            const result = await res.json();
+                            if (result.success) {
+                                localStorage.removeItem('JobLynk_guest_cv');
+                                // Store new doc ID so cv-builder loads it
+                                localStorage.setItem('JobLynk_linked_cv_id', result.id);
+                            }
+                        } catch (e) { console.warn('Failed to link guest CV:', e); }
+                    }
+
                     document.getElementById('signinForm').addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const btn = document.getElementById('btnSubmit');
@@ -100,6 +127,14 @@
                             const data = await res.json();
 
                             if (data.success) {
+                                // Check for guest CV to link
+                                const returnParam = new URLSearchParams(window.location.search).get('return');
+                                if (returnParam === 'cv-builder') {
+                                    await linkGuestCv();
+                                    window.location.href = 'cv-builder.html';
+                                    return;
+                                }
+
                                 // Redirect based on role
                                 const role = data.user.role;
                                 if (role === 'recruiter') {
@@ -133,6 +168,12 @@
                         const infoEl = document.getElementById('formInfo');
                         infoEl.textContent = 'Account created successfully. Email verification is disabled for testing, so you can sign in immediately.';
                         infoEl.style.display = 'block';
+                    }
+
+                    // Preserve return param on "Create one" link
+                    const returnVal = signInParams.get('return');
+                    if (returnVal) {
+                        document.querySelector('a[href="sign-up.html"]').href = 'sign-up.html?return=' + encodeURIComponent(returnVal);
                     }
                 </script>
 

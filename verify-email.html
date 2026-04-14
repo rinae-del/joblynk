@@ -116,6 +116,14 @@
         const params = new URLSearchParams(window.location.search);
         const token = params.get('token');
         const emailFromSignup = params.get('email');
+        const returnParam = params.get('return');
+        const returnSuffix = returnParam ? '?return=' + encodeURIComponent(returnParam) : '';
+
+        // Preserve return param on all sign-in / sign-up links
+        if (returnParam) {
+            document.querySelectorAll('a[href="sign-in.html"]').forEach(a => a.href = 'sign-in.html' + returnSuffix);
+            document.querySelectorAll('a[href="sign-up.html"]').forEach(a => a.href = 'sign-up.html' + returnSuffix);
+        }
 
         // Show stored email if available
         if (emailFromSignup) {

@@ -1,6 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ============================
+    // AUTH STATE (non-blocking — guests allowed)
+    // ============================
+    let isLoggedIn = false;
+    let currentUser = null;
+
+    const authReady = fetch('api/auth/session.php', { credentials: 'include', cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.loggedIn) {
+                isLoggedIn = true;
+                currentUser = data.user;
+                window.__JobLynkUser = data.user;
+            } else {
+                // Guest mode: update UI
+                const backBtn = document.getElementById('btnBack');
+                if (backBtn) { backBtn.href = 'index.html'; backBtn.querySelector('span').textContent = 'Home'; }
+            }
+        })
+        .catch(() => {});
+
+    // ============================
     // STATE
     // ============================
     const cvData = {
@@ -25,7 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     // DOCUMENT ID & PERSISTENCE
     // ============================
-    let docId = new URLSearchParams(window.location.search).get('id');
+    // Check if we're returning from sign-in with a linked CV
+    const linkedCvId = localStorage.getItem('JobLynk_linked_cv_id');
+    let docId = linkedCvId || new URLSearchParams(window.location.search).get('id');
+    if (linkedCvId) {
+        localStorage.removeItem('JobLynk_linked_cv_id');
+        window.history.replaceState({}, '', '?id=' + linkedCvId);
+    }
     const isNew = !docId;
     if (!docId) docId = 'new_' + Date.now().toString();
 
@@ -33,6 +60,38 @@ document.addEventListener('DOMContentLoaded', () => {
     let serverDocId = isNew ? null : docId; // Track the DB id
 
     async function loadData() {
+        // Wait for auth check to complete
+        await authReady;
+
+        // Guest mode with no doc ID: try loading guest CV from localStorage
+        if (!isLoggedIn && isNew) {
+            try {
+                const guestRaw = localStorage.getItem('JobLynk_guest_cv');
+                if (guestRaw) {
+                    const guest = JSON.parse(guestRaw);
+                    if (guest.data) {
+                        Object.keys(cvData).forEach(key => {
+                            if (guest.data[key] !== undefined) cvData[key] = guest.data[key];
+                        });
+                    }
+                    if (guest.accentColor) currentAccentColor = guest.accentColor;
+                    const titleEl = document.querySelector('.topbar-title');
+                    if (titleEl && guest.name) titleEl.textContent = guest.name;
+                    document.querySelectorAll('[data-cv]').forEach(inp => {
+                        const key = inp.getAttribute('data-cv');
+                        if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
+                    });
+                    if (cvData.photoUrl) {
+                        const avatarImg = $('avatarPreview');
+                        const avatarIcon = $('avatarIcon');
+                        if (avatarImg) { avatarImg.src = cvData.photoUrl; avatarImg.style.display = 'block'; }
+                        if (avatarIcon) avatarIcon.style.display = 'none';
+                    }
+                }
+            } catch (e) { console.warn('Guest CV load failed:', e); }
+            return;
+        }
+
         if (isNew) return;
 
         // Try API first
@@ -105,7 +164,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const titleEl = document.querySelector('.topbar-title');
             const title = titleEl ? titleEl.textContent.trim() : 'Untitled CV';
 
-            // Try API save
+            // Guest mode: save to localStorage only
+            if (!isLoggedIn) {
+                try {
+                    const guestRecord = {
+                        id: docId,
+                        name: title || 'Untitled CV',
+                        lastEdited: new Date().toISOString(),
+                        type: 'cv',
+                        accentColor: currentAccentColor,
+                        data: { ...cvData }
+                    };
+                    localStorage.setItem('JobLynk_guest_cv', JSON.stringify(guestRecord));
+                } catch (e) { console.warn('Guest save failed:', e); }
+
+                setTimeout(() => {
+                    if (cloudIcon) {
+                        cloudIcon.classList.remove('fa-spin');
+                        cloudIcon.classList.replace('fa-arrows-rotate', 'fa-cloud');
+                    }
+                }, 500);
+                return;
+            }
+
+            // Logged-in: Try API save
             try {
                 const payload = {
                     doc_type: 'cv',
@@ -541,6 +623,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // PDF / DOWNLOAD
     // ============================
     $('btnPdf')?.addEventListener('click', () => {
+        // Guest mode: save state and prompt sign-in
+        if (!isLoggedIn) {
+            // Ensure latest state is saved
+            const titleEl = document.querySelector('.topbar-title');
+            const title = titleEl ? titleEl.textContent.trim() : 'Untitled CV';
+            try {
+                localStorage.setItem('JobLynk_guest_cv', JSON.stringify({
+                    id: docId,
+                    name: title || 'Untitled CV',
+                    lastEdited: new Date().toISOString(),
+                    type: 'cv',
+                    accentColor: currentAccentColor,
+                    data: { ...cvData }
+                }));
+            } catch (e) { console.warn('Guest save failed:', e); }
+
+            // Show auth modal
+            const modal = document.getElementById('guestAuthModal');
+            if (modal) modal.style.display = 'flex';
+            return;
+        }
+
         const element = $('cvPaper');
         const cvName = `${cvData.firstName || 'Untitled'}_${cvData.lastName || 'CV'}`.replace(/\s+/g, '_');
         const opt = {

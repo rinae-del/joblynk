@@ -12,7 +12,6 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="auth-guard.js?v=9"></script>
 </head>
 
 <body>
@@ -472,6 +471,24 @@
 
     <!-- Mobile FAB -->
     <button class="mobile-fab" id="btnMobileFab"><i class="fa-solid fa-eye"></i></button>
+
+    <!-- Guest Auth Modal -->
+    <div id="guestAuthModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem;">
+        <div style="background:#fff; border-radius:20px; max-width:420px; width:100%; padding:2.5rem; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.25); position:relative;">
+            <button onclick="document.getElementById('guestAuthModal').style.display='none'" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.2rem; color:#94A3B8; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <div style="width:64px; height:64px; border-radius:16px; background:linear-gradient(135deg,#3B4BA6,#7C3AED); display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem;">
+                <i class="fa-solid fa-download" style="font-size:1.5rem; color:#fff;"></i>
+            </div>
+            <h3 style="font-size:1.3rem; font-weight:800; color:#1E293B; margin-bottom:0.5rem;">Sign in to download</h3>
+            <p style="color:#64748B; font-size:0.92rem; line-height:1.6; margin-bottom:1.75rem;">Create a free account or sign in to download your CV. Don't worry — your progress is saved and will be waiting for you.</p>
+            <a href="sign-up.html?return=cv-builder" style="display:block; padding:14px; background:linear-gradient(135deg,#3B4BA6,#7C3AED); color:#fff; font-weight:700; font-size:1rem; border-radius:12px; text-decoration:none; margin-bottom:0.75rem; box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                <i class="fa-solid fa-user-plus" style="margin-right:6px;"></i> Create Free Account
+            </a>
+            <a href="sign-in.html?return=cv-builder" style="display:block; padding:14px; background:#F1F5F9; color:#1E293B; font-weight:700; font-size:1rem; border-radius:12px; text-decoration:none;">
+                <i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i> Sign In
+            </a>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="cv-builder.js"></script>

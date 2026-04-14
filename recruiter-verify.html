@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | JobLynk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        .code-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .code-inputs input {
+            width: 52px;
+            height: 62px;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            border: 2px solid #D1D5DB;
+            border-radius: 12px;
+            background: #F8FAFC;
+            color: var(--text, #1E293B);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .code-inputs input:focus {
+            border-color: var(--accent, #3B4BA6);
+            box-shadow: 0 0 0 3px rgba(59, 75, 166, 0.15);
+        }
+        .code-inputs input.error {
+            border-color: #EF4444;
+            background: #FEF2F2;
+        }
+        .code-inputs input.success {
+            border-color: #059669;
+            background: #ECFDF5;
+        }
+        .edit-email-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .edit-email-row input {
+            flex: 1;
+            padding: 0.65rem 0.85rem;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .edit-email-row button {
+            padding: 0.65rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent, #3B4BA6);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .success-banner {
+            background: linear-gradient(135deg, #059669, #10B981);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-split-layout">
+        <!-- Visual Sidebar -->
+        <div class="auth-banner">
+            <a href="index.html" class="auth-banner-logo">JobLynk.</a>
+            <div class="auth-banner-content">
+                <h1>Almost there!</h1>
+                <p>Just one more step. Verify your email to start posting jobs.</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="auth-main">
+            <a href="index.html" class="auth-mobile-logo">JobLynk.</a>
+
+            <div class="auth-main-inner">
+
+                <!-- Payment success banner -->
+                <div id="paymentBanner" class="success-banner" style="display:none;">
+                    <i class="fa-solid fa-circle-check" style="font-size:1.2rem;"></i>
+                    <span>Payment successful! Now verify your email to get started.</span>
+                </div>
+
+                <!-- Code entry state -->
+                <div id="state-code">
+                    <div class="auth-header" style="margin-bottom: 0.5rem;">
+                        <div style="font-size: 3.5rem; margin-bottom: 1rem;"><i class="fa-solid fa-shield-halved" style="color: var(--accent);"></i></div>
+                        <h2>Enter verification code</h2>
+                        <p style="margin-top: 0.5rem; line-height: 1.6;">
+                            We sent a 6-digit code to <strong id="displayEmail"></strong>
+                        </p>
+                    </div>
+
+                    <div class="code-inputs" id="codeInputs">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" data-index="0">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" data-index="1">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" data-index="2">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" data-index="3">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" data-index="4">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" data-index="5">
+                    </div>
+
+                    <div id="codeMsg" style="text-align:center; margin-bottom:1rem; font-size:0.9rem; display:none;"></div>
+
+                    <button type="button" class="auth-btn" id="btnVerify" disabled>
+                        <i class="fa-solid fa-check-circle"></i> Verify Email
+                    </button>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+                        <button type="button" id="btnResend" style="background:none; border:none; color:var(--accent,#3B4BA6); font-weight:600; font-size:0.88rem; cursor:pointer; padding:0;">
+                            <i class="fa-solid fa-rotate-right"></i> Resend code
+                        </button>
+                        <button type="button" id="btnShowEdit" style="background:none; border:none; color:var(--text-secondary,#6B7280); font-weight:600; font-size:0.88rem; cursor:pointer; padding:0;">
+                            <i class="fa-solid fa-pencil"></i> Edit email address
+                        </button>
+                    </div>
+
+                    <!-- Edit email section (hidden by default) -->
+                    <div id="editEmailSection" style="display:none; margin-top:1.25rem; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:1.25rem;">
+                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-muted,#6B7280); display:block; margin-bottom:0.5rem;">NEW EMAIL ADDRESS</label>
+                        <div class="edit-email-row">
+                            <input type="email" id="newEmailInput" placeholder="new@example.com">
+                            <button type="button" id="btnUpdateEmail">Update & Resend</button>
+                        </div>
+                        <div id="editEmailMsg" style="font-size:0.85rem; margin-top:0.5rem; display:none;"></div>
+                    </div>
+                </div>
+
+                <!-- Success state -->
+                <div id="state-success" style="display: none;">
+                    <div class="auth-header" style="margin-bottom: 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-circle-check" style="color: #059669;"></i>
+                        </div>
+                        <h2>Email verified!</h2>
+                        <p style="margin-top: 0.5rem; line-height: 1.6;">
+                            Your recruiter account is fully activated. Let's post your first job!
+                        </p>
+                    </div>
+                    <a href="recruiter-post-job.html?payment=success" class="auth-btn" style="display: block; text-align: center; text-decoration: none;">
+                        <i class="fa-solid fa-plus-circle"></i> Post Your First Job
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const API_BASE = 'api/auth';
+
+        // Show payment banner if returning from PayFast
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            document.getElementById('paymentBanner').style.display = 'flex';
+            history.replaceState(null, '', window.location.pathname);
+        }
+
+        // Fetch current session to get email
+        let currentEmail = '';
+        fetch(API_BASE + '/session.php', { credentials: 'include', cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    window.location.replace('sign-in.html');
+                    return;
+                }
+                currentEmail = data.user.email;
+                document.getElementById('displayEmail').textContent = currentEmail;
+                document.getElementById('newEmailInput').value = '';
+            })
+            .catch(() => window.location.replace('sign-in.html'));
+
+        // ── Code input handling ──
+        const inputs = document.querySelectorAll('#codeInputs input');
+        const btnVerify = document.getElementById('btnVerify');
+
+        inputs.forEach((input, i) => {
+            input.addEventListener('input', (e) => {
+                const val = e.target.value.replace(/\D/g, '');
+                e.target.value = val;
+                if (val && i < inputs.length - 1) inputs[i + 1].focus();
+                updateVerifyBtn();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && i > 0) {
+                    inputs[i - 1].focus();
+                }
+            });
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasted = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+                pasted.split('').forEach((ch, j) => {
+                    if (inputs[j]) inputs[j].value = ch;
+                });
+                if (pasted.length > 0) inputs[Math.min(pasted.length, 5)].focus();
+                updateVerifyBtn();
+            });
+        });
+
+        function getCode() {
+            return Array.from(inputs).map(i => i.value).join('');
+        }
+        function updateVerifyBtn() {
+            btnVerify.disabled = getCode().length < 6;
+        }
+        function showMsg(id, text, isError) {
+            const el = document.getElementById(id);
+            el.style.display = 'block';
+            el.style.color = isError ? '#EF4444' : '#059669';
+            el.textContent = text;
+        }
+
+        // ── Verify code ──
+        btnVerify.addEventListener('click', async () => {
+            const code = getCode();
+            if (code.length < 6) return;
+
+            btnVerify.disabled = true;
+            btnVerify.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+
+            try {
+                const res = await fetch(API_BASE + '/verify-code.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    inputs.forEach(i => i.classList.add('success'));
+                    document.getElementById('state-code').style.display = 'none';
+                    document.getElementById('paymentBanner').style.display = 'none';
+                    document.getElementById('state-success').style.display = 'block';
+                } else {
+                    inputs.forEach(i => i.classList.add('error'));
+                    showMsg('codeMsg', data.message || 'Invalid code. Please try again.', true);
+                    btnVerify.disabled = false;
+                    btnVerify.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verify Email';
+                    setTimeout(() => inputs.forEach(i => i.classList.remove('error')), 2000);
+                }
+            } catch {
+                showMsg('codeMsg', 'Network error. Please try again.', true);
+                btnVerify.disabled = false;
+                btnVerify.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verify Email';
+            }
+        });
+
+        // ── Resend code ──
+        document.getElementById('btnResend').addEventListener('click', async function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const res = await fetch(API_BASE + '/resend-code.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({})
+                });
+                const data = await res.json();
+                showMsg('codeMsg', data.message || 'A new code has been sent.', !data.success);
+                if (data.email) {
+                    currentEmail = data.email;
+                    document.getElementById('displayEmail').textContent = currentEmail;
+                }
+            } catch {
+                showMsg('codeMsg', 'Failed to resend. Please try again.', true);
+            }
+
+            this.disabled = false;
+            this.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Resend code';
+        });
+
+        // ── Edit email toggle ──
+        document.getElementById('btnShowEdit').addEventListener('click', () => {
+            const section = document.getElementById('editEmailSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+            if (section.style.display === 'block') {
+                document.getElementById('newEmailInput').value = currentEmail;
+                document.getElementById('newEmailInput').focus();
+            }
+        });
+
+        // ── Update email & resend ──
+        document.getElementById('btnUpdateEmail').addEventListener('click', async function() {
+            const newEmail = document.getElementById('newEmailInput').value.trim();
+            if (!newEmail) return;
+
+            this.disabled = true;
+            this.textContent = 'Updating...';
+
+            try {
+                const res = await fetch(API_BASE + '/update-email.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email: newEmail })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentEmail = newEmail;
+                    document.getElementById('displayEmail').textContent = newEmail;
+                    document.getElementById('editEmailSection').style.display = 'none';
+                    showMsg('codeMsg', 'Email updated! A new code has been sent to ' + newEmail + '.', false);
+                    // Clear code inputs
+                    inputs.forEach(i => { i.value = ''; });
+                    updateVerifyBtn();
+                } else {
+                    showMsg('editEmailMsg', data.message || 'Failed to update email.', true);
+                }
+            } catch {
+                showMsg('editEmailMsg', 'Network error. Please try again.', true);
+            }
+
+            this.disabled = false;
+            this.textContent = 'Update & Resend';
+        });
+    })();
+    </script>
+
+</body>
+</html>

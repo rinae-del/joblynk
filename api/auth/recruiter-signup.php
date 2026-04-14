@@ -142,25 +142,7 @@ try {
     jsonResponse(['success' => false, 'message' => 'Database error: ' . $e->getMessage()], 500);
 }
 
-if ($emailVerificationRequired) {
-    // ── Send Verification Email ──
-    $verifyUrl = APP_URL . '/verify-email.html?token=' . $token;
-    $emailBody = '
-        <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
-            Hi ' . htmlspecialchars($firstName) . ', welcome to ' . APP_NAME . ' for Employers!<br>
-            Please verify your email address to activate your account. 
-            Your payment will be processed via PayFast.
-        </p>
-        <div style="text-align:center;margin:32px 0;">
-            <a href="' . $verifyUrl . '" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:16px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
-                Verify Email Address
-            </a>
-        </div>
-    ';
-
-    $emailHtml = buildEmailTemplate('Verify your recruiter account', $emailBody);
-    sendResendEmail($email, 'Verify your email – Joblynk Recruiter', $emailHtml);
-}
+// Verification email is sent after payment via payment-return.php (as a 6-digit code)
 
 if ($paymentMethod === 'invoice') {
     $invoiceUrl = APP_URL . '/recruiter-invoice.html?token=' . urlencode($invoiceToken) . '&emailed=1';
