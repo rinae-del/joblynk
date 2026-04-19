@@ -151,7 +151,7 @@
             <!-- Documents -->
             <div class="app-modal-field">
                 <label><i class="fa-solid fa-paperclip" style="margin-right:4px;color:var(--accent,#4F46E5);"></i> Attach Documents</label>
-                <p style="font-size:0.78rem;color:var(--text-muted,#6b7280);margin:-4px 0 10px;">Select from your saved documents and/or upload new files. You can attach multiple.</p>
+                <p style="font-size:0.78rem;color:var(--text-muted,#6b7280);margin:-4px 0 10px;">Choose one saved CV, optionally add a cover letter, include any supporting documents, or upload new files.</p>
 
                 <!-- Saved documents (checkboxes) -->
                 <div id="appSavedDocs" style="margin-bottom:12px;">
@@ -165,8 +165,8 @@
                 <label class="app-file-upload-box" id="multiUploadBox">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
                     <span>Click to upload documents</span>
-                    <span class="upload-hint">PDF, DOC, or DOCX — max 5 MB each — select multiple files</span>
-                    <input type="file" id="appFileUpload" accept=".pdf,.doc,.docx" multiple style="display:none;" onchange="onMultiFilesSelected(this)">
+                    <span class="upload-hint">PDF, DOC, DOCX, JPG or PNG — max 5 MB each — select multiple files</span>
+                    <input type="file" id="appFileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display:none;" onchange="onMultiFilesSelected(this)">
                 </label>
                 <div id="appUploadedFilesList" class="app-uploaded-files" style="display:none;"></div>
             </div>

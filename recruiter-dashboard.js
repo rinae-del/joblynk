@@ -591,6 +591,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="candidate-doc-tab" data-tab="cl" onclick="switchCandidateDocTab('cl')">
                     <i class="fa-solid fa-envelope-open-text"></i> Cover Letter ${app.cl_name ? '' : '<span style="opacity:0.5;">(None)</span>'}
                 </button>
+                ${(() => {
+                    const extraDocIds = (Array.isArray(app.document_ids) ? app.document_ids : [])
+                        .map(id => parseInt(id, 10))
+                        .filter(id => id && id !== parseInt(app.cv_id || 0, 10) && id !== parseInt(app.cl_id || 0, 10));
+                    return extraDocIds.length
+                        ? `<button class="candidate-doc-tab" data-tab="attachments" onclick="switchCandidateDocTab('attachments')"><i class="fa-solid fa-paperclip"></i> Attachments (${extraDocIds.length})</button>`
+                        : '';
+                })()}
                 ${hasResponses ? '<button class="candidate-doc-tab" data-tab="responses" onclick="switchCandidateDocTab(\'responses\')"><i class="fa-solid fa-clipboard-question"></i> Responses</button>' : ''}
             </div>
             <div class="candidate-doc-panel" id="candidateDocPanel">
@@ -652,6 +660,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (tab === 'attachments') {
+            renderCandidateAttachments(app);
+            return;
+        }
+
         const docId = tab === 'cv' ? app.cv_id : app.cl_id;
         const docName = tab === 'cv' ? app.cv_name : app.cl_name;
         const docLabel = tab === 'cv' ? 'CV' : 'Cover Letter';
@@ -688,6 +701,54 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.warn('Error loading document:', e);
             document.getElementById('candidateDocPanel').innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);">Failed to load document.</div>`;
+        }
+    }
+
+    async function renderCandidateAttachments(app) {
+        const panel = document.getElementById('candidateDocPanel');
+        const attachmentIds = (Array.isArray(app.document_ids) ? app.document_ids : [])
+            .map(id => parseInt(id, 10))
+            .filter(id => id && id !== parseInt(app.cv_id || 0, 10) && id !== parseInt(app.cl_id || 0, 10));
+
+        if (!attachmentIds.length) {
+            panel.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-solid fa-paperclip" style="font-size:2rem; margin-bottom:8px; display:block; opacity:0.3;"></i>No additional attachments were included with this application.</div>';
+            return;
+        }
+
+        panel.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.2rem;"></i><div style="margin-top:8px; font-size:0.85rem;">Loading attachments...</div></div>';
+
+        try {
+            const docs = await Promise.all(attachmentIds.map(async (docId) => {
+                if (window._docCache[docId]) {
+                    return window._docCache[docId];
+                }
+
+                const res = await fetch(`api/documents/index.php?id=${encodeURIComponent(docId)}&application_id=${encodeURIComponent(app.id)}`, { credentials: 'include' });
+                const result = await res.json();
+                if (!result.success || !result.document) {
+                    return null;
+                }
+                window._docCache[docId] = result.document;
+                return result.document;
+            }));
+
+            const validDocs = docs.filter(Boolean);
+            if (!validDocs.length) {
+                panel.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted);">No additional attachments were available.</div>';
+                return;
+            }
+
+            panel.innerHTML = `<div class="doc-preview-card"><div class="doc-preview-header"><h4>Additional Attachments</h4><div class="doc-preview-contact">${validDocs.length} attached document${validDocs.length === 1 ? '' : 's'}</div></div><div class="doc-preview-section">${validDocs.map((doc) => {
+                const data = doc.data || {};
+                const serveUrl = `api/documents/serve.php?id=${encodeURIComponent(doc.id)}&application_id=${encodeURIComponent(app.id)}`;
+                const fileName = escHtml(data.original_name || doc.name || `Document #${doc.id}`);
+                const mime = String(data.mime_type || '').toLowerCase();
+                const icon = mime.indexOf('pdf') !== -1 ? 'fa-file-pdf' : (mime.indexOf('image') !== -1 ? 'fa-file-image' : 'fa-file-word');
+                return `<div class="doc-preview-entry" style="display:flex; align-items:center; justify-content:space-between; gap:12px;"><div><div class="doc-preview-entry-title"><i class="fa-solid ${icon}" style="margin-right:8px;"></i>${fileName}</div><div class="doc-preview-entry-meta">${escHtml(doc.doc_type || 'supporting')}</div></div><a href="${serveUrl}" target="_blank" class="btn-action btn-shortlist" style="display:inline-flex; text-decoration:none;"><i class="fa-solid fa-eye"></i> View</a></div>`;
+            }).join('')}</div></div>`;
+        } catch (e) {
+            console.warn('Error loading attachment documents:', e);
+            panel.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted);">Failed to load attachments.</div>';
         }
     }
 

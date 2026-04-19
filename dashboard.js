@@ -427,10 +427,85 @@ document.addEventListener('DOMContentLoaded', () => {
     // Application Modal
     let _uploadedFiles = []; // staged file uploads
 
+    function getApplyDocMeta(docType) {
+        if (docType === 'cl') {
+            return { typeClass: 'cl', typeLabel: 'Cover Letter', icon: 'fa-envelope-open-text' };
+        }
+        if (docType === 'supporting') {
+            return { typeClass: 'supporting', typeLabel: 'Supporting Document', icon: 'fa-file-circle-check' };
+        }
+        return { typeClass: 'cv', typeLabel: 'CV', icon: 'fa-file-lines' };
+    }
+
+    function setExclusiveDocTypeSelection(docType, currentInput) {
+        document.querySelectorAll(`input[name="app_doc_ids"][data-doc-type="${docType}"]`).forEach(cb => {
+            if (cb !== currentInput) {
+                cb.checked = false;
+                cb.closest('.app-doc-check-item')?.classList.remove('checked');
+            }
+        });
+    }
+
+    function syncApplyDocSelectionState(input) {
+        const item = input.closest('.app-doc-check-item');
+        if (item) {
+            item.classList.toggle('checked', input.checked);
+        }
+
+        if (input.checked && (input.dataset.docType === 'cv' || input.dataset.docType === 'cl')) {
+            setExclusiveDocTypeSelection(input.dataset.docType, input);
+        }
+    }
+
+    function buildSavedDocItem(doc, defaultSelected) {
+        const meta = getApplyDocMeta(doc.doc_type);
+        const item = document.createElement('label');
+        item.className = `app-doc-check-item${defaultSelected ? ' is-default checked' : ''}`;
+        item.innerHTML = `
+            <input type="checkbox" name="app_doc_ids" value="${doc.id}" data-doc-type="${doc.doc_type}" ${defaultSelected ? 'checked' : ''}>
+            <div class="doc-icon ${meta.typeClass}"><i class="fa-solid ${meta.icon}"></i></div>
+            <span class="doc-name">${escText(doc.name || doc.original_name || 'Untitled')}</span>
+            ${defaultSelected ? '<span class="doc-default-flag">Selected</span>' : ''}
+            <span class="doc-type-label ${meta.typeClass}">${meta.typeLabel}</span>`;
+
+        const input = item.querySelector('input');
+        input.addEventListener('change', () => {
+            syncApplyDocSelectionState(input);
+        });
+
+        item.addEventListener('click', function(e) {
+            if (e.target !== input && !e.target.closest('input')) {
+                input.checked = !input.checked;
+                syncApplyDocSelectionState(input);
+                e.preventDefault();
+            }
+        });
+
+        return item;
+    }
+
+    function renderSavedDocGroup(container, title, docs, defaultDocId) {
+        if (!docs.length) return;
+
+        const heading = document.createElement('div');
+        heading.className = 'app-doc-group-title';
+        heading.textContent = title;
+        container.appendChild(heading);
+
+        docs.forEach(doc => {
+            container.appendChild(buildSavedDocItem(doc, defaultDocId && String(doc.id) === String(defaultDocId)));
+        });
+    }
+
     window.onMultiFilesSelected = function(input) {
         if (!input.files) return;
         for (const file of input.files) {
             if (file.size > 5 * 1024 * 1024) { alert(`${file.name} exceeds 5 MB limit.`); continue; }
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            if (!['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'].includes(ext)) {
+                alert(`${file.name} is not a supported file type.`);
+                continue;
+            }
             _uploadedFiles.push(file);
         }
         input.value = ''; // allow re-selecting same files
@@ -546,25 +621,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('api/documents/index.php', { credentials: 'include' });
             const result = await res.json();
             if (result.success && result.documents && result.documents.length) {
-                hasAnyDocs = true;
-                result.documents.forEach(doc => {
-                    const typeClass = doc.doc_type === 'cv' ? 'cv' : 'cl';
-                    const typeLabel = doc.doc_type === 'cv' ? 'CV' : 'Cover Letter';
-                    const icon = doc.doc_type === 'cv' ? 'fa-file-lines' : 'fa-envelope-open-text';
-                    const item = document.createElement('label');
-                    item.className = 'app-doc-check-item';
-                    item.innerHTML = `
-                        <input type="checkbox" name="app_doc_ids" value="${doc.id}" data-doc-type="${doc.doc_type}">
-                        <div class="doc-icon ${typeClass}"><i class="fa-solid ${icon}"></i></div>
-                        <span class="doc-name">${escText(doc.name || 'Untitled')}</span>
-                        <span class="doc-type-label ${typeClass}">${typeLabel}</span>`;
-                    item.addEventListener('click', function(e) {
-                        if (e.target.tagName === 'INPUT') {
-                            this.classList.toggle('checked', e.target.checked);
-                        }
-                    });
-                    docsList.appendChild(item);
-                });
+                const selectableDocs = [...result.documents].sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
+                const cvDocs = selectableDocs.filter(doc => doc.doc_type === 'cv');
+                const clDocs = selectableDocs.filter(doc => doc.doc_type === 'cl');
+                const supportingDocs = selectableDocs.filter(doc => doc.doc_type === 'supporting');
+                const defaultCvId = cvDocs.length ? cvDocs[0].id : null;
+
+                hasAnyDocs = selectableDocs.length > 0;
+                renderSavedDocGroup(docsList, 'Saved CVs', cvDocs, defaultCvId);
+                renderSavedDocGroup(docsList, 'Saved Cover Letters', clDocs);
+                renderSavedDocGroup(docsList, 'Supporting Documents', supportingDocs);
             }
         } catch (e) {
             console.warn('Docs API failed:', e);
@@ -621,9 +687,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.submitJobApplication = async function() {
         if (!currentApplyJobId) return;
 
-        // Collect selected saved document IDs
-        const selectedDocIds = [...document.querySelectorAll('input[name="app_doc_ids"]:checked')].map(cb => cb.value);
-
         // Separate first CV and CL for backward compatibility
         let cvId = null, clId = null;
         const allDocIds = [];
@@ -633,6 +696,16 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (docType === 'cl' && !clId) clId = cb.value;
             allDocIds.push(cb.value);
         });
+
+        const hasUploadedCv = _uploadedFiles.some(file => {
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            return ['pdf', 'doc', 'docx'].includes(ext);
+        });
+
+        if (!cvId && !hasUploadedCv) {
+            alert('Select a saved CV or upload one before submitting your application.');
+            return;
+        }
 
         // Must have at least one document (saved or uploaded)
         if (allDocIds.length === 0 && _uploadedFiles.length === 0) {
@@ -687,8 +760,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 credentials: 'include',
                 body: fd
             });
-            const result = await res.json();
-            if (!result.success) throw new Error(result.message || 'Submit failed');
+            const rawResult = await res.text();
+            if (!rawResult.trim()) {
+                throw new Error('The server returned an empty response while submitting your application.');
+            }
+
+            let result;
+            try {
+                result = JSON.parse(rawResult);
+            } catch (parseError) {
+                throw new Error('The server returned an invalid response while submitting your application.');
+            }
+
+            if (!res.ok || !result.success) throw new Error(result.message || 'Submit failed');
 
             // Refresh caches
             await JobsStore.fetchApplications();

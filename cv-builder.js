@@ -40,8 +40,197 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const activeOptionalFields = new Set();
+    const TITLE_DEFAULT = 'Untitled CV';
 
     const uid = () => Math.random().toString(36).substr(2, 9);
+
+    const monthOptions = [
+        { value: '01', label: 'January' },
+        { value: '02', label: 'February' },
+        { value: '03', label: 'March' },
+        { value: '04', label: 'April' },
+        { value: '05', label: 'May' },
+        { value: '06', label: 'June' },
+        { value: '07', label: 'July' },
+        { value: '08', label: 'August' },
+        { value: '09', label: 'September' },
+        { value: '10', label: 'October' },
+        { value: '11', label: 'November' },
+        { value: '12', label: 'December' }
+    ];
+
+    const dayOptions = Array.from({ length: 31 }, (_, index) => ({
+        value: String(index + 1).padStart(2, '0'),
+        label: String(index + 1)
+    }));
+
+    const genderOptions = [
+        { value: 'Male', label: 'Male' },
+        { value: 'Female', label: 'Female' },
+        { value: 'Non-binary', label: 'Non-binary' },
+        { value: 'Other', label: 'Other' },
+        { value: 'Prefer not to say', label: 'Prefer not to say' }
+    ];
+
+    const drivingLicenceOptions = [
+        { value: 'No licence', label: 'No licence' },
+        { value: 'Learner\'s licence', label: 'Learner\'s licence' },
+        { value: 'Code 8', label: 'Code 8' },
+        { value: 'Code 10', label: 'Code 10' },
+        { value: 'Code 14', label: 'Code 14' },
+        { value: 'International licence', label: 'International licence' }
+    ];
+
+    const languageOptions = [
+        'English', 'Afrikaans', 'isiZulu', 'isiXhosa', 'Sesotho', 'Setswana',
+        'Sepedi', 'Xitsonga', 'siSwati', 'Tshivenda', 'isiNdebele', 'South African Sign Language',
+        'French', 'Portuguese', 'German', 'Spanish', 'Arabic', 'Mandarin',
+        'Hindi', 'Urdu', 'Swahili'
+    ].map(language => ({ value: language, label: language }));
+
+    const languageLevelOptions = [
+        { value: 'Native', label: 'Native' },
+        { value: 'Fluent', label: 'Fluent' },
+        { value: 'Advanced', label: 'Advanced' },
+        { value: 'Intermediate', label: 'Intermediate' },
+        { value: 'Basic', label: 'Basic' }
+    ];
+
+    function escapeHtml(value = '') {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function buildYearOptions(startYear, endYear) {
+        const options = [];
+        for (let year = startYear; year >= endYear; year -= 1) {
+            options.push({ value: String(year), label: String(year) });
+        }
+        return options;
+    }
+
+    function ensureSelectedOption(options, selectedValue) {
+        if (!selectedValue) return options;
+        return options.some(option => option.value === selectedValue)
+            ? options
+            : [{ value: selectedValue, label: selectedValue }, ...options];
+    }
+
+    function buildSelectOptions(options, selectedValue, placeholder) {
+        return [`<option value="">${escapeHtml(placeholder)}</option>`]
+            .concat(
+                ensureSelectedOption(options, selectedValue).map(option =>
+                    `<option value="${escapeHtml(option.value)}"${option.value === selectedValue ? ' selected' : ''}>${escapeHtml(option.label)}</option>`
+                )
+            )
+            .join('');
+    }
+
+    function parseStoredDate(value) {
+        const match = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(value || '');
+        return {
+            year: match?.[1] || '',
+            month: match?.[2] || '',
+            day: match?.[3] || ''
+        };
+    }
+
+    function buildMonthYearControl(arr, id, key, value) {
+        const { year, month } = parseStoredDate(value);
+        const currentYear = new Date().getFullYear();
+        return `
+            <div class="date-select-grid date-select-grid-2">
+                <select class="dyn" data-arr="${arr}" data-id="${id}" data-key="${key}" data-date-part="month">
+                    ${buildSelectOptions(monthOptions, month, 'Month')}
+                </select>
+                <select class="dyn" data-arr="${arr}" data-id="${id}" data-key="${key}" data-date-part="year">
+                    ${buildSelectOptions(buildYearOptions(currentYear + 5, currentYear - 60), year, 'Year')}
+                </select>
+            </div>
+        `;
+    }
+
+    function buildDateOfBirthControl(field, value) {
+        const { day, month, year } = parseStoredDate(value);
+        const currentYear = new Date().getFullYear();
+        return `
+            <div class="date-select-grid date-select-grid-3">
+                <select data-optional-field="${field}" data-date-part="day">
+                    ${buildSelectOptions(dayOptions, day, 'Day')}
+                </select>
+                <select data-optional-field="${field}" data-date-part="month">
+                    ${buildSelectOptions(monthOptions, month, 'Month')}
+                </select>
+                <select data-optional-field="${field}" data-date-part="year">
+                    ${buildSelectOptions(buildYearOptions(currentYear, currentYear - 100), year, 'Year')}
+                </select>
+            </div>
+        `;
+    }
+
+    function formatDateRange(startDate, endDate) {
+        const start = fmtDate(startDate);
+        const end = fmtDate(endDate);
+
+        if (!start && !end) return '';
+        if (start && !end) return `${start} — Present`;
+        if (!start && end) return end;
+        return `${start} — ${end}`;
+    }
+
+    function formatDateRangeWithCity(startDate, endDate, city) {
+        return [formatDateRange(startDate, endDate), city].filter(Boolean).join(', ');
+    }
+
+    function formatOptionalFieldValue(field, value) {
+        if (!value) return '';
+        if (field === 'dateOfBirth') return fmtFullDate(value);
+        return value;
+    }
+
+    function fmtFullDate(value) {
+        const { year, month, day } = parseStoredDate(value);
+        if (!year || !month || !day) return value || '';
+        const monthLabel = monthOptions.find(option => option.value === month)?.label || month;
+        return `${Number(day)} ${monthLabel} ${year}`;
+    }
+
+    function buildDefaultCvName(date = new Date()) {
+        const datePart = [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, '0'),
+            String(date.getDate()).padStart(2, '0')
+        ].join('-');
+        const timePart = `${String(date.getHours()).padStart(2, '0')}-${String(date.getMinutes()).padStart(2, '0')}`;
+        return `CV ${datePart} ${timePart}`;
+    }
+
+    function getCurrentCvTitle() {
+        const titleEl = document.querySelector('.topbar-title');
+        return titleEl ? titleEl.textContent.trim() : '';
+    }
+
+    function sanitizeFileName(name) {
+        return (name || buildDefaultCvName())
+            .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/ /g, '_');
+    }
+
+    function ensureNewCvName() {
+        if (!isNew) return;
+        const titleEl = document.querySelector('.topbar-title');
+        if (!titleEl) return;
+
+        const currentTitle = titleEl.textContent.trim();
+        if (!currentTitle || currentTitle === TITLE_DEFAULT) {
+            titleEl.textContent = buildDefaultCvName();
+        }
+    }
 
     // ============================
     // DOCUMENT ID & PERSISTENCE
@@ -108,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (doc.accent_color) currentAccentColor = doc.accent_color;
                 const titleEl = document.querySelector('.topbar-title');
-                if (titleEl) titleEl.textContent = doc.name || 'Untitled CV';
+                if (titleEl) titleEl.textContent = doc.name || TITLE_DEFAULT;
                 document.querySelectorAll('[data-cv]').forEach(inp => {
                     const key = inp.getAttribute('data-cv');
                     if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
@@ -135,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     if (ex.accentColor) currentAccentColor = ex.accentColor;
                     const titleEl = document.querySelector('.topbar-title');
-                    if (titleEl) titleEl.textContent = ex.name || 'Untitled CV';
+                    if (titleEl) titleEl.textContent = ex.name || TITLE_DEFAULT;
                     document.querySelectorAll('[data-cv]').forEach(inp => {
                         const key = inp.getAttribute('data-cv');
                         if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
@@ -162,14 +351,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveTimeout = setTimeout(async () => {
             const titleEl = document.querySelector('.topbar-title');
-            const title = titleEl ? titleEl.textContent.trim() : 'Untitled CV';
+            const title = titleEl ? titleEl.textContent.trim() : TITLE_DEFAULT;
 
             // Guest mode: save to localStorage only
             if (!isLoggedIn) {
                 try {
                     const guestRecord = {
                         id: docId,
-                        name: title || 'Untitled CV',
+                        name: title || TITLE_DEFAULT,
                         lastEdited: new Date().toISOString(),
                         type: 'cv',
                         accentColor: currentAccentColor,
@@ -191,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const payload = {
                     doc_type: 'cv',
-                    name: title || 'Untitled CV',
+                    name: title || TITLE_DEFAULT,
                     accent_color: currentAccentColor,
                     data: { ...cvData }
                 };
@@ -219,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let cvs = stored ? JSON.parse(stored) : [];
                     const fallbackId = serverDocId || docId;
                     const idx = cvs.findIndex(c => String(c.id) === String(fallbackId));
-                    const record = { id: fallbackId, name: title || 'Untitled CV', lastEdited: new Date().toISOString(), type: 'cv', accentColor: currentAccentColor, data: { ...cvData } };
+                    const record = { id: fallbackId, name: title || TITLE_DEFAULT, lastEdited: new Date().toISOString(), type: 'cv', accentColor: currentAccentColor, data: { ...cvData } };
                     if (idx >= 0) cvs[idx] = record; else cvs.push(record);
                     localStorage.setItem('JobLynk_cvs', JSON.stringify(cvs));
                 } catch (e2) { console.error('localStorage save failed:', e2); }
@@ -290,12 +479,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     // SIMPLE INPUT BINDING
     // ============================
-    document.addEventListener('input', (e) => {
-        const field = e.target.getAttribute('data-cv');
+    function syncSimpleField(target) {
+        const field = target.getAttribute('data-cv');
         if (field && field in cvData && !Array.isArray(cvData[field])) {
-            cvData[field] = e.target.value;
+            cvData[field] = target.value;
             renderPreview();
             saveData();
+        }
+    }
+
+    document.addEventListener('input', (e) => {
+        if (e.target.matches('input[data-cv], textarea[data-cv]')) {
+            syncSimpleField(e.target);
+        }
+    });
+
+    document.addEventListener('change', (e) => {
+        if (e.target.matches('select[data-cv]')) {
+            syncSimpleField(e.target);
         }
     });
 
@@ -341,30 +542,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    function hydrateOptionalFieldsFromData() {
+        Object.keys(optionalLabels).forEach(field => {
+            if (cvData[field]) activeOptionalFields.add(field);
+            const chip = document.querySelector(`.chip[data-field="${field}"]`);
+            if (chip) chip.classList.toggle('active', activeOptionalFields.has(field));
+        });
+    }
+
+    function renderOptionalFieldControl(field) {
+        if (field === 'dateOfBirth') {
+            return buildDateOfBirthControl(field, cvData[field] || '');
+        }
+
+        if (field === 'drivingLicence') {
+            return `
+                <select data-cv="${field}">
+                    ${buildSelectOptions(drivingLicenceOptions, cvData[field] || '', 'Select licence')}
+                </select>
+            `;
+        }
+
+        if (field === 'gender') {
+            return `
+                <select data-cv="${field}">
+                    ${buildSelectOptions(genderOptions, cvData[field] || '', 'Select gender')}
+                </select>
+            `;
+        }
+
+        return `<input type="text" data-cv="${field}" value="${escapeHtml(cvData[field] || '')}" autocomplete="off">`;
+    }
+
+    function syncOptionalCompositeDate(field) {
+        const row = document.querySelector(`.optional-field-row[data-field="${field}"]`);
+        if (!row) return;
+
+        const day = row.querySelector('[data-date-part="day"]')?.value || '';
+        const month = row.querySelector('[data-date-part="month"]')?.value || '';
+        const year = row.querySelector('[data-date-part="year"]')?.value || '';
+
+        cvData[field] = day && month && year ? `${year}-${month}-${day}` : '';
+        renderPreview();
+        saveData();
+    }
+
     function renderOptionalFields() {
         const container = $('optionalFieldsContainer');
         container.innerHTML = '';
         activeOptionalFields.forEach(field => {
             const row = document.createElement('div');
             row.className = 'optional-field-row';
+            row.dataset.field = field;
             row.innerHTML = `
                 <div class="input-group">
                     <label>${optionalLabels[field]}</label>
-                    <input type="text" data-cv="${field}" value="${cvData[field] || ''}" autocomplete="off">
+                    ${renderOptionalFieldControl(field)}
                 </div>
                 <button class="btn-remove-field" data-field="${field}"><i class="fa-solid fa-xmark"></i></button>
             `;
             container.appendChild(row);
         });
+
+        container.querySelectorAll('[data-optional-field][data-date-part]').forEach(select => {
+            select.addEventListener('change', () => {
+                syncOptionalCompositeDate(select.getAttribute('data-optional-field'));
+            });
+        });
+
         // Remove button handlers
         container.querySelectorAll('.btn-remove-field').forEach(btn => {
             btn.addEventListener('click', () => {
                 const field = btn.getAttribute('data-field');
                 activeOptionalFields.delete(field);
                 cvData[field] = '';
-                document.querySelector(`.chip[data-field="${field}"]`).classList.remove('active');
+                document.querySelector(`.chip[data-field="${field}"]`)?.classList.remove('active');
                 renderOptionalFields();
                 renderPreview();
+                saveData();
             });
         });
     }
@@ -405,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let optHtml = '';
         activeOptionalFields.forEach(field => {
             if (cvData[field]) {
-                optHtml += `<div class="cv-detail-row">${optionalLabels[field]}: ${cvData[field]}</div>`;
+                optHtml += `<div class="cv-detail-row">${optionalLabels[field]}: ${formatOptionalFieldValue(field, cvData[field])}</div>`;
             }
         });
         preview.optionalDetails.innerHTML = optHtml;
@@ -426,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
         preview.experienceList.innerHTML = cvData.experience.map(e => `
             <div class="cv-entry">
                 <div class="cv-entry-title">${e.jobTitle || '(Not specified)'}${e.employer ? ', '+e.employer : ''}</div>
-                <div class="cv-entry-date">${fmtDate(e.startDate)} ${e.startDate || e.endDate ? '—' : ''} ${fmtDate(e.endDate) || 'Present'}${e.city ? ', '+e.city : ''}</div>
+                <div class="cv-entry-date">${formatDateRangeWithCity(e.startDate, e.endDate, e.city)}</div>
                 <div class="cv-entry-desc">${e.description || ''}</div>
             </div>
         `).join('');
@@ -436,7 +691,7 @@ document.addEventListener('DOMContentLoaded', () => {
         preview.educationList.innerHTML = cvData.education.map(e => `
             <div class="cv-entry">
                 <div class="cv-entry-title">${e.degree || '(Not specified)'}${e.school ? ', '+e.school : ''}</div>
-                <div class="cv-entry-date">${fmtDate(e.startDate)} ${e.startDate || e.endDate ? '—' : ''} ${fmtDate(e.endDate) || 'Present'}${e.city ? ', '+e.city : ''}</div>
+                <div class="cv-entry-date">${formatDateRangeWithCity(e.startDate, e.endDate, e.city)}</div>
                 <div class="cv-entry-desc">${e.description || ''}</div>
             </div>
         `).join('');
@@ -463,8 +718,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let initialized = false;
-    renderPreview();
-    initialized = true;
 
     // ============================
     // DYNAMIC ARRAYS
@@ -476,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="list-card-header" onclick="document.getElementById('exp-${exp.id}').classList.toggle('open')">
                     <div class="list-card-info">
                         <span class="list-card-title">${exp.jobTitle || '(Not specified)'}</span>
-                        <span class="list-card-subtitle">${exp.startDate||'Start'} - ${exp.endDate||'End'}</span>
+                        <span class="list-card-subtitle">${formatDateRange(exp.startDate, exp.endDate) || 'Start - End'}</span>
                     </div>
                     <div class="list-card-actions">
                         <button class="del-exp" data-id="${exp.id}"><i class="fa-solid fa-trash-can"></i></button>
@@ -489,14 +742,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="input-group"><label>Employer</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="employer" value="${exp.employer}" autocomplete="off"></div>
                     </div>
                     <div class="form-row">
-                        <div class="input-group"><label>Start date</label><input type="date" class="dyn" data-arr="experience" data-id="${exp.id}" data-key="startDate" value="${exp.startDate}"></div>
-                        <div class="input-group"><label>End date</label><input type="date" class="dyn" data-arr="experience" data-id="${exp.id}" data-key="endDate" value="${exp.endDate}"></div>
+                        <div class="input-group"><label>Start date</label>${buildMonthYearControl('experience', exp.id, 'startDate', exp.startDate)}</div>
+                        <div class="input-group"><label>End date</label>${buildMonthYearControl('experience', exp.id, 'endDate', exp.endDate)}</div>
                     </div>
                     <div class="form-row">
                         <div class="input-group"><label>City</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="city" value="${exp.city}" autocomplete="off"></div>
                     </div>
                     <div class="form-row">
-                        <div class="input-group full-width"><label>Description</label><textarea class="dyn" data-arr="experience" data-id="${exp.id}" data-key="description" rows="3">${exp.description}</textarea></div>
+                        <div class="input-group full-width"><label>Job Description</label><textarea class="dyn" data-arr="experience" data-id="${exp.id}" data-key="description" rows="3">${exp.description}</textarea></div>
                     </div>
                 </div>
             </div>
@@ -511,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="list-card-header" onclick="document.getElementById('edu-${edu.id}').classList.toggle('open')">
                     <div class="list-card-info">
                         <span class="list-card-title">${edu.school || '(Not specified)'}</span>
-                        <span class="list-card-subtitle">${edu.startDate||'Start'} - ${edu.endDate||'End'}</span>
+                        <span class="list-card-subtitle">${formatDateRange(edu.startDate, edu.endDate) || 'Start - End'}</span>
                     </div>
                     <div class="list-card-actions">
                         <button class="del-edu" data-id="${edu.id}"><i class="fa-solid fa-trash-can"></i></button>
@@ -524,11 +777,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="input-group"><label>Degree</label><input class="dyn" data-arr="education" data-id="${edu.id}" data-key="degree" value="${edu.degree}" autocomplete="off"></div>
                     </div>
                     <div class="form-row">
-                        <div class="input-group"><label>Start date</label><input type="date" class="dyn" data-arr="education" data-id="${edu.id}" data-key="startDate" value="${edu.startDate}"></div>
-                        <div class="input-group"><label>End date</label><input type="date" class="dyn" data-arr="education" data-id="${edu.id}" data-key="endDate" value="${edu.endDate}"></div>
+                        <div class="input-group"><label>Start date</label>${buildMonthYearControl('education', edu.id, 'startDate', edu.startDate)}</div>
+                        <div class="input-group"><label>End date</label>${buildMonthYearControl('education', edu.id, 'endDate', edu.endDate)}</div>
                     </div>
                     <div class="form-row">
-                        <div class="input-group full-width"><label>Description</label><textarea class="dyn" data-arr="education" data-id="${edu.id}" data-key="description" rows="3">${edu.description}</textarea></div>
+                        <div class="input-group full-width"><label>Education Description</label><textarea class="dyn" data-arr="education" data-id="${edu.id}" data-key="description" rows="3">${edu.description}</textarea></div>
                     </div>
                 </div>
             </div>
@@ -573,8 +826,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.languages.length-1?'open':''}" id="lng-${l.id}">
                     <div class="form-row">
-                        <div class="input-group"><label>Language</label><input class="dyn" data-arr="languages" data-id="${l.id}" data-key="name" value="${l.name}" autocomplete="off"></div>
-                        <div class="input-group"><label>Level</label><input class="dyn" data-arr="languages" data-id="${l.id}" data-key="level" value="${l.level}" placeholder="e.g. Native, Fluent" autocomplete="off"></div>
+                        <div class="input-group"><label>Language</label><select class="dyn" data-arr="languages" data-id="${l.id}" data-key="name">${buildSelectOptions(languageOptions, l.name, 'Select language')}</select></div>
+                        <div class="input-group"><label>Level</label><select class="dyn" data-arr="languages" data-id="${l.id}" data-key="level">${buildSelectOptions(languageLevelOptions, l.level, 'Select level')}</select></div>
                     </div>
                 </div>
             </div>
@@ -586,22 +839,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // DYN INPUT HANDLER
     // ============================
     function attachDyn() {
+        const syncDynamicField = (e) => {
+            const arr = e.target.getAttribute('data-arr');
+            const id = e.target.getAttribute('data-id');
+            const key = e.target.getAttribute('data-key');
+            const item = cvData[arr].find(x => x.id === id);
+            if (!item) return;
+
+            if (e.target.hasAttribute('data-date-part')) {
+                const group = e.target.closest('.date-select-grid');
+                const month = group.querySelector(`[data-key="${key}"][data-date-part="month"]`)?.value || '';
+                const year = group.querySelector(`[data-key="${key}"][data-date-part="year"]`)?.value || '';
+                item[key] = month && year ? `${year}-${month}` : '';
+            } else {
+                item[key] = e.target.value;
+            }
+
+            const card = e.target.closest('.list-card');
+            if (card && (key === 'jobTitle' || key === 'school' || key === 'name')) {
+                card.querySelector('.list-card-title').textContent = item[key] || '(Not specified)';
+            }
+
+            if (card && arr === 'languages' && key === 'level') {
+                card.querySelector('.list-card-subtitle').textContent = item.level || '';
+            }
+
+            if (card && (arr === 'experience' || arr === 'education') && (key === 'startDate' || key === 'endDate')) {
+                card.querySelector('.list-card-subtitle').textContent = formatDateRange(item.startDate, item.endDate) || 'Start - End';
+            }
+
+            renderPreview();
+        };
+
         document.querySelectorAll('.dyn').forEach(inp => {
-            inp.oninput = (e) => {
-                const arr = e.target.getAttribute('data-arr');
-                const id = e.target.getAttribute('data-id');
-                const key = e.target.getAttribute('data-key');
-                const item = cvData[arr].find(x => x.id === id);
-                if (item) {
-                    item[key] = e.target.value;
-                    // Update card header
-                    const card = e.target.closest('.list-card');
-                    if (key === 'jobTitle' || key === 'school' || key === 'name') {
-                        card.querySelector('.list-card-title').textContent = e.target.value || '(Not specified)';
-                    }
-                    renderPreview();
-                }
-            };
+            if (inp.tagName === 'SELECT') {
+                inp.onchange = syncDynamicField;
+            } else {
+                inp.oninput = syncDynamicField;
+                inp.onchange = syncDynamicField;
+            }
         });
 
         // Delete handlers
@@ -627,11 +903,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isLoggedIn) {
             // Ensure latest state is saved
             const titleEl = document.querySelector('.topbar-title');
-            const title = titleEl ? titleEl.textContent.trim() : 'Untitled CV';
+            const title = titleEl ? titleEl.textContent.trim() : TITLE_DEFAULT;
             try {
                 localStorage.setItem('JobLynk_guest_cv', JSON.stringify({
                     id: docId,
-                    name: title || 'Untitled CV',
+                    name: title || TITLE_DEFAULT,
                     lastEdited: new Date().toISOString(),
                     type: 'cv',
                     accentColor: currentAccentColor,
@@ -646,7 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const element = $('cvPaper');
-        const cvName = `${cvData.firstName || 'Untitled'}_${cvData.lastName || 'CV'}`.replace(/\s+/g, '_');
+        const cvName = sanitizeFileName(getCurrentCvTitle() || buildDefaultCvName());
         const opt = {
             margin:       0,
             filename:     `${cvName}.pdf`,
@@ -686,10 +962,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     function fmtDate(val) {
         if (!val) return '';
-        const d = new Date(val + 'T00:00:00');
-        if (isNaN(d)) return val;
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        return `${months[d.getMonth()]} ${d.getFullYear()}`;
+        const { year, month } = parseStoredDate(val);
+        if (!year && !month) return val;
+        if (!month) return year;
+        const monthLabel = monthOptions.find(option => option.value === month)?.label.slice(0, 3) || month;
+        return `${monthLabel} ${year}`;
     }
 
     // ============================
@@ -834,7 +1111,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     // INITIALIZE: Load saved data
     // ============================
-    loadData();
-    renderPreview();
+    loadData().then(() => {
+        hydrateOptionalFieldsFromData();
+        ensureNewCvName();
+        renderOptionalFields();
+        renderExperience();
+        renderEducation();
+        renderSkills();
+        renderLanguages();
+        renderPreview();
+        initialized = true;
+
+        if (isNew) {
+            saveData();
+        }
+    });
 
 });

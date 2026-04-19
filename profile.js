@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initSkills();
     initInnerNav();
     initSaveButton();
+    initProfilePictureControls();
     initFileUploads();
+    loadProfileDocuments();
     initIdValidation();
 
     // Live progress updates on every input
@@ -23,6 +25,258 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================
 const PROFILE_KEY = 'JobLynk_profile';
 const PROFILE_API = 'api/profile/index.php';
+const PROFILE_DOCUMENTS_API = 'api/documents/index.php';
+const PROFILE_DOCUMENT_SERVE_API = 'api/documents/serve.php';
+const DEFAULT_PROFILE_AVATAR_BG = '3B4BA6';
+
+const profileDocuments = {
+    cv: null,
+    cl: null,
+    supporting: [],
+};
+
+let profileAvatarUrl = '';
+let profileAvatarCustom = false;
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatFileSize(bytes) {
+    if (!bytes) {
+        return 'Unknown size';
+    }
+
+    if (bytes < 1024) {
+        return bytes + ' B';
+    }
+
+    if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + ' KB';
+    }
+
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+function formatDocumentUpdated(dateStr) {
+    if (!dateStr) {
+        return 'Uploaded recently';
+    }
+
+    const parsed = new Date(dateStr);
+    if (Number.isNaN(parsed.getTime())) {
+        return 'Uploaded recently';
+    }
+
+    return 'Updated ' + parsed.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
+}
+
+function getDocumentIconClass(doc) {
+    const mime = (doc && doc.mime_type ? doc.mime_type : '').toLowerCase();
+
+    if (mime.indexOf('pdf') !== -1) {
+        return 'fa-solid fa-file-pdf';
+    }
+    if (mime.indexOf('word') !== -1 || mime.indexOf('document') !== -1) {
+        return 'fa-solid fa-file-word';
+    }
+    if (mime.indexOf('image') !== -1) {
+        return 'fa-regular fa-image';
+    }
+
+    return doc && doc.doc_type === 'supporting'
+        ? 'fa-solid fa-file-circle-check'
+        : 'fa-solid fa-file-lines';
+}
+
+function getDocumentViewUrl(docId) {
+    return `${PROFILE_DOCUMENT_SERVE_API}?id=${encodeURIComponent(docId)}`;
+}
+
+function getProfileDisplayName() {
+    const firstName = document.getElementById('profFirstName')?.value.trim() || '';
+    const lastName = document.getElementById('profLastName')?.value.trim() || '';
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+    if (fullName) {
+        return fullName;
+    }
+
+    if (window.__JobLynkUser && window.__JobLynkUser.name) {
+        return window.__JobLynkUser.name;
+    }
+
+    return 'Guest User';
+}
+
+function buildDefaultProfileAvatarUrl(name) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Guest User')}&background=${DEFAULT_PROFILE_AVATAR_BG}&color=fff&size=256`;
+}
+
+function renderSidebarAvatar(src, name) {
+    const avatarContainer = document.querySelector('.sidebar-user .user-avatar');
+    if (!avatarContainer) {
+        return;
+    }
+
+    let avatarImg = avatarContainer.querySelector('img');
+    if (!avatarImg) {
+        avatarContainer.textContent = '';
+        avatarImg = document.createElement('img');
+        avatarContainer.appendChild(avatarImg);
+    }
+
+    avatarImg.src = src;
+    avatarImg.alt = `${name} avatar`;
+}
+
+function renderProfileAvatar() {
+    const displayName = getProfileDisplayName();
+    const resolvedAvatarUrl = profileAvatarUrl || buildDefaultProfileAvatarUrl(displayName);
+    const profilePic = document.getElementById('profilePic');
+    const hint = document.getElementById('profilePicHint');
+
+    if (profilePic) {
+        profilePic.src = resolvedAvatarUrl;
+        profilePic.alt = `${displayName} profile picture`;
+    }
+
+    renderSidebarAvatar(resolvedAvatarUrl, displayName);
+
+    if (hint) {
+        hint.textContent = profileAvatarCustom
+            ? 'Your custom photo is saved.'
+            : 'Click the camera to upload JPG, PNG or WebP up to 5MB.';
+    }
+}
+
+function updateProfileAvatar(avatarUrl) {
+    profileAvatarUrl = avatarUrl || '';
+    profileAvatarCustom = Boolean(avatarUrl);
+    renderProfileAvatar();
+}
+
+function validateProfileAvatarFile(file) {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+
+    if (!allowedExts.includes(ext)) {
+        return 'Please upload JPG, PNG or WEBP images only.';
+    }
+
+    if (file.type && !allowedMimes.includes(file.type)) {
+        return 'Only JPG, PNG or WEBP images are supported.';
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        return 'Profile photo must be less than 5MB.';
+    }
+
+    return '';
+}
+
+function setProfilePictureLoading(isLoading) {
+    const button = document.getElementById('btnChangePic');
+    const container = document.querySelector('.profile-pic-container');
+    const hint = document.getElementById('profilePicHint');
+
+    if (button) {
+        button.disabled = isLoading;
+        button.innerHTML = isLoading
+            ? '<i class="fa-solid fa-circle-notch fa-spin"></i>'
+            : '<i class="fa-solid fa-camera"></i>';
+    }
+
+    if (container) {
+        container.classList.toggle('is-uploading', isLoading);
+    }
+
+    if (hint && isLoading) {
+        hint.textContent = 'Uploading profile photo...';
+    }
+}
+
+async function uploadProfileAvatar(file) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const res = await fetch(PROFILE_API, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+    });
+    const result = await res.json();
+
+    if (!result.success) {
+        throw new Error(result.message || 'Failed to upload profile picture.');
+    }
+
+    return result.avatar_url || result.profile?.avatar_url || '';
+}
+
+function initProfilePictureControls() {
+    const changeButton = document.getElementById('btnChangePic');
+    const fileInput = document.getElementById('profilePicInput');
+
+    if (changeButton && fileInput) {
+        changeButton.addEventListener('click', () => {
+            if (!changeButton.disabled) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', async () => {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) {
+                return;
+            }
+
+            const validationMessage = validateProfileAvatarFile(file);
+            if (validationMessage) {
+                alert(validationMessage);
+                fileInput.value = '';
+                return;
+            }
+
+            setProfilePictureLoading(true);
+
+            try {
+                const avatarUrl = await uploadProfileAvatar(file);
+                updateProfileAvatar(avatarUrl);
+            } catch (e) {
+                console.error('Failed to upload profile picture:', e);
+                alert(e.message || 'Failed to upload profile picture.');
+            } finally {
+                fileInput.value = '';
+                setProfilePictureLoading(false);
+                renderProfileAvatar();
+            }
+        });
+    }
+
+    ['profFirstName', 'profLastName'].forEach((fieldId) => {
+        const input = document.getElementById(fieldId);
+        if (input) {
+            input.addEventListener('input', () => {
+                if (!profileAvatarCustom) {
+                    renderProfileAvatar();
+                }
+            });
+        }
+    });
+
+    renderProfileAvatar();
+}
 
 function getProfileData() {
     try {
@@ -112,6 +366,7 @@ async function loadProfileData() {
                 local._skills = p.skills;
                 localStorage.setItem(PROFILE_KEY, JSON.stringify(local));
             }
+            updateProfileAvatar(p.avatar_url || '');
             apiLoaded = true;
         }
     } catch (e) {
@@ -124,6 +379,7 @@ async function loadProfileData() {
         document.querySelectorAll('[data-profile]').forEach(inp => {
             if (inp.id && data[inp.id]) inp.value = data[inp.id];
         });
+        renderProfileAvatar();
     }
 
     // Populate from auth user data if fields are still empty
@@ -140,6 +396,11 @@ async function loadProfileData() {
         }
         if (emailEl && !emailEl.value && user.email) {
             emailEl.value = user.email;
+        }
+        if (user.avatar_url) {
+            updateProfileAvatar(user.avatar_url);
+        } else if (!profileAvatarCustom) {
+            renderProfileAvatar();
         }
         updateProgress();
     }
@@ -213,70 +474,325 @@ function updateProgress() {
 // FILE UPLOADS
 // ============================
 function initFileUploads() {
-    setupUploadZone('cvUploadZone', 'profileCvInput', 'cvPreview', 'cvFileName', 'cvFileSize', 'btnRemoveCv');
-    setupUploadZone('clUploadZone', 'profileClInput', 'clPreview', 'clFileName', 'clFileSize', 'btnRemoveCl');
+    setupUploadZone({ zoneId: 'cvUploadZone', inputId: 'profileCvInput', docType: 'cv', multiple: false });
+    setupUploadZone({ zoneId: 'clUploadZone', inputId: 'profileClInput', docType: 'cl', multiple: false });
+    setupUploadZone({ zoneId: 'supportingUploadZone', inputId: 'profileSupportingInput', docType: 'supporting', multiple: true });
+
+    const viewCvBtn = document.getElementById('btnViewCv');
+    const removeCvBtn = document.getElementById('btnRemoveCv');
+    const viewClBtn = document.getElementById('btnViewCl');
+    const removeClBtn = document.getElementById('btnRemoveCl');
+
+    if (viewCvBtn) {
+        viewCvBtn.addEventListener('click', () => openProfileDocument(profileDocuments.cv));
+    }
+    if (removeCvBtn) {
+        removeCvBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            await removeProfileDocument('cv');
+        });
+    }
+    if (viewClBtn) {
+        viewClBtn.addEventListener('click', () => openProfileDocument(profileDocuments.cl));
+    }
+    if (removeClBtn) {
+        removeClBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            await removeProfileDocument('cl');
+        });
+    }
 }
 
-function setupUploadZone(zoneId, inputId, previewId, nameId, sizeId, removeBtnId) {
-    const zone = document.getElementById(zoneId);
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    const nameDisplay = document.getElementById(nameId);
-    const sizeDisplay = document.getElementById(sizeId);
-    const removeBtn = document.getElementById(removeBtnId);
+function setupUploadZone(options) {
+    const zone = document.getElementById(options.zoneId);
+    const input = document.getElementById(options.inputId);
 
-    zone.addEventListener('click', () => input.click());
+    if (!zone || !input) {
+        return;
+    }
+
+    zone.addEventListener('click', () => {
+        if (!zone.classList.contains('is-uploading')) {
+            input.click();
+        }
+    });
 
     zone.addEventListener('dragover', (e) => {
         e.preventDefault();
-        zone.style.borderColor = 'var(--profile-accent)';
-        zone.style.background = '#f8fafc';
+        zone.classList.add('is-dragover');
     });
 
     zone.addEventListener('dragleave', () => {
-        zone.style.borderColor = '';
-        zone.style.background = '';
+        zone.classList.remove('is-dragover');
     });
 
-    zone.addEventListener('drop', (e) => {
+    zone.addEventListener('drop', async (e) => {
         e.preventDefault();
-        zone.style.borderColor = '';
-        zone.style.background = '';
-        if (e.dataTransfer.files.length > 0) {
-            handleFiles(e.dataTransfer.files[0]);
+        zone.classList.remove('is-dragover');
+
+        const files = Array.from(e.dataTransfer.files || []);
+        if (files.length > 0) {
+            await uploadProfileFiles(options.docType, files, zone, input, options.multiple);
         }
     });
 
-    input.addEventListener('change', () => {
-        if (input.files.length > 0) {
-            handleFiles(input.files[0]);
+    input.addEventListener('change', async () => {
+        const files = Array.from(input.files || []);
+        if (files.length > 0) {
+            await uploadProfileFiles(options.docType, files, zone, input, options.multiple);
         }
     });
+}
 
-    const handleFiles = (file) => {
-        const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        if (!validTypes.includes(file.type)) {
-            alert('Please upload a valid document (PDF, DOC, or DOCX)');
+function validateProfileUploadFile(docType, file) {
+    const baseAllowedMimes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    const baseAllowedExts = ['pdf', 'doc', 'docx'];
+    const allowedMimes = docType === 'supporting'
+        ? baseAllowedMimes.concat(['image/jpeg', 'image/png'])
+        : baseAllowedMimes;
+    const allowedExts = docType === 'supporting'
+        ? baseAllowedExts.concat(['jpg', 'jpeg', 'png'])
+        : baseAllowedExts;
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+
+    if (!allowedExts.includes(ext)) {
+        return docType === 'supporting'
+            ? 'Please upload PDF, DOC, DOCX, JPG or PNG files only.'
+            : 'Please upload a valid document (PDF, DOC, or DOCX).';
+    }
+
+    if (file.type && !allowedMimes.includes(file.type)) {
+        return docType === 'supporting'
+            ? 'This supporting document type is not supported.'
+            : 'Please upload a valid document (PDF, DOC, or DOCX).';
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        return 'File size must be less than 5MB.';
+    }
+
+    return '';
+}
+
+async function uploadProfileFiles(docType, files, zone, input, multiple) {
+    const queue = multiple ? files : files.slice(0, 1);
+    const previousDoc = (docType === 'cv' || docType === 'cl') ? profileDocuments[docType] : null;
+
+    for (const file of queue) {
+        const validationMessage = validateProfileUploadFile(docType, file);
+        if (validationMessage) {
+            alert(validationMessage);
+            input.value = '';
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
-            return;
-        }
-        nameDisplay.textContent = file.name;
-        sizeDisplay.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-        zone.style.display = 'none';
-        preview.style.display = 'flex';
-        updateProgress();
-    };
+    }
 
-    removeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+    zone.classList.add('is-uploading');
+
+    try {
+        for (const file of queue) {
+            await uploadProfileDocument(file, docType);
+        }
+
+        if (previousDoc && previousDoc.id) {
+            await deleteProfileDocumentById(previousDoc.id, true);
+        }
+
+        await loadProfileDocuments();
+    } catch (e) {
+        console.error('Profile document upload failed:', e);
+        alert(e.message || 'Failed to upload document. Please try again.');
+    } finally {
         input.value = '';
+        zone.classList.remove('is-uploading');
+        zone.classList.remove('is-dragover');
+    }
+}
+
+async function uploadProfileDocument(file, docType) {
+    const formData = new FormData();
+    formData.append('doc_type', docType);
+    formData.append('name', file.name.replace(/\.[^.]+$/, ''));
+    formData.append('file', file);
+
+    const res = await fetch(PROFILE_DOCUMENTS_API, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+    });
+    const result = await res.json();
+
+    if (!result.success) {
+        throw new Error(result.message || 'Upload failed.');
+    }
+
+    return result.document;
+}
+
+async function loadProfileDocuments() {
+    try {
+        const res = await fetch(`${PROFILE_DOCUMENTS_API}?uploaded=1`, { credentials: 'include' });
+        const result = await res.json();
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to load uploaded documents.');
+        }
+
+        const docs = Array.isArray(result.documents) ? result.documents : [];
+        profileDocuments.cv = docs.find(doc => doc.doc_type === 'cv') || null;
+        profileDocuments.cl = docs.find(doc => doc.doc_type === 'cl') || null;
+        profileDocuments.supporting = docs.filter(doc => doc.doc_type === 'supporting');
+    } catch (e) {
+        console.warn('Failed to load profile documents:', e);
+        profileDocuments.cv = null;
+        profileDocuments.cl = null;
+        profileDocuments.supporting = [];
+    }
+
+    renderUploadedDocumentSlot('cv', profileDocuments.cv);
+    renderUploadedDocumentSlot('cl', profileDocuments.cl);
+    renderSupportingDocuments();
+}
+
+function renderUploadedDocumentSlot(docType, doc) {
+    const zone = document.getElementById(docType === 'cv' ? 'cvUploadZone' : 'clUploadZone');
+    const preview = document.getElementById(docType === 'cv' ? 'cvPreview' : 'clPreview');
+    const nameDisplay = document.getElementById(docType === 'cv' ? 'cvFileName' : 'clFileName');
+    const sizeDisplay = document.getElementById(docType === 'cv' ? 'cvFileSize' : 'clFileSize');
+    const icon = preview ? preview.querySelector('.file-info i') : null;
+
+    if (!zone || !preview || !nameDisplay || !sizeDisplay) {
+        return;
+    }
+
+    if (!doc) {
         zone.style.display = 'flex';
         preview.style.display = 'none';
-        updateProgress();
+        return;
+    }
+
+    nameDisplay.textContent = doc.original_name || doc.name || 'Uploaded document';
+    sizeDisplay.textContent = doc.file_size ? formatFileSize(doc.file_size) : formatDocumentUpdated(doc.updated_at);
+    if (icon) {
+        icon.className = getDocumentIconClass(doc);
+    }
+
+    zone.style.display = 'none';
+    preview.style.display = 'flex';
+}
+
+function renderSupportingDocuments() {
+    const list = document.getElementById('supportingDocsList');
+    const empty = document.getElementById('supportingDocsEmpty');
+    if (!list || !empty) {
+        return;
+    }
+
+    const docs = profileDocuments.supporting || [];
+    if (!docs.length) {
+        list.innerHTML = '';
+        list.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+    }
+
+    list.style.display = 'flex';
+    empty.style.display = 'none';
+    list.innerHTML = docs.map(doc => `
+        <div class="supporting-doc-item">
+            <div class="supporting-doc-main">
+                <span class="supporting-doc-icon"><i class="${getDocumentIconClass(doc)}"></i></span>
+                <div class="supporting-doc-details">
+                    <span class="supporting-doc-name">${escapeHtml(doc.original_name || doc.name || 'Supporting Document')}</span>
+                    <span class="supporting-doc-meta">${escapeHtml(formatFileSize(doc.file_size))} • ${escapeHtml(formatDocumentUpdated(doc.updated_at))}</span>
+                </div>
+            </div>
+            <div class="supporting-doc-actions">
+                <button type="button" class="btn-view-file" data-support-view="${doc.id}"><i class="fa-solid fa-eye"></i> View</button>
+                <button type="button" class="btn-remove-file" data-support-delete="${doc.id}"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+        </div>
+    `).join('');
+
+    list.querySelectorAll('[data-support-view]').forEach(button => {
+        button.addEventListener('click', () => {
+            const docId = button.getAttribute('data-support-view');
+            const doc = profileDocuments.supporting.find(item => String(item.id) === String(docId));
+            openProfileDocument(doc);
+        });
     });
+
+    list.querySelectorAll('[data-support-delete]').forEach(button => {
+        button.addEventListener('click', async () => {
+            const docId = button.getAttribute('data-support-delete');
+            const doc = profileDocuments.supporting.find(item => String(item.id) === String(docId));
+            if (!doc) {
+                return;
+            }
+
+            if (!confirm(`Delete ${doc.original_name || doc.name || 'this document'}?`)) {
+                return;
+            }
+
+            try {
+                await deleteProfileDocumentById(doc.id);
+                await loadProfileDocuments();
+            } catch (e) {
+                console.error('Failed to delete supporting document:', e);
+                alert(e.message || 'Failed to delete document.');
+            }
+        });
+    });
+}
+
+function openProfileDocument(doc) {
+    if (!doc || !doc.id) {
+        return;
+    }
+
+    window.open(getDocumentViewUrl(doc.id), '_blank', 'noopener');
+}
+
+async function removeProfileDocument(docType) {
+    const doc = profileDocuments[docType];
+    if (!doc || !doc.id) {
+        return;
+    }
+
+    const label = docType === 'cv' ? 'CV' : 'cover letter';
+    if (!confirm(`Remove your uploaded ${label}?`)) {
+        return;
+    }
+
+    try {
+        await deleteProfileDocumentById(doc.id);
+        await loadProfileDocuments();
+    } catch (e) {
+        console.error(`Failed to delete ${docType} document:`, e);
+        alert(e.message || 'Failed to delete document.');
+    }
+}
+
+async function deleteProfileDocumentById(docId, silent) {
+    const res = await fetch(`${PROFILE_DOCUMENTS_API}?id=${encodeURIComponent(docId)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    });
+    const result = await res.json();
+
+    if (!result.success) {
+        if (silent) {
+            return false;
+        }
+        throw new Error(result.message || 'Failed to delete document.');
+    }
+
+    return true;
 }
 
 // ============================

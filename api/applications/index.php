@@ -26,6 +26,64 @@ if (!$userId) {
     jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);
 }
 
+function ensureApplicationsSchema(PDO $pdo): void
+{
+    try {
+        $columns = [];
+        foreach ($pdo->query('SHOW COLUMNS FROM applications') ?: [] as $column) {
+            $columns[$column['Field']] = $column;
+        }
+
+        if (!isset($columns['document_ids'])) {
+            $pdo->exec('ALTER TABLE applications ADD COLUMN document_ids TEXT NULL AFTER cl_id');
+        }
+
+        if (!isset($columns['applicant_name'])) {
+            $pdo->exec("ALTER TABLE applications ADD COLUMN applicant_name VARCHAR(255) DEFAULT '' AFTER document_ids");
+        }
+
+        if (!isset($columns['note'])) {
+            $pdo->exec('ALTER TABLE applications ADD COLUMN note TEXT NULL AFTER applicant_name');
+        }
+
+        if (!isset($columns['form_responses'])) {
+            $pdo->exec('ALTER TABLE applications ADD COLUMN form_responses TEXT NULL AFTER note');
+        }
+
+        if (isset($columns['status']) && strpos((string)$columns['status']['Type'], "'shortlisted'") === false) {
+            $pdo->exec("ALTER TABLE applications MODIFY COLUMN status ENUM('submitted', 'reviewed', 'shortlisted', 'rejected') NOT NULL DEFAULT 'submitted'");
+        }
+    } catch (Throwable $e) {
+        // Ignore schema migration issues here so existing compatible schemas continue to work.
+    }
+
+    try {
+        $docTypeColumn = $pdo->query("SHOW COLUMNS FROM documents LIKE 'doc_type'")->fetch();
+        if ($docTypeColumn && strpos((string)$docTypeColumn['Type'], "'supporting'") === false) {
+            $pdo->exec("ALTER TABLE documents MODIFY COLUMN doc_type ENUM('cv', 'cl', 'supporting') NOT NULL");
+        }
+    } catch (Throwable $e) {
+        // Ignore schema migration issues here so application submission still uses any compatible schema.
+    }
+}
+
+function decodeApplicationDocumentIds($value): array
+{
+    if (is_string($value)) {
+        $value = json_decode($value, true);
+    }
+
+    if (!is_array($value)) {
+        return [];
+    }
+
+    return array_values(array_unique(array_map('intval', array_filter($value, static function ($id) {
+        return (int)$id > 0;
+    }))));
+}
+
+ensureApplicationsSchema($pdo);
+
 // ═══════════════════════════
 // GET — List applications
 // ═══════════════════════════
@@ -50,6 +108,7 @@ if ($method === 'GET') {
         $apps = $stmt->fetchAll();
         foreach ($apps as &$a) {
             $a['form_responses'] = json_decode($a['form_responses'] ?? 'null', true);
+            $a['document_ids'] = decodeApplicationDocumentIds($a['document_ids'] ?? null);
         }
         jsonResponse(['success' => true, 'applications' => $apps]);
     }
@@ -72,6 +131,7 @@ if ($method === 'GET') {
         $apps = $stmt->fetchAll();
         foreach ($apps as &$a) {
             $a['form_responses'] = json_decode($a['form_responses'] ?? 'null', true);
+            $a['document_ids'] = decodeApplicationDocumentIds($a['document_ids'] ?? null);
         }
         jsonResponse(['success' => true, 'applications' => $apps]);
     }
@@ -87,6 +147,9 @@ if ($method === 'GET') {
     ');
     $stmt->execute([$userId]);
     $apps = $stmt->fetchAll();
+    foreach ($apps as &$a) {
+        $a['document_ids'] = decodeApplicationDocumentIds($a['document_ids'] ?? null);
+    }
     jsonResponse(['success' => true, 'applications' => $apps]);
 }
 
@@ -144,11 +207,7 @@ if ($method === 'POST') {
     $formResponsesJson = $formResponses ? json_encode($formResponses) : null;
 
     // Document IDs from saved documents (JSON array from FormData)
-    $documentIds = $body['document_ids'] ?? null;
-    if (is_string($documentIds)) {
-        $documentIds = json_decode($documentIds, true);
-    }
-    if (!is_array($documentIds)) $documentIds = [];
+    $documentIds = decodeApplicationDocumentIds($body['document_ids'] ?? null);
 
     // Ensure cv_id and cl_id are included in the list
     if ($cvId && !in_array($cvId, $documentIds)) $documentIds[] = $cvId;
@@ -177,6 +236,8 @@ if ($method === 'POST') {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ];
     $allowedExts = ['pdf', 'doc', 'docx'];
+    $attachmentAllowedMimes = array_merge($allowedMimes, ['image/jpeg', 'image/png']);
+    $attachmentAllowedExts = array_merge($allowedExts, ['jpg', 'jpeg', 'png']);
     $maxFileSize = 5 * 1024 * 1024; // 5MB
     $uploadsDir = __DIR__ . '/../../uploads';
     if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
@@ -238,13 +299,13 @@ if ($method === 'POST') {
             }
 
             $ext = strtolower(pathinfo($extraFiles['name'][$i], PATHINFO_EXTENSION));
-            if (!in_array($ext, $allowedExts)) {
-                jsonResponse(['success' => false, 'message' => 'Invalid file type for "' . $extraFiles['name'][$i] . '". Allowed: PDF, DOC, DOCX.'], 422);
+            if (!in_array($ext, $attachmentAllowedExts)) {
+                jsonResponse(['success' => false, 'message' => 'Invalid file type for "' . $extraFiles['name'][$i] . '". Allowed: PDF, DOC, DOCX, JPG, PNG.'], 422);
             }
 
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $mime = $finfo->file($extraFiles['tmp_name'][$i]);
-            if (!in_array($mime, $allowedMimes)) {
+            if (!in_array($mime, $attachmentAllowedMimes)) {
                 jsonResponse(['success' => false, 'message' => 'Invalid file content type for "' . $extraFiles['name'][$i] . '".'], 422);
             }
 
@@ -257,13 +318,14 @@ if ($method === 'POST') {
             }
 
             $originalName = pathinfo($extraFiles['name'][$i], PATHINFO_FILENAME);
-            $fileData = json_encode(['uploaded_file' => $storedName, 'original_name' => $extraFiles['name'][$i], 'mime_type' => $mime]);
+            $fileData = json_encode(['uploaded_file' => $storedName, 'original_name' => $extraFiles['name'][$i], 'mime_type' => $mime, 'file_size' => (int)$extraFiles['size'][$i]]);
+            $extraDocType = (!$cvId && in_array($ext, $allowedExts, true)) ? 'cv' : 'supporting';
             $stmt = $pdo->prepare('INSERT INTO documents (user_id, doc_type, name, data) VALUES (?, ?, ?, ?)');
-            $stmt->execute([$userId, 'cv', $originalName, $fileData]);
+            $stmt->execute([$userId, $extraDocType, $originalName, $fileData]);
             $newDocId = (int)$pdo->lastInsertId();
 
             // Use first uploaded file as cv_id if none set
-            if (!$cvId) $cvId = $newDocId;
+            if ($extraDocType === 'cv') $cvId = $newDocId;
             $documentIds[] = $newDocId;
         }
     }

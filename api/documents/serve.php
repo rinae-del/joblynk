@@ -34,7 +34,7 @@ $doc = null;
 // Recruiter access via application
 if ($appId && ($userRole === 'recruiter' || $userRole === 'admin')) {
     $stmt = $pdo->prepare('
-        SELECT a.cv_id, a.cl_id FROM applications a
+        SELECT a.cv_id, a.cl_id, a.document_ids FROM applications a
         JOIN jobs j ON a.job_id = j.id
         WHERE a.id = ? AND j.user_id = ?
     ');
@@ -46,7 +46,17 @@ if ($appId && ($userRole === 'recruiter' || $userRole === 'admin')) {
         exit('Application not found or not authorized.');
     }
 
-    if ((int)$docId !== (int)$application['cv_id'] && (int)$docId !== (int)$application['cl_id']) {
+    $applicationDocIds = json_decode($application['document_ids'] ?? '[]', true);
+    if (!is_array($applicationDocIds)) {
+        $applicationDocIds = [];
+    }
+
+    $allowedDocIds = array_values(array_unique(array_map('intval', array_merge(
+        [$application['cv_id'] ?? null, $application['cl_id'] ?? null],
+        $applicationDocIds
+    ))));
+
+    if (!in_array((int)$docId, $allowedDocIds, true)) {
         http_response_code(403);
         exit('Document does not belong to this application.');
     }

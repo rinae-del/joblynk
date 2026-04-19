@@ -12,6 +12,91 @@ require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();
 
+function isLocalAvatarPath(string $path): bool
+{
+    $normalized = str_replace('\\', '/', ltrim($path, '/\\'));
+    return strpos($normalized, 'uploads/avatars/') === 0;
+}
+
+function deleteLocalAvatarFile(?string $path): void
+{
+    if (!$path || !isLocalAvatarPath($path)) {
+        return;
+    }
+
+    $filePath = __DIR__ . '/../../' . str_replace('\\', '/', ltrim($path, '/\\'));
+    if (is_file($filePath)) {
+        @unlink($filePath);
+    }
+}
+
+function fetchProfile(PDO $pdo, int $userId): array
+{
+    $stmt = $pdo->prepare('
+        SELECT id, first_name, last_name, email, phone, location,
+               bio, job_title, linkedin, portfolio, skills,
+               id_number, dob, gender, citizenship,
+               street_address, city, province, postal_code, country,
+               avatar_url
+        FROM users WHERE id = ?
+    ');
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        jsonResponse(['success' => false, 'message' => 'User not found.'], 404);
+    }
+
+    $user['skills'] = json_decode($user['skills'], true) ?: [];
+
+    return $user;
+}
+
+function storeAvatarUpload(array $file, int $userId): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        jsonResponse(['success' => false, 'message' => 'Please choose an image to upload.'], 422);
+    }
+
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        jsonResponse(['success' => false, 'message' => 'Avatar upload failed.'], 422);
+    }
+
+    $maxSize = 5 * 1024 * 1024;
+    if (($file['size'] ?? 0) > $maxSize) {
+        jsonResponse(['success' => false, 'message' => 'Profile photo must be smaller than 5MB.'], 422);
+    }
+
+    $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+    $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExts, true)) {
+        jsonResponse(['success' => false, 'message' => 'Allowed image types: JPG, PNG, WEBP.'], 422);
+    }
+
+    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = $finfo->file($file['tmp_name']);
+    if (!in_array($mime, $allowedMimes, true)) {
+        jsonResponse(['success' => false, 'message' => 'Invalid image file.'], 422);
+    }
+
+    $avatarDir = __DIR__ . '/../../uploads/avatars';
+    if (!is_dir($avatarDir)) {
+        mkdir($avatarDir, 0755, true);
+    }
+
+    $storedName = 'avatar_' . $userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $destination = $avatarDir . '/' . $storedName;
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        jsonResponse(['success' => false, 'message' => 'Failed to save profile photo.'], 500);
+    }
+
+    return [
+        'avatar_url' => 'uploads/avatars/' . $storedName,
+        'mime_type' => $mime,
+    ];
+}
+
 if (!isset($_SESSION['user_id'])) {
     jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);
 }
@@ -51,33 +136,46 @@ try {
             ADD COLUMN country VARCHAR(50) DEFAULT 'South Africa' AFTER postal_code
         ");
     }
-} catch (Exception $e) {
+    $avatarCol = $pdo->query("SHOW COLUMNS FROM users LIKE 'avatar_url'")->fetch();
+    if (!$avatarCol) {
+        $countryCol = $pdo->query("SHOW COLUMNS FROM users LIKE 'country'")->fetch();
+        $position = $countryCol ? 'AFTER country' : 'AFTER updated_at';
+        $pdo->exec("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255) DEFAULT '' {$position}");
+    }
+} catch (Throwable $e) {
     // Columns likely already exist — ignore
 }
 
 // ── GET: return profile ──
 if ($method === 'GET') {
-    $stmt = $pdo->prepare('
-        SELECT id, first_name, last_name, email, phone, location,
-               bio, job_title, linkedin, portfolio, skills,
-               id_number, dob, gender, citizenship,
-               street_address, city, province, postal_code, country
-        FROM users WHERE id = ?
-    ');
-    $stmt->execute([$userId]);
-    $user = $stmt->fetch();
-
-    if (!$user) {
-        jsonResponse(['success' => false, 'message' => 'User not found.'], 404);
-    }
-
-    $user['skills'] = json_decode($user['skills'], true) ?: [];
+    $user = fetchProfile($pdo, $userId);
 
     jsonResponse(['success' => true, 'profile' => $user]);
 }
 
 // ── POST: update profile ──
 if ($method === 'POST') {
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+    $isMultipart = stripos($contentType, 'multipart/form-data') !== false;
+
+    if ($isMultipart && isset($_FILES['avatar'])) {
+        $currentProfile = fetchProfile($pdo, $userId);
+        $avatarUpload = storeAvatarUpload($_FILES['avatar'], $userId);
+
+        $stmt = $pdo->prepare('UPDATE users SET avatar_url = ? WHERE id = ?');
+        $stmt->execute([$avatarUpload['avatar_url'], $userId]);
+
+        deleteLocalAvatarFile($currentProfile['avatar_url'] ?? '');
+
+        $updatedProfile = fetchProfile($pdo, $userId);
+        jsonResponse([
+            'success' => true,
+            'message' => 'Profile picture updated.',
+            'avatar_url' => $updatedProfile['avatar_url'] ?? '',
+            'profile' => $updatedProfile,
+        ]);
+    }
+
     $body = getJsonBody();
 
     $firstName  = trim($body['firstName'] ?? $body['first_name'] ?? '');

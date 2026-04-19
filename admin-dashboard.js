@@ -1603,6 +1603,7 @@ function renderDocsPage() {
     const typeStyles = {
         cv: { icon: 'fa-solid fa-file-lines', bg: 'rgba(59,130,246,0.1)', color: '#3B82F6', label: 'CV / Resume' },
         cl: { icon: 'fa-solid fa-envelope-open-text', bg: 'rgba(126,34,206,0.1)', color: '#7E22CE', label: 'Cover Letter' },
+        supporting: { icon: 'fa-solid fa-file-circle-check', bg: 'rgba(71,85,105,0.1)', color: '#475569', label: 'Supporting Document' },
     };
 
     pageDocs.forEach(doc => {
@@ -1631,7 +1632,7 @@ function renderDocsPage() {
                     <span class="table-note">${safeEmail}</span>
                 </div>
             </td>
-            <td data-label="Type"><span class="document-chip ${doc.doc_type === 'cv' ? 'success' : 'accent'}"><i class="${ts.icon}" style="font-size:0.7rem;"></i> ${ts.label}</span></td>
+            <td data-label="Type"><span class="document-chip ${doc.doc_type === 'cv' ? 'success' : doc.doc_type === 'cl' ? 'accent' : 'muted'}"><i class="${ts.icon}" style="font-size:0.7rem;"></i> ${ts.label}</span></td>
             <td data-label="Updated">
                 <div class="table-value">
                     <span>${formatDate(doc.updated_at || doc.created_at)}</span>
@@ -1697,20 +1698,20 @@ window.openDocDrawer = function(docId) {
     const docName = escapeHtml(doc.name || 'Untitled');
     const ownerName = escapeHtml(`${doc.first_name || ''} ${doc.last_name || ''}`.trim() || 'Unknown');
     const safeEmail = escapeHtml(doc.email || '—');
-    const accent = escapeHtml(doc.accent_color || (doc.doc_type === 'cv' ? '#3B4BA6' : '#0F766E'));
-    const isCV = doc.doc_type === 'cv';
-    const typeLabel = isCV ? 'CV / Resume' : 'Cover Letter';
-    const typeIcon = isCV ? 'fa-solid fa-file-lines' : 'fa-solid fa-envelope-open-text';
-    const typeBg = isCV ? 'rgba(59,130,246,0.1)' : 'rgba(126,34,206,0.1)';
-    const typeColor = isCV ? '#3B82F6' : '#7E22CE';
+    const accent = escapeHtml(doc.accent_color || (doc.doc_type === 'cv' ? '#3B4BA6' : doc.doc_type === 'cl' ? '#0F766E' : '#475569'));
+    const typeStyle = doc.doc_type === 'cv'
+        ? { label: 'CV / Resume', icon: 'fa-solid fa-file-lines', bg: 'rgba(59,130,246,0.1)', color: '#3B82F6' }
+        : doc.doc_type === 'cl'
+            ? { label: 'Cover Letter', icon: 'fa-solid fa-envelope-open-text', bg: 'rgba(126,34,206,0.1)', color: '#7E22CE' }
+            : { label: 'Supporting Document', icon: 'fa-solid fa-file-circle-check', bg: 'rgba(71,85,105,0.1)', color: '#475569' };
 
     body.innerHTML = `
         <div class="drawer-profile">
-            <div class="drawer-avatar" style="background:${typeBg}; color:${typeColor}; border-radius:14px;">
-                <i class="${typeIcon}" style="font-size:1.3rem;"></i>
+            <div class="drawer-avatar" style="background:${typeStyle.bg}; color:${typeStyle.color}; border-radius:14px;">
+                <i class="${typeStyle.icon}" style="font-size:1.3rem;"></i>
             </div>
             <div class="drawer-profile-name">${docName}</div>
-            <div class="drawer-profile-email">${typeLabel}</div>
+            <div class="drawer-profile-email">${typeStyle.label}</div>
         </div>
 
         <div class="drawer-details">

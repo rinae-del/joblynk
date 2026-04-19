@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `last_name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(191) NOT NULL UNIQUE,
     `phone` VARCHAR(30) NULL,
+    `avatar_url` VARCHAR(255) DEFAULT '',
     `password_hash` VARCHAR(255) NOT NULL,
     `company_id` INT NULL,
     `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `payment_invoices` (
 CREATE TABLE IF NOT EXISTS `documents` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
-    `doc_type` ENUM('cv', 'cl') NOT NULL,
+    `doc_type` ENUM('cv', 'cl', 'supporting') NOT NULL,
     `name` VARCHAR(255) NOT NULL DEFAULT 'Untitled',
     `accent_color` VARCHAR(20) DEFAULT '#3B4BA6',
     `data` JSON NULL,
