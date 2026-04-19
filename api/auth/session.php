@@ -27,14 +27,15 @@ if (isset($_SESSION['user_id'])) {
     }
 
     $select = $avatarColumnExists
-        ? 'SELECT email_verified, avatar_url FROM users WHERE id = ?'
-        : 'SELECT email_verified FROM users WHERE id = ?';
+        ? 'SELECT u.email_verified, u.avatar_url, c.name AS company_name FROM users u LEFT JOIN companies c ON u.company_id = c.id WHERE u.id = ?'
+        : 'SELECT u.email_verified, c.name AS company_name FROM users u LEFT JOIN companies c ON u.company_id = c.id WHERE u.id = ?';
 
     $stmt = $pdo->prepare($select);
     $stmt->execute([$_SESSION['user_id']]);
     $row = $stmt->fetch();
     $emailVerified = $row ? (bool) $row['email_verified'] : false;
     $avatarUrl = $avatarColumnExists ? ($row['avatar_url'] ?? '') : '';
+    $companyName = $row['company_name'] ?? '';
 
     jsonResponse([
         'loggedIn' => true,
@@ -44,6 +45,7 @@ if (isset($_SESSION['user_id'])) {
             'email' => $_SESSION['user_email'],
             'role'  => $_SESSION['user_role'],
             'avatar_url' => $avatarUrl,
+            'company_name' => $companyName,
             'email_verified' => $emailVerified,
             'is_impersonating' => isset($_SESSION['original_admin']) || isset($_SESSION['original_admin_id'])
         ]

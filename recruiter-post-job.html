@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=10">
-    <link rel="stylesheet" href="recruiter-dashboard.css?v=10">
-    <script src="auth-guard.js?v=9" data-role="recruiter"></script>
+    <link rel="stylesheet" href="dashboard.css?v=20260419">
+    <link rel="stylesheet" href="recruiter-dashboard.css?v=20260419">
+    <script src="auth-guard.js?v=20260419" data-role="recruiter"></script>
 </head>
 
 <body>
@@ -56,15 +56,23 @@
                             <div class="form-group" style="flex: 1;">
                                 <label for="wizCompany">Company Display Name*</label>
                                 <select id="wizCompany" class="form-control" required>
-                                    <option value="" data-user-name>Loading...</option>
+                                    <option value="" data-company-name>Loading...</option>
                                     <option value="Confidential">Confidential / Hidden</option>
                                 </select>
                             </div>
                         </div>
                         <div class="dash-row" style="gap: 20px;">
                             <div class="form-group" style="flex: 1;">
-                                <label for="wizLocation">Hyper-Local Location* <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(For smart matching)</span></label>
-                                <input type="text" id="wizLocation" class="form-control" placeholder="Specific City, Neighborhood, or 'Remote'" required>
+                                <label for="wizProvince">Province*</label>
+                                <select id="wizProvince" class="form-control" required>
+                                    <option value="">Select Province</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizCity">City / Area*</label>
+                                <select id="wizCity" class="form-control" required>
+                                    <option value="">Select City</option>
+                                </select>
                             </div>
                             <div class="form-group" style="flex: 1;">
                                 <label for="wizType">Employment Type*</label>
@@ -122,6 +130,13 @@
                                     <option value="Per Hour">Per Hour</option>
                                 </select>
                             </div>
+                        </div>
+                        <div style="margin-top: 8px; margin-bottom: 16px;">
+                            <label class="checkbox-item" style="display:inline-flex; width:auto; border:none; background:none; padding:0;">
+                                <input type="checkbox" id="wizHideSalary">
+                                <span style="font-weight:600;">Don't show salary on listing</span>
+                            </label>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Salary will be hidden from candidates but stored internally.</p>
                         </div>
                         <div class="form-group mt-3">
                             <label>Benefits Included</label>
@@ -248,10 +263,55 @@
         </div>
     </main>
 
-    <script src="components.js?v=9"></script>
-    <script src="jobs-store.js?v=7"></script>
-    <script src="recruiter-dashboard.js?v=7"></script>
+    <script src="components.js?v=20260419"></script>
+    <script src="jobs-store.js?v=20260419"></script>
+    <script src="recruiter-dashboard.js?v=20260419"></script>
     <script>
+    // ── Province / City cascade ──
+    const SA_LOCATIONS = {
+        'Gauteng': ['Johannesburg','Pretoria','Sandton','Midrand','Centurion','Randburg','Roodepoort','Soweto','Benoni','Boksburg','Germiston','Kempton Park','Alberton','Edenvale','Springs','Krugersdorp','Vereeniging','Vanderbijlpark','Tshwane'],
+        'Western Cape': ['Cape Town','Stellenbosch','Paarl','George','Knysna','Mossel Bay','Worcester','Bellville','Somerset West','Hermanus','Franschhoek','Plettenberg Bay','Saldanha','Malmesbury'],
+        'KwaZulu-Natal': ['Durban','Pietermaritzburg','Richards Bay','Newcastle','Ballito','Umhlanga','Pinetown','Ladysmith','Port Shepstone','Empangeni','Mtubatuba','Eshowe'],
+        'Eastern Cape': ['Port Elizabeth (Gqeberha)','East London','Makhanda (Grahamstown)','Bhisho','Uitenhage','Queenstown','King William\'s Town','Mthatha','Cradock','Graaff-Reinet'],
+        'Free State': ['Bloemfontein','Welkom','Kroonstad','Bethlehem','Sasolburg','Phuthaditjhaba','Virginia','Parys','Harrismith'],
+        'Limpopo': ['Polokwane','Tzaneen','Mokopane','Thohoyandou','Louis Trichardt','Lephalale','Musina','Bela-Bela','Groblersdal','Phalaborwa'],
+        'Mpumalanga': ['Nelspruit (Mbombela)','Witbank (eMalahleni)','Middelburg','Secunda','Standerton','Ermelo','Barberton','Hazyview','White River','Lydenburg'],
+        'North West': ['Rustenburg','Mahikeng','Klerksdorp','Potchefstroom','Brits','Lichtenburg','Hartbeespoort','Orkney','Vryburg'],
+        'Northern Cape': ['Kimberley','Upington','Springbok','De Aar','Kuruman','Kathu','Calvinia','Colesberg']
+    };
+
+    (function initLocationDropdowns() {
+        const provSel = document.getElementById('wizProvince');
+        const citySel = document.getElementById('wizCity');
+        if (!provSel || !citySel) return;
+
+        // Add "Remote" as special option
+        const remoteOpt = document.createElement('option');
+        remoteOpt.value = 'Remote'; remoteOpt.textContent = 'Remote (Anywhere)';
+        provSel.appendChild(remoteOpt);
+
+        Object.keys(SA_LOCATIONS).sort().forEach(prov => {
+            const opt = document.createElement('option');
+            opt.value = prov; opt.textContent = prov;
+            provSel.appendChild(opt);
+        });
+
+        provSel.addEventListener('change', () => {
+            const prov = provSel.value;
+            citySel.innerHTML = '<option value="">Select City</option>';
+            if (prov === 'Remote') {
+                const opt = document.createElement('option');
+                opt.value = 'Remote'; opt.textContent = 'Remote'; opt.selected = true;
+                citySel.appendChild(opt);
+                return;
+            }
+            (SA_LOCATIONS[prov] || []).forEach(city => {
+                const opt = document.createElement('option');
+                opt.value = city; opt.textContent = city;
+                citySel.appendChild(opt);
+            });
+        });
+    })();
     // Show welcome banner after successful payment
     (function() {
         const params = new URLSearchParams(window.location.search);
@@ -299,7 +359,9 @@
     window.previewJobAd = function() {
         const title = document.getElementById('wizJobTitle').value.trim();
         const company = document.getElementById('wizCompany').value || 'Your Company';
-        const location = document.getElementById('wizLocation').value.trim();
+        const province = document.getElementById('wizProvince').value;
+        const city = document.getElementById('wizCity').value;
+        const location = (province === 'Remote') ? 'Remote' : [city, province].filter(Boolean).join(', ');
         const type = document.getElementById('wizType').value;
         const desc = document.getElementById('wizDesc').value.trim();
         const reqs = document.getElementById('wizReqs').value.trim();
@@ -436,7 +498,18 @@
                 }
                 companySelect.value = job.company || '';
             }
-            document.getElementById('wizLocation').value = job.location || '';
+            // Restore province/city from saved location string
+            const locParts = (job.location || '').split(',').map(s => s.trim());
+            const provSel = document.getElementById('wizProvince');
+            const citySel = document.getElementById('wizCity');
+            if (job.location === 'Remote') {
+                provSel.value = 'Remote'; provSel.dispatchEvent(new Event('change'));
+            } else if (locParts.length >= 2) {
+                provSel.value = locParts[locParts.length - 1]; provSel.dispatchEvent(new Event('change'));
+                setTimeout(() => { citySel.value = locParts[0]; }, 50);
+            } else if (locParts.length === 1) {
+                provSel.value = locParts[0]; provSel.dispatchEvent(new Event('change'));
+            }
             document.getElementById('wizType').value = job.type || 'Full-time';
             if (document.getElementById('wizDesc')) document.getElementById('wizDesc').value = job.description || '';
             if (document.getElementById('wizReqs')) document.getElementById('wizReqs').value = job.requirements || '';
@@ -444,6 +517,7 @@
             if (document.getElementById('wizSalaryFrom')) document.getElementById('wizSalaryFrom').value = job.salary_from || '';
             if (document.getElementById('wizSalaryTo')) document.getElementById('wizSalaryTo').value = job.salary_to || '';
             if (document.getElementById('wizSalaryPeriod')) document.getElementById('wizSalaryPeriod').value = job.salary_period || 'Per Month';
+            if (document.getElementById('wizHideSalary')) document.getElementById('wizHideSalary').checked = !!(job.hide_salary || job.hideSalary);
             if (document.getElementById('wizDate')) document.getElementById('wizDate').value = job.closing_date || '';
 
             // Set benefit checkboxes

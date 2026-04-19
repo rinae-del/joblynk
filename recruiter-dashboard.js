@@ -144,12 +144,15 @@ function populateCandidateFilter() {
     const select = document.getElementById('candidateJobFilter');
     if (!select) return;
 
+    const queryJobId = new URLSearchParams(window.location.search).get('job') || '';
     const previousValue = select.value;
     select.innerHTML = '<option value="">Filter by Job: All</option>';
     recruiterState.jobs.forEach(job => {
         select.innerHTML += `<option value="${job.id}">${job.title}</option>`;
     });
-    if ([...select.options].some(option => option.value === previousValue)) {
+    if (queryJobId && [...select.options].some(option => option.value === queryJobId)) {
+        select.value = queryJobId;
+    } else if ([...select.options].some(option => option.value === previousValue)) {
         select.value = previousValue;
     }
 }
@@ -375,7 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Collect all wizard data
             const title = document.getElementById('wizJobTitle').value;
             const company = document.getElementById('wizCompany').value;
-            const location = document.getElementById('wizLocation').value;
+            const provEl = document.getElementById('wizProvince');
+            const cityEl = document.getElementById('wizCity');
+            const location = provEl ? ((provEl.value === 'Remote') ? 'Remote' : [cityEl?.value, provEl.value].filter(Boolean).join(', ')) : (document.getElementById('wizLocation')?.value || '');
             const type = document.getElementById('wizType').value;
             const description = document.getElementById('wizDesc')?.value || '';
             const requirements = document.getElementById('wizReqs')?.value || '';
@@ -383,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const salaryFrom = document.getElementById('wizSalaryFrom')?.value || '';
             const salaryTo = document.getElementById('wizSalaryTo')?.value || '';
             const salaryPeriod = document.getElementById('wizSalaryPeriod')?.value || 'Per Month';
+            const hideSalary = document.getElementById('wizHideSalary')?.checked || false;
             const closingDate = document.getElementById('wizDate')?.value || '';
 
             // Collect benefits
@@ -394,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var jobData = {
                 title, company, location, type,
                 description, requirements, skills,
-                salaryFrom, salaryTo, salaryPeriod,
+                salaryFrom, salaryTo, salaryPeriod, hideSalary,
                 benefits, closingDate,
                 customFields: collectCustomFields()
             };
@@ -430,6 +436,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = 'recruiter-pricing.html';
                         return;
                     }
+
+                    // Handle other API errors
+                    if (result && result.error) {
+                        alert(result.message || 'Failed to post job. Please try again.');
+                        return;
+                    }
                 }
             }
             
@@ -458,6 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadMyJobs() {
         const tbody = document.getElementById('myJobsTableBody');
         if (!tbody) return;
+        const queryJobId = new URLSearchParams(window.location.search).get('job') || '';
 
         try {
             const res = await fetch('api/jobs/index.php?mine=1', { credentials: 'include' });
@@ -468,8 +481,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tbody.innerHTML = '';
 
-            if (result.jobs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">No jobs posted yet. Click "Post a Job" to get started.</td></tr>';
+            const jobsToRender = queryJobId
+                ? result.jobs.filter(job => String(job.id) === String(queryJobId))
+                : result.jobs;
+
+            if (jobsToRender.length === 0) {
+                tbody.innerHTML = queryJobId
+                    ? '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">This job could not be found. It may have been removed or closed.</td></tr>'
+                    : '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">No jobs posted yet. Click "Post a Job" to get started.</td></tr>';
                 renderActivePostingsPreview();
                 populateCandidateFilter();
                 renderCandidatesView();
@@ -482,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let totalApplicants = 0;
 
-            result.jobs.forEach(job => {
+            jobsToRender.forEach(job => {
                 const tr = document.createElement('tr');
                 tr.className = 'card-row card-row-recruiter';
                 const applicants = job.applicant_count || 0;
@@ -541,6 +560,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.reviewCandidate = function(applicationId) {
         const app = recruiterState.applications.find(item => item.id === applicationId);
         if (!app) return;
+
+        // Mark application as viewed (fires email to candidate on first view)
+        fetch('/api/applications/index.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ application_id: applicationId, action: 'mark_viewed' })
+        }).catch(() => {});
 
         const applicantName = `${app.first_name || ''} ${app.last_name || ''}`.trim() || app.applicant_name || 'Unknown Applicant';
         const statusColors = {
@@ -913,7 +940,8 @@ function switchView(viewId) {
         'post-job': 'recruiter-post-job.html',
         'my-jobs': 'recruiter-my-jobs.html',
         'candidates': 'recruiter-candidates.html',
-        'messages': 'recruiter-messages.html'
+        'messages': 'recruiter-messages.html',
+        'company': 'recruiter-company.html'
     };
     window.location.href = pageMap[viewId] || 'recruiter-overview.html';
 }

@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=11">
-    <script src="auth-guard.js?v=9"></script>
+    <link rel="stylesheet" href="dashboard.css?v=20260419">
+    <script src="auth-guard.js?v=20260419"></script>
 </head>
 
 <body>
@@ -102,6 +102,26 @@
                     <button class="section-arrow" title="View all Jobs"><i
                             class="fa-solid fa-chevron-right"></i></button>
                 </div>
+                <!-- Job search / filters -->
+                <div class="job-filters" id="jobFilters" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+                    <div style="flex:1;min-width:160px;">
+                        <input type="text" id="jobSearchKeyword" class="form-control" placeholder="Search jobs..." style="width:100%;padding:10px 14px;border:1px solid var(--border,#e5e7eb);border-radius:10px;font-size:0.88rem;background:var(--bg-white,#fff);">
+                    </div>
+                    <div style="min-width:140px;">
+                        <select id="jobFilterLocation" class="form-control" style="width:100%;padding:10px 14px;border:1px solid var(--border,#e5e7eb);border-radius:10px;font-size:0.88rem;background:var(--bg-white,#fff);color:var(--text,#1e293b);">
+                            <option value="">All Locations</option>
+                        </select>
+                    </div>
+                    <div style="min-width:130px;">
+                        <select id="jobFilterType" class="form-control" style="width:100%;padding:10px 14px;border:1px solid var(--border,#e5e7eb);border-radius:10px;font-size:0.88rem;background:var(--bg-white,#fff);color:var(--text,#1e293b);">
+                            <option value="">All Types</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Freelance">Freelance</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="job-list" id="jobList">
                     <!-- Dynamically populated by dashboard.js via jobs-store.js -->
                 </div>
@@ -192,9 +212,9 @@
         </div>
     </div>
 
-    <script src="components.js?v=10"></script>
-    <script src="jobs-store.js?v=9"></script>
-    <script src="dashboard.js?v=10"></script>
+    <script src="components.js?v=20260419"></script>
+    <script src="jobs-store.js?v=20260419"></script>
+    <script src="dashboard.js?v=20260419"></script>
 </body>
 
 </html>

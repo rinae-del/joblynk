@@ -83,6 +83,7 @@
                 { id: 'navMyJobs',     key: 'my-jobs',     icon: 'fa-solid fa-briefcase',    label: 'My Jobs',     href: 'recruiter-my-jobs.html' },
                 { id: 'navCandidates', key: 'candidates',  icon: 'fa-solid fa-users',        label: 'Candidates',  href: 'recruiter-candidates.html' },
                 { id: 'navMessages',   key: 'messages',    icon: 'fa-regular fa-envelope',   label: 'Messages',    href: 'recruiter-messages.html' },
+                { id: 'navCompany',    key: 'company',     icon: 'fa-solid fa-building-circle-check', label: 'Company', href: 'recruiter-company.html' },
                 { id: 'navPricing',    key: 'pricing',     icon: 'fa-solid fa-tag',          label: 'Pricing',     href: 'recruiter-pricing.html' },
             ],
             tabBarItems: [
@@ -92,6 +93,7 @@
                 { key: 'messages',   icon: 'fa-regular fa-envelope', label: 'Messages',   href: 'recruiter-messages.html' },
             ],
             moreItems: [
+                { key: 'company', icon: 'fa-solid fa-building-circle-check', label: 'Company', href: 'recruiter-company.html' },
                 { key: 'pricing', icon: 'fa-solid fa-tag', label: 'Pricing', href: 'recruiter-pricing.html' },
             ],
             userIcon: { icon: 'fa-solid fa-building', bg: 'rgba(126,34,206,0.2)', color: '#c084fc' },

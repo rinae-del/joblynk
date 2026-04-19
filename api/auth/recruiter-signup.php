@@ -144,6 +144,57 @@ try {
 
 // Verification email is sent after payment via payment-return.php (as a 6-digit code)
 
+$loginUrl = APP_URL . '/sign-in.html';
+
+try {
+    $safeFirstName = htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8');
+    $safeCompanyName = htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8');
+    $safePackageLabel = htmlspecialchars($packageLabel, ENT_QUOTES, 'UTF-8');
+    $accountStatusCopy = $emailVerificationRequired
+        ? '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#475569;">Your recruiter account has been created. You will complete email verification during the payment return flow, so keep an eye on your inbox after checkout.</p>'
+        : '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#475569;">Your recruiter account is active and ready to use.</p>';
+
+    $welcomeEmailBody = '
+        <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
+            Hi ' . $safeFirstName . ', welcome to JobLynk. Your recruiter account for <strong style="color:#1E293B;">' . $safeCompanyName . '</strong> has been registered successfully.
+        </p>
+        ' . $accountStatusCopy . '
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#F8FAFC;">
+            <tr>
+                <td style="padding:16px 18px;font-size:13px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.04em;">Account Summary</td>
+            </tr>
+            <tr>
+                <td style="padding:0 18px 18px;">
+                    <p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Plan:</strong> ' . $safePackageLabel . '</p>
+                    <p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Login email:</strong> ' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . '</p>
+                    <p style="margin:0;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Next step:</strong> Complete payment, then sign in to start posting jobs.</p>
+                </td>
+            </tr>
+        </table>
+        <div style="text-align:center;margin:28px 0;">
+            <a href="' . $loginUrl . '" style="display:inline-block;padding:14px 30px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:16px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                Sign In to JobLynk
+            </a>
+        </div>
+        <div style="margin:24px 0 0;padding:20px;border:1px solid #E2E8F0;border-radius:12px;background:#FFFFFF;">
+            <p style="margin:0 0 12px;font-size:14px;font-weight:700;color:#1E293B;">Quick-start guide to your first job post</p>
+            <ol style="margin:0;padding-left:20px;color:#475569;font-size:14px;line-height:1.7;">
+                <li>Complete payment for your selected recruiter package.</li>
+                <li>Sign in and open your recruiter dashboard.</li>
+                <li>Create your first job advert, add the role details, and publish it live.</li>
+            </ol>
+        </div>
+        <p style="margin:20px 0 0;font-size:13px;line-height:1.6;color:#94A3B8;">
+            If you did not create this account, please contact <a href="mailto:info@joblynk.co.za" style="color:#3B4BA6;text-decoration:none;font-weight:600;">info@joblynk.co.za</a> immediately.
+        </p>
+    ';
+
+    $welcomeEmailHtml = buildEmailTemplate('Welcome to JobLynk', $welcomeEmailBody);
+    sendResendEmail($email, 'Welcome to JobLynk – Your recruiter account is ready', $welcomeEmailHtml);
+} catch (Throwable $e) {
+    error_log('Recruiter welcome email error: ' . $e->getMessage());
+}
+
 if ($paymentMethod === 'invoice') {
     $invoiceUrl = APP_URL . '/recruiter-invoice.html?token=' . urlencode($invoiceToken) . '&emailed=1';
     $invoiceSubtotal = round($expectedAmount / 1.15, 2);

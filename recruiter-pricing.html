@@ -318,6 +318,15 @@
             text-decoration: none;
         }
 
+        .signup-hint {
+            max-width: 860px;
+            margin: 1.25rem auto 0;
+            padding: 0 1.5rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 680px) {
             .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
@@ -333,6 +342,10 @@
         <a href="recruiter-overview.html" class="logo"><span>JobLynk</span></a>
         <h1>Recruit <em>smarter</em>, not harder</h1>
         <p>Choose a plan to post your jobs and connect with thousands of qualified South African candidates.</p>
+    </div>
+
+    <div class="signup-hint">
+        New recruiters: choose your package here first, then continue to account setup.
     </div>
 
     <!-- ═══ INTRO OFFER BANNER ═══ -->
@@ -456,7 +469,7 @@
             <input type="checkbox" id="tcAccept">
             <div style="font-size: 0.88rem; color: var(--muted); line-height: 1.5;">
                 <label for="tcAccept" style="display: inline; cursor: pointer; margin: 0; padding: 0; color: inherit; font-size: inherit; font-weight: normal;">I agree to the</label>
-                <a href="terms-and-conditions.html" target="_blank" style="color: var(--accent-light); text-decoration: underline; position: relative; z-index: 10;">Terms &amp; Conditions</a>
+                <a href="recruiter-terms.html" target="_blank" style="color: var(--accent-light); text-decoration: underline; position: relative; z-index: 10;">Terms &amp; Conditions</a>
                 <label for="tcAccept" style="display: inline; cursor: pointer; margin: 0; padding: 0; color: inherit; font-size: inherit; font-weight: normal;">and consent to JobLynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA. All prices include VAT. Bundle purchases must be used within 90 days.</label>
             </div>
         </div>
@@ -558,8 +571,9 @@
                 if (data.loggedIn && data.user) {
                     window.__JobLynkUser = {
                         id: data.user.id,
-                        name: (data.user.first_name || '') + ' ' + (data.user.last_name || ''),
+                        name: data.user.name || '',
                         email: data.user.email || '',
+                        role: data.user.role || '',
                     };
                 }
             } catch (e) { console.warn('Could not load session:', e); }
@@ -583,18 +597,28 @@
         function selectPlan(planId, amount) {
             const cb = document.getElementById('tcAccept');
             if (!cb.checked) {
-                cb.closest('.tc-box').style.borderColor = '#EF4444';
-                cb.closest('.tc-box').style.animation = 'shake 0.4s ease';
+                const box = cb.closest('.tc-box');
+                box.style.borderColor = '#EF4444';
+                box.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.18)';
+                box.style.animation = 'shake 0.4s ease';
+                box.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 setTimeout(() => {
-                    cb.closest('.tc-box').style.borderColor = '';
-                    cb.closest('.tc-box').style.animation = '';
-                }, 600);
-                alert('Please accept the Terms and Conditions before purchasing.');
+                    box.style.borderColor = '';
+                    box.style.boxShadow = '';
+                    box.style.animation = '';
+                }, 2000);
                 return;
             }
 
             // Get user info from auth session (if logged in)
             const user = window.__JobLynkUser || {};
+            const isExistingRecruiter = user.role === 'recruiter' || user.role === 'admin';
+
+            if (!isExistingRecruiter) {
+                window.location.href = `recruiter-signup.html?plan=${encodeURIComponent(planId)}`;
+                return;
+            }
+
             const names = (user.name || '').split(' ');
 
             // Build PayFast form data

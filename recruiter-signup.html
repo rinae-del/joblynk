@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="style.css?v=20260419">
+    <link rel="stylesheet" href="auth.css?v=20260419">
     <style>
         /* ── Recruiter signup specific ── */
         .signup-grid {
@@ -106,6 +106,10 @@
             gap: 0.75rem;
             margin-bottom: 0.25rem;
         }
+        .package-grid.selected-only {
+            grid-template-columns: minmax(0, 280px);
+            justify-content: start;
+        }
         .package-card {
             background: #F8FAFC;
             border: 2px solid #E5E7EB;
@@ -117,6 +121,12 @@
             position: relative;
         }
         .package-card:hover { border-color: var(--accent, #3B4BA6); }
+        .package-card.is-locked {
+            cursor: default;
+        }
+        .package-card.is-locked:hover {
+            border-color: var(--accent, #3B4BA6);
+        }
         .package-card.selected {
             border-color: var(--accent, #3B4BA6);
             background: #F0F0FF;
@@ -154,6 +164,28 @@
         }
         .package-card.popular .pkg-badge {
             background: linear-gradient(135deg, var(--accent, #3B4BA6), #7C3AED);
+        }
+
+        .selected-plan-note {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .selected-plan-note p {
+            font-size: 0.85rem;
+            color: #6B7280;
+        }
+        .change-plan-link {
+            color: var(--accent, #3B4BA6);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .change-plan-link:hover {
+            text-decoration: underline;
         }
 
         /* ── Basket Summary ── */
@@ -388,7 +420,7 @@
                 <div class="checkout-stepper">
                     <div class="step-indicator active" data-step="1">
                         <span class="step-number">1</span>
-                        <span class="step-label">Choose Plan</span>
+                        <span class="step-label">Selected Package</span>
                     </div>
                     <div class="step-connector" id="conn1"></div>
                     <div class="step-indicator" data-step="2">
@@ -408,8 +440,11 @@
 
                     <!-- ══ STEP 1: Choose Plan ══ -->
                     <div class="step-panel active" id="step1">
-                        <div class="section-title" style="border-top:none;margin-top:0;">Choose Your Plan</div>
-                        <p style="font-size:0.85rem;color:#6B7280;margin-bottom:1.25rem;">Select the package you want to sign up with before entering your company details.</p>
+                        <div class="section-title" style="border-top:none;margin-top:0;">Selected Package</div>
+                        <div class="selected-plan-note">
+                            <p>You selected your recruiter package on the pricing page. Continue with this option, or go back and choose a different package first.</p>
+                            <a href="recruiter-pricing.html" class="change-plan-link" data-change-plan-link>Change package</a>
+                        </div>
 
                         <div class="package-grid">
                             <label class="package-card" data-plan="intro" data-amount="750" data-jobs="1">
@@ -458,7 +493,7 @@
                         </div>
 
                         <div class="basket-summary">
-                            <h4><i class="fa-solid fa-basket-shopping"></i> Your Basket</h4>
+                            <h4><i class="fa-solid fa-basket-shopping"></i> Selected Package Summary</h4>
                             <div class="basket-row">
                                 <span id="basketItemName">3-Job Listing</span>
                                 <span id="basketItemQty">1</span>
@@ -542,7 +577,7 @@
                                     <option>Education</option>
                                     <option>Consulting</option>
                                     <option>Marketing & Media</option>
-                                    <option>Recruiting</option>
+                                    <option>Recruitment</option>
                                     <option>Government</option>
                                     <option>Other</option>
                                 </select>
@@ -614,7 +649,7 @@
                         </div>
 
                         <p style="font-size:0.78rem;color:#9CA3AF;margin-top:0.75rem;">
-                            By signing up I agree to JobLynk's <a href="terms-and-conditions.html" style="color:var(--accent,#3B4BA6);">Terms</a> and <a href="terms-and-conditions.html" style="color:var(--accent,#3B4BA6);">Privacy Policy</a>.
+                            By signing up I agree to JobLynk's <a href="recruiter-terms.html" style="color:var(--accent,#3B4BA6);">Terms</a> and <a href="recruiter-terms.html" style="color:var(--accent,#3B4BA6);">Privacy Policy</a>.
                         </p>
 
                         <div class="step-nav">
@@ -686,7 +721,7 @@
                         <div class="tc-checkbox">
                             <input type="checkbox" id="tcAccept">
                             <div>
-                                <label for="tcAccept">I agree to the </label><a href="terms-and-conditions.html" target="_blank">Terms &amp; Conditions</a>
+                                <label for="tcAccept">I agree to the </label><a href="recruiter-terms.html" target="_blank">Terms &amp; Conditions</a>
                                 <label for="tcAccept"> and consent to JobLynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA.</label>
                             </div>
                         </div>
@@ -715,6 +750,7 @@
         let currentStep = 1;
         const PLAN_LABELS = { intro: 'Intro Listing', '1job': 'Standard Listing', '2job': '2-Job Bundle', '3job': '3-Job Bundle', '4job': '4-Job Bundle', '5job': '5-Job Bundle' };
         const PAYMENT_LABELS = { payfast: 'PayFast', invoice: 'Invoice by email' };
+        const PRICING_PAGE_URL = 'recruiter-pricing.html';
 
         // ── Package card selection UI ──
         function selectPackageCard(card) {
@@ -726,14 +762,71 @@
 
         const packageCards = Array.from(document.querySelectorAll('.package-card'));
 
-        packageCards.forEach(card => {
-            card.addEventListener('click', () => selectPackageCard(card));
-        });
+        function loadConfiguredPricing() {
+            try {
+                const stored = localStorage.getItem('JobLynk_pricing');
+                if (!stored) return;
 
-        const requestedPlan = new URLSearchParams(window.location.search).get('plan');
-        const preselected = packageCards.find(card => card.dataset.plan === requestedPlan)
-            || packageCards.find(card => card.dataset.plan === '3job');
-        if (preselected) selectPackageCard(preselected);
+                const pricing = JSON.parse(stored);
+                const planPrices = {
+                    intro: pricing.intro,
+                    '1job': pricing.job1,
+                    '2job': pricing.job2,
+                    '3job': pricing.job3,
+                    '4job': pricing.job4,
+                    '5job': pricing.job5,
+                };
+
+                packageCards.forEach(card => {
+                    const amount = planPrices[card.dataset.plan];
+                    if (!amount) return;
+
+                    card.dataset.amount = String(amount);
+                    const priceEl = card.querySelector('.pkg-price');
+                    if (priceEl) {
+                        priceEl.textContent = 'R' + Number(amount).toLocaleString('en-ZA');
+                    }
+                });
+            } catch (e) {
+                console.error('Error loading recruiter signup pricing:', e);
+            }
+        }
+
+        function initializeSelectedPackage() {
+            const requestedPlan = new URLSearchParams(window.location.search).get('plan');
+            if (!requestedPlan) {
+                window.location.replace(PRICING_PAGE_URL);
+                return null;
+            }
+
+            const selectedCard = packageCards.find(card => card.dataset.plan === requestedPlan);
+            if (!selectedCard) {
+                window.location.replace(PRICING_PAGE_URL);
+                return null;
+            }
+
+            selectPackageCard(selectedCard);
+
+            const packageGrid = document.querySelector('.package-grid');
+            if (packageGrid) {
+                packageGrid.classList.add('selected-only');
+            }
+
+            packageCards.forEach(card => {
+                const isSelected = card === selectedCard;
+                card.style.display = isSelected ? '' : 'none';
+                card.classList.toggle('is-locked', isSelected);
+            });
+
+            document.querySelectorAll('[data-change-plan-link]').forEach(link => {
+                link.href = PRICING_PAGE_URL;
+            });
+
+            return selectedCard;
+        }
+
+        loadConfiguredPricing();
+        const preselected = initializeSelectedPackage();
 
         // ── Basket calculation ──
         function getSelectedPackage() {

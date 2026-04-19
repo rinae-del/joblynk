@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLynk - Company Settings</title>
+    <meta name="description" content="Manage your recruiter company profile, branding and business information on JobLynk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=20260419">
+    <link rel="stylesheet" href="recruiter-dashboard.css?v=20260419">
+    <link rel="stylesheet" href="recruiter-company.css?v=20260419">
+    <script src="auth-guard.js?v=20260419" data-role="recruiter"></script>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="recruiter" data-active="company"></div>
+    <div id="app-topbar" data-label="Recruiter"></div>
+
+    <main class="main-content recruiter-company-main">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Recruiter","href":"recruiter-overview.html"},{"label":"Company Settings"}]'></nav>
+
+        <section class="company-hero">
+            <div>
+                <p class="company-kicker">Recruiter Workspace</p>
+                <h1>Company <span class="gradient-text">Settings</span></h1>
+                <p class="company-subtitle">Keep your company details, address and branding current so every job advert looks credible and consistent.</p>
+            </div>
+            <div class="company-hero-actions">
+                <span class="company-status" id="companySaveStatus">Changes saved automatically only when you click save</span>
+                <button class="welcome-btn primary" id="btnSaveCompany" type="button"><i class="fa-solid fa-floppy-disk"></i> Save Company</button>
+            </div>
+        </section>
+
+        <div class="company-layout">
+            <aside class="company-side-panel">
+                <section class="company-card company-brand-card">
+                    <div class="company-logo-shell">
+                        <img id="companyLogoPreview" alt="Company logo preview">
+                        <button type="button" class="company-logo-button" id="btnUploadLogo"><i class="fa-solid fa-camera"></i></button>
+                        <input type="file" id="companyLogoInput" accept=".jpg,.jpeg,.png,.webp" hidden>
+                    </div>
+                    <h2 id="companyPreviewName">Your company</h2>
+                    <p id="companyPreviewMeta">Add your company information and branding.</p>
+                    <a id="companyPreviewWebsite" class="company-link" href="#" target="_blank" rel="noopener" style="display:none;">Visit website</a>
+                    <p class="company-help" id="companyLogoHint">Upload JPG, PNG or WebP up to 5MB.</p>
+                </section>
+
+                <section class="company-card company-tip-card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Recommended</h3>
+                    <ul>
+                        <li>Use your official company name so job ads and invoices stay consistent.</li>
+                        <li>Upload a square or landscape logo with a transparent or light background.</li>
+                        <li>Include your website and company summary to strengthen employer branding.</li>
+                    </ul>
+                </section>
+            </aside>
+
+            <div class="company-form-column">
+                <section class="company-card">
+                    <div class="company-card-header">
+                        <h2><i class="fa-solid fa-building"></i> Company Details</h2>
+                    </div>
+                    <div class="company-form-grid">
+                        <label class="company-field company-field-full">
+                            <span>Company Name</span>
+                            <input type="text" id="companyName" class="company-input" placeholder="e.g. Acme Holdings" data-company-field>
+                        </label>
+                        <label class="company-field">
+                            <span>Industry</span>
+                            <input type="text" id="companyIndustry" class="company-input" placeholder="e.g. Technology" data-company-field>
+                        </label>
+                        <label class="company-field">
+                            <span>Company Size</span>
+                            <select id="companySize" class="company-input" data-company-field>
+                                <option value="">Select size</option>
+                                <option value="1-10">1-10 employees</option>
+                                <option value="11-50">11-50 employees</option>
+                                <option value="51-200">51-200 employees</option>
+                                <option value="201-500">201-500 employees</option>
+                                <option value="500+">500+ employees</option>
+                            </select>
+                        </label>
+                        <label class="company-field">
+                            <span>Website</span>
+                            <input type="url" id="companyWebsite" class="company-input" placeholder="https://example.com" data-company-field>
+                        </label>
+                        <label class="company-field">
+                            <span>VAT Number</span>
+                            <input type="text" id="companyVatNumber" class="company-input" placeholder="Optional" data-company-field>
+                        </label>
+                        <label class="company-field company-field-full">
+                            <span>Company Summary</span>
+                            <textarea id="companyDescription" class="company-textarea" placeholder="A short overview of your business, culture or hiring focus." data-company-field></textarea>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="company-card">
+                    <div class="company-card-header">
+                        <h2><i class="fa-solid fa-location-dot"></i> Registered Address</h2>
+                    </div>
+                    <div class="company-form-grid">
+                        <label class="company-field company-field-full">
+                            <span>Address Line 1</span>
+                            <input type="text" id="companyAddressLine1" class="company-input" placeholder="Street address" data-company-field>
+                        </label>
+                        <label class="company-field company-field-full">
+                            <span>Address Line 2</span>
+                            <input type="text" id="companyAddressLine2" class="company-input" placeholder="Suite, building or suburb" data-company-field>
+                        </label>
+                        <label class="company-field">
+                            <span>City</span>
+                            <input type="text" id="companyCity" class="company-input" placeholder="e.g. Johannesburg" data-company-field>
+                        </label>
+                        <label class="company-field">
+                            <span>Province</span>
+                            <select id="companyProvince" class="company-input" data-company-field>
+                                <option value="">Select province</option>
+                                <option value="Eastern Cape">Eastern Cape</option>
+                                <option value="Free State">Free State</option>
+                                <option value="Gauteng">Gauteng</option>
+                                <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                <option value="Limpopo">Limpopo</option>
+                                <option value="Mpumalanga">Mpumalanga</option>
+                                <option value="North West">North West</option>
+                                <option value="Northern Cape">Northern Cape</option>
+                                <option value="Western Cape">Western Cape</option>
+                            </select>
+                        </label>
+                        <label class="company-field">
+                            <span>Postal Code</span>
+                            <input type="text" id="companyPostalCode" class="company-input" placeholder="e.g. 2001" data-company-field>
+                        </label>
+                        <label class="company-field">
+                            <span>Country</span>
+                            <input type="text" id="companyCountry" class="company-input" value="South Africa" data-company-field>
+                        </label>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="components.js?v=20260419"></script>
+    <script src="recruiter-company.js?v=20260419"></script>
+</body>
+
+</html>

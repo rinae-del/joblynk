@@ -53,6 +53,10 @@ function ensureApplicationsSchema(PDO $pdo): void
         if (isset($columns['status']) && strpos((string)$columns['status']['Type'], "'shortlisted'") === false) {
             $pdo->exec("ALTER TABLE applications MODIFY COLUMN status ENUM('submitted', 'reviewed', 'shortlisted', 'rejected') NOT NULL DEFAULT 'submitted'");
         }
+
+        if (!isset($columns['viewed_at'])) {
+            $pdo->exec('ALTER TABLE applications ADD COLUMN viewed_at DATETIME NULL AFTER status');
+        }
     } catch (Throwable $e) {
         // Ignore schema migration issues here so existing compatible schemas continue to work.
     }
@@ -188,6 +192,87 @@ if ($method === 'POST') {
         $stmt = $pdo->prepare('UPDATE applications SET status = ? WHERE id = ?');
         $stmt->execute([$newStatus, $appId]);
         jsonResponse(['success' => true, 'message' => 'Application status updated.']);
+    }
+
+    // Recruiter: mark application as viewed (fires "viewed by employer" email once)
+    if (isset($body['application_id']) && isset($body['action']) && $body['action'] === 'mark_viewed') {
+        if ($userRole !== 'recruiter' && $userRole !== 'admin') {
+            jsonResponse(['success' => false, 'message' => 'Not authorized.'], 403);
+        }
+        $appId = (int)$body['application_id'];
+
+        // Verify recruiter owns the job and check if already viewed
+        $stmt = $pdo->prepare('
+            SELECT a.id, a.viewed_at, a.user_id, a.job_id
+            FROM applications a
+            JOIN jobs j ON a.job_id = j.id
+            WHERE a.id = ? AND j.user_id = ?
+        ');
+        $stmt->execute([$appId, $userId]);
+        $app = $stmt->fetch();
+        if (!$app) {
+            jsonResponse(['success' => false, 'message' => 'Application not found or not authorized.'], 404);
+        }
+
+        // Only send email on first view
+        if (!$app['viewed_at']) {
+            $stmt = $pdo->prepare('UPDATE applications SET viewed_at = NOW() WHERE id = ?');
+            $stmt->execute([$appId]);
+
+            // Send "application viewed" email to candidate
+            try {
+                $stmt = $pdo->prepare('SELECT first_name, last_name, email FROM users WHERE id = ?');
+                $stmt->execute([$app['user_id']]);
+                $candidate = $stmt->fetch();
+
+                $stmt = $pdo->prepare('SELECT title, company FROM jobs WHERE id = ?');
+                $stmt->execute([$app['job_id']]);
+                $job = $stmt->fetch();
+
+                if ($candidate && $candidate['email'] && $job) {
+                    $candidateFirst = htmlspecialchars($candidate['first_name'] ?? 'there', ENT_QUOTES);
+                    $jobTitle = htmlspecialchars($job['title'] ?? 'your applied position', ENT_QUOTES);
+                    $jobCompany = htmlspecialchars($job['company'] ?? 'the company', ENT_QUOTES);
+
+                    $viewedBody = '
+                        <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $candidateFirst . ',</p>
+                        <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Good news — <strong>a recruiter has viewed your application</strong> for the position below:</p>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0FDF4;border-radius:12px;border:1px solid #BBF7D0;margin:20px 0;">
+                            <tr>
+                                <td style="padding:20px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="padding:4px 0;font-size:14px;color:#64748B;width:100px;">Position</td>
+                                            <td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobTitle . '</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px 0;font-size:14px;color:#64748B;">Company</td>
+                                            <td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobCompany . '</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">This is a great sign! Keep your profile and CV up to date so you make the best impression.</p>
+                        <div style="text-align:center;margin:24px 0;">
+                            <a href="' . APP_URL . '/dashboard.html" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                                View Your Applications
+                            </a>
+                        </div>
+                        <p style="font-size:14px;color:#94A3B8;margin:24px 0 0;">Keep going — you\'re on the right track! 💪</p>';
+
+                    sendResendEmail(
+                        $candidate['email'],
+                        'Your application was viewed — ' . ($job['title'] ?? 'Job'),
+                        buildEmailTemplate('A Recruiter Viewed Your Application 👀', $viewedBody)
+                    );
+                }
+            } catch (Throwable $e) {
+                error_log('Application viewed email error: ' . $e->getMessage());
+            }
+        }
+
+        jsonResponse(['success' => true, 'message' => 'Application marked as viewed.']);
     }
 
     // Job seeker: submit application
@@ -333,15 +418,105 @@ if ($method === 'POST') {
     $documentIdsJson = !empty($documentIds) ? json_encode(array_values(array_unique($documentIds))) : null;
 
     // Get applicant name
-    $stmt = $pdo->prepare('SELECT first_name, last_name FROM users WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT first_name, last_name, email FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
-    $applicantName = ($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '');
+    $applicantName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+    $applicantEmail = $user['email'] ?? '';
 
     $stmt = $pdo->prepare('INSERT INTO applications (job_id, user_id, cv_id, cl_id, document_ids, applicant_name, note, form_responses) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, $documentIdsJson, trim($applicantName), $note, $formResponsesJson]);
+    $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, $documentIdsJson, $applicantName, $note, $formResponsesJson]);
+    $appId = (int)$pdo->lastInsertId();
 
-    jsonResponse(['success' => true, 'id' => (int)$pdo->lastInsertId(), 'message' => 'Application submitted!'], 201);
+    // ── Send notification emails ──
+    try {
+        // Fetch job and recruiter info
+        $stmt = $pdo->prepare('SELECT j.title, j.company, j.location, j.type, u.email AS recruiter_email, u.first_name AS recruiter_first FROM jobs j JOIN users u ON j.user_id = u.id WHERE j.id = ?');
+        $stmt->execute([$jobId]);
+        $jobInfo = $stmt->fetch();
+
+        if ($jobInfo) {
+            $jobTitle = htmlspecialchars($jobInfo['title'] ?? '', ENT_QUOTES);
+            $jobCompany = htmlspecialchars($jobInfo['company'] ?? '', ENT_QUOTES);
+            $jobLocation = htmlspecialchars($jobInfo['location'] ?? 'Not specified', ENT_QUOTES);
+            $jobType = htmlspecialchars($jobInfo['type'] ?? 'Full-time', ENT_QUOTES);
+            $recruiterEmail = $jobInfo['recruiter_email'];
+            $recruiterFirst = htmlspecialchars($jobInfo['recruiter_first'] ?? 'Recruiter', ENT_QUOTES);
+            $safeApplicantName = htmlspecialchars($applicantName ?: 'A candidate', ENT_QUOTES);
+
+            $jobDetailsHtml = '
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:12px;border:1px solid #E2E8F0;margin:20px 0;">
+                    <tr>
+                        <td style="padding:20px;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="padding:4px 0;font-size:14px;color:#64748B;width:120px;">Position</td>
+                                    <td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobTitle . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 0;font-size:14px;color:#64748B;">Company</td>
+                                    <td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobCompany . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 0;font-size:14px;color:#64748B;">Location</td>
+                                    <td style="padding:4px 0;font-size:14px;color:#1E293B;">' . $jobLocation . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 0;font-size:14px;color:#64748B;">Type</td>
+                                    <td style="padding:4px 0;font-size:14px;color:#1E293B;">' . $jobType . '</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>';
+
+            // Email to candidate
+            $candidateBody = '
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $safeApplicantName . ',</p>
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Great news — your application has been received! Here\'s a summary:</p>
+                ' . $jobDetailsHtml . '
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 8px;"><strong>What happens next?</strong></p>
+                <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.8;color:#475569;">
+                    <li>The recruiter at <strong>' . $jobCompany . '</strong> will review your application</li>
+                    <li>You\'ll receive an email when your application is viewed</li>
+                    <li>You can track your application status anytime from your dashboard</li>
+                </ul>
+                <div style="text-align:center;margin:24px 0;">
+                    <a href="' . APP_URL . '/dashboard.html" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                        View Application Status
+                    </a>
+                </div>
+                <p style="font-size:14px;color:#94A3B8;margin:24px 0 0;">Good luck! 🍀</p>';
+
+            if ($applicantEmail) {
+                sendResendEmail($applicantEmail, 'Application Submitted — ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('Application Submitted ✓', $candidateBody));
+            }
+
+            // Email to recruiter
+            $recruiterBody = '
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $recruiterFirst . ',</p>
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">You have a new application for your job posting:</p>
+                ' . $jobDetailsHtml . '
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#EEF2FF;border-radius:12px;border:1px solid #C7D2FE;margin:20px 0;">
+                    <tr>
+                        <td style="padding:20px;">
+                            <p style="margin:0 0 4px;font-size:13px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Applicant</p>
+                            <p style="margin:0;font-size:16px;font-weight:700;color:#1E293B;">' . $safeApplicantName . '</p>
+                        </td>
+                    </tr>
+                </table>
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 24px;">Review the full application and attached documents on your <a href="' . APP_URL . '/recruiter-candidates.html" style="color:#4F46E5;font-weight:600;text-decoration:none;">candidates dashboard</a>.</p>';
+
+            if ($recruiterEmail) {
+                sendResendEmail($recruiterEmail, 'New Application — ' . $safeApplicantName . ' for ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('New Application Received', $recruiterBody));
+            }
+        }
+    } catch (Throwable $e) {
+        // Don't fail the application if email sending fails
+        error_log('Application email error: ' . $e->getMessage());
+    }
+
+    jsonResponse(['success' => true, 'id' => $appId, 'message' => 'Application submitted!'], 201);
 }
 
 jsonResponse(['success' => false, 'message' => 'Method not allowed.'], 405);

@@ -97,6 +97,16 @@ const _authScript = document.currentScript || document.querySelector('script[src
             }
         });
 
+        // Populate company name in any element with data-company-name attribute
+        if (data.user.company_name) {
+            document.querySelectorAll('[data-company-name]').forEach(el => {
+                el.textContent = data.user.company_name;
+                if (el.tagName === 'OPTION' || el.tagName === 'INPUT') {
+                    el.value = data.user.company_name;
+                }
+            });
+        }
+
         // Populate user email in any element with data-user-email attribute
         document.querySelectorAll('[data-user-email]').forEach(el => {
             el.textContent = data.user.email;

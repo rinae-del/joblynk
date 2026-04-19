@@ -4,6 +4,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const $ = id => document.getElementById(id);
+    const pageParams = new URLSearchParams(window.location.search);
+    const previewJobId = pageParams.get('job') || '';
 
     // ============================
     // SMOOTH SCROLL NAV (for hash links in sidebar)
@@ -356,11 +358,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch from API
         await JobsStore.fetchJobs();
-        const jobs = JobsStore.getActiveJobs();
+        let jobs = JobsStore.getActiveJobs();
+
+        // Populate location filter with unique locations
+        const locSelect = $('jobFilterLocation');
+        if (locSelect && locSelect.options.length <= 1) {
+            const locs = [...new Set(jobs.map(j => j.location).filter(Boolean))].sort();
+            locs.forEach(l => {
+                const o = document.createElement('option');
+                o.value = l; o.textContent = l;
+                locSelect.appendChild(o);
+            });
+        }
+
+        // Apply filters
+        const keyword = ($('jobSearchKeyword')?.value || '').trim().toLowerCase();
+        const filterLoc = $('jobFilterLocation')?.value || '';
+        const filterType = $('jobFilterType')?.value || '';
+
+        if (keyword) {
+            jobs = jobs.filter(j =>
+                (j.title || '').toLowerCase().includes(keyword) ||
+                (j.company || '').toLowerCase().includes(keyword) ||
+                (j.description || '').toLowerCase().includes(keyword)
+            );
+        }
+        if (filterLoc) {
+            jobs = jobs.filter(j => (j.location || '').includes(filterLoc));
+        }
+        if (filterType) {
+            jobs = jobs.filter(j => (j.type || '').toLowerCase() === filterType.toLowerCase());
+        }
+        if (previewJobId) {
+            jobs = jobs.filter(j => String(j.id) === String(previewJobId));
+        }
+
         jobList.innerHTML = '';
 
         if (jobs.length === 0) {
-            jobList.innerHTML = '<div class="job-empty-state"><i class="fa-solid fa-briefcase job-empty-icon"></i><p>No jobs available yet</p><span>Fresh matches will appear here as soon as recruiters publish them.</span></div>';
+            const emptyMessage = previewJobId
+                ? '<div class="job-empty-state"><i class="fa-solid fa-eye-slash job-empty-icon"></i><p>This job is no longer live</p><span>The preview link may have expired or the advert may have been closed.</span></div>'
+                : '<div class="job-empty-state"><i class="fa-solid fa-briefcase job-empty-icon"></i><p>No jobs available yet</p><span>Fresh matches will appear here as soon as recruiters publish them.</span></div>';
+            jobList.innerHTML = emptyMessage;
             return;
         }
 
@@ -404,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="job-meta">
                         ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>` : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>'}
                         ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${job.type}</span>` : ''}
-                        ${salaryLabel ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${salaryLabel}</span>` : ''}
+                        ${salaryLabel && !job.hideSalary ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${salaryLabel}</span>` : ''}
                     </div>
                     <div class="job-insights">
                         <span class="job-insight"><i class="fa-regular fa-clock"></i> ${formatRelativeAge(job.postedAt)}</span>
@@ -868,6 +907,14 @@ document.addEventListener('DOMContentLoaded', () => {
         await renderCards();
         await renderJobs();
         await renderApplications();
+
+        // Wire up job search / filter controls
+        const searchInput = $('jobSearchKeyword');
+        const locFilter = $('jobFilterLocation');
+        const typeFilter = $('jobFilterType');
+        if (searchInput) searchInput.addEventListener('input', () => renderJobs());
+        if (locFilter) locFilter.addEventListener('change', () => renderJobs());
+        if (typeFilter) typeFilter.addEventListener('change', () => renderJobs());
     })();
 
 });

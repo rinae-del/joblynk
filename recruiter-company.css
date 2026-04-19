@@ -1,0 +1,254 @@
+.recruiter-company-main {
+    padding-bottom: 96px;
+}
+
+.company-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding: 28px;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 30%),
+        linear-gradient(135deg, #ffffff, #f8fafc);
+    border: 1px solid var(--border, #e5e7eb);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.company-kicker {
+    margin: 0 0 8px;
+    color: #7e22ce;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.company-hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(2rem, 4vw, 2.7rem);
+    line-height: 1.05;
+    color: var(--text, #0f172a);
+}
+
+.company-subtitle {
+    max-width: 720px;
+    margin: 0;
+    color: var(--text-muted, #64748b);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.company-hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    min-width: 260px;
+}
+
+.company-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+.company-status.is-success {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+.company-status.is-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.company-layout {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+}
+
+.company-side-panel,
+.company-form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.company-card {
+    padding: 24px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid var(--border, #e5e7eb);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.company-brand-card {
+    text-align: center;
+}
+
+.company-logo-shell {
+    position: relative;
+    width: 148px;
+    height: 148px;
+    margin: 0 auto 18px;
+    border-radius: 32px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ede9fe, #dbeafe);
+    border: 1px solid #d8b4fe;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.company-logo-shell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.company-logo-button {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.26);
+}
+
+.company-brand-card h2 {
+    margin: 0 0 6px;
+    font-size: 1.35rem;
+    color: var(--text, #0f172a);
+}
+
+.company-brand-card p,
+.company-tip-card li,
+.company-help,
+.company-link {
+    color: var(--text-muted, #64748b);
+    line-height: 1.7;
+}
+
+.company-link {
+    display: inline-flex;
+    margin-top: 6px;
+    color: #4338ca;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.company-link:hover {
+    text-decoration: underline;
+}
+
+.company-tip-card h3,
+.company-card-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-size: 1rem;
+    color: var(--text, #0f172a);
+}
+
+.company-tip-card ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.company-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.company-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.company-field-full {
+    grid-column: 1 / -1;
+}
+
+.company-field span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.company-input,
+.company-textarea {
+    width: 100%;
+    border: 1px solid #dbe2ea;
+    border-radius: 14px;
+    background: #f8fafc;
+    padding: 13px 14px;
+    color: #0f172a;
+    font: inherit;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.company-textarea {
+    min-height: 144px;
+    resize: vertical;
+}
+
+.company-input:focus,
+.company-textarea:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
+    background: #ffffff;
+}
+
+@media (max-width: 1080px) {
+    .company-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .company-hero {
+        flex-direction: column;
+    }
+
+    .company-hero-actions {
+        align-items: flex-start;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 720px) {
+    .company-hero,
+    .company-card {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .company-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .company-status,
+    .company-hero-actions .welcome-btn {
+        width: 100%;
+    }
+}

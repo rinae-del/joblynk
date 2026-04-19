@@ -55,6 +55,7 @@ const JobsStore = (() => {
             salaryFrom: j.salary_from || j.salaryFrom || '',
             salaryTo: j.salary_to || j.salaryTo || '',
             salaryPeriod: j.salary_period || j.salaryPeriod || 'Per Month',
+            hideSalary: !!(j.hide_salary || j.hideSalary),
             benefits: j.benefits || [],
             closingDate: j.closing_date || j.closingDate || '',
             customFields: j.custom_fields || j.customFields || [],
@@ -97,23 +98,12 @@ const JobsStore = (() => {
             if (result.no_credits) {
                 return { no_credits: true };
             }
-        } catch (e) { console.warn('API addJob failed:', e); }
-
-        // Fallback
-        const jobs = getJobsLocal();
-        const colors = ['#DC2626', '#2563EB', '#059669', '#7C3AED', '#D97706', '#EC4899'];
-        const job = {
-            id: 'job_' + Date.now(),
-            ...jobData,
-            status: 'active',
-            postedAt: new Date().toISOString(),
-            applicants: 0,
-            color: colors[jobs.length % colors.length]
-        };
-        jobs.push(job);
-        localStorage.setItem(JOBS_KEY, JSON.stringify(jobs));
-        _jobsCache = jobs;
-        return job;
+            // Propagate other API errors instead of falling back to localStorage
+            return { error: true, message: result.message || 'Failed to post job.' };
+        } catch (e) {
+            console.warn('API addJob failed:', e);
+            return { error: true, message: 'Network error. Please try again.' };
+        }
     }
 
     async function updateJob(id, updates) {
