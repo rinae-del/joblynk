@@ -17,6 +17,63 @@ require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();
 
+function ensureJobsSchema(PDO $pdo): array {
+    $columns = [];
+
+    try {
+        foreach ($pdo->query('SHOW COLUMNS FROM jobs') ?: [] as $column) {
+            $columns[$column['Field']] = $column;
+        }
+    } catch (Throwable $e) {
+        error_log('Jobs schema inspection failed: ' . $e->getMessage());
+        return array_fill_keys([
+            'title',
+            'company',
+            'location',
+            'type',
+            'description',
+            'requirements',
+            'skills',
+            'salary_from',
+            'salary_to',
+            'status',
+            'color',
+        ], true);
+    }
+
+    $migrations = [
+        'salary_period' => "ALTER TABLE jobs ADD COLUMN salary_period VARCHAR(50) DEFAULT 'Per Month' AFTER salary_to",
+        'benefits' => 'ALTER TABLE jobs ADD COLUMN benefits TEXT NULL AFTER salary_period',
+        'closing_date' => 'ALTER TABLE jobs ADD COLUMN closing_date DATE NULL AFTER benefits',
+        'custom_fields' => 'ALTER TABLE jobs ADD COLUMN custom_fields TEXT NULL AFTER closing_date',
+        'hide_salary' => 'ALTER TABLE jobs ADD COLUMN hide_salary TINYINT(1) NOT NULL DEFAULT 0 AFTER salary_period',
+        'color' => "ALTER TABLE jobs ADD COLUMN color VARCHAR(20) DEFAULT '#3B4BA6' AFTER status",
+    ];
+
+    foreach ($migrations as $field => $sql) {
+        if (isset($columns[$field])) {
+            continue;
+        }
+
+        try {
+            $pdo->exec($sql);
+            $columns[$field] = ['Field' => $field];
+        } catch (Throwable $e) {
+            error_log('Jobs schema migration skipped for ' . $field . ': ' . $e->getMessage());
+        }
+    }
+
+    return $columns;
+}
+
+function normalizeJobRow(array &$job): void {
+    $job['benefits'] = json_decode($job['benefits'] ?? '[]', true) ?: [];
+    $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
+    $job['hide_salary'] = (int) ($job['hide_salary'] ?? 0);
+    $job['salary_period'] = $job['salary_period'] ?? 'Per Month';
+    $job['closing_date'] = $job['closing_date'] ?? null;
+}
+
 function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $jobData): void {
     try {
         $stmt = $pdo->prepare('SELECT first_name, email FROM users WHERE id = ? LIMIT 1');
@@ -76,14 +133,7 @@ function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $
 
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = getDB();
-
-// Auto-migrate: ensure hide_salary column exists
-try {
-    $col = $pdo->query("SHOW COLUMNS FROM jobs LIKE 'hide_salary'")->fetch();
-    if (!$col) {
-        $pdo->exec("ALTER TABLE jobs ADD COLUMN hide_salary TINYINT(1) NOT NULL DEFAULT 0 AFTER salary_period");
-    }
-} catch (Throwable $e) { /* ignore */ }
+$jobColumns = ensureJobsSchema($pdo);
 
 $userId = $_SESSION['user_id'] ?? null;
 $userRole = $_SESSION['user_role'] ?? null;
@@ -101,8 +151,7 @@ if ($method === 'GET') {
         $stmt->execute([$jobId]);
         $job = $stmt->fetch();
         if (!$job) jsonResponse(['success' => false, 'message' => 'Job not found.'], 404);
-        $job['benefits'] = json_decode($job['benefits'], true) ?: [];
-        $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
+        normalizeJobRow($job);
         jsonResponse(['success' => true, 'job' => $job]);
     }
 
@@ -112,8 +161,7 @@ if ($method === 'GET') {
         $stmt->execute([$userId]);
         $jobs = $stmt->fetchAll();
         foreach ($jobs as &$j) {
-            $j['benefits'] = json_decode($j['benefits'], true) ?: [];
-            $j['custom_fields'] = json_decode($j['custom_fields'] ?? '[]', true) ?: [];
+            normalizeJobRow($j);
         }
         jsonResponse(['success' => true, 'jobs' => $jobs]);
     }
@@ -122,8 +170,7 @@ if ($method === 'GET') {
     $stmt = $pdo->query('SELECT j.*, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j WHERE j.status = "active" ORDER BY j.created_at DESC');
     $jobs = $stmt->fetchAll();
     foreach ($jobs as &$j) {
-        $j['benefits'] = json_decode($j['benefits'], true) ?: [];
-        $j['custom_fields'] = json_decode($j['custom_fields'] ?? '[]', true) ?: [];
+        normalizeJobRow($j);
     }
     jsonResponse(['success' => true, 'jobs' => $jobs]);
 }
@@ -165,6 +212,25 @@ if ($method === 'POST') {
         $customFields = $body['customFields'] ?? $body['custom_fields'] ?? [];
         $customFieldsJson = json_encode(is_array($customFields) ? $customFields : []);
 
+        $jobFieldValues = [
+            'title' => $title,
+            'company' => $company,
+            'location' => $location,
+            'type' => $type,
+            'description' => $description,
+            'requirements' => $requirements,
+            'skills' => $skills,
+            'salary_from' => $salaryFrom,
+            'salary_to' => $salaryTo,
+            'salary_period' => $salaryPeriod,
+            'hide_salary' => $hideSalary,
+            'benefits' => $benefitsJson,
+            'closing_date' => $closingDate ?: null,
+            'custom_fields' => $customFieldsJson,
+            'status' => $status,
+            'color' => $color,
+        ];
+
         if ($jobId) {
             // Update — verify ownership
             $stmt = $pdo->prepare('SELECT id, status FROM jobs WHERE id = ? AND user_id = ?');
@@ -172,8 +238,22 @@ if ($method === 'POST') {
             $existingJob = $stmt->fetch();
             if (!$existingJob) jsonResponse(['success' => false, 'message' => 'Job not found or not authorized.'], 404);
 
-            $stmt = $pdo->prepare('UPDATE jobs SET title=?, company=?, location=?, type=?, description=?, requirements=?, skills=?, salary_from=?, salary_to=?, salary_period=?, hide_salary=?, benefits=?, closing_date=?, custom_fields=?, status=?, color=? WHERE id=? AND user_id=?');
-            $stmt->execute([$title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $hideSalary, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color, $jobId, $userId]);
+            $updateParts = [];
+            $updateValues = [];
+            foreach ($jobFieldValues as $field => $value) {
+                if (!isset($jobColumns[$field])) {
+                    continue;
+                }
+                $updateParts[] = $field . ' = ?';
+                $updateValues[] = $value;
+            }
+
+            if (empty($updateParts)) {
+                jsonResponse(['success' => false, 'message' => 'Jobs table schema is missing required columns.'], 500);
+            }
+
+            $stmt = $pdo->prepare('UPDATE jobs SET ' . implode(', ', $updateParts) . ' WHERE id = ? AND user_id = ?');
+            $stmt->execute(array_merge($updateValues, [$jobId, $userId]));
 
             if ($status === 'active' && ($existingJob['status'] ?? '') !== 'active') {
                 sendJobLiveConfirmationEmail($pdo, (int) $userId, (int) $jobId, [
@@ -202,8 +282,19 @@ if ($method === 'POST') {
         $cnt = $pdo->query('SELECT COUNT(*) FROM jobs')->fetchColumn();
         $color = $colors[$cnt % count($colors)];
 
-        $stmt = $pdo->prepare('INSERT INTO jobs (user_id, title, company, location, type, description, requirements, skills, salary_from, salary_to, salary_period, hide_salary, benefits, closing_date, custom_fields, status, color) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
-        $stmt->execute([$userId, $title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $hideSalary, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color]);
+        $insertColumns = ['user_id'];
+        $insertValues = [$userId];
+        foreach ($jobFieldValues as $field => $value) {
+            if (!isset($jobColumns[$field])) {
+                continue;
+            }
+            $insertColumns[] = $field;
+            $insertValues[] = $value;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($insertColumns), '?'));
+        $stmt = $pdo->prepare('INSERT INTO jobs (' . implode(', ', $insertColumns) . ') VALUES (' . $placeholders . ')');
+        $stmt->execute($insertValues);
         $newId = (int)$pdo->lastInsertId();
 
         // Decrement credit (recruiter only)
