@@ -380,7 +380,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                return res.json();
+                const raw = await res.text();
+
+                if (!raw.trim()) {
+                    throw new Error(`Jobs API returned an empty response (${res.status}).`);
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(raw);
+                } catch (parseError) {
+                    throw new Error(`Jobs API returned invalid JSON (${res.status}).`);
+                }
+
+                return data;
             };
             
             // Check if editing

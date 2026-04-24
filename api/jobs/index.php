@@ -137,45 +137,83 @@ if ($method === 'POST') {
         jsonResponse(['success' => false, 'message' => 'Only recruiters can post jobs.'], 403);
     }
 
-    $body = getJsonBody();
+    try {
+        $body = getJsonBody();
 
-    $jobId       = $body['id'] ?? null;
-    $title       = trim($body['title'] ?? '');
-    $company     = trim($body['company'] ?? '');
-    $location    = trim($body['location'] ?? '');
-    $type        = trim($body['type'] ?? 'Full-time');
-    $description = trim($body['description'] ?? '');
-    $requirements = trim($body['requirements'] ?? '');
-    $skills      = trim($body['skills'] ?? '');
-    $salaryFrom  = trim($body['salaryFrom'] ?? $body['salary_from'] ?? '');
-    $salaryTo    = trim($body['salaryTo'] ?? $body['salary_to'] ?? '');
-    $salaryPeriod = trim($body['salaryPeriod'] ?? $body['salary_period'] ?? 'Per Month');
-    $hideSalary  = !empty($body['hideSalary'] ?? $body['hide_salary'] ?? false) ? 1 : 0;
-    $benefits    = $body['benefits'] ?? [];
-    $closingDate = $body['closingDate'] ?? $body['closing_date'] ?? null;
-    $status      = $body['status'] ?? 'active';
-    $color       = $body['color'] ?? '#3B4BA6';
+        $jobId       = $body['id'] ?? null;
+        $title       = trim($body['title'] ?? '');
+        $company     = trim($body['company'] ?? '');
+        $location    = trim($body['location'] ?? '');
+        $type        = trim($body['type'] ?? 'Full-time');
+        $description = trim($body['description'] ?? '');
+        $requirements = trim($body['requirements'] ?? '');
+        $skills      = trim($body['skills'] ?? '');
+        $salaryFrom  = trim($body['salaryFrom'] ?? $body['salary_from'] ?? '');
+        $salaryTo    = trim($body['salaryTo'] ?? $body['salary_to'] ?? '');
+        $salaryPeriod = trim($body['salaryPeriod'] ?? $body['salary_period'] ?? 'Per Month');
+        $hideSalary  = !empty($body['hideSalary'] ?? $body['hide_salary'] ?? false) ? 1 : 0;
+        $benefits    = $body['benefits'] ?? [];
+        $closingDate = $body['closingDate'] ?? $body['closing_date'] ?? null;
+        $status      = $body['status'] ?? 'active';
+        $color       = $body['color'] ?? '#3B4BA6';
 
-    if (!$title) jsonResponse(['success' => false, 'message' => 'Job title is required.'], 422);
-    if (!$company) jsonResponse(['success' => false, 'message' => 'Company name is required.'], 422);
+        if (!$title) jsonResponse(['success' => false, 'message' => 'Job title is required.'], 422);
+        if (!$company) jsonResponse(['success' => false, 'message' => 'Company name is required.'], 422);
 
-    $benefitsJson = json_encode(is_array($benefits) ? $benefits : []);
+        $benefitsJson = json_encode(is_array($benefits) ? $benefits : []);
 
-    $customFields = $body['customFields'] ?? $body['custom_fields'] ?? [];
-    $customFieldsJson = json_encode(is_array($customFields) ? $customFields : []);
+        $customFields = $body['customFields'] ?? $body['custom_fields'] ?? [];
+        $customFieldsJson = json_encode(is_array($customFields) ? $customFields : []);
 
-    if ($jobId) {
-        // Update — verify ownership
-        $stmt = $pdo->prepare('SELECT id, status FROM jobs WHERE id = ? AND user_id = ?');
-        $stmt->execute([$jobId, $userId]);
-        $existingJob = $stmt->fetch();
-        if (!$existingJob) jsonResponse(['success' => false, 'message' => 'Job not found or not authorized.'], 404);
+        if ($jobId) {
+            // Update — verify ownership
+            $stmt = $pdo->prepare('SELECT id, status FROM jobs WHERE id = ? AND user_id = ?');
+            $stmt->execute([$jobId, $userId]);
+            $existingJob = $stmt->fetch();
+            if (!$existingJob) jsonResponse(['success' => false, 'message' => 'Job not found or not authorized.'], 404);
 
-        $stmt = $pdo->prepare('UPDATE jobs SET title=?, company=?, location=?, type=?, description=?, requirements=?, skills=?, salary_from=?, salary_to=?, salary_period=?, hide_salary=?, benefits=?, closing_date=?, custom_fields=?, status=?, color=? WHERE id=? AND user_id=?');
-        $stmt->execute([$title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $hideSalary, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color, $jobId, $userId]);
+            $stmt = $pdo->prepare('UPDATE jobs SET title=?, company=?, location=?, type=?, description=?, requirements=?, skills=?, salary_from=?, salary_to=?, salary_period=?, hide_salary=?, benefits=?, closing_date=?, custom_fields=?, status=?, color=? WHERE id=? AND user_id=?');
+            $stmt->execute([$title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $hideSalary, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color, $jobId, $userId]);
 
-        if ($status === 'active' && ($existingJob['status'] ?? '') !== 'active') {
-            sendJobLiveConfirmationEmail($pdo, (int) $userId, (int) $jobId, [
+            if ($status === 'active' && ($existingJob['status'] ?? '') !== 'active') {
+                sendJobLiveConfirmationEmail($pdo, (int) $userId, (int) $jobId, [
+                    'title' => $title,
+                    'company' => $company,
+                    'location' => $location,
+                    'type' => $type,
+                    'closingDate' => $closingDate,
+                ]);
+            }
+
+            jsonResponse(['success' => true, 'id' => (int)$jobId, 'message' => 'Job updated.']);
+        }
+
+        // Create new — check job credits (admins bypass)
+        if ($userRole === 'recruiter') {
+            $stmt = $pdo->prepare('SELECT id, total_credits, used_credits FROM job_credits WHERE user_id = ? AND used_credits < total_credits AND expires_at > NOW() ORDER BY expires_at ASC LIMIT 1');
+            $stmt->execute([$userId]);
+            $credit = $stmt->fetch();
+            if (!$credit) {
+                jsonResponse(['success' => false, 'message' => 'No job credits available. Please purchase a plan to post jobs.', 'no_credits' => true], 403);
+            }
+        }
+
+        $colors = ['#DC2626', '#2563EB', '#059669', '#7C3AED', '#D97706', '#EC4899'];
+        $cnt = $pdo->query('SELECT COUNT(*) FROM jobs')->fetchColumn();
+        $color = $colors[$cnt % count($colors)];
+
+        $stmt = $pdo->prepare('INSERT INTO jobs (user_id, title, company, location, type, description, requirements, skills, salary_from, salary_to, salary_period, hide_salary, benefits, closing_date, custom_fields, status, color) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+        $stmt->execute([$userId, $title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $hideSalary, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color]);
+        $newId = (int)$pdo->lastInsertId();
+
+        // Decrement credit (recruiter only)
+        if ($userRole === 'recruiter' && isset($credit)) {
+            $stmt = $pdo->prepare('UPDATE job_credits SET used_credits = used_credits + 1 WHERE id = ?');
+            $stmt->execute([$credit['id']]);
+        }
+
+        if ($status === 'active') {
+            sendJobLiveConfirmationEmail($pdo, (int) $userId, $newId, [
                 'title' => $title,
                 'company' => $company,
                 'location' => $location,
@@ -184,44 +222,11 @@ if ($method === 'POST') {
             ]);
         }
 
-        jsonResponse(['success' => true, 'id' => (int)$jobId, 'message' => 'Job updated.']);
+        jsonResponse(['success' => true, 'id' => $newId, 'message' => 'Job posted.'], 201);
+    } catch (Throwable $e) {
+        error_log('Jobs POST error: ' . $e->getMessage());
+        jsonResponse(['success' => false, 'message' => 'Failed to save job. Please try again.'], 500);
     }
-
-    // Create new — check job credits (admins bypass)
-    if ($userRole === 'recruiter') {
-        $stmt = $pdo->prepare('SELECT id, total_credits, used_credits FROM job_credits WHERE user_id = ? AND used_credits < total_credits AND expires_at > NOW() ORDER BY expires_at ASC LIMIT 1');
-        $stmt->execute([$userId]);
-        $credit = $stmt->fetch();
-        if (!$credit) {
-            jsonResponse(['success' => false, 'message' => 'No job credits available. Please purchase a plan to post jobs.', 'no_credits' => true], 403);
-        }
-    }
-
-    $colors = ['#DC2626', '#2563EB', '#059669', '#7C3AED', '#D97706', '#EC4899'];
-    $cnt = $pdo->query('SELECT COUNT(*) FROM jobs')->fetchColumn();
-    $color = $colors[$cnt % count($colors)];
-
-    $stmt = $pdo->prepare('INSERT INTO jobs (user_id, title, company, location, type, description, requirements, skills, salary_from, salary_to, salary_period, hide_salary, benefits, closing_date, custom_fields, status, color) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
-    $stmt->execute([$userId, $title, $company, $location, $type, $description, $requirements, $skills, $salaryFrom, $salaryTo, $salaryPeriod, $hideSalary, $benefitsJson, $closingDate ?: null, $customFieldsJson, $status, $color]);
-    $newId = (int)$pdo->lastInsertId();
-
-    // Decrement credit (recruiter only)
-    if ($userRole === 'recruiter' && isset($credit)) {
-        $stmt = $pdo->prepare('UPDATE job_credits SET used_credits = used_credits + 1 WHERE id = ?');
-        $stmt->execute([$credit['id']]);
-    }
-
-    if ($status === 'active') {
-        sendJobLiveConfirmationEmail($pdo, (int) $userId, $newId, [
-            'title' => $title,
-            'company' => $company,
-            'location' => $location,
-            'type' => $type,
-            'closingDate' => $closingDate,
-        ]);
-    }
-
-    jsonResponse(['success' => true, 'id' => $newId, 'message' => 'Job posted.'], 201);
 }
 
 // ═══════════════════════════
