@@ -371,6 +371,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (postJobFormWizard) {
         postJobFormWizard.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const submitJob = async (payload) => {
+                const res = await fetch('api/jobs/index.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                return res.json();
+            };
             
             // Check if editing
             var editingId = postJobFormWizard.dataset.editingJobId || null;
@@ -409,13 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update existing job via API directly
                 jobData.id = parseInt(editingId);
                 try {
-                    var res = await fetch('api/jobs/index.php', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(jobData)
-                    });
-                    var result = await res.json();
+                    var result = await submitJob(jobData);
                     if (!result.success) {
                         alert(result.message || 'Failed to update job.');
                         return;
@@ -426,22 +431,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
             } else {
-                // Save via API-backed JobsStore (new job, checks credits)
-                if (typeof JobsStore !== 'undefined') {
-                    const result = await JobsStore.addJob(jobData);
+                // Create new job via the same authenticated API flow used for edits.
+                try {
+                    const result = await submitJob(jobData);
 
-                    // Handle no-credits error
-                    if (result && result.no_credits) {
-                        alert('You have no job credits remaining. Please purchase a package to post jobs.');
-                        window.location.href = 'recruiter-pricing.html';
-                        return;
-                    }
+                    if (!result.success) {
+                        if (result.no_credits) {
+                            alert('You have no job credits remaining. Please purchase a package to post jobs.');
+                            window.location.href = 'recruiter-pricing.html';
+                            return;
+                        }
 
-                    // Handle other API errors
-                    if (result && result.error) {
+                        if (result.message === 'Not authenticated.') {
+                            alert('Your recruiter session expired. Please sign in again and then publish the job.');
+                            window.location.href = 'sign-in.html';
+                            return;
+                        }
+
                         alert(result.message || 'Failed to post job. Please try again.');
                         return;
                     }
+                } catch (err) {
+                    console.error('Error posting job:', err);
+                    alert('Failed to post job. Please try again.');
+                    return;
                 }
             }
             
