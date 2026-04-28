@@ -66,12 +66,28 @@ function ensureJobsSchema(PDO $pdo): array {
     return $columns;
 }
 
+function ensureCompanyBrandingSchema(PDO $pdo): void {
+    try {
+        $logoColumn = $pdo->query("SHOW COLUMNS FROM companies LIKE 'logo_url'")->fetch();
+        if (!$logoColumn) {
+            $pdo->exec("ALTER TABLE companies ADD COLUMN logo_url VARCHAR(255) DEFAULT ''");
+        }
+    } catch (Throwable $e) {
+        error_log('Company branding schema inspection failed: ' . $e->getMessage());
+    }
+}
+
 function normalizeJobRow(array &$job): void {
     $job['benefits'] = json_decode($job['benefits'] ?? '[]', true) ?: [];
     $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
     $job['hide_salary'] = (int) ($job['hide_salary'] ?? 0);
     $job['salary_period'] = $job['salary_period'] ?? 'Per Month';
     $job['closing_date'] = $job['closing_date'] ?? null;
+    $job['company_logo_url'] = trim((string) ($job['company_logo_url'] ?? ''));
+
+    if (strcasecmp(trim((string) ($job['company'] ?? '')), 'Confidential') === 0) {
+        $job['company_logo_url'] = '';
+    }
 }
 
 function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $jobData): void {
@@ -134,6 +150,7 @@ function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = getDB();
 $jobColumns = ensureJobsSchema($pdo);
+ensureCompanyBrandingSchema($pdo);
 
 $userId = $_SESSION['user_id'] ?? null;
 $userRole = $_SESSION['user_role'] ?? null;
@@ -147,7 +164,7 @@ if ($method === 'GET') {
 
     // Single job
     if ($jobId) {
-        $stmt = $pdo->prepare('SELECT j.*, u.first_name, u.last_name, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id WHERE j.id = ?');
+        $stmt = $pdo->prepare('SELECT j.*, u.first_name, u.last_name, c.logo_url AS company_logo_url, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id LEFT JOIN companies c ON c.id = u.company_id WHERE j.id = ?');
         $stmt->execute([$jobId]);
         $job = $stmt->fetch();
         if (!$job) jsonResponse(['success' => false, 'message' => 'Job not found.'], 404);
@@ -157,7 +174,7 @@ if ($method === 'GET') {
 
     // Recruiter: my jobs
     if (isset($_GET['mine']) && $userId) {
-        $stmt = $pdo->prepare('SELECT j.*, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j WHERE j.user_id = ? ORDER BY j.created_at DESC');
+        $stmt = $pdo->prepare('SELECT j.*, c.logo_url AS company_logo_url, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id LEFT JOIN companies c ON c.id = u.company_id WHERE j.user_id = ? ORDER BY j.created_at DESC');
         $stmt->execute([$userId]);
         $jobs = $stmt->fetchAll();
         foreach ($jobs as &$j) {
@@ -167,7 +184,7 @@ if ($method === 'GET') {
     }
 
     // All active jobs
-    $stmt = $pdo->query('SELECT j.*, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j WHERE j.status = "active" ORDER BY j.created_at DESC');
+    $stmt = $pdo->query('SELECT j.*, c.logo_url AS company_logo_url, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id LEFT JOIN companies c ON c.id = u.company_id WHERE j.status = "active" ORDER BY j.created_at DESC');
     $jobs = $stmt->fetchAll();
     foreach ($jobs as &$j) {
         normalizeJobRow($j);

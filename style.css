@@ -565,6 +565,36 @@ body {
     flex-direction: column;
 }
 
+/* Export-only: Remove scaling and shadow for PDF export */
+.a4-paper.export-pdf {
+    transform: none !important;
+    box-shadow: none !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+/* Page break rules for PDF export */
+.a4-paper.export-pdf .cv-main-block,
+.a4-paper.export-pdf .cv-sidebar-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+.a4-paper.export-pdf .cv-main-block {
+    page-break-before: auto;
+    break-before: auto;
+}
+.a4-paper.export-pdf .cv-main-block:not(:first-child) {
+    page-break-before: always;
+    break-before: page;
+}
+.a4-paper.export-pdf .cv-header-block,
+.a4-paper.export-pdf .cv-wave {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
 /* ── CV Header Block (Blue/Navy) ── */
 .cv-header-block {
     background: var(--accent);

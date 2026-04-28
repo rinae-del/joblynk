@@ -926,14 +926,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const opt = {
             margin:       0,
             filename:     `${cvName}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 3, useCORS: true, logging: false, backgroundColor: '#fff' },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        // Temporarily reset transform for clean capture
+        // Add export-pdf class and remove transform for clean capture
+        element.classList.add('export-pdf');
         const origTransform = element.style.transform;
         element.style.transform = 'none';
         html2pdf().set(opt).from(element).save().then(() => {
+            // Restore state
+            element.classList.remove('export-pdf');
+            element.style.transform = origTransform;
+        }).catch(() => {
+            element.classList.remove('export-pdf');
             element.style.transform = origTransform;
         });
     });

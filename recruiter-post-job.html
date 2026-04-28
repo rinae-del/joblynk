@@ -84,6 +84,24 @@
                                 </select>
                             </div>
                         </div>
+                        <div style="margin-top: 4px; padding: 18px; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(79,70,229,0.03)); display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
+                            <div style="width: 72px; height: 72px; border-radius: 18px; overflow: hidden; background: #fff; border: 1px solid rgba(124,58,237,0.16); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 10px 24px rgba(79,70,229,0.08);">
+                                <img id="postJobLogoPreview" alt="Company logo preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                <span id="postJobLogoFallback" style="font-size: 1.5rem; font-weight: 800; color: #4F46E5;">J</span>
+                            </div>
+                            <div style="flex: 1; min-width: 240px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+                                    <strong style="font-size: 0.96rem; color: var(--text);">Free company branding on this advert</strong>
+                                    <span style="background: #EEF2FF; color: #4F46E5; font-size: 0.74rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">Included</span>
+                                </div>
+                                <p id="postJobLogoHint" style="margin: 0; color: var(--text-muted); font-size: 0.82rem; line-height: 1.6;">Upload your company logo here. It will appear on candidate-facing job cards at no extra cost.</p>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
+                                    <button type="button" id="btnPostJobLogoUpload" class="welcome-btn primary" style="padding: 10px 16px;"><i class="fa-solid fa-image"></i> Upload Logo</button>
+                                    <a href="recruiter-company.html" class="welcome-btn secondary" style="padding: 10px 16px; color: var(--text); border-color: var(--border);"><i class="fa-solid fa-building-circle-check"></i> Company Settings</a>
+                                </div>
+                                <input type="file" id="postJobLogoInput" accept=".jpg,.jpeg,.png,.webp" hidden>
+                            </div>
+                        </div>
                         <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
                             <button type="button" class="btn-submit" onclick="nextWizardStep(1)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
@@ -208,7 +226,10 @@
                 <div style="padding:28px;">
                     <!-- Company & badge row -->
                     <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
-                        <div id="prevAvatar" style="width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:#fff; background:linear-gradient(135deg,#4F46E5,#818cf8);"></div>
+                        <div id="prevAvatar" style="width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:#fff; background:linear-gradient(135deg,#4F46E5,#818cf8); overflow:hidden;">
+                            <img id="prevAvatarImage" alt="Company logo preview" style="width:100%; height:100%; object-fit:cover; display:none;">
+                            <span id="prevAvatarInitial">J</span>
+                        </div>
                         <div style="flex:1;">
                             <div id="prevCompany" style="font-size:0.85rem; color:var(--text-muted,#6b7280); font-weight:600;"></div>
                             <div id="prevTitle" style="font-size:1.25rem; font-weight:800; color:var(--text,#1e293b);"></div>
@@ -353,6 +374,204 @@
         }
     })();
 
+    const COMPANY_API = 'api/company/index.php';
+    let postJobCompanyProfile = null;
+
+    function getCompanyLogoFallback(name) {
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'JobLynk')}&background=4F46E5&color=fff&size=256&rounded=true`;
+    }
+
+    function getAdvertCompanyName() {
+        return (document.getElementById('wizCompany')?.value || window.__JobLynkUser?.company_name || '').trim();
+    }
+
+    function isConfidentialAdvert(companyName) {
+        return companyName.toLowerCase() === 'confidential';
+    }
+
+    function setPreviewAvatar(companyName) {
+        const wrapper = document.getElementById('prevAvatar');
+        const img = document.getElementById('prevAvatarImage');
+        const initial = document.getElementById('prevAvatarInitial');
+        if (!wrapper || !img || !initial) return;
+
+        const safeName = companyName || 'JobLynk';
+        const shouldUseLogo = !isConfidentialAdvert(safeName) && postJobCompanyProfile?.logo_url;
+        if (shouldUseLogo) {
+            img.src = postJobCompanyProfile.logo_url;
+            img.style.display = 'block';
+            initial.style.display = 'none';
+        } else {
+            img.removeAttribute('src');
+            img.style.display = 'none';
+            initial.style.display = 'inline';
+            initial.textContent = safeName ? safeName[0].toUpperCase() : 'J';
+        }
+    }
+
+    function syncPostJobLogoCard() {
+        const companyName = getAdvertCompanyName() || 'Your Company';
+        const logo = document.getElementById('postJobLogoPreview');
+        const fallback = document.getElementById('postJobLogoFallback');
+        const hint = document.getElementById('postJobLogoHint');
+        const button = document.getElementById('btnPostJobLogoUpload');
+        const confidential = isConfidentialAdvert(companyName);
+        const hasLogo = !confidential && !!postJobCompanyProfile?.logo_url;
+
+        if (logo && fallback) {
+            if (hasLogo) {
+                logo.src = postJobCompanyProfile.logo_url;
+                logo.style.display = 'block';
+                fallback.style.display = 'none';
+            } else {
+                logo.removeAttribute('src');
+                logo.style.display = 'none';
+                fallback.style.display = 'inline';
+                fallback.textContent = companyName ? companyName[0].toUpperCase() : 'J';
+            }
+        }
+
+        if (button) {
+            button.disabled = confidential;
+            button.style.opacity = confidential ? '0.6' : '1';
+            button.style.cursor = confidential ? 'not-allowed' : 'pointer';
+        }
+
+        if (hint) {
+            if (confidential) {
+                hint.textContent = 'Branding is hidden for confidential adverts. Choose your company name to upload and show your logo.';
+            } else if (hasLogo) {
+                hint.textContent = 'This logo is active on your adverts. Upload a new one to refresh your branding.';
+            } else {
+                hint.textContent = 'Upload your company logo here. It will appear on candidate-facing job cards at no extra cost.';
+            }
+        }
+
+        setPreviewAvatar(companyName);
+    }
+
+    async function loadCompanyProfileForPostJob() {
+        try {
+            const res = await fetch(COMPANY_API, { credentials: 'include', cache: 'no-store' });
+            const result = await res.json();
+            if (result.success) {
+                postJobCompanyProfile = result.company || null;
+                const select = document.getElementById('wizCompany');
+                if (select && postJobCompanyProfile?.name) {
+                    const currentOption = select.querySelector('[data-company-name]');
+                    if (currentOption) {
+                        currentOption.value = postJobCompanyProfile.name;
+                        currentOption.textContent = postJobCompanyProfile.name;
+                    }
+                    if (!select.value) {
+                        select.value = postJobCompanyProfile.name;
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to load company profile for job branding:', error);
+        }
+
+        syncPostJobLogoCard();
+    }
+
+    async function ensureCompanyProfileForBranding(companyName) {
+        const res = await fetch(COMPANY_API, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: companyName })
+        });
+        const result = await res.json();
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to save company details for branding.');
+        }
+        postJobCompanyProfile = result.company || null;
+        syncPostJobLogoCard();
+    }
+
+    function validatePostJobLogoFile(file) {
+        const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+
+        if (!allowedExts.includes(ext)) return 'Please upload JPG, PNG or WEBP images only.';
+        if (file.type && !allowedMimes.includes(file.type)) return 'Only JPG, PNG or WEBP images are supported.';
+        if (file.size > 5 * 1024 * 1024) return 'Company logo must be less than 5MB.';
+        return '';
+    }
+
+    function initPostJobBranding() {
+        const button = document.getElementById('btnPostJobLogoUpload');
+        const input = document.getElementById('postJobLogoInput');
+        const companySelect = document.getElementById('wizCompany');
+        const hint = document.getElementById('postJobLogoHint');
+        if (!button || !input) return;
+
+        button.addEventListener('click', () => {
+            const companyName = getAdvertCompanyName();
+            if (!companyName || isConfidentialAdvert(companyName)) {
+                syncPostJobLogoCard();
+                return;
+            }
+            input.click();
+        });
+
+        companySelect?.addEventListener('change', () => {
+            syncPostJobLogoCard();
+        });
+
+        input.addEventListener('change', async () => {
+            const file = input.files && input.files[0];
+            const companyName = getAdvertCompanyName();
+            if (!file) return;
+
+            const validationMessage = validatePostJobLogoFile(file);
+            if (validationMessage) {
+                if (hint) hint.textContent = validationMessage;
+                input.value = '';
+                return;
+            }
+
+            if (!companyName || isConfidentialAdvert(companyName)) {
+                syncPostJobLogoCard();
+                input.value = '';
+                return;
+            }
+
+            if (hint) hint.textContent = 'Uploading company logo...';
+            button.disabled = true;
+
+            try {
+                await ensureCompanyProfileForBranding(companyName);
+                const formData = new FormData();
+                formData.append('logo', file);
+                const res = await fetch(COMPANY_API, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                });
+                const result = await res.json();
+                if (!result.success) {
+                    throw new Error(result.message || 'Failed to upload company logo.');
+                }
+
+                postJobCompanyProfile = result.company || null;
+                syncPostJobLogoCard();
+            } catch (error) {
+                console.error('Failed to upload post-job logo:', error);
+                if (hint) hint.textContent = error.message || 'Failed to upload company logo.';
+            } finally {
+                button.disabled = false;
+                input.value = '';
+            }
+        });
+
+        loadCompanyProfileForPostJob();
+    }
+
+    initPostJobBranding();
+
     // ── Job Preview ──
     function escHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
@@ -372,8 +591,7 @@
         const closingDate = document.getElementById('wizDate').value;
 
         // Avatar
-        const letter = company ? company[0].toUpperCase() : 'J';
-        document.getElementById('prevAvatar').textContent = letter;
+        setPreviewAvatar(company);
 
         // Header
         document.getElementById('prevCompany').textContent = company;

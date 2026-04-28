@@ -62,6 +62,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return past.toLocaleDateString();
     }
 
+    function isConfidentialCompany(companyName) {
+        return (companyName || '').trim().toLowerCase() === 'confidential';
+    }
+
+    function renderJobAvatarMarkup(companyName, primaryColor, secondaryColor, logoUrl) {
+        const letter = companyName ? companyName[0].toUpperCase() : 'J';
+        const safeAlt = (companyName || 'Company')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        if (logoUrl && !isConfidentialCompany(companyName)) {
+            return `
+                <div class="job-avatar" style="background:linear-gradient(135deg,${primaryColor},${secondaryColor})">
+                    <img src="${logoUrl}" alt="${safeAlt} logo" loading="lazy">
+                </div>
+            `;
+        }
+
+        return `<div class="job-avatar" style="background:linear-gradient(135deg,${primaryColor},${secondaryColor})">${letter}</div>`;
+    }
+
     // Normalized doc object from API or localStorage
     function normalizeDoc(raw, source) {
         if (source === 'api') {
@@ -407,7 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (statJobs) statJobs.textContent = jobs.length;
 
         jobs.forEach(job => {
-            const letter = job.company ? job.company[0].toUpperCase() : 'J';
             const color = job.color || '#4F46E5';
             const lighterColor = color + '88';
             const accentSoft = color + '22';
@@ -431,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.style.setProperty('--job-accent', color);
             item.style.setProperty('--job-accent-soft', accentSoft);
             item.innerHTML = `
-                <div class="job-avatar" style="background:linear-gradient(135deg,${color},${lighterColor})">${letter}</div>
+                ${renderJobAvatarMarkup(job.company, color, lighterColor, job.companyLogoUrl)}
                 <div class="job-body">
                     <div class="job-header">
                         <div class="job-heading">
@@ -854,13 +876,14 @@ document.addEventListener('DOMContentLoaded', () => {
         appList.innerHTML = '';
         apps.slice(0, 5).forEach(app => {
             // Use enriched API data if available, otherwise lookup locally
-            const jobTitle = app.jobTitle || (JobsStore.getJobById(app.jobId)?.title) || 'Unknown Job';
-            const jobCompany = app.jobCompany || (JobsStore.getJobById(app.jobId)?.company) || '';
-            const color = app.jobColor || (JobsStore.getJobById(app.jobId)?.color) || '#3B4BA6';
+            const linkedJob = JobsStore.getJobById(app.jobId) || null;
+            const jobTitle = app.jobTitle || linkedJob?.title || 'Unknown Job';
+            const jobCompany = app.jobCompany || linkedJob?.company || '';
+            const color = app.jobColor || linkedJob?.color || '#3B4BA6';
             const accentSoft = color + '22';
-            const letter = jobCompany ? jobCompany[0].toUpperCase() : 'J';
-            const jobLocation = app.jobLocation || (JobsStore.getJobById(app.jobId)?.location) || '';
-            const jobType = app.jobType || (JobsStore.getJobById(app.jobId)?.type) || '';
+            const jobLogoUrl = linkedJob?.companyLogoUrl || '';
+            const jobLocation = app.jobLocation || linkedJob?.location || '';
+            const jobType = app.jobType || linkedJob?.type || '';
 
             const statusMap = {
                 submitted: { cls: 'is-submitted', text: 'Submitted' },
@@ -875,7 +898,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.style.setProperty('--job-accent', color);
             item.style.setProperty('--job-accent-soft', accentSoft);
             item.innerHTML = `
-                <div class="job-avatar" style="background:linear-gradient(135deg,${color},${color}88);">${letter}</div>
+                ${renderJobAvatarMarkup(jobCompany, color, color + '88', jobLogoUrl)}
                 <div class="job-body">
                     <div class="job-header">
                         <div class="job-heading">

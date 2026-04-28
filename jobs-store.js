@@ -47,6 +47,7 @@ const JobsStore = (() => {
             id: j.id,
             title: j.title,
             company: j.company,
+            companyLogoUrl: j.company_logo_url || j.companyLogoUrl || '',
             location: j.location || '',
             type: j.type || 'Full-time',
             description: j.description || '',
