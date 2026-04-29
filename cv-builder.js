@@ -960,6 +960,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isZoomed && isMobile) {
             document.querySelector('.preview-scroll').scrollLeft = 100;
         }
+        if (typeof syncTemplateStageMetrics === 'function') {
+            requestAnimationFrame(syncTemplateStageMetrics);
+        }
     });
 
     // ============================
@@ -1003,15 +1006,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     const templatePanel = $('templatePanel');
     const templateCarousel = $('templateCarousel');
-    const activeTemplateName = $('activeTemplateName');
+    const templateCards = Array.from(document.querySelectorAll('.template-card'));
+    let templateWheelLocked = false;
+
+    function syncTemplateStageMetrics() {
+        if (!templatePanel || !paper) return;
+        const paperRect = paper.getBoundingClientRect();
+        if (paperRect.width > 0) {
+            templatePanel.style.setProperty('--paper-preview-half', `${paperRect.width / 2}px`);
+        }
+    }
+
+    function syncTemplateCardStates() {
+        const activeIndex = Math.max(0, templateCards.findIndex(card => card.classList.contains('active')));
+        const totalCards = templateCards.length;
+
+        templateCards.forEach((card, index) => {
+            const forward = (index - activeIndex + totalCards) % totalCards;
+            const backward = (activeIndex - index + totalCards) % totalCards;
+
+            card.classList.remove('is-prev', 'is-next', 'is-far-prev', 'is-far-next');
+            if (forward === 0) return;
+
+            if (backward === 1) {
+                card.classList.add('is-prev');
+            } else if (forward === 1) {
+                card.classList.add('is-next');
+            } else if (backward < forward) {
+                card.classList.add('is-far-prev');
+            } else {
+                card.classList.add('is-far-next');
+            }
+        });
+    }
+
+    function centerActiveTemplate(behavior = 'smooth') {
+        syncTemplateStageMetrics();
+        syncTemplateCardStates();
+    }
+
     $('btnTemplate')?.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAllDropdowns();
         templatePanel.classList.toggle('open');
         if (templatePanel.classList.contains('open')) {
-            requestAnimationFrame(() => {
-                syncTemplateCardStates(document.querySelector('.template-card.active') || templateCards[0], true);
-            });
+            requestAnimationFrame(() => centerActiveTemplate('smooth'));
         }
     });
     $('btnCloseTemplates')?.addEventListener('click', () => {
@@ -1020,42 +1059,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentTemplate = 'classic';
     let currentFont = null;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const templateCards = Array.from(document.querySelectorAll('.template-card'));
 
-    function centerTemplateCard(card) {
-        if (!card) return;
-        card.scrollIntoView({
-            behavior: prefersReducedMotion ? 'auto' : 'smooth',
-            block: 'nearest',
-            inline: 'center'
-        });
-    }
-
-    function syncTemplateCardStates(activeCard, shouldCenter = false) {
-        if (!activeCard) return;
-
-        const activeIndex = templateCards.indexOf(activeCard);
-        templateCards.forEach((card, index) => {
-            const distance = Math.abs(index - activeIndex);
-            card.classList.toggle('active', card === activeCard);
-            card.classList.toggle('is-near', distance === 1);
-            card.classList.toggle('is-far', distance > 1);
-            card.setAttribute('aria-pressed', card === activeCard ? 'true' : 'false');
-            card.tabIndex = card === activeCard ? 0 : -1;
-        });
-
-        const activeLabel = activeCard.querySelector('.template-card-title')?.textContent?.trim();
-        if (activeTemplateName && activeLabel) {
-            activeTemplateName.textContent = activeLabel;
-        }
-
-        if (shouldCenter) {
-            centerTemplateCard(activeCard);
-        }
-    }
-
-    function applyTemplateSelection(card, shouldCenter = true) {
+    function selectTemplateCard(card) {
         if (!card) return;
 
         const tpl = card.dataset.template;
@@ -1068,43 +1073,53 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentFont) paper.style.fontFamily = `'${currentFont}', sans-serif`;
         // Re-apply accent color
         reapplyAccentColor();
-        syncTemplateCardStates(card, shouldCenter);
+        // Update active state
+        templateCards.forEach(c => {
+            const isActive = c === card;
+            c.classList.toggle('active', isActive);
+            c.setAttribute('aria-pressed', String(isActive));
+        });
+        requestAnimationFrame(() => centerActiveTemplate('smooth'));
     }
 
-    templateCards.forEach((card, index) => {
-        card.addEventListener('click', () => {
-            applyTemplateSelection(card, true);
-        });
+    function moveTemplate(direction) {
+        const activeIndex = Math.max(0, templateCards.findIndex(card => card.classList.contains('active')));
+        const nextIndex = (activeIndex + direction + templateCards.length) % templateCards.length;
+        selectTemplateCard(templateCards[nextIndex]);
+    }
 
-        card.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                applyTemplateSelection(card, true);
-                return;
-            }
-
-            if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
-                return;
-            }
-
-            event.preventDefault();
-            const nextIndex = event.key === 'ArrowRight'
-                ? Math.min(index + 1, templateCards.length - 1)
-                : Math.max(index - 1, 0);
-            const nextCard = templateCards[nextIndex];
-            if (!nextCard) return;
-            nextCard.focus();
-            applyTemplateSelection(nextCard, true);
-        });
+    templateCards.forEach(card => {
+        card.addEventListener('click', () => selectTemplateCard(card));
     });
 
-    templateCarousel?.addEventListener('wheel', (event) => {
-        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-        event.preventDefault();
-        templateCarousel.scrollBy({ left: event.deltaY, behavior: 'auto' });
+    $('btnTemplatePrev')?.addEventListener('click', () => moveTemplate(-1));
+    $('btnTemplateNext')?.addEventListener('click', () => moveTemplate(1));
+
+    templateCarousel?.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            moveTemplate(e.key === 'ArrowLeft' ? -1 : 1);
+        }
+    });
+
+    templateCarousel?.addEventListener('wheel', (e) => {
+        const strongestDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (Math.abs(strongestDelta) < 12) return;
+
+        e.preventDefault();
+        if (templateWheelLocked) return;
+        templateWheelLocked = true;
+        moveTemplate(strongestDelta > 0 ? 1 : -1);
+        setTimeout(() => { templateWheelLocked = false; }, 240);
     }, { passive: false });
 
-    syncTemplateCardStates(templateCards.find(card => card.classList.contains('active')) || templateCards[0], false);
+    window.addEventListener('resize', () => {
+        if (templatePanel.classList.contains('open')) {
+            syncTemplateStageMetrics();
+        }
+    });
+
+    syncTemplateCardStates();
 
     // ============================
     // TOOLBAR: Font Family
