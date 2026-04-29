@@ -375,6 +375,101 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'Quick apply with your saved profile';
     }
 
+    function getJobBadgeState(applied, daysSince, applicants) {
+        if (applied) {
+            return { className: 'job-badge is-applied', label: 'Applied' };
+        }
+        if (daysSince <= 3) {
+            return { className: 'job-badge new', label: 'New' };
+        }
+        if (applicants >= 40) {
+            return { className: 'job-badge hot', label: 'Hot' };
+        }
+        return { className: 'job-badge is-open', label: 'Open' };
+    }
+
+    function getJobBadgeMarkup(applied, daysSince, applicants) {
+        const badge = getJobBadgeState(applied, daysSince, applicants);
+        return `<span class="${badge.className}">${badge.label}</span>`;
+    }
+
+    function buildJobMetaLine(job) {
+        return [job.company, job.location || 'Remote-friendly', job.type || 'Role type not specified']
+            .filter(Boolean)
+            .join(' • ');
+    }
+
+    function buildJobMetaPillsHtml(job) {
+        const salaryLabel = formatSalaryLabel(job);
+        return [
+            job.location
+                ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${escText(job.location)}</span>`
+                : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>',
+            job.type
+                ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${escText(job.type)}</span>`
+                : '',
+            salaryLabel && !job.hideSalary
+                ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${escText(salaryLabel)}</span>`
+                : ''
+        ].filter(Boolean).join('');
+    }
+
+    function buildJobInsightsHtml(job) {
+        const applicants = parseInt(job.applicants, 10) || 0;
+        const benefitsCount = Array.isArray(job.benefits) ? job.benefits.length : 0;
+        return [
+            `<span class="job-insight"><i class="fa-regular fa-clock"></i> ${escText(formatRelativeAge(job.postedAt))}</span>`,
+            `<span class="job-insight"><i class="fa-solid fa-users"></i> <strong>${applicants}</strong> applicant${applicants === 1 ? '' : 's'}</span>`,
+            benefitsCount
+                ? `<span class="job-insight"><i class="fa-solid fa-sparkles"></i> ${benefitsCount} benefit${benefitsCount === 1 ? '' : 's'}</span>`
+                : ''
+        ].filter(Boolean).join('');
+    }
+
+    function updateJobPreviewBadge(job) {
+        const badgeHost = $('jobPreviewBadge');
+        if (!badgeHost) return;
+
+        const applied = JobsStore.hasApplied(job.id);
+        const daysSince = getDaysSince(job.postedAt);
+        const applicants = parseInt(job.applicants, 10) || 0;
+        const badge = getJobBadgeState(applied, daysSince, applicants);
+        badgeHost.className = badge.className;
+        badgeHost.textContent = badge.label;
+    }
+
+    function setPreviewApplyButtonState(job) {
+        const button = $('btnPreviewApply');
+        if (!button) return;
+
+        if (JobsStore.hasApplied(job.id)) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-circle-check"></i> Application submitted';
+        } else {
+            button.disabled = false;
+            button.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Apply now';
+        }
+    }
+
+    function renderJobPreview(job) {
+        $('jobPreviewTitle').textContent = job.title || 'Untitled role';
+        $('jobPreviewCompany').textContent = job.company || 'Company';
+        $('jobPreviewMeta').textContent = buildJobMetaLine(job);
+        $('jobPreviewMetaPills').innerHTML = buildJobMetaPillsHtml(job);
+        $('jobPreviewInsights').innerHTML = buildJobInsightsHtml(job);
+        $('jobPreviewBody').innerHTML = buildJobDetailsHtml(job) || '<div class="job-empty-state"><i class="fa-solid fa-file-lines job-empty-icon"></i><p>No job details available yet</p><span>The recruiter has not added further role details for this listing.</span></div>';
+        updateJobPreviewBadge(job);
+        setPreviewApplyButtonState(job);
+    }
+
+    function openPreviewJobById(jobId) {
+        const job = JobsStore.getJobById(jobId);
+        if (!job) return;
+        currentApplyJobId = job.id;
+        renderJobPreview(job);
+        $('jobPreviewOverlay').style.display = 'flex';
+    }
+
     async function renderJobs() {
         const jobList = $('jobList');
         if (!jobList || typeof JobsStore === 'undefined') return;
@@ -439,14 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const benefitsCount = Array.isArray(job.benefits) ? job.benefits.length : 0;
             const salaryLabel = formatSalaryLabel(job);
             const footnote = applied ? 'Tracked in your applications board' : getJobFootnote(job, daysSince, applicants);
-            let badge = '<span class="job-badge is-open">Open</span>';
-            if (applied) {
-                badge = '<span class="job-badge is-applied">Applied</span>';
-            } else if (daysSince <= 3) {
-                badge = '<span class="job-badge new">New</span>';
-            } else if (applicants >= 40) {
-                badge = '<span class="job-badge hot">Hot</span>';
-            }
+            const badge = getJobBadgeMarkup(applied, daysSince, applicants);
 
             const item = document.createElement('div');
             item.className = 'job-item';
@@ -458,7 +546,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="job-header">
                         <div class="job-heading">
                             <span class="job-kicker">${job.company}</span>
-                            <div class="job-title">${job.title}</div>
+                            <button type="button" class="job-title-link" data-job-preview="${job.id}">
+                                <span class="job-title">${job.title}</span>
+                            </button>
                         </div>
                         ${badge}
                     </div>
@@ -475,12 +565,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="job-footer">
                         ${applied
                             ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
-                            : `<button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply now</button>`
+                            : `<div class="job-action-group"><button type="button" onclick="openPreviewJob('${job.id}')" class="job-preview-btn"><i class="fa-regular fa-eye"></i> View job</button><button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply now</button></div>`
                         }
                         <span class="job-footnote">${footnote}</span>
                     </div>
                 </div>
             `;
+
+            item.querySelector('[data-job-preview]')?.addEventListener('click', () => {
+                openPreviewJobById(job.id);
+            });
             jobList.appendChild(item);
         });
     }
@@ -603,6 +697,21 @@ document.addEventListener('DOMContentLoaded', () => {
         cb.checked = !cb.checked;
         el.classList.toggle('checked', cb.checked);
     }
+
+    window.openPreviewJob = function(jobId) {
+        openPreviewJobById(jobId);
+    };
+
+    window.closeJobPreviewModal = function() {
+        $('jobPreviewOverlay').style.display = 'none';
+    };
+
+    window.applyFromPreview = function() {
+        const jobId = currentApplyJobId;
+        if (!jobId || JobsStore.hasApplied(jobId)) return;
+        closeJobPreviewModal();
+        openAppModal(jobId);
+    };
 
     window.toggleJobDetails = function() {
         const body = $('appModalDetailsBody');
@@ -744,6 +853,16 @@ document.addEventListener('DOMContentLoaded', () => {
         $('appModalOverlay').style.display = 'none';
         currentApplyJobId = null;
     };
+
+    if (previewJobId) {
+        const openPreviewFromQuery = async () => {
+            await Promise.all([JobsStore.fetchJobs(), JobsStore.fetchApplications()]);
+            if (JobsStore.getJobById(previewJobId)) {
+                openPreviewJobById(previewJobId);
+            }
+        };
+        openPreviewFromQuery();
+    }
 
     window.submitJobApplication = async function() {
         if (!currentApplyJobId) return;

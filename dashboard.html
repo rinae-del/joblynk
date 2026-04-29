@@ -148,6 +148,38 @@
         </div>
     </main>
 
+    <!-- ========== JOB PREVIEW MODAL ========== -->
+    <div class="app-modal-overlay" id="jobPreviewOverlay">
+        <div class="app-modal job-preview-modal">
+            <div class="app-modal-header">
+                <h2>Job Preview</h2>
+                <button onclick="closeJobPreviewModal()" class="app-modal-close" aria-label="Close">&times;</button>
+            </div>
+
+            <div class="app-modal-job-info job-preview-hero" id="jobPreviewHero">
+                <div class="job-preview-kicker-row">
+                    <span class="job-preview-kicker" id="jobPreviewCompany"></span>
+                    <span class="job-badge is-open" id="jobPreviewBadge">Open</span>
+                </div>
+                <div class="app-modal-title job-preview-title" id="jobPreviewTitle"></div>
+                <div class="app-modal-company" id="jobPreviewMeta"></div>
+                <div class="job-meta job-preview-meta-pills" id="jobPreviewMetaPills"></div>
+                <div class="job-insights job-preview-insights" id="jobPreviewInsights"></div>
+            </div>
+
+            <div class="app-modal-details job-preview-details" style="display:block;">
+                <div class="app-modal-details-body job-preview-body" id="jobPreviewBody"></div>
+            </div>
+
+            <div class="app-modal-actions job-preview-actions">
+                <button onclick="closeJobPreviewModal()" class="app-modal-cancel">Close</button>
+                <button id="btnPreviewApply" onclick="applyFromPreview()" class="app-modal-submit">
+                    <i class="fa-solid fa-paper-plane"></i> Apply now
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ========== APPLICATION MODAL ========== -->
     <div class="app-modal-overlay" id="appModalOverlay">
         <div class="app-modal">

@@ -1296,18 +1296,48 @@ textarea.form-control {
     line-height: 1.3;
 }
 
+.job-title-link {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+}
+
+.job-title-link:hover .job-title,
+.job-title-link:focus-visible .job-title {
+    color: var(--job-accent, #3B4BA6);
+}
+
+.job-title-link:focus-visible {
+    outline: 2px solid rgba(79, 70, 229, 0.28);
+    outline-offset: 4px;
+    border-radius: 10px;
+}
+
 .job-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
+
+.job-action-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 .job-meta-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: .74rem;
     font-weight: 600;
+
+.job-preview-btn,
     color: #334155;
     background: rgba(255, 255, 255, 0.86);
     padding: 6px 10px;
@@ -1378,6 +1408,20 @@ textarea.form-control {
     cursor: pointer;
     transition: all .25s;
     box-shadow: 0 4px 14px rgba(79, 70, 229, .25);
+}
+
+.job-preview-btn {
+    background: #fff;
+    color: var(--text-secondary);
+    border: 1px solid #D9DFED;
+    box-shadow: none;
+}
+
+.job-preview-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, .12);
 }
 
 .job-apply-btn:hover {
@@ -1769,6 +1813,64 @@ select.app-modal-select {
     border-radius: var(--radius);
     max-height: 280px;
     overflow-y: auto;
+}
+
+.job-preview-modal {
+    max-width: 720px;
+}
+
+.job-preview-hero {
+    background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.job-preview-kicker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.job-preview-kicker {
+    font-size: .76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--accent);
+}
+
+.job-preview-title {
+    font-size: 1.4rem;
+    margin-bottom: 0;
+}
+
+.job-preview-meta-pills,
+.job-preview-insights {
+    gap: 10px;
+}
+
+.job-preview-details {
+    margin-bottom: 1.5rem;
+}
+
+.job-preview-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 42vh;
+}
+
+.job-preview-actions {
+    margin-top: 0;
+}
+
+.app-modal-submit:disabled {
+    cursor: not-allowed;
+    opacity: .7;
+    transform: none;
+    box-shadow: none;
 }
 
 .app-detail-block {
@@ -2329,6 +2431,10 @@ select.app-modal-select {
         align-items: flex-start;
     }
 
+    .job-action-group {
+        width: 100%;
+    }
+
     .dash-section-half {
         border-radius: 16px;
         padding: 20px 18px;
@@ -2484,6 +2590,13 @@ select.app-modal-select {
         font-size: 0.78rem;
     }
 
+    .job-preview-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 9px 14px;
+        font-size: 0.78rem;
+    }
+
     .job-applied-label,
     .job-footnote,
     .table-note,
@@ -2514,6 +2627,15 @@ select.app-modal-select {
 
     .app-modal-header h2 {
         font-size: 1.15rem;
+    }
+
+    .job-preview-kicker-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .job-preview-title {
+        font-size: 1.1rem;
     }
 
     .app-modal-actions {
