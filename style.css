@@ -939,24 +939,38 @@ body {
    TEMPLATE PANEL (Visual Picker)
    ====================================== */
 .template-panel {
-    background: #fff;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
     border-top: 1px solid var(--border);
-    padding: 16px 20px;
+    padding: 18px 0 16px;
     display: none;
 }
 
 .template-panel.open {
     display: block;
+    animation: fadeInUp .24s ease;
 }
 
 .template-panel-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-    font-size: .85rem;
-    font-weight: 600;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 0 20px 14px;
+}
+
+.template-panel-copy span {
+    display: block;
+    font-size: .92rem;
+    font-weight: 700;
     color: var(--text);
+}
+
+.template-panel-copy p {
+    margin-top: 4px;
+    max-width: 420px;
+    font-size: .76rem;
+    line-height: 1.5;
+    color: var(--text-muted);
 }
 
 .template-panel-close {
@@ -975,49 +989,163 @@ body {
     color: var(--text);
 }
 
+.template-carousel-shell {
+    position: relative;
+    padding: 8px 0 10px;
+}
+
+.template-carousel-shell::before,
+.template-carousel-shell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 92px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.template-carousel-shell::before {
+    left: 0;
+    background: linear-gradient(90deg, rgba(248, 250, 252, 1) 8%, rgba(248, 250, 252, 0) 100%);
+}
+
+.template-carousel-shell::after {
+    right: 0;
+    background: linear-gradient(270deg, rgba(248, 250, 252, 1) 8%, rgba(248, 250, 252, 0) 100%);
+}
+
 .template-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    --template-card-width: 196px;
+    display: flex;
+    align-items: stretch;
+    gap: 18px;
+    overflow-x: auto;
+    padding: 10px max(20px, calc(50% - (var(--template-card-width) / 2))) 18px;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 50%;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+}
+
+.template-grid::-webkit-scrollbar {
+    height: 6px;
+}
+
+.template-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.template-grid::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 999px;
 }
 
 .template-card {
+    flex: 0 0 var(--template-card-width);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: none;
+    border: none;
+    padding: 0;
     cursor: pointer;
-    text-align: center;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    padding: 4px;
-    transition: all .2s;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    opacity: .34;
+    transform: translateY(18px) scale(.74);
+    transform-origin: center center;
+    filter: saturate(.72);
+    scroll-snap-align: center;
+    transition: transform .35s cubic-bezier(.22, 1, .36, 1), opacity .35s, filter .35s;
 }
 
 .template-card:hover {
-    border-color: #ccc;
+    opacity: .88;
+}
+
+.template-card.is-near {
+    opacity: .62;
+    transform: translateY(10px) scale(.86);
+    filter: saturate(.88);
 }
 
 .template-card.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: none;
 }
 
-.template-card span {
+.template-card:focus-visible {
+    outline: none;
+}
+
+.template-card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 2px;
+}
+
+.template-card-title {
     display: block;
-    font-size: .75rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-top: 6px;
+    font-size: .84rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.template-card-subtitle {
+    display: block;
+    font-size: .72rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.template-selection-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+}
+
+.template-selection-kicker {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+#activeTemplateName {
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text);
 }
 
 /* -- Thumbnail Previews -- */
 .tpl-preview {
     width: 100%;
     aspect-ratio: 210 / 297;
-    border-radius: 4px;
+    border-radius: 20px;
     overflow: hidden;
-    background: #fff;
-    border: 1px solid #e8e8e8;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+    border: 1px solid #E2E8F0;
     display: flex;
     flex-direction: column;
     font-size: 0;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .08);
+    transition: border-color .3s, box-shadow .3s, background .3s;
+}
+
+.template-card.active .tpl-preview {
+    border-color: rgba(79, 70, 229, .35);
+    box-shadow: 0 22px 48px rgba(15, 23, 42, .14), 0 0 0 3px rgba(79, 70, 229, .08);
+}
+
+.template-card:focus-visible .tpl-preview {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, .18), 0 18px 38px rgba(15, 23, 42, .12);
 }
 
 .tp-header {
@@ -1412,6 +1540,25 @@ body {
     .mobile-fab {
         display: flex;
     }
+
+    .template-panel-header {
+        padding: 0 16px 12px;
+    }
+
+    .template-grid {
+        --template-card-width: 172px;
+        gap: 14px;
+        padding-inline: max(16px, calc(50% - (var(--template-card-width) / 2)));
+    }
+
+    .template-carousel-shell::before,
+    .template-carousel-shell::after {
+        width: 56px;
+    }
+
+    .template-selection-meta {
+        padding: 0 16px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1423,6 +1570,29 @@ body {
     .date-select-grid-2,
     .date-select-grid-3 {
         grid-template-columns: 1fr;
+    }
+
+    .template-panel-copy p {
+        font-size: .72rem;
+    }
+
+    .template-grid {
+        --template-card-width: 148px;
+        gap: 12px;
+        padding-bottom: 14px;
+    }
+
+    .template-card-title {
+        font-size: .78rem;
+    }
+
+    .template-card-subtitle {
+        font-size: .68rem;
+    }
+
+    .template-selection-meta {
+        flex-wrap: wrap;
+        gap: 4px 8px;
     }
 }
 

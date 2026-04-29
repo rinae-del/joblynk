@@ -1002,10 +1002,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // TOOLBAR: Template Panel Toggle
     // ============================
     const templatePanel = $('templatePanel');
+    const templateCarousel = $('templateCarousel');
+    const activeTemplateName = $('activeTemplateName');
     $('btnTemplate')?.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAllDropdowns();
         templatePanel.classList.toggle('open');
+        if (templatePanel.classList.contains('open')) {
+            requestAnimationFrame(() => {
+                syncTemplateCardStates(document.querySelector('.template-card.active') || templateCards[0], true);
+            });
+        }
     });
     $('btnCloseTemplates')?.addEventListener('click', () => {
         templatePanel.classList.remove('open');
@@ -1013,24 +1020,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentTemplate = 'classic';
     let currentFont = null;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const templateCards = Array.from(document.querySelectorAll('.template-card'));
 
-    document.querySelectorAll('.template-card').forEach(card => {
+    function centerTemplateCard(card) {
+        if (!card) return;
+        card.scrollIntoView({
+            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+            block: 'nearest',
+            inline: 'center'
+        });
+    }
+
+    function syncTemplateCardStates(activeCard, shouldCenter = false) {
+        if (!activeCard) return;
+
+        const activeIndex = templateCards.indexOf(activeCard);
+        templateCards.forEach((card, index) => {
+            const distance = Math.abs(index - activeIndex);
+            card.classList.toggle('active', card === activeCard);
+            card.classList.toggle('is-near', distance === 1);
+            card.classList.toggle('is-far', distance > 1);
+            card.setAttribute('aria-pressed', card === activeCard ? 'true' : 'false');
+            card.tabIndex = card === activeCard ? 0 : -1;
+        });
+
+        const activeLabel = activeCard.querySelector('.template-card-title')?.textContent?.trim();
+        if (activeTemplateName && activeLabel) {
+            activeTemplateName.textContent = activeLabel;
+        }
+
+        if (shouldCenter) {
+            centerTemplateCard(activeCard);
+        }
+    }
+
+    function applyTemplateSelection(card, shouldCenter = true) {
+        if (!card) return;
+
+        const tpl = card.dataset.template;
+        currentTemplate = tpl;
+        // Reset paper classes, preserve size
+        paper.className = 'a4-paper';
+        if (tpl !== 'classic') paper.classList.add('tpl-' + tpl);
+        if (currentSize !== 'medium') paper.classList.add('size-' + currentSize);
+        // Re-apply custom font if set
+        if (currentFont) paper.style.fontFamily = `'${currentFont}', sans-serif`;
+        // Re-apply accent color
+        reapplyAccentColor();
+        syncTemplateCardStates(card, shouldCenter);
+    }
+
+    templateCards.forEach((card, index) => {
         card.addEventListener('click', () => {
-            const tpl = card.dataset.template;
-            currentTemplate = tpl;
-            // Reset paper classes, preserve size
-            paper.className = 'a4-paper';
-            if (tpl !== 'classic') paper.classList.add('tpl-' + tpl);
-            if (currentSize !== 'medium') paper.classList.add('size-' + currentSize);
-            // Re-apply custom font if set
-            if (currentFont) paper.style.fontFamily = `'${currentFont}', sans-serif`;
-            // Re-apply accent color
-            reapplyAccentColor();
-            // Update active state
-            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
+            applyTemplateSelection(card, true);
+        });
+
+        card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                applyTemplateSelection(card, true);
+                return;
+            }
+
+            if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+                return;
+            }
+
+            event.preventDefault();
+            const nextIndex = event.key === 'ArrowRight'
+                ? Math.min(index + 1, templateCards.length - 1)
+                : Math.max(index - 1, 0);
+            const nextCard = templateCards[nextIndex];
+            if (!nextCard) return;
+            nextCard.focus();
+            applyTemplateSelection(nextCard, true);
         });
     });
+
+    templateCarousel?.addEventListener('wheel', (event) => {
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        event.preventDefault();
+        templateCarousel.scrollBy({ left: event.deltaY, behavior: 'auto' });
+    }, { passive: false });
+
+    syncTemplateCardStates(templateCards.find(card => card.classList.contains('active')) || templateCards[0], false);
 
     // ============================
     // TOOLBAR: Font Family

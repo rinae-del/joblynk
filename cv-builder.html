@@ -311,13 +311,17 @@
             <!-- Template Picker Panel (slides up) -->
             <div class="template-panel" id="templatePanel">
                 <div class="template-panel-header">
-                    <span>Choose a template</span>
+                    <div class="template-panel-copy">
+                        <span>Choose a template</span>
+                        <p>Scroll sideways to compare layouts, then click any card to bring it forward.</p>
+                    </div>
                     <button class="template-panel-close" id="btnCloseTemplates"><i
                             class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="template-grid">
+                <div class="template-carousel-shell">
+                <div class="template-grid" id="templateCarousel" aria-label="CV templates">
                     <!-- Classic -->
-                    <div class="template-card active" data-template="classic">
+                    <button type="button" class="template-card active" data-template="classic" aria-pressed="true" aria-label="Classic template">
                         <div class="tpl-preview tpl-preview-classic">
                             <div class="tp-header" style="background:#3B4BA6"></div>
                             <div class="tp-body">
@@ -335,10 +339,13 @@
                             </div>
                             <div class="tp-wave" style="background:#3B4BA6"></div>
                         </div>
-                        <span>Classic</span>
-                    </div>
+                        <div class="template-card-copy">
+                            <span class="template-card-title">Classic</span>
+                            <small class="template-card-subtitle">Balanced two-column resume</small>
+                        </div>
+                    </button>
                     <!-- Modern -->
-                    <div class="template-card" data-template="modern">
+                    <button type="button" class="template-card" data-template="modern" aria-pressed="false" aria-label="Modern template">
                         <div class="tpl-preview tpl-preview-modern">
                             <div class="tp-header-full" style="background:#0F766E">
                                 <div class="tp-circle"></div>
@@ -352,10 +359,13 @@
                                 <div class="tp-line w70"></div>
                             </div>
                         </div>
-                        <span>Modern</span>
-                    </div>
+                        <div class="template-card-copy">
+                            <span class="template-card-title">Modern</span>
+                            <small class="template-card-subtitle">Bold header with full-width flow</small>
+                        </div>
+                    </button>
                     <!-- Elegant -->
-                    <div class="template-card" data-template="elegant">
+                    <button type="button" class="template-card" data-template="elegant" aria-pressed="false" aria-label="Elegant template">
                         <div class="tpl-preview tpl-preview-elegant">
                             <div class="tp-header-centered">
                                 <div class="tp-line-dark w50 centered"></div>
@@ -375,10 +385,13 @@
                                 </div>
                             </div>
                         </div>
-                        <span>Elegant</span>
-                    </div>
+                        <div class="template-card-copy">
+                            <span class="template-card-title">Elegant</span>
+                            <small class="template-card-subtitle">Refined split layout with softer detail</small>
+                        </div>
+                    </button>
                     <!-- Minimal -->
-                    <div class="template-card" data-template="minimal">
+                    <button type="button" class="template-card" data-template="minimal" aria-pressed="false" aria-label="Minimal template">
                         <div class="tpl-preview tpl-preview-minimal">
                             <div class="tp-header-minimal">
                                 <div class="tp-line-dark w70"></div>
@@ -389,8 +402,16 @@
                                 <div class="tp-line w80"></div>
                                 <div class="tp-line w60"></div>
                                 <div class="tp-line w90"></div>
-                            </div>
+                        <div class="template-card-copy">
+                            <span class="template-card-title">Minimal</span>
+                            <small class="template-card-subtitle">Clean single-column document</small>
                         </div>
+                    </button>
+                </div>
+                </div>
+                <div class="template-selection-meta">
+                    <span class="template-selection-kicker">Active template</span>
+                    <strong id="activeTemplateName">Classic</strong>
                         <span>Minimal</span>
                     </div>
                 </div>
