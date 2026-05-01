@@ -36,6 +36,7 @@ function ensureJobsSchema(PDO $pdo): array {
             'skills',
             'salary_from',
             'salary_to',
+            'salary_note',
             'status',
             'color',
         ], true);
@@ -43,6 +44,7 @@ function ensureJobsSchema(PDO $pdo): array {
 
     $migrations = [
         'salary_period' => "ALTER TABLE jobs ADD COLUMN salary_period VARCHAR(50) DEFAULT 'Per Month' AFTER salary_to",
+        'salary_note' => "ALTER TABLE jobs ADD COLUMN salary_note VARCHAR(255) DEFAULT '' AFTER salary_period",
         'benefits' => 'ALTER TABLE jobs ADD COLUMN benefits TEXT NULL AFTER salary_period',
         'closing_date' => 'ALTER TABLE jobs ADD COLUMN closing_date DATE NULL AFTER benefits',
         'custom_fields' => 'ALTER TABLE jobs ADD COLUMN custom_fields TEXT NULL AFTER closing_date',
@@ -82,6 +84,7 @@ function normalizeJobRow(array &$job): void {
     $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
     $job['hide_salary'] = (int) ($job['hide_salary'] ?? 0);
     $job['salary_period'] = $job['salary_period'] ?? 'Per Month';
+    $job['salary_note'] = $job['salary_note'] ?? '';
     $job['closing_date'] = $job['closing_date'] ?? null;
     $job['company_logo_url'] = trim((string) ($job['company_logo_url'] ?? ''));
 
@@ -214,6 +217,7 @@ if ($method === 'POST') {
         $skills      = trim($body['skills'] ?? '');
         $salaryFrom  = trim($body['salaryFrom'] ?? $body['salary_from'] ?? '');
         $salaryTo    = trim($body['salaryTo'] ?? $body['salary_to'] ?? '');
+        $salaryNote  = trim($body['salaryNote'] ?? $body['salary_note'] ?? '');
         $salaryPeriod = trim($body['salaryPeriod'] ?? $body['salary_period'] ?? 'Per Month');
         $hideSalary  = !empty($body['hideSalary'] ?? $body['hide_salary'] ?? false) ? 1 : 0;
         $benefits    = $body['benefits'] ?? [];
@@ -239,6 +243,7 @@ if ($method === 'POST') {
             'skills' => $skills,
             'salary_from' => $salaryFrom,
             'salary_to' => $salaryTo,
+            'salary_note' => $salaryNote,
             'salary_period' => $salaryPeriod,
             'hide_salary' => $hideSalary,
             'benefits' => $benefitsJson,

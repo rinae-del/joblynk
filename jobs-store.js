@@ -55,6 +55,7 @@ const JobsStore = (() => {
             skills: j.skills || '',
             salaryFrom: j.salary_from || j.salaryFrom || '',
             salaryTo: j.salary_to || j.salaryTo || '',
+            salaryNote: j.salary_note || j.salaryNote || '',
             salaryPeriod: j.salary_period || j.salaryPeriod || 'Per Month',
             hideSalary: !!(j.hide_salary || j.hideSalary),
             benefits: j.benefits || [],

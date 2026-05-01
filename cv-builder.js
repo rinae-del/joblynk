@@ -1120,6 +1120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     syncTemplateCardStates();
+    if (templatePanel.classList.contains('open')) {
+        requestAnimationFrame(() => centerActiveTemplate('auto'));
+    }
 
     // ============================
     // TOOLBAR: Font Family

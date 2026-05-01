@@ -110,6 +110,8 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     `salary_from` VARCHAR(50) DEFAULT '',
     `salary_to` VARCHAR(50) DEFAULT '',
     `salary_period` VARCHAR(50) DEFAULT 'Per Month',
+    `salary_note` VARCHAR(255) DEFAULT '',
+    `hide_salary` TINYINT(1) NOT NULL DEFAULT 0,
     `benefits` JSON NULL,
     `closing_date` DATE NULL,
     `custom_fields` TEXT NULL,

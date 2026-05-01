@@ -47,7 +47,7 @@
                 <form id="postJobFormWizard">
                     <!-- Step 1 -->
                     <div class="wizard-step active" id="step-1">
-                        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 1: Job Identity & Matching</h3>
+                        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 1: Job Identity</h3>
                         <div class="dash-row" style="gap: 20px;">
                             <div class="form-group" style="flex: 1;">
                                 <label for="wizJobTitle">Job Title*</label>
@@ -57,8 +57,9 @@
                                 <label for="wizCompany">Company Display Name*</label>
                                 <select id="wizCompany" class="form-control" required>
                                     <option value="" data-company-name>Loading...</option>
-                                    <option value="Confidential">Confidential / Hidden</option>
+                                    <option value="Confidential">Remain Confidential</option>
                                 </select>
+                                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; line-height:1.5;">Choose Remain Confidential to hide your company name and logo from candidates.</p>
                             </div>
                         </div>
                         <div class="dash-row" style="gap: 20px;">
@@ -119,7 +120,7 @@
                             <textarea id="wizReqs" class="form-control" style="min-height: 100px;" placeholder="List necessary degrees, certifications, or years of experience..." required></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="wizSkills">Key Skills Tags <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Comma separated)</span></label>
+                            <label for="wizSkills">Key Skills Tags <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(use comma to separate each skill)</span></label>
                             <input type="text" id="wizSkills" class="form-control" placeholder="e.g. React, Python, Project Management, Agile">
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 24px;">
@@ -133,21 +134,31 @@
                         <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text);">Step 3: Compensation & Benefits</h3>
                         <div class="dash-row" style="gap: 20px;">
                             <div class="form-group" style="flex: 1;">
-                                <label for="wizSalaryFrom">Salary From</label>
-                                <input type="number" id="wizSalaryFrom" class="form-control" placeholder="Amount (e.g. 15000)">
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label for="wizSalaryTo">Salary Up To</label>
-                                <input type="number" id="wizSalaryTo" class="form-control" placeholder="Amount (e.g. 25000)">
+                                <label for="wizSalaryFrom">Salary</label>
+                                <input type="text" id="wizSalaryFrom" class="form-control" list="salarySuggestions" placeholder="e.g. R 25 000 or $ 1,500">
+                                <datalist id="salarySuggestions">
+                                    <option value="R 15 000">
+                                    <option value="R 25 000">
+                                    <option value="R 40 000">
+                                    <option value="R 60 000">
+                                    <option value="$ 1,500">
+                                    <option value="$ 3,000">
+                                </datalist>
+                                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Type an amount with R for Rands or $ for Dollars, or choose a suggestion.</p>
                             </div>
                             <div class="form-group" style="flex: 1;">
                                 <label for="wizSalaryPeriod">Salary Period</label>
                                 <select id="wizSalaryPeriod" class="form-control">
                                     <option value="Per Month">Per Month</option>
+                                    <option value="Per Week">Per Week</option>
                                     <option value="Per Annum">Per Annum</option>
                                     <option value="Per Hour">Per Hour</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="wizSalaryNote">Salary Notes</label>
+                            <input type="text" id="wizSalaryNote" class="form-control" placeholder="e.g. Commission, negotiable on experience, market related">
                         </div>
                         <div style="margin-top: 8px; margin-bottom: 16px;">
                             <label class="checkbox-item" style="display:inline-flex; width:auto; border:none; background:none; padding:0;">
@@ -196,10 +207,22 @@
                                 <i class="fa-solid fa-clipboard-question" style="color:#7E22CE;"></i> Screening Questions
                                 <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(optional — applicants must answer these when applying)</span>
                             </label>
+                            <div class="answer-type-note">
+                                <strong>ANSWER Type:</strong>
+                                Choose Short Text for brief answers, Long Text for detailed responses, Dropdown when applicants must pick from your options, or Yes / No for simple confirmation questions.
+                            </div>
                             <div id="customFieldsList" class="custom-fields-list"></div>
                             <button type="button" class="btn-add-field" onclick="addCustomField()">
                                 <i class="fa-solid fa-plus"></i> Add Question
                             </button>
+                        </div>
+
+                        <div class="post-job-important-note" role="note" aria-label="Important preview reminder">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div>
+                                <strong>IMPORTANT</strong>
+                                <span>Please Preview Advert Before Publishing Advert</span>
+                            </div>
                         </div>
 
                         <div style="display: flex; justify-content: space-between; margin-top: 24px;">
@@ -585,9 +608,10 @@
         const desc = document.getElementById('wizDesc').value.trim();
         const reqs = document.getElementById('wizReqs').value.trim();
         const skills = document.getElementById('wizSkills').value.trim();
-        const salaryFrom = document.getElementById('wizSalaryFrom').value;
-        const salaryTo = document.getElementById('wizSalaryTo').value;
+        const salaryFrom = document.getElementById('wizSalaryFrom').value.trim();
+        const salaryNote = document.getElementById('wizSalaryNote')?.value.trim() || '';
         const salaryPeriod = document.getElementById('wizSalaryPeriod').value;
+        const hideSalary = document.getElementById('wizHideSalary')?.checked || false;
         const closingDate = document.getElementById('wizDate').value;
 
         // Avatar
@@ -606,13 +630,9 @@
 
         // Salary
         const salarySection = document.getElementById('prevSalarySection');
-        if (salaryFrom || salaryTo) {
-            let salaryText = '';
-            const fmt = n => 'R ' + parseInt(n).toLocaleString('en-ZA');
-            if (salaryFrom && salaryTo) salaryText = fmt(salaryFrom) + ' – ' + fmt(salaryTo);
-            else if (salaryFrom) salaryText = 'From ' + fmt(salaryFrom);
-            else salaryText = 'Up to ' + fmt(salaryTo);
-            salaryText += ' ' + salaryPeriod;
+        if (!hideSalary && (salaryFrom || salaryNote)) {
+            let salaryText = salaryFrom ? `${salaryFrom} ${salaryPeriod}` : '';
+            if (salaryNote) salaryText = salaryText ? `${salaryText} - ${salaryNote}` : salaryNote;
             document.getElementById('prevSalary').textContent = salaryText;
             metaEl.innerHTML += `<span style="${pillStyle}"><i class="fa-solid fa-wallet"></i> ${escHtml(salaryText)}</span>`;
             salarySection.style.display = '';
@@ -734,6 +754,7 @@
             if (document.getElementById('wizSkills')) document.getElementById('wizSkills').value = job.skills || '';
             if (document.getElementById('wizSalaryFrom')) document.getElementById('wizSalaryFrom').value = job.salary_from || '';
             if (document.getElementById('wizSalaryTo')) document.getElementById('wizSalaryTo').value = job.salary_to || '';
+            if (document.getElementById('wizSalaryNote')) document.getElementById('wizSalaryNote').value = job.salary_note || job.salaryNote || '';
             if (document.getElementById('wizSalaryPeriod')) document.getElementById('wizSalaryPeriod').value = job.salary_period || 'Per Month';
             if (document.getElementById('wizHideSalary')) document.getElementById('wizHideSalary').checked = !!(job.hide_salary || job.hideSalary);
             if (document.getElementById('wizDate')) document.getElementById('wizDate').value = job.closing_date || '';

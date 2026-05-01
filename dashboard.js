@@ -340,23 +340,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatSalaryLabel(job) {
-        const salaryFrom = Number(job.salaryFrom || 0);
-        const salaryTo = Number(job.salaryTo || 0);
-        if (!salaryFrom && !salaryTo) return '';
+        const salaryFromRaw = String(job.salaryFrom || '').trim();
+        const salaryToRaw = String(job.salaryTo || '').trim();
+        const salaryNote = String(job.salaryNote || '').trim();
+        if (!salaryFromRaw && !salaryToRaw && !salaryNote) return '';
 
         const compactMoney = value => new Intl.NumberFormat('en', {
             notation: 'compact',
             maximumFractionDigits: 1,
         }).format(value);
 
+        const formatSalaryValue = value => {
+            const raw = String(value || '').trim();
+            if (!raw) return '';
+            const plainNumeric = /^\d[\d\s,.]*$/.test(raw);
+            if (!plainNumeric) return raw;
+            const numeric = Number(raw.replace(/[\s,]/g, ''));
+            return numeric ? `R${compactMoney(numeric)}` : raw;
+        };
+
         const period = String(job.salaryPeriod || 'Per Month').replace(/^Per\s+/i, '/');
+        const salaryFrom = formatSalaryValue(salaryFromRaw);
+        const salaryTo = formatSalaryValue(salaryToRaw);
+        let salaryText = '';
+
         if (salaryFrom && salaryTo) {
-            return `R${compactMoney(salaryFrom)} - R${compactMoney(salaryTo)} ${period}`;
+            salaryText = `${salaryFrom} - ${salaryTo} ${period}`;
+        } else if (salaryFrom) {
+            salaryText = `${salaryFrom} ${period}`;
+        } else if (salaryTo) {
+            salaryText = `Up to ${salaryTo} ${period}`;
         }
-        if (salaryFrom) {
-            return `From R${compactMoney(salaryFrom)} ${period}`;
+
+        if (salaryNote) {
+            return salaryText ? `${salaryText} • ${salaryNote}` : salaryNote;
         }
-        return `Up to R${compactMoney(salaryTo)} ${period}`;
+
+        return salaryText;
     }
 
     function getJobFootnote(job, daysSince, applicants) {
@@ -555,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="job-meta">
                         ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>` : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>'}
                         ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${job.type}</span>` : ''}
-                        ${salaryLabel && !job.hideSalary ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${salaryLabel}</span>` : ''}
+                        ${salaryLabel && !job.hideSalary ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${escText(salaryLabel)}</span>` : ''}
                     </div>
                     <div class="job-insights">
                         <span class="job-insight"><i class="fa-regular fa-clock"></i> ${formatRelativeAge(job.postedAt)}</span>
@@ -738,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `<div class="app-detail-block"><h4><i class="fa-solid fa-tags"></i> Skills</h4><div class="app-detail-chips">${chips}</div></div>`;
         }
         const salary = formatSalaryLabel(job);
-        if (salary) {
+        if (salary && !job.hideSalary) {
             html += `<div class="app-detail-block"><h4><i class="fa-solid fa-wallet"></i> Salary</h4><p>${escText(salary)}</p></div>`;
         }
         if (Array.isArray(job.benefits) && job.benefits.length) {

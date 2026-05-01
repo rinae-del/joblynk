@@ -411,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const skills = document.getElementById('wizSkills')?.value || '';
             const salaryFrom = document.getElementById('wizSalaryFrom')?.value || '';
             const salaryTo = document.getElementById('wizSalaryTo')?.value || '';
+            const salaryNote = document.getElementById('wizSalaryNote')?.value || '';
             const salaryPeriod = document.getElementById('wizSalaryPeriod')?.value || 'Per Month';
             const hideSalary = document.getElementById('wizHideSalary')?.checked || false;
             const closingDate = document.getElementById('wizDate')?.value || '';
@@ -424,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var jobData = {
                 title, company, location, type,
                 description, requirements, skills,
-                salaryFrom, salaryTo, salaryPeriod, hideSalary,
+                salaryFrom, salaryTo, salaryNote, salaryPeriod, hideSalary,
                 benefits, closingDate,
                 customFields: collectCustomFields()
             };
