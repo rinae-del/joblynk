@@ -751,11 +751,26 @@
             };
         };
 
-        const cleanAiString = value => String(value || '').replace(/\s+/g, ' ').trim();
+        const cleanAiString = value => {
+            if (value === undefined || value === null) return '';
+            if (Array.isArray(value)) return value.map(cleanAiString).filter(Boolean).join(', ');
+            if (typeof value === 'boolean') return value ? 'Present' : '';
+            if (typeof value === 'object') return '';
+            return String(value).replace(/\s+/g, ' ').trim();
+        };
+
+        const cleanAiText = value => {
+            if (Array.isArray(value)) return value.map(cleanAiString).filter(Boolean).join('\n');
+            return cleanAiString(value);
+        };
 
         const asArray = value => {
             if (Array.isArray(value)) return value;
             if (!value) return [];
+            if (typeof value === 'object' && Array.isArray(value.items)) return value.items;
+            if (typeof value === 'object' && Array.isArray(value.list)) return value.list;
+            if (typeof value === 'object' && Array.isArray(value.values)) return value.values;
+            if (typeof value === 'object' && Array.isArray(value.entries)) return value.entries;
             if (typeof value === 'object') return [value];
             return splitListItems(String(value));
         };
@@ -771,14 +786,53 @@
             return JSON.parse(cleaned.slice(start, end + 1));
         };
 
+        const getPathValue = (object, path) => path.split('.').reduce((value, key) => {
+            if (value === undefined || value === null) return undefined;
+            return value[key];
+        }, object);
+
+        const pickString = (object, paths) => {
+            for (const path of paths) {
+                const value = getPathValue(object, path);
+                const cleaned = cleanAiString(value);
+                if (cleaned) return cleaned;
+            }
+            return '';
+        };
+
+        const pickText = (object, paths) => {
+            for (const path of paths) {
+                const value = getPathValue(object, path);
+                const cleaned = cleanAiText(value);
+                if (cleaned) return cleaned;
+            }
+            return '';
+        };
+
+        const pickArray = (object, paths) => {
+            for (const path of paths) {
+                const value = getPathValue(object, path);
+                const items = asArray(value);
+                if (items.length) return items;
+            }
+            return [];
+        };
+
+        const getAiRoot = aiData => aiData.data || aiData.cvData || aiData.cv || aiData.resume || aiData.candidate || aiData.applicant || aiData.profile || aiData;
+
         const normalizeAiCvDraft = (aiData, fallbackDraft, fileName) => {
+            const source = getAiRoot(aiData || {});
             const fallbackData = fallbackDraft.data || {};
-            const skills = asArray(aiData.skills).map(skill => {
-                const name = typeof skill === 'string' ? skill : (skill.name || skill.skill || skill.title);
+            const fullName = pickString(source, ['fullName', 'name', 'candidateName', 'applicantName', 'personal.fullName', 'personalDetails.fullName', 'personalInformation.fullName']);
+            const fullNameParts = fullName.split(/\s+/).filter(Boolean);
+            const fallbackFirstName = fullNameParts.shift() || fallbackData.firstName || '';
+            const fallbackLastName = fullNameParts.join(' ') || fallbackData.lastName || '';
+            const skills = pickArray(source, ['skills', 'technicalSkills', 'keySkills', 'coreSkills', 'competencies', 'skillSet']).map(skill => {
+                const name = typeof skill === 'string' ? skill : (skill.name || skill.skill || skill.skillName || skill.title || skill.label);
                 return cleanAiString(name);
             }).filter(Boolean).slice(0, 18).map(name => ({ id: createImportId(), name }));
 
-            const languages = asArray(aiData.languages).map(language => {
+            const languages = pickArray(source, ['languages', 'languageSkills', 'spokenLanguages']).map(language => {
                 if (typeof language === 'string') return { name: language, level: '' };
                 return { name: language.name || language.language || '', level: language.level || language.proficiency || '' };
             }).map(language => ({
@@ -787,39 +841,39 @@
                 level: cleanAiString(language.level)
             })).filter(language => language.name).slice(0, 12);
 
-            const experience = asArray(aiData.experience).map(item => ({
+            const experience = pickArray(source, ['experience', 'experiences', 'employment', 'employmentHistory', 'workExperience', 'workHistory', 'professionalExperience', 'careerHistory', 'jobs', 'roles']).map(item => ({
                 id: createImportId(),
-                jobTitle: cleanAiString(item.jobTitle || item.title || item.role || item.position),
-                employer: cleanAiString(item.employer || item.company || item.organisation || item.organization),
-                startDate: cleanAiString(item.startDate),
-                endDate: cleanAiString(item.endDate),
-                city: cleanAiString(item.city || item.location),
-                description: cleanAiString(item.description || item.responsibilities || item.achievements)
+                jobTitle: cleanAiString(item.jobTitle || item.job_title || item.title || item.role || item.position || item.designation),
+                employer: cleanAiString(item.employer || item.company || item.companyName || item.organisation || item.organization || item.organizationName),
+                startDate: cleanAiString(item.startDate || item.start || item.from || item.periodStart),
+                endDate: cleanAiString(item.endDate || item.end || item.to || item.periodEnd || item.current),
+                city: cleanAiString(item.city || item.location || item.place),
+                description: cleanAiText(item.description || item.responsibilities || item.achievements || item.duties || item.bullets || item.highlights || item.summary)
             })).filter(item => item.jobTitle || item.employer || item.description).slice(0, 8);
 
-            const education = asArray(aiData.education).map(item => ({
+            const education = pickArray(source, ['education', 'educationHistory', 'qualifications', 'academicBackground', 'studies']).map(item => ({
                 id: createImportId(),
-                school: cleanAiString(item.school || item.institution || item.provider),
-                degree: cleanAiString(item.degree || item.qualification || item.course),
-                startDate: cleanAiString(item.startDate),
-                endDate: cleanAiString(item.endDate),
-                city: cleanAiString(item.city || item.location),
-                description: cleanAiString(item.description || item.notes)
+                school: cleanAiString(item.school || item.institution || item.institutionName || item.provider || item.university || item.college),
+                degree: cleanAiString(item.degree || item.qualification || item.course || item.program || item.programme || item.certificate),
+                startDate: cleanAiString(item.startDate || item.start || item.from || item.periodStart),
+                endDate: cleanAiString(item.endDate || item.end || item.to || item.periodEnd),
+                city: cleanAiString(item.city || item.location || item.place),
+                description: cleanAiText(item.description || item.notes || item.achievements || item.modules)
             })).filter(item => item.school || item.degree || item.description).slice(0, 6);
 
             const data = {
                 ...fallbackData,
-                firstName: cleanAiString(aiData.firstName) || fallbackData.firstName || '',
-                lastName: cleanAiString(aiData.lastName) || fallbackData.lastName || '',
-                jobTitle: cleanAiString(aiData.jobTitle) || fallbackData.jobTitle || '',
-                email: cleanAiString(aiData.email) || fallbackData.email || '',
-                phone: cleanAiString(aiData.phone) || fallbackData.phone || '',
-                address: cleanAiString(aiData.address) || fallbackData.address || '',
-                postCode: cleanAiString(aiData.postCode || aiData.postcode) || fallbackData.postCode || '',
-                city: cleanAiString(aiData.city) || fallbackData.city || '',
-                summary: cleanAiString(aiData.summary) || fallbackData.summary || '',
-                website: cleanAiString(aiData.website) || fallbackData.website || '',
-                linkedin: cleanAiString(aiData.linkedin) || fallbackData.linkedin || '',
+                firstName: pickString(source, ['firstName', 'first_name', 'givenName', 'given_name', 'name.first', 'name.given', 'personal.firstName', 'personalDetails.firstName', 'personalInformation.firstName']) || fallbackFirstName,
+                lastName: pickString(source, ['lastName', 'last_name', 'surname', 'familyName', 'family_name', 'name.last', 'name.family', 'personal.lastName', 'personalDetails.lastName', 'personalInformation.lastName']) || fallbackLastName,
+                jobTitle: pickString(source, ['jobTitle', 'job_title', 'title', 'headline', 'currentRole', 'current_role', 'currentTitle', 'profession', 'occupation', 'targetJobTitle', 'profile.jobTitle']) || fallbackData.jobTitle || '',
+                email: pickString(source, ['email', 'emailAddress', 'email_address', 'contact.email', 'contactDetails.email', 'personal.email', 'personalDetails.email']) || fallbackData.email || '',
+                phone: pickString(source, ['phone', 'phoneNumber', 'phone_number', 'mobile', 'mobileNumber', 'mobile_number', 'cell', 'cellphone', 'telephone', 'contactNumber', 'contact.phone', 'contact.phoneNumber', 'contact.mobile', 'contact.mobileNumber', 'contact.cell', 'contactDetails.phone', 'contactDetails.phoneNumber', 'contactDetails.mobile', 'contactDetails.mobileNumber']) || fallbackData.phone || '',
+                address: pickString(source, ['address', 'streetAddress', 'street_address', 'location.address', 'contact.address', 'contactDetails.address']) || fallbackData.address || '',
+                postCode: pickString(source, ['postCode', 'postcode', 'postalCode', 'postal_code', 'zip', 'location.postCode', 'location.postalCode', 'address.postCode', 'address.postalCode', 'contact.postCode', 'contact.postalCode', 'contactDetails.postCode', 'contactDetails.postalCode']) || fallbackData.postCode || '',
+                city: pickString(source, ['city', 'town', 'location.city', 'location.town', 'address.city', 'contact.city', 'contactDetails.city']) || fallbackData.city || '',
+                summary: pickText(source, ['summary', 'professionalSummary', 'professional_summary', 'profileSummary', 'careerSummary', 'career_summary', 'profile', 'about', 'aboutMe', 'personalStatement']) || fallbackData.summary || '',
+                website: pickString(source, ['website', 'portfolio', 'portfolioUrl', 'portfolio_url', 'site', 'links.website']) || fallbackData.website || '',
+                linkedin: pickString(source, ['linkedin', 'linkedIn', 'linkedinUrl', 'linkedin_url', 'links.linkedin']) || fallbackData.linkedin || '',
                 experience: experience.length ? experience : (fallbackData.experience || []),
                 education: education.length ? education : (fallbackData.education || []),
                 skills: skills.length ? skills : (fallbackData.skills || []),

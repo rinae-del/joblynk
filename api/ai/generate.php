@@ -4,7 +4,7 @@
  * Server-side proxy for DeepSeek AI generation.
  * 
  * POST — Accepts a prompt, calls DeepSeek API using admin-configured key,
- *         returns generated content. Authenticated users only.
+ *         returns generated content. Cover letters require auth; CV import may run before sign-in.
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -14,10 +14,6 @@ require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();
 
-if (!isset($_SESSION['user_id'])) {
-    jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);
-}
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonResponse(['success' => false, 'message' => 'Method not allowed.'], 405);
 }
@@ -26,8 +22,16 @@ $body = getJsonBody();
 $prompt = trim($body['prompt'] ?? '');
 $task = trim($body['task'] ?? 'cover_letter');
 
+if ($task !== 'cv_import' && !isset($_SESSION['user_id'])) {
+    jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);
+}
+
 if (!$prompt) {
     jsonResponse(['success' => false, 'message' => 'Prompt is required.'], 422);
+}
+
+if ($task === 'cv_import' && strlen($prompt) > 26000) {
+    jsonResponse(['success' => false, 'message' => 'CV text is too long to process.'], 413);
 }
 
 $systemContent = 'You are a professional cover letter writer.';
