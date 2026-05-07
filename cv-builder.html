@@ -11,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=20260419">
+    <link rel="stylesheet" href="style.css?v=20260507-mobile">
 </head>
 
 <body>
@@ -29,6 +29,7 @@
         <div class="topbar-right">
             <button class="topbar-btn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
             <button class="topbar-btn" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+            <button class="topbar-btn mobile-fab" id="btnMobileFab" aria-label="Preview CV" data-label="Preview"><i class="fa-solid fa-eye"></i></button>
             <button class="topbar-btn-download" id="btnPdf"><i class="fa-solid fa-download"></i> Download</button>
         </div>
     </header>
@@ -112,8 +113,6 @@
                             <button class="chip" data-field="gender"><i class="fa-solid fa-plus"></i> Gender</button>
                             <button class="chip" data-field="nationality"><i class="fa-solid fa-plus"></i>
                                 Nationality</button>
-                            <button class="chip" data-field="civilStatus"><i class="fa-solid fa-plus"></i> Civil
-                                status</button>
                             <button class="chip" data-field="website"><i class="fa-solid fa-plus"></i> Website</button>
                             <button class="chip" data-field="linkedin"><i class="fa-solid fa-plus"></i>
                                 LinkedIn</button>
@@ -477,9 +476,6 @@
 
     </div>
 
-    <!-- Mobile FAB -->
-    <button class="mobile-fab" id="btnMobileFab"><i class="fa-solid fa-eye"></i></button>
-
     <!-- Guest Auth Modal -->
     <div id="guestAuthModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem;">
         <div style="background:#fff; border-radius:20px; max-width:420px; width:100%; padding:2.5rem; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.25); position:relative;">
@@ -499,7 +495,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="cv-builder.js?v=20260419"></script>
+    <script src="cv-builder.js?v=20260507-import"></script>
 </body>
 
 </html>

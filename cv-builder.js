@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         photoUrl: '',
         // Optional fields
         dateOfBirth: '', placeOfBirth: '', drivingLicence: '',
-        gender: '', nationality: '', civilStatus: '',
+        gender: '', nationality: '',
         website: '', linkedin: ''
     };
 
@@ -236,7 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     // Check if we're returning from sign-in with a linked CV
     const linkedCvId = localStorage.getItem('JobLynk_linked_cv_id');
-    let docId = linkedCvId || new URLSearchParams(window.location.search).get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const startBlank = urlParams.get('blank') === '1';
+    let docId = linkedCvId || urlParams.get('id');
     if (linkedCvId) {
         localStorage.removeItem('JobLynk_linked_cv_id');
         window.history.replaceState({}, '', '?id=' + linkedCvId);
@@ -247,9 +249,52 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAccentColor = '#3B4BA6';
     let serverDocId = isNew ? null : docId; // Track the DB id
 
+    function applyCvRecord(record) {
+        const recordData = record?.data || record || {};
+        Object.keys(cvData).forEach(key => {
+            if (recordData[key] !== undefined) cvData[key] = recordData[key];
+        });
+        if (record?.accentColor) currentAccentColor = record.accentColor;
+
+        const titleEl = document.querySelector('.topbar-title');
+        if (titleEl && record?.name) titleEl.textContent = record.name;
+
+        document.querySelectorAll('[data-cv]').forEach(input => {
+            const key = input.getAttribute('data-cv');
+            if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) input.value = cvData[key];
+        });
+
+        if (cvData.photoUrl) {
+            const avatarImg = $('avatarPreview');
+            const avatarIcon = $('avatarIcon');
+            if (avatarImg) { avatarImg.src = cvData.photoUrl; avatarImg.style.display = 'block'; }
+            if (avatarIcon) avatarIcon.style.display = 'none';
+        }
+    }
+
     async function loadData() {
         // Wait for auth check to complete
         await authReady;
+
+        if (isNew && startBlank) {
+            localStorage.removeItem('JobLynk_imported_cv_draft');
+            ensureNewCvName();
+            return;
+        }
+
+        if (isNew) {
+            try {
+                const importedRaw = localStorage.getItem('JobLynk_imported_cv_draft');
+                if (importedRaw) {
+                    applyCvRecord(JSON.parse(importedRaw));
+                    localStorage.removeItem('JobLynk_imported_cv_draft');
+                    return;
+                }
+            } catch (error) {
+                console.warn('Imported CV draft load failed:', error);
+                localStorage.removeItem('JobLynk_imported_cv_draft');
+            }
+        }
 
         // Guest mode with no doc ID: try loading guest CV from localStorage
         if (!isLoggedIn && isNew) {
@@ -528,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const optionalLabels = {
         dateOfBirth: 'Date of birth', placeOfBirth: 'Place of birth',
         drivingLicence: 'Driving licence', gender: 'Gender',
-        nationality: 'Nationality', civilStatus: 'Civil status',
+        nationality: 'Nationality',
         website: 'Website', linkedin: 'LinkedIn'
     };
 
@@ -627,11 +672,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // MOBILE TOGGLE
     // ============================
     $('btnMobileFab')?.addEventListener('click', () => {
-        $('previewPane').classList.add('open');
+        const previewPane = $('previewPane');
+        const mobileFab = $('btnMobileFab');
+        const fabIcon = mobileFab?.querySelector('i');
+        if (!previewPane) return;
+        const isOpen = previewPane.classList.toggle('open');
+        if (fabIcon) fabIcon.className = isOpen ? 'fa-solid fa-pen' : 'fa-solid fa-eye';
+        mobileFab?.setAttribute('aria-label', isOpen ? 'Back to editor' : 'Preview CV');
+        mobileFab?.setAttribute('data-label', isOpen ? 'Edit' : 'Preview');
     });
     // Close on swipe right or ESC – simplified: click topbar back when preview is open
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') $('previewPane')?.classList.remove('open');
+        if (e.key === 'Escape') {
+            $('previewPane')?.classList.remove('open');
+            const mobileFab = $('btnMobileFab');
+            const fabIcon = mobileFab?.querySelector('i');
+            if (fabIcon) fabIcon.className = 'fa-solid fa-eye';
+            mobileFab?.setAttribute('aria-label', 'Preview CV');
+            mobileFab?.setAttribute('data-label', 'Preview');
+        }
     });
 
     // ============================
