@@ -566,29 +566,34 @@ body {
     flex-direction: column;
 }
 
+.cv-pdf-export-host {
+    position: fixed;
+    top: 0;
+    left: -10000px;
+    width: 210mm;
+    background: #fff;
+    pointer-events: none;
+    z-index: -1;
+}
+
 /* Export-only: Remove scaling and shadow for PDF export */
 .a4-paper.export-pdf {
     transform: none !important;
     box-shadow: none !important;
     width: 210mm !important;
+    height: auto !important;
     min-height: 297mm !important;
     margin: 0 !important;
     overflow: visible !important;
+    transition: none !important;
 }
 
 /* Page break rules for PDF export */
 .a4-paper.export-pdf .cv-main-block,
-.a4-paper.export-pdf .cv-sidebar-block {
+.a4-paper.export-pdf .cv-sidebar-block,
+.a4-paper.export-pdf .cv-entry {
     page-break-inside: avoid;
     break-inside: avoid;
-}
-.a4-paper.export-pdf .cv-main-block {
-    page-break-before: auto;
-    break-before: auto;
-}
-.a4-paper.export-pdf .cv-main-block:not(:first-child) {
-    page-break-before: always;
-    break-before: page;
 }
 .a4-paper.export-pdf .cv-header-block,
 .a4-paper.export-pdf .cv-wave {
@@ -1963,6 +1968,10 @@ body {
    PRINT
    ====================================== */
 @media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
 
     .topbar,
     .editor-pane,
@@ -1991,8 +2000,10 @@ body {
     .a4-paper {
         transform: none !important;
         box-shadow: none !important;
-        width: 100% !important;
+        width: 210mm !important;
+        min-height: 297mm !important;
         margin: 0 !important;
+        overflow: visible !important;
     }
 
     .cv-header-block,

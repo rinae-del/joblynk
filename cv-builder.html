@@ -11,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=20260507-cvtools3">
+    <link rel="stylesheet" href="style.css?v=20260507-cvpdf1">
 </head>
 
 <body>
@@ -61,11 +61,11 @@
                                 <input type="file" id="photoUpload" accept="image/*" style="display:none;">
                             </div>
                             <div class="input-group">
-                                <label for="firstName">Given name</label>
+                                <label for="firstName">First name</label>
                                 <input type="text" id="firstName" data-cv="firstName" autocomplete="off">
                             </div>
                             <div class="input-group">
-                                <label for="lastName">Family name</label>
+                                <label for="lastName">Last name</label>
                                 <input type="text" id="lastName" data-cv="lastName" autocomplete="off">
                             </div>
                         </div>
@@ -504,8 +504,9 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="cv-builder.js?v=20260507-cvtools"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="cv-builder.js?v=20260507-cvpdf1"></script>
 </body>
 
 </html>

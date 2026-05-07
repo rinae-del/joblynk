@@ -1005,7 +1005,140 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     // PDF / DOWNLOAD
     // ============================
-    $('btnPdf')?.addEventListener('click', () => {
+    const A4_WIDTH_MM = 210;
+    const A4_HEIGHT_MM = 297;
+
+    function waitForExportImages(root) {
+        const pendingImages = Array.from(root.querySelectorAll('img'))
+            .filter(img => img.src && !img.complete);
+
+        if (!pendingImages.length) return Promise.resolve();
+
+        return Promise.all(pendingImages.map(img => new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+        })));
+    }
+
+    function createExportClone(sourceElement) {
+        const host = document.createElement('div');
+        host.className = 'cv-pdf-export-host';
+
+        const clone = sourceElement.cloneNode(true);
+        clone.id = 'cvPaperExport';
+        clone.classList.add('export-pdf');
+        clone.style.transform = 'none';
+        clone.style.transition = 'none';
+
+        host.appendChild(clone);
+        document.body.appendChild(host);
+        return { host, clone };
+    }
+
+    function findA4Break(canvas, context, startY, pageHeightPx) {
+        const targetY = Math.min(canvas.height, startY + pageHeightPx);
+        if (targetY >= canvas.height) return targetY - startY;
+
+        const minY = startY + Math.floor(pageHeightPx * 0.82);
+        const sampleStep = Math.max(8, Math.floor(canvas.width / 160));
+        let bestY = targetY;
+        let bestScore = Number.POSITIVE_INFINITY;
+
+        for (let y = targetY - 1; y >= minY; y -= 4) {
+            const row = context.getImageData(0, y, canvas.width, 1).data;
+            let score = 0;
+
+            for (let x = 0; x < canvas.width; x += sampleStep) {
+                const index = x * 4;
+                const alpha = row[index + 3];
+                const red = row[index];
+                const green = row[index + 1];
+                const blue = row[index + 2];
+
+                if (alpha > 10 && (red < 246 || green < 246 || blue < 246)) score += 1;
+            }
+
+            if (score < bestScore) {
+                bestScore = score;
+                bestY = y;
+                if (score === 0) break;
+            }
+        }
+
+        return Math.max(1, bestY - startY);
+    }
+
+    async function downloadA4Pdf(sourceElement, fileName) {
+        if (typeof html2canvas !== 'function') {
+            throw new Error('PDF renderer is not ready yet. Please try again.');
+        }
+
+        const JsPdf = window.jspdf?.jsPDF || window.jsPDF;
+        if (!JsPdf) {
+            throw new Error('PDF generator is not ready yet. Please try again.');
+        }
+
+        const { host, clone } = createExportClone(sourceElement);
+
+        try {
+            if (document.fonts?.ready) await document.fonts.ready;
+            await waitForExportImages(clone);
+            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+            const exportWidth = clone.scrollWidth;
+            const exportHeight = Math.max(clone.scrollHeight, Math.ceil(exportWidth * A4_HEIGHT_MM / A4_WIDTH_MM));
+            const canvas = await html2canvas(clone, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                width: exportWidth,
+                height: exportHeight,
+                windowWidth: exportWidth,
+                windowHeight: exportHeight
+            });
+
+            const sourceContext = canvas.getContext('2d', { willReadFrequently: true });
+            const pageHeightPx = Math.floor(canvas.width * A4_HEIGHT_MM / A4_WIDTH_MM);
+            const pdf = new JsPdf({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+            let y = 0;
+            let pageIndex = 0;
+
+            while (y < canvas.height) {
+                const sliceHeight = findA4Break(canvas, sourceContext, y, pageHeightPx);
+                const pageCanvas = document.createElement('canvas');
+                pageCanvas.width = canvas.width;
+                pageCanvas.height = pageHeightPx;
+
+                const pageContext = pageCanvas.getContext('2d');
+                pageContext.fillStyle = '#ffffff';
+                pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+                pageContext.drawImage(
+                    canvas,
+                    0,
+                    y,
+                    canvas.width,
+                    sliceHeight,
+                    0,
+                    0,
+                    canvas.width,
+                    sliceHeight
+                );
+
+                if (pageIndex > 0) pdf.addPage('a4', 'portrait');
+                pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'FAST');
+
+                y += sliceHeight;
+                pageIndex += 1;
+            }
+
+            pdf.save(fileName);
+        } finally {
+            host.remove();
+        }
+    }
+
+    $('btnPdf')?.addEventListener('click', async () => {
         // Guest mode: save state and prompt sign-in
         if (!isLoggedIn) {
             // Ensure latest state is saved
@@ -1028,27 +1161,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const button = $('btnPdf');
         const element = $('cvPaper');
         const cvName = sanitizeFileName(getCurrentCvTitle() || buildDefaultCvName());
-        const opt = {
-            margin:       0,
-            filename:     `${cvName}.pdf`,
-            image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  { scale: 3, useCORS: true, logging: false, backgroundColor: '#fff' },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        // Add export-pdf class and remove transform for clean capture
-        element.classList.add('export-pdf');
-        const origTransform = element.style.transform;
-        element.style.transform = 'none';
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Restore state
-            element.classList.remove('export-pdf');
-            element.style.transform = origTransform;
-        }).catch(() => {
-            element.classList.remove('export-pdf');
-            element.style.transform = origTransform;
-        });
+        const originalHtml = button?.innerHTML;
+
+        try {
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing';
+            }
+            await downloadA4Pdf(element, `${cvName}.pdf`);
+        } catch (error) {
+            console.error('PDF export failed:', error);
+            alert(error.message || 'Could not download the CV. Please try again.');
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        }
     });
 
     // ============================
