@@ -11,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=20260507-mobile">
+    <link rel="stylesheet" href="style.css?v=20260507-cvtools3">
 </head>
 
 <body>
@@ -98,7 +98,7 @@
                             </div>
                             <div class="input-group">
                                 <label for="city">City</label>
-                                <input type="text" id="city" data-cv="city" autocomplete="off">
+                                <select id="city" data-cv="city" data-city-select></select>
                             </div>
                         </div>
 
@@ -403,10 +403,15 @@
                 </div>
             </div>
 
+            <button class="template-side-toggle active" id="btnTemplatePreviewToggle" type="button" data-template-toggle aria-controls="templatePanel" aria-expanded="true" aria-pressed="true">
+                <i class="fa-solid fa-table-columns"></i>
+                <span>Templates</span>
+            </button>
+
             <!-- Preview Bottom Toolbar -->
             <div class="preview-toolbar">
                 <div class="toolbar-group">
-                    <button class="toolbar-btn active" id="btnTemplate" title="Templates"><i
+                    <button class="toolbar-btn active" id="btnTemplate" data-template-toggle aria-pressed="true" title="Templates"><i
                             class="fa-solid fa-table-columns"></i> <i class="fa-solid fa-caret-down"></i></button>
                 </div>
 
@@ -468,6 +473,9 @@
                 </div>
 
                 <div class="toolbar-group">
+                    <button class="toolbar-btn toolbar-btn-labeled active" id="btnTemplateToggle" data-template-toggle aria-pressed="true" title="Templates">
+                        <i class="fa-solid fa-table-columns"></i><span>Templates</span>
+                    </button>
                     <button class="toolbar-btn" title="Fullscreen" id="btnFullscreen"><i
                             class="fa-solid fa-expand"></i></button>
                 </div>
@@ -475,6 +483,8 @@
         </aside>
 
     </div>
+
+    <datalist id="skillSuggestions"></datalist>
 
     <!-- Guest Auth Modal -->
     <div id="guestAuthModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem;">
@@ -495,7 +505,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="cv-builder.js?v=20260507-import"></script>
+    <script src="cv-builder.js?v=20260507-cvtools"></script>
 </body>
 
 </html>

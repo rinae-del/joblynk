@@ -96,6 +96,31 @@ document.addEventListener('DOMContentLoaded', () => {
         { value: 'Basic', label: 'Basic' }
     ];
 
+    const cityOptions = [
+        'Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Gqeberha', 'Port Elizabeth',
+        'Bloemfontein', 'Polokwane', 'Mbombela', 'Nelspruit', 'East London', 'Kimberley',
+        'Pietermaritzburg', 'Rustenburg', 'Mthatha', 'George', 'Welkom', 'Vereeniging',
+        'Vanderbijlpark', 'Centurion', 'Sandton', 'Midrand', 'Roodepoort', 'Soweto',
+        'Benoni', 'Boksburg', 'Kempton Park', 'Alberton', 'Randburg', 'Brakpan',
+        'Springs', 'Krugersdorp', 'Tembisa', 'Umlazi', 'Pinetown', 'Chatsworth',
+        'Umhlanga', 'Ballito', 'Stellenbosch', 'Paarl', 'Worcester', 'Bellville',
+        'Brackenfell', 'Khayelitsha', 'Mitchells Plain', 'Middelburg', 'Emalahleni',
+        'Secunda', 'Newcastle', 'Ladysmith', 'Klerksdorp', 'Potchefstroom', 'Mahikeng',
+        'Upington', 'Queenstown', 'Other / Remote'
+    ].map(city => ({ value: city, label: city }));
+
+    const skillSuggestionValues = [
+        'Administration', 'Attention to detail', 'Bookkeeping', 'Budgeting', 'Business analysis',
+        'Call centre support', 'Cash handling', 'Communication', 'Conflict resolution',
+        'Content writing', 'CRM', 'Customer service', 'Data analysis', 'Data capturing',
+        'Digital marketing', 'Email management', 'Excel', 'Financial reporting', 'Graphic design',
+        'Inventory management', 'JavaScript', 'Leadership', 'Microsoft Office', 'Payroll',
+        'Power BI', 'Presentation skills', 'Problem solving', 'Project coordination',
+        'Project management', 'Python', 'Recruitment', 'Report writing', 'Retail sales',
+        'Sales', 'SEO', 'Social media management', 'SQL', 'Stock control', 'Teamwork',
+        'Time management', 'Training', 'UI/UX design', 'WordPress'
+    ];
+
     function escapeHtml(value = '') {
         return String(value)
             .replace(/&/g, '&amp;')
@@ -126,6 +151,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     `<option value="${escapeHtml(option.value)}"${option.value === selectedValue ? ' selected' : ''}>${escapeHtml(option.label)}</option>`
                 )
             )
+            .join('');
+    }
+
+    function buildCityOptions(selectedValue, placeholder = 'Select city') {
+        return buildSelectOptions(cityOptions, selectedValue, placeholder);
+    }
+
+    function hydrateCitySelect(select = $('city'), selectedValue = cvData.city, placeholder = 'Select city') {
+        if (!select) return;
+        select.innerHTML = buildCityOptions(selectedValue, placeholder);
+    }
+
+    function renderSkillSuggestions() {
+        const datalist = $('skillSuggestions');
+        if (!datalist) return;
+        datalist.innerHTML = skillSuggestionValues
+            .map(skill => `<option value="${escapeHtml(skill)}"></option>`)
             .join('');
     }
 
@@ -259,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const titleEl = document.querySelector('.topbar-title');
         if (titleEl && record?.name) titleEl.textContent = record.name;
 
+        hydrateCitySelect($('city'), cvData.city);
         document.querySelectorAll('[data-cv]').forEach(input => {
             const key = input.getAttribute('data-cv');
             if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) input.value = cvData[key];
@@ -310,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (guest.accentColor) currentAccentColor = guest.accentColor;
                     const titleEl = document.querySelector('.topbar-title');
                     if (titleEl && guest.name) titleEl.textContent = guest.name;
+                    hydrateCitySelect($('city'), cvData.city);
                     document.querySelectorAll('[data-cv]').forEach(inp => {
                         const key = inp.getAttribute('data-cv');
                         if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
@@ -342,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (doc.accent_color) currentAccentColor = doc.accent_color;
                 const titleEl = document.querySelector('.topbar-title');
                 if (titleEl) titleEl.textContent = doc.name || TITLE_DEFAULT;
+                hydrateCitySelect($('city'), cvData.city);
                 document.querySelectorAll('[data-cv]').forEach(inp => {
                     const key = inp.getAttribute('data-cv');
                     if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
@@ -369,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (ex.accentColor) currentAccentColor = ex.accentColor;
                     const titleEl = document.querySelector('.topbar-title');
                     if (titleEl) titleEl.textContent = ex.name || TITLE_DEFAULT;
+                    hydrateCitySelect($('city'), cvData.city);
                     document.querySelectorAll('[data-cv]').forEach(inp => {
                         const key = inp.getAttribute('data-cv');
                         if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
@@ -804,7 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="input-group"><label>End date</label>${buildMonthYearControl('experience', exp.id, 'endDate', exp.endDate)}</div>
                     </div>
                     <div class="form-row">
-                        <div class="input-group"><label>City</label><input class="dyn" data-arr="experience" data-id="${exp.id}" data-key="city" value="${exp.city}" autocomplete="off"></div>
+                        <div class="input-group"><label>City</label><select class="dyn" data-arr="experience" data-id="${exp.id}" data-key="city">${buildCityOptions(exp.city, 'Select city')}</select></div>
                     </div>
                     <div class="form-row">
                         <div class="input-group full-width"><label>Job Description</label><textarea class="dyn" data-arr="experience" data-id="${exp.id}" data-key="description" rows="3">${exp.description}</textarea></div>
@@ -839,6 +885,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="input-group"><label>End date</label>${buildMonthYearControl('education', edu.id, 'endDate', edu.endDate)}</div>
                     </div>
                     <div class="form-row">
+                        <div class="input-group"><label>City</label><select class="dyn" data-arr="education" data-id="${edu.id}" data-key="city">${buildCityOptions(edu.city, 'Select city')}</select></div>
+                    </div>
+                    <div class="form-row">
                         <div class="input-group full-width"><label>Education Description</label><textarea class="dyn" data-arr="education" data-id="${edu.id}" data-key="description" rows="3">${edu.description}</textarea></div>
                     </div>
                 </div>
@@ -860,7 +909,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.skills.length-1?'open':''}" id="sk-${s.id}">
                     <div class="form-row">
-                        <div class="input-group full-width"><label>Skill</label><input class="dyn" data-arr="skills" data-id="${s.id}" data-key="name" value="${s.name}" autocomplete="off"></div>
+                        <div class="input-group full-width"><label>Skill</label><input class="dyn" list="skillSuggestions" data-arr="skills" data-id="${s.id}" data-key="name" value="${s.name}" autocomplete="off" placeholder="Start typing a skill"></div>
                     </div>
                 </div>
             </div>
@@ -1066,6 +1115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const templatePanel = $('templatePanel');
     const templateCarousel = $('templateCarousel');
     const templateCards = Array.from(document.querySelectorAll('.template-card'));
+    const templateToggleButtons = Array.from(document.querySelectorAll('[data-template-toggle]'));
     let templateWheelLocked = false;
 
     function syncTemplateStageMetrics() {
@@ -1104,16 +1154,27 @@ document.addEventListener('DOMContentLoaded', () => {
         syncTemplateCardStates();
     }
 
-    $('btnTemplate')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        templatePanel.classList.toggle('open');
-        if (templatePanel.classList.contains('open')) {
-            requestAnimationFrame(() => centerActiveTemplate('smooth'));
-        }
+    function setTemplatePanelOpen(isOpen) {
+        if (!templatePanel) return;
+        templatePanel.classList.toggle('open', isOpen);
+        templateToggleButtons.forEach(button => {
+            button.classList.toggle('active', isOpen);
+            button.setAttribute('aria-pressed', String(isOpen));
+            if (button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', String(isOpen));
+        });
+        if (isOpen) requestAnimationFrame(() => centerActiveTemplate('smooth'));
+    }
+
+    templateToggleButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllDropdowns();
+            setTemplatePanelOpen(!templatePanel.classList.contains('open'));
+        });
     });
+
     $('btnCloseTemplates')?.addEventListener('click', () => {
-        templatePanel.classList.remove('open');
+        setTemplatePanelOpen(false);
     });
 
     let currentTemplate = 'classic';
@@ -1259,15 +1320,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close template panel when clicking outside
     document.addEventListener('click', (e) => {
-        if (!templatePanel.contains(e.target) && e.target !== $('btnTemplate') && !$('btnTemplate').contains(e.target)) {
-            templatePanel.classList.remove('open');
+        if (!templatePanel.contains(e.target) && !e.target.closest('[data-template-toggle]')) {
+            setTemplatePanelOpen(false);
         }
     });
 
     // ============================
     // INITIALIZE: Load saved data
     // ============================
+    hydrateCitySelect();
+    renderSkillSuggestions();
+
     loadData().then(() => {
+        hydrateCitySelect($('city'), cvData.city);
         hydrateOptionalFieldsFromData();
         ensureNewCvName();
         renderOptionalFields();

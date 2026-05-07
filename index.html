@@ -650,6 +650,21 @@
             return cities.find(city => new RegExp(`\\b${city}\\b`, 'i').test(text)) || '';
         };
 
+        const createImportId = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+
+        const buildFallbackSummary = ({ jobTitle, skills, experience, education }) => {
+            const skillNames = skills.map(skill => skill.name).filter(Boolean).slice(0, 4);
+            const latestRole = experience[0]?.jobTitle || jobTitle || 'professional';
+            const latestEmployer = experience[0]?.employer ? ` at ${experience[0].employer}` : '';
+            const educationLine = education[0]?.degree || education[0]?.school || '';
+            const summaryParts = [
+                `${latestRole} with practical experience${latestEmployer} and a track record of contributing to organised, reliable work.`
+            ];
+            if (skillNames.length) summaryParts.push(`Skilled in ${skillNames.join(', ')} with a focus on accuracy, communication and measurable results.`);
+            if (educationLine) summaryParts.push(`Backed by ${educationLine} and ready to add value in a professional team environment.`);
+            return summaryParts.join(' ');
+        };
+
         const buildImportedCvData = (rawText, fileName) => {
             const normalizedText = normalizeImportedText(rawText);
             const lines = normalizedText.split('\n').map(line => line.trim()).filter(Boolean);
@@ -679,12 +694,12 @@
             const educationText = findSectionText(lines, ['education', 'qualifications']);
             const postCodeMatch = normalizedText.match(/\b\d{4}\b/);
             const city = detectCity(normalizedText);
-            const skills = splitListItems(skillsText).map(name => ({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), name }));
+            const skills = splitListItems(skillsText).map(name => ({ id: createImportId(), name }));
             const languages = splitListItems(languageText)
                 .filter(name => /english|afrikaans|zulu|xhosa|sotho|setswana|sepedi|tsonga|swati|venda|ndebele|french|portuguese|german|spanish/i.test(name))
-                .map(name => ({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()), name, level: '' }));
+                .map(name => ({ id: createImportId(), name, level: '' }));
             const experience = experienceText ? [{
-                id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+                id: createImportId(),
                 jobTitle: possibleJobTitle,
                 employer: '',
                 startDate: '',
@@ -693,7 +708,7 @@
                 description: experienceText.slice(0, 1200)
             }] : [];
             const education = educationText ? [{
-                id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+                id: createImportId(),
                 school: '',
                 degree: educationText.split('\n')[0] || '',
                 startDate: '',
@@ -701,6 +716,7 @@
                 city,
                 description: educationText.slice(0, 800)
             }] : [];
+            const summary = summaryText || buildFallbackSummary({ jobTitle: possibleJobTitle, skills, experience, education });
 
             return {
                 id: 'import_' + Date.now(),
@@ -717,7 +733,7 @@
                     address: '',
                     postCode: postCodeMatch ? postCodeMatch[0] : '',
                     city,
-                    summary: summaryText.slice(0, 900),
+                    summary: summary.slice(0, 900),
                     hobbies: '',
                     experience,
                     education,
@@ -735,6 +751,139 @@
             };
         };
 
+        const cleanAiString = value => String(value || '').replace(/\s+/g, ' ').trim();
+
+        const asArray = value => {
+            if (Array.isArray(value)) return value;
+            if (!value) return [];
+            if (typeof value === 'object') return [value];
+            return splitListItems(String(value));
+        };
+
+        const parseAiJson = content => {
+            const cleaned = String(content || '')
+                .replace(/^```(?:json)?/i, '')
+                .replace(/```$/i, '')
+                .trim();
+            const start = cleaned.indexOf('{');
+            const end = cleaned.lastIndexOf('}');
+            if (start < 0 || end < start) throw new Error('AI did not return JSON.');
+            return JSON.parse(cleaned.slice(start, end + 1));
+        };
+
+        const normalizeAiCvDraft = (aiData, fallbackDraft, fileName) => {
+            const fallbackData = fallbackDraft.data || {};
+            const skills = asArray(aiData.skills).map(skill => {
+                const name = typeof skill === 'string' ? skill : (skill.name || skill.skill || skill.title);
+                return cleanAiString(name);
+            }).filter(Boolean).slice(0, 18).map(name => ({ id: createImportId(), name }));
+
+            const languages = asArray(aiData.languages).map(language => {
+                if (typeof language === 'string') return { name: language, level: '' };
+                return { name: language.name || language.language || '', level: language.level || language.proficiency || '' };
+            }).map(language => ({
+                id: createImportId(),
+                name: cleanAiString(language.name),
+                level: cleanAiString(language.level)
+            })).filter(language => language.name).slice(0, 12);
+
+            const experience = asArray(aiData.experience).map(item => ({
+                id: createImportId(),
+                jobTitle: cleanAiString(item.jobTitle || item.title || item.role || item.position),
+                employer: cleanAiString(item.employer || item.company || item.organisation || item.organization),
+                startDate: cleanAiString(item.startDate),
+                endDate: cleanAiString(item.endDate),
+                city: cleanAiString(item.city || item.location),
+                description: cleanAiString(item.description || item.responsibilities || item.achievements)
+            })).filter(item => item.jobTitle || item.employer || item.description).slice(0, 8);
+
+            const education = asArray(aiData.education).map(item => ({
+                id: createImportId(),
+                school: cleanAiString(item.school || item.institution || item.provider),
+                degree: cleanAiString(item.degree || item.qualification || item.course),
+                startDate: cleanAiString(item.startDate),
+                endDate: cleanAiString(item.endDate),
+                city: cleanAiString(item.city || item.location),
+                description: cleanAiString(item.description || item.notes)
+            })).filter(item => item.school || item.degree || item.description).slice(0, 6);
+
+            const data = {
+                ...fallbackData,
+                firstName: cleanAiString(aiData.firstName) || fallbackData.firstName || '',
+                lastName: cleanAiString(aiData.lastName) || fallbackData.lastName || '',
+                jobTitle: cleanAiString(aiData.jobTitle) || fallbackData.jobTitle || '',
+                email: cleanAiString(aiData.email) || fallbackData.email || '',
+                phone: cleanAiString(aiData.phone) || fallbackData.phone || '',
+                address: cleanAiString(aiData.address) || fallbackData.address || '',
+                postCode: cleanAiString(aiData.postCode || aiData.postcode) || fallbackData.postCode || '',
+                city: cleanAiString(aiData.city) || fallbackData.city || '',
+                summary: cleanAiString(aiData.summary) || fallbackData.summary || '',
+                website: cleanAiString(aiData.website) || fallbackData.website || '',
+                linkedin: cleanAiString(aiData.linkedin) || fallbackData.linkedin || '',
+                experience: experience.length ? experience : (fallbackData.experience || []),
+                education: education.length ? education : (fallbackData.education || []),
+                skills: skills.length ? skills : (fallbackData.skills || []),
+                languages: languages.length ? languages : (fallbackData.languages || [])
+            };
+
+            if (!data.summary) {
+                data.summary = buildFallbackSummary({ jobTitle: data.jobTitle, skills: data.skills, experience: data.experience, education: data.education }).slice(0, 900);
+            }
+
+            return {
+                ...fallbackDraft,
+                id: 'import_ai_' + Date.now(),
+                name: `${data.firstName} ${data.lastName}`.trim() || fileName.replace(/\.[^.]+$/, '') || 'Imported CV',
+                lastEdited: new Date().toISOString(),
+                data
+            };
+        };
+
+        const buildCvImportPrompt = extractedText => `Extract this uploaded CV into strict JSON for the JobLynk CV builder.
+
+Rules:
+- Return JSON only, no markdown and no commentary.
+- Use only facts found in the CV text.
+- If a field is unknown, use an empty string or an empty array.
+- Generate a polished professional summary in 2 to 4 concise sentences from the evidence in the CV. Do not invent employers, qualifications, skills or years of experience.
+- Dates should be "YYYY-MM" where possible, or an empty string.
+
+Return this exact shape:
+{
+  "firstName": "",
+  "lastName": "",
+  "jobTitle": "",
+  "email": "",
+  "phone": "",
+  "address": "",
+  "postCode": "",
+  "city": "",
+  "summary": "",
+  "website": "",
+  "linkedin": "",
+  "experience": [{ "jobTitle": "", "employer": "", "startDate": "", "endDate": "", "city": "", "description": "" }],
+  "education": [{ "school": "", "degree": "", "startDate": "", "endDate": "", "city": "", "description": "" }],
+  "skills": [""],
+  "languages": [{ "name": "", "level": "" }]
+}
+
+CV text:
+${normalizeImportedText(extractedText).slice(0, 18000)}`;
+
+        const buildAiImportedCvData = async (rawText, fileName, fallbackDraft) => {
+            const response = await fetch('api/ai/generate.php', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task: 'cv_import', prompt: buildCvImportPrompt(rawText) })
+            });
+            const result = await response.json().catch(() => null);
+            if (!response.ok || !result?.success) {
+                throw new Error(result?.message || 'AI CV import unavailable.');
+            }
+            return normalizeAiCvDraft(parseAiJson(result.content), fallbackDraft, fileName);
+        };
+
         cvImportFile?.addEventListener('change', async event => {
             const file = event.target.files?.[0];
             if (!file) return;
@@ -742,7 +891,13 @@
                 setImportStatus('Reading your CV and extracting details...', 'loading');
                 const importedText = await extractCvText(file);
                 if (!normalizeImportedText(importedText)) throw new Error('No readable text found in this file.');
-                const draft = buildImportedCvData(importedText, file.name);
+                let draft = buildImportedCvData(importedText, file.name);
+                try {
+                    setImportStatus('Using AI to organise your CV details...', 'loading');
+                    draft = await buildAiImportedCvData(importedText, file.name, draft);
+                } catch (aiError) {
+                    console.warn('AI CV import fell back to local parser:', aiError);
+                }
                 localStorage.setItem('JobLynk_imported_cv_draft', JSON.stringify(draft));
                 setImportStatus('Done. Opening the CV builder...', 'success');
                 window.location.href = 'cv-builder.html?imported=1';

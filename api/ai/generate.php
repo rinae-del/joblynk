@@ -1,9 +1,9 @@
 <?php
 /**
  * /api/ai/generate.php
- * Server-side proxy for DeepSeek AI cover letter generation.
+ * Server-side proxy for DeepSeek AI generation.
  * 
- * POST — Accepts cover letter context, calls DeepSeek API using admin-configured key,
+ * POST — Accepts a prompt, calls DeepSeek API using admin-configured key,
  *         returns generated content. Authenticated users only.
  */
 
@@ -24,9 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $body = getJsonBody();
 $prompt = trim($body['prompt'] ?? '');
+$task = trim($body['task'] ?? 'cover_letter');
 
 if (!$prompt) {
     jsonResponse(['success' => false, 'message' => 'Prompt is required.'], 422);
+}
+
+$systemContent = 'You are a professional cover letter writer.';
+$temperature = 0.7;
+
+if ($task === 'cv_import') {
+    $systemContent = 'You are an expert CV parser and professional resume writer. Extract only information supported by the CV text, structure it accurately, and write concise professional CV summaries.';
+    $temperature = 0.2;
 }
 
 // ── Retrieve DeepSeek API key from admin settings ──
@@ -53,10 +62,10 @@ if (!$apiKey || !is_string($apiKey)) {
 $payload = json_encode([
     'model' => 'deepseek-chat',
     'messages' => [
-        ['role' => 'system', 'content' => 'You are a professional cover letter writer.'],
+        ['role' => 'system', 'content' => $systemContent],
         ['role' => 'user', 'content' => $prompt],
     ],
-    'temperature' => 0.7,
+    'temperature' => $temperature,
 ]);
 
 $ch = curl_init('https://api.deepseek.com/chat/completions');
