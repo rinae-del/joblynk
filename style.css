@@ -576,6 +576,16 @@ body {
     z-index: -1;
 }
 
+.cv-pdf-document {
+    width: 210mm;
+    background: #fff;
+}
+
+.cv-pdf-export-host .a4-paper {
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 /* Export-only: Remove scaling and shadow for PDF export */
 .a4-paper.export-pdf {
     transform: none !important;
@@ -586,6 +596,44 @@ body {
     margin: 0 !important;
     overflow: visible !important;
     transition: none !important;
+}
+
+.a4-paper.export-pdf-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    overflow: hidden !important;
+    page-break-after: always;
+    break-after: page;
+}
+
+.a4-paper.export-pdf-page.cv-continuation-page .cv-header-block {
+    padding-top: 22px;
+    padding-bottom: 18px;
+}
+
+.a4-paper.export-pdf-page.cv-continuation-page .cv-header-label {
+    margin-bottom: 10px;
+    font-size: .68rem;
+}
+
+.a4-paper.export-pdf-page.cv-continuation-page .cv-name {
+    font-size: 1.35rem;
+}
+
+.a4-paper.export-pdf-page.cv-continuation-page .cv-jobtitle {
+    font-size: .9rem;
+}
+
+.a4-paper.export-pdf-page.export-empty-left .cv-col-left,
+.a4-paper.export-pdf-page.export-empty-right .cv-col-right {
+    display: none;
+}
+
+.a4-paper.export-pdf-page.export-empty-left .cv-col-right,
+.a4-paper.export-pdf-page.export-empty-right .cv-col-left {
+    width: 100%;
 }
 
 /* Page break rules for PDF export */

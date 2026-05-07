@@ -1007,6 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     const A4_WIDTH_MM = 210;
     const A4_HEIGHT_MM = 297;
+    const EXPORT_RENDER_SCALE = 2;
 
     function waitForExportImages(root) {
         const pendingImages = Array.from(root.querySelectorAll('img'))
@@ -1020,52 +1021,179 @@ document.addEventListener('DOMContentLoaded', () => {
         })));
     }
 
-    function createExportClone(sourceElement) {
-        const host = document.createElement('div');
-        host.className = 'cv-pdf-export-host';
-
-        const clone = sourceElement.cloneNode(true);
-        clone.id = 'cvPaperExport';
-        clone.classList.add('export-pdf');
-        clone.style.transform = 'none';
-        clone.style.transition = 'none';
-
-        host.appendChild(clone);
-        document.body.appendChild(host);
-        return { host, clone };
+    function removeExportIds(root) {
+        root.removeAttribute?.('id');
+        root.querySelectorAll?.('[id]').forEach(el => el.removeAttribute('id'));
     }
 
-    function findA4Break(canvas, context, startY, pageHeightPx) {
-        const targetY = Math.min(canvas.height, startY + pageHeightPx);
-        if (targetY >= canvas.height) return targetY - startY;
+    function isVisibleForExport(element) {
+        if (!element) return false;
+        const style = window.getComputedStyle(element);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+    }
 
-        const minY = startY + Math.floor(pageHeightPx * 0.82);
-        const sampleStep = Math.max(8, Math.floor(canvas.width / 160));
-        let bestY = targetY;
-        let bestScore = Number.POSITIVE_INFINITY;
+    function cloneExportNode(node) {
+        if (!node) return document.createElement('div');
+        const clone = node.cloneNode(true);
+        removeExportIds(clone);
+        return clone;
+    }
 
-        for (let y = targetY - 1; y >= minY; y -= 4) {
-            const row = context.getImageData(0, y, canvas.width, 1).data;
-            let score = 0;
+    function createExportPage(sourceElement, isFirstPage) {
+        const page = sourceElement.cloneNode(false);
+        page.classList.add('export-pdf', 'export-pdf-page');
+        if (!isFirstPage) page.classList.add('cv-continuation-page');
+        page.style.transform = 'none';
+        page.style.transition = 'none';
+        page.removeAttribute('id');
 
-            for (let x = 0; x < canvas.width; x += sampleStep) {
-                const index = x * 4;
-                const alpha = row[index + 3];
-                const red = row[index];
-                const green = row[index + 1];
-                const blue = row[index + 2];
+        const header = cloneExportNode(sourceElement.querySelector('.cv-header-block'));
+        const contentSource = sourceElement.querySelector('.cv-content');
+        const leftSource = sourceElement.querySelector('.cv-col-left');
+        const rightSource = sourceElement.querySelector('.cv-col-right');
+        const wave = cloneExportNode(sourceElement.querySelector('.cv-wave'));
 
-                if (alpha > 10 && (red < 246 || green < 246 || blue < 246)) score += 1;
-            }
+        const content = contentSource?.cloneNode(false) || document.createElement('div');
+        const left = leftSource?.cloneNode(false) || document.createElement('div');
+        const right = rightSource?.cloneNode(false) || document.createElement('div');
 
-            if (score < bestScore) {
-                bestScore = score;
-                bestY = y;
-                if (score === 0) break;
-            }
+        content.classList.add('cv-content');
+        left.classList.add('cv-col-left');
+        right.classList.add('cv-col-right');
+        removeExportIds(content);
+        removeExportIds(left);
+        removeExportIds(right);
+
+        if (!isFirstPage) {
+            const label = header.querySelector('.cv-header-label');
+            if (label) label.textContent = 'Curriculum vitae continued';
         }
 
-        return Math.max(1, bestY - startY);
+        content.append(left, right);
+        page.append(header, content, wave);
+        return { paper: page, left, right };
+    }
+
+    function createBlockShell(block, listSelector) {
+        const shell = cloneExportNode(block);
+        const list = shell.querySelector(listSelector);
+        if (list) list.innerHTML = '';
+        return { shell, list };
+    }
+
+    function createPaginatedExport(sourceElement) {
+        const host = document.createElement('div');
+        host.className = 'cv-pdf-export-host';
+        document.body.appendChild(host);
+
+        const pages = [];
+        const columnPageIndex = { left: 0, right: 0 };
+
+        const ensurePage = (index) => {
+            while (pages.length <= index) {
+                const page = createExportPage(sourceElement, pages.length === 0);
+                pages.push(page);
+                host.appendChild(page.paper);
+            }
+            return pages[index];
+        };
+
+        const pageOverflows = (page) => page.scrollHeight > page.clientHeight + 2;
+
+        const tryAppend = (columnName, node) => {
+            const page = ensurePage(columnPageIndex[columnName]);
+            page[columnName].appendChild(node);
+            if (!pageOverflows(page.paper)) return true;
+            node.remove();
+            return false;
+        };
+
+        const forceAppend = (columnName, node) => {
+            ensurePage(columnPageIndex[columnName])[columnName].appendChild(node);
+        };
+
+        const addWholeBlock = (columnName, block) => {
+            const node = cloneExportNode(block);
+            if (tryAppend(columnName, node)) return;
+
+            columnPageIndex[columnName] += 1;
+            if (!tryAppend(columnName, node)) forceAppend(columnName, node);
+        };
+
+        const addSplittableBlock = (columnName, block, listSelector) => {
+            const sourceList = block.querySelector(listSelector);
+            const items = Array.from(sourceList?.children || []).filter(isVisibleForExport);
+            if (!items.length) return;
+
+            let currentShell = null;
+            let currentList = null;
+
+            const startShell = () => {
+                const created = createBlockShell(block, listSelector);
+                currentShell = created.shell;
+                currentList = created.list;
+                const page = ensurePage(columnPageIndex[columnName]);
+                page[columnName].appendChild(currentShell);
+
+                if (pageOverflows(page.paper)) {
+                    currentShell.remove();
+                    columnPageIndex[columnName] += 1;
+                    ensurePage(columnPageIndex[columnName])[columnName].appendChild(currentShell);
+                }
+            };
+
+            startShell();
+            items.forEach((item) => {
+                const itemClone = cloneExportNode(item);
+                currentList.appendChild(itemClone);
+
+                if (!pageOverflows(ensurePage(columnPageIndex[columnName]).paper)) return;
+
+                itemClone.remove();
+
+                if (!currentList.children.length) {
+                    currentShell.remove();
+                }
+
+                columnPageIndex[columnName] += 1;
+                startShell();
+                currentList.appendChild(itemClone);
+            });
+        };
+
+        const addColumnBlock = (columnName, block) => {
+            const entries = block.querySelector('.cv-entries');
+            const stackedItems = block.querySelector('.cv-skills-stacked');
+
+            if (entries && entries.children.length > 1) {
+                addSplittableBlock(columnName, block, '.cv-entries');
+                return;
+            }
+
+            if (stackedItems && stackedItems.children.length > 1) {
+                addSplittableBlock(columnName, block, '.cv-skills-stacked');
+                return;
+            }
+
+            addWholeBlock(columnName, block);
+        };
+
+        ensurePage(0);
+
+        Array.from(sourceElement.querySelector('.cv-col-left')?.children || [])
+            .filter(isVisibleForExport)
+            .forEach(block => addColumnBlock('left', block));
+
+        Array.from(sourceElement.querySelector('.cv-col-right')?.children || [])
+            .filter(isVisibleForExport)
+            .forEach(block => addColumnBlock('right', block));
+
+        pages.forEach(page => {
+            page.paper.classList.toggle('export-empty-left', !page.left.children.length);
+            page.paper.classList.toggle('export-empty-right', !page.right.children.length);
+        });
+
+        return { host, pages: pages.map(page => page.paper) };
     }
 
     async function downloadA4Pdf(sourceElement, fileName) {
@@ -1078,58 +1206,31 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error('PDF generator is not ready yet. Please try again.');
         }
 
-        const { host, clone } = createExportClone(sourceElement);
+        const { host, pages } = createPaginatedExport(sourceElement);
 
         try {
             if (document.fonts?.ready) await document.fonts.ready;
-            await waitForExportImages(clone);
+            await waitForExportImages(host);
             await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-            const exportWidth = clone.scrollWidth;
-            const exportHeight = Math.max(clone.scrollHeight, Math.ceil(exportWidth * A4_HEIGHT_MM / A4_WIDTH_MM));
-            const canvas = await html2canvas(clone, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff',
-                width: exportWidth,
-                height: exportHeight,
-                windowWidth: exportWidth,
-                windowHeight: exportHeight
-            });
-
-            const sourceContext = canvas.getContext('2d', { willReadFrequently: true });
-            const pageHeightPx = Math.floor(canvas.width * A4_HEIGHT_MM / A4_WIDTH_MM);
             const pdf = new JsPdf({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
-            let y = 0;
-            let pageIndex = 0;
 
-            while (y < canvas.height) {
-                const sliceHeight = findA4Break(canvas, sourceContext, y, pageHeightPx);
-                const pageCanvas = document.createElement('canvas');
-                pageCanvas.width = canvas.width;
-                pageCanvas.height = pageHeightPx;
-
-                const pageContext = pageCanvas.getContext('2d');
-                pageContext.fillStyle = '#ffffff';
-                pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-                pageContext.drawImage(
-                    canvas,
-                    0,
-                    y,
-                    canvas.width,
-                    sliceHeight,
-                    0,
-                    0,
-                    canvas.width,
-                    sliceHeight
-                );
+            for (let pageIndex = 0; pageIndex < pages.length; pageIndex += 1) {
+                const page = pages[pageIndex];
+                const rect = page.getBoundingClientRect();
+                const canvas = await html2canvas(page, {
+                    scale: EXPORT_RENDER_SCALE,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    width: Math.ceil(rect.width),
+                    height: Math.ceil(rect.height),
+                    windowWidth: Math.ceil(rect.width),
+                    windowHeight: Math.ceil(rect.height)
+                });
 
                 if (pageIndex > 0) pdf.addPage('a4', 'portrait');
-                pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'FAST');
-
-                y += sliceHeight;
-                pageIndex += 1;
+                pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'FAST');
             }
 
             pdf.save(fileName);
