@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260507-theme">
+    <link rel="stylesheet" href="landing.css?v=20260511-client">
 </head>
 
 <body class="landing-page">
@@ -23,7 +23,10 @@
 
     <!-- Navigation -->
     <nav class="landing-nav">
-        <a href="index.html" class="landing-nav-logo">JobLynk.</a>
+        <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
+            <img src="images/logo.png" alt="" class="landing-logo-img">
+            <span class="landing-logo-text">JobLynk</span>
+        </a>
 
         <div class="landing-nav-links">
             <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
@@ -32,6 +35,7 @@
         </div>
 
         <div class="landing-nav-actions">
+            <a href="jobs.html" class="btn-landing btn-landing-outline">View Jobs</a>
             <a href="sign-in.html" class="btn-landing btn-landing-outline">Sign In</a>
             <a href="sign-up.html" class="btn-landing btn-landing-primary">Get Started Free</a>
         </div>
@@ -44,6 +48,7 @@
         <a href="jobs.html">For Job Seekers</a>
         <a href="#for-recruiters">For Recruiters</a>
         <a href="#faq">FAQ</a>
+        <a href="jobs.html">View Jobs</a>
         <a href="sign-in.html">Sign In</a>
         <a href="sign-up.html">Get Started Free</a>
     </div>
@@ -53,17 +58,16 @@
         <div class="hero-content">
             <span class="hero-eyebrow"><i class="fa-solid fa-location-dot"></i> Built for South Africa</span>
 
-            <h1 class="hero-title">The fastest way to land<br>your next role in <span>South Africa.</span></h1>
+            <h1 class="hero-title">The smart link to your next career move in <span>South Africa.</span></h1>
 
             <p class="hero-subtitle">
-                Build a professional ATS-ready CV in 10 minutes, generate tailored cover letters with AI,
-                and apply to live jobs across Johannesburg, Cape Town and Durban in one place.
+                Customise your existing CV or create a new CV using our free tools and templates. Browse live South African jobs and apply when the role feels right.
             </p>
 
             <div class="hero-actions">
-                <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create my CV <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create Free CV <i class="fa-solid fa-arrow-right"></i></a>
                 <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg"><i class="fa-solid fa-briefcase"></i> View Jobs</a>
-                <a href="#how-it-works" class="btn-landing btn-landing-ghost btn-lg"><i class="fa-solid fa-circle-play"></i> See how it works</a>
+                <a href="cover-letter.html" class="btn-landing btn-landing-ghost btn-lg"><i class="fa-solid fa-envelope-open-text"></i> Free AI Cover Letter</a>
             </div>
 
             <ul class="hero-checklist">
@@ -99,16 +103,16 @@
                 <div class="floating-stat stat-top-right">
                     <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
                     <div class="stat-text">
-                        <h4>10,000+</h4>
-                        <p>Active SA Jobs</p>
+                        <h4>Live</h4>
+                        <p>SA job board</p>
                     </div>
                 </div>
 
                 <div class="floating-stat stat-bottom-left">
                     <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
                     <div class="stat-text">
-                        <h4>1,000+</h4>
-                        <p>Hires this year</p>
+                        <h4>Free</h4>
+                        <p>CV tools</p>
                     </div>
                 </div>
             </div>
@@ -156,17 +160,17 @@
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=250&fit=crop&q=80" alt="" class="feature-img">
+                    <img src="images/landing-cv-builder.png" alt="JobLynk CV builder screen" class="feature-img">
                 </div>
                 <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
-                <h3>ATS-Optimised CV Builder</h3>
-                <p>Build a polished, ATS-friendly CV in under 10 minutes. Pass automated filters, catch human eyes, and download a professional PDF instantly.</p>
+                <h3>ATS Optimised CV Builder</h3>
+                <p>Build a polished CV in under 10 minutes. Use templates, edit your details and download a professional PDF instantly.</p>
                 <a href="#cv-start" class="feature-link js-open-cv-start">Try the CV Builder <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
             <div class="feature-card featured">
                 <div class="feature-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=250&fit=crop&q=80" alt="" class="feature-img">
+                    <img src="images/landing-cover-letter.png" alt="JobLynk cover letter builder screen" class="feature-img">
                 </div>
                 <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
                 <h3>AI Cover Letter Engine</h3>
@@ -177,7 +181,7 @@
 
             <div class="feature-card">
                 <div class="feature-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop&q=80" alt="" class="feature-img">
+                    <img src="images/landing-jobs-board.png" alt="JobLynk live jobs board screen" class="feature-img">
                 </div>
                 <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
                 <h3>Live SA Job Board</h3>
@@ -222,25 +226,25 @@
         </div>
     </section>
 
-    <!-- Stats Counter Section -->
+    <!-- Benefits Counter Section -->
     <section class="stats-counter-section">
         <div class="section-container">
             <div class="stats-counter-grid">
                 <div class="stat-counter-item">
-                    <h3>10,000+</h3>
-                    <p>Active job listings</p>
+                    <h3>Free</h3>
+                    <p>CV builder for job seekers</p>
                 </div>
                 <div class="stat-counter-item">
-                    <h3>25,000+</h3>
-                    <p>Registered candidates</p>
+                    <h3>Live</h3>
+                    <p>SA job board access</p>
                 </div>
                 <div class="stat-counter-item">
-                    <h3>1,000+</h3>
-                    <p>Successful hires</p>
+                    <h3>AI</h3>
+                    <p>Cover letter support</p>
                 </div>
                 <div class="stat-counter-item">
-                    <h3>500+</h3>
-                    <p>SA companies hiring</p>
+                    <h3>Track</h3>
+                    <p>Applications in one dashboard</p>
                 </div>
             </div>
         </div>
@@ -254,39 +258,63 @@
                 <h2>Real candidates. Real offers. Real outcomes.</h2>
             </div>
 
-            <div class="testimonials-grid">
+            <div class="testimonials-grid testimonials-grid-expanded">
                 <div class="testimonial-card">
-                    <div class="testimonial-result">3 interviews in 2 weeks</div>
-                    <p class="testimonial-quote">JobLynk's CV builder is a game changer. I applied to 3 roles and got 2 interviews within a week. The ATS-friendly format made all the difference.</p>
+                    <div class="testimonial-result">Interview ready CV</div>
+                    <p class="testimonial-quote">I rebuilt my CV on JobLynk after struggling with old templates. It looked cleaner, read better and helped me apply with more confidence.</p>
                     <div class="testimonial-user">
                         <div class="testimonial-avatar" style="background: linear-gradient(135deg, #6366F1, #A78BFA);">SJ</div>
                         <div class="user-meta">
-                            <h4>Sarah Johannes</h4>
-                            <p>Junior UX Designer · Cape Town</p>
+                            <h4>Sipho Jacobs</h4>
+                            <p>Call Centre Agent, Johannesburg</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="testimonial-card testimonial-card-featured">
-                    <div class="testimonial-result testimonial-result-green">Hired in 21 days</div>
-                    <p class="testimonial-quote">The AI cover letter generator saved me hours. I finally landed my dream internship at a top SA tech firm thanks to JobLynk.</p>
+                    <div class="testimonial-result testimonial-result-green">Stronger applications</div>
+                    <p class="testimonial-quote">The cover letter tool helped me sound professional without overthinking every paragraph. It gave me a solid starting point for each role.</p>
                     <div class="testimonial-user">
                         <div class="testimonial-avatar" style="background: linear-gradient(135deg, #059669, #34D399);">DK</div>
                         <div class="user-meta">
-                            <h4>David Kumalo</h4>
-                            <p>Marketing Intern · Johannesburg</p>
+                            <h4>Danielle Khan</h4>
+                            <p>Customer Success Manager, Cape Town</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="testimonial-card">
-                    <div class="testimonial-result testimonial-result-amber">5x faster shortlists</div>
-                    <p class="testimonial-quote">As a recruiter, finding quality talent used to be hard. JobLynk's matching system makes my job so much easier, and the candidates are quality.</p>
+                    <div class="testimonial-result testimonial-result-amber">Better job search flow</div>
+                    <p class="testimonial-quote">I liked being able to view jobs first, then sign in only when I was ready to apply. It feels simple and built for South African job seekers.</p>
                     <div class="testimonial-user">
                         <div class="testimonial-avatar" style="background: linear-gradient(135deg, #F59E0B, #D97706);">ER</div>
                         <div class="user-meta">
-                            <h4>Elena Rodriguez</h4>
-                            <p>Talent Acquisition · TechScale</p>
+                            <h4>Elroy Radebe</h4>
+                            <p>Junior Data Analyst, Pretoria</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-result testimonial-result-green">Saved time</div>
+                    <p class="testimonial-quote">I could update my CV, check roles and prepare a cover letter from one place. That helped me apply after work without losing track.</p>
+                    <div class="testimonial-user">
+                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8);">MN</div>
+                        <div class="user-meta">
+                            <h4>Michelle Naidoo</h4>
+                            <p>Payroll Administrator, Durban</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-result">Easy to use</div>
+                    <p class="testimonial-quote">The builder made it easy to turn my experience into something presentable. I did not need design skills to get a smart CV.</p>
+                    <div class="testimonial-user">
+                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #EC4899, #F472B6);">LM</div>
+                        <div class="user-meta">
+                            <h4>Lerato Maseko</h4>
+                            <p>Office Administrator, Bloemfontein</p>
                         </div>
                     </div>
                 </div>
@@ -300,8 +328,8 @@
             <div class="recruiter-grid">
                 <div class="recruiter-copy">
                     <span class="eyebrow eyebrow-green">For recruiters &amp; companies</span>
-                    <h2>Hire quality SA talent without the hiring admin.</h2>
-                    <p>Whether you're an agency recruiter or a company hiring directly, JobLynk gives you a simple way to advertise roles, manage applicants, and move strong candidates from shortlist to offer faster.</p>
+                    <h2>Hire quality SA talent without paying traditional job board rates.</h2>
+                    <p>JobLynk is candidate focused first, with recruiter tools that help the right South African talent find and apply to your roles.</p>
                     <ul class="recruiter-points">
                         <li><i class="fa-solid fa-circle-check"></i> Packages built for single hires or multi-role campaigns</li>
                         <li><i class="fa-solid fa-circle-check"></i> Unlimited applicants on every listing</li>
@@ -318,7 +346,7 @@
                 <div class="recruiter-proof-panel">
                     <div class="proof-panel-header">
                         <span class="proof-panel-kicker">Recruiter workspace</span>
-                        <h3>One dashboard for posting roles, reviewing candidates and downloading CVs.</h3>
+                        <h3>One dashboard for posting roles, reviewing candidates and keeping hiring admin under control.</h3>
                     </div>
                     <div class="proof-panel-grid">
                         <div class="proof-panel-metric">
@@ -390,7 +418,7 @@
         <div class="final-cta-inner">
             <div class="final-cta-copy">
                 <h2>Your next role is one application away.</h2>
-                <p>Join 25,000+ South Africans using JobLynk to land better roles, faster. Free forever for job seekers.</p>
+                <p>Use JobLynk to build your CV, create stronger cover letters, browse live roles and apply with confidence. Free forever for job seekers.</p>
             </div>
             <div class="final-cta-actions">
                 <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create CV now <i class="fa-solid fa-arrow-right"></i></a>
@@ -404,7 +432,10 @@
     <footer class="landing-footer">
         <div class="footer-grid">
             <div class="footer-brand">
-                <h3>JobLynk.</h3>
+                <a href="index.html" class="footer-brand-logo" aria-label="JobLynk home">
+                    <img src="images/logo.png" alt="">
+                    <span>JobLynk</span>
+                </a>
                 <p>South Africa's purpose-built hiring platform, connecting the next generation of professionals with the country's most ambitious companies.</p>
             </div>
 
@@ -460,13 +491,13 @@
         <div class="cv-start-dialog" id="cv-start">
             <button class="cv-start-close" type="button" data-close-cv-modal aria-label="Close CV start dialog"><i class="fa-solid fa-xmark"></i></button>
             <span class="eyebrow eyebrow-green">Create your CV</span>
-            <h2 id="cvStartTitle">Start with what you already have, or build from scratch.</h2>
-            <p>Import your current CV and JobLynk will extract the basics into the builder, or start with a clean blank slate.</p>
+            <h2 id="cvStartTitle">Customise your existing CV or create a new CV using our free tools and templates.</h2>
+            <p>Import your current CV and JobLynk will extract the basics into the builder, or create a new CV from a guided template.</p>
 
             <div class="cv-start-options">
                 <label class="cv-start-card cv-import-card" for="cvImportFile">
                     <span class="cv-start-card-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
-                    <strong>Import current CV</strong>
+                    <strong>Customise current CV</strong>
                     <small>Upload PDF, DOCX or TXT. We will prefill names, contact details, summary, skills, experience and education where possible.</small>
                     <span class="cv-start-card-action">Choose file <i class="fa-solid fa-arrow-right"></i></span>
                     <input id="cvImportFile" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain">
@@ -474,9 +505,9 @@
 
                 <a class="cv-start-card cv-blank-card" href="cv-builder.html?blank=1">
                     <span class="cv-start-card-icon"><i class="fa-solid fa-pen-to-square"></i></span>
-                    <strong>Start blank slate</strong>
+                    <strong>Create new CV</strong>
                     <small>Open a fresh CV builder and fill in your details step by step.</small>
-                    <span class="cv-start-card-action">Start blank <i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="cv-start-card-action">Create new CV <i class="fa-solid fa-arrow-right"></i></span>
                 </a>
             </div>
 

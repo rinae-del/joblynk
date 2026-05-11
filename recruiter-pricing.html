@@ -9,14 +9,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260428">
+    <link rel="stylesheet" href="landing.css?v=20260511-client">
     <link rel="stylesheet" href="recruiter-pricing.css?v=20260428">
 </head>
 
 <body class="landing-page pricing-page">
 
     <nav class="landing-nav pricing-nav">
-        <a href="index.html" class="landing-nav-logo">JobLynk.</a>
+        <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
+            <img src="images/logo.png" alt="" class="landing-logo-img">
+            <span class="landing-logo-text">JobLynk</span>
+        </a>
 
         <div class="landing-nav-links">
             <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
@@ -227,7 +230,10 @@
     <footer class="landing-footer pricing-footer">
         <div class="footer-grid">
             <div class="footer-brand">
-                <h3>JobLynk.</h3>
+                <a href="index.html" class="footer-brand-logo" aria-label="JobLynk home">
+                    <img src="images/logo.png" alt="">
+                    <span>JobLynk</span>
+                </a>
                 <p>Recruiter tools for clearer job adverts, faster candidate review, and simpler hiring campaigns.</p>
             </div>
 

@@ -98,6 +98,7 @@ function sendResendEmail(string $to, string $subject, string $htmlBody): bool {
 function buildEmailTemplate(string $title, string $bodyContent): string {
     $appName = htmlspecialchars(APP_NAME, ENT_QUOTES);
     $safeTitle = htmlspecialchars($title, ENT_QUOTES);
+    $logoUrl = htmlspecialchars(rtrim(APP_URL, '/') . '/images/logo.png', ENT_QUOTES);
 
     return '
     <!DOCTYPE html>
@@ -116,8 +117,8 @@ function buildEmailTemplate(string $title, string $bodyContent): string {
                             <td style="background:#0F172A;padding:28px 34px;">
                                 <table width="100%" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td width="58" valign="middle">
-                                            <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#34D399,#6366F1);color:#FFFFFF;font-size:18px;font-weight:900;line-height:48px;text-align:center;letter-spacing:0;">JL</div>
+                                        <td width="68" valign="middle">
+                                            <img src="' . $logoUrl . '" width="58" height="58" alt="' . $appName . '" style="display:block;width:58px;height:58px;border-radius:16px;object-fit:cover;border:1px solid rgba(255,255,255,0.18);">
                                         </td>
                                         <td valign="middle" style="padding-left:14px;">
                                             <div style="margin:0;color:#FFFFFF;font-size:24px;font-weight:900;letter-spacing:0;">' . $appName . '</div>

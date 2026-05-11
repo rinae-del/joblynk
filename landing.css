@@ -867,15 +867,28 @@ body.landing-page {
 }
 
 .landing-nav-logo {
-    font-size: 1.6rem;
-    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
     color: var(--text);
     text-decoration: none;
-    letter-spacing: -0.5px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-light));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    min-width: 0;
+}
+
+.landing-logo-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    object-fit: cover;
+    object-position: center;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+.landing-logo-text {
+    color: var(--text);
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: 0;
 }
 
 .landing-nav-links {
@@ -1533,6 +1546,7 @@ body.landing-page {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center;
     transition: transform 0.4s ease;
 }
 
@@ -1709,6 +1723,10 @@ body.landing-page {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
+}
+
+.testimonials-grid-expanded {
+    grid-template-columns: repeat(5, minmax(210px, 1fr));
 }
 
 .testimonial-card {
@@ -1903,6 +1921,24 @@ body.landing-page {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.footer-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.85rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.footer-brand-logo img {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    object-fit: cover;
 }
 
 .footer-brand p {
@@ -3280,7 +3316,8 @@ html[data-theme="dark"] .recruiter-section {
     }
 
     .features-grid,
-    .testimonials-grid {
+    .testimonials-grid,
+    .testimonials-grid-expanded {
         gap: 1rem;
     }
 }
@@ -3315,8 +3352,13 @@ html[data-theme="dark"] .recruiter-section {
         padding-bottom: 0.85rem;
     }
 
-    .landing-nav-logo {
-        font-size: 1.45rem;
+    .landing-logo-img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .landing-logo-text {
+        font-size: 1.12rem;
     }
 
     .theme-toggle,
