@@ -54,7 +54,7 @@ if ($user) {
         </p>';
 
     $emailHtml = buildEmailTemplate('Reset your password', $emailBody);
-    sendResendEmail($email, 'Reset your password – ' . APP_NAME, $emailHtml);
+    sendResendEmail($email, 'Reset your password | ' . APP_NAME, $emailHtml);
 }
 
 // Always return success

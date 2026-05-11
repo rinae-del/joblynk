@@ -3,8 +3,8 @@
  * /api/admin/impersonate.php
  * Allows an admin to log in as another user, or revert back to admin.
  * 
- * GET ?user_id=X  — Impersonate user X (admin only)
- * GET ?revert=1   — Revert back to original admin session
+ * GET ?user_id=X  - Impersonate user X (admin only)
+ * GET ?revert=1   - Revert back to original admin session
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -27,7 +27,7 @@ if (isset($_GET['revert'])) {
         $_SESSION['user_role'] = 'admin';
         unset($_SESSION['original_admin_id']);
     } else {
-        // Not impersonating — just redirect
+        // Not impersonating - just redirect
         header('Location: ' . APP_URL . '/admin-overview.html');
         exit;
     }

@@ -1,5 +1,5 @@
 /**
- * JobLynk – Shared UI Components
+ * JobLynk - Shared UI Components
  * Renders sidebar, mobile topbar, bottom tab-bar, and breadcrumb.
  *
  * Usage:
@@ -18,7 +18,7 @@
             sidebarClass: '',
             topbarLabel: 'Dashboard',
             items: [
-                { id: 'navDashboard',    key: 'dashboard',     icon: 'fa-solid fa-house',               label: 'Dashboard',      href: 'dashboard.html' },
+                { id: 'navDashboard',    key: 'dashboard',     icon: 'fa-solid fa-house',               label: 'Home',           href: 'dashboard.html' },
                 { id: 'navCvs',          key: 'cvs',           icon: 'fa-regular fa-file-lines',        label: 'CVs',            href: '#sectionCvs' },
                 { id: 'navCoverLetters', key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text',  label: 'Cover Letters',  href: '#sectionCoverLetters' },
                 { id: 'navJobs',         key: 'jobs',          icon: 'fa-solid fa-briefcase',           label: 'Jobs',           href: '#sectionJobs' },
@@ -37,7 +37,7 @@
             ],
             userIcon: { icon: 'fa-solid fa-user', bg: 'rgba(79,70,229,0.15)', color: '#818CF8' },
             bottomLinks: [
-                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Sign Out', href: '#', id: 'navSignOut', signOut: true },
+                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Log Out', href: '#', id: 'navSignOut', signOut: true },
             ],
             ctaButton: { icon: 'fa-solid fa-plus', label: 'New CV', href: 'cv-builder.html', id: 'btnNewDoc' },
         },
@@ -46,7 +46,7 @@
             sidebarClass: 'admin-sidebar',
             topbarLabel: 'Admin',
             items: [
-                { id: 'navOverview',     key: 'overview',     icon: 'fa-solid fa-gauge-high',       label: 'Overview',      href: 'admin-overview.html' },
+                { id: 'navOverview',     key: 'overview',     icon: 'fa-solid fa-gauge-high',       label: 'Home',          href: 'admin-overview.html' },
                 { id: 'navUsers',        key: 'users',        icon: 'fa-solid fa-users',            label: 'Users',         href: 'admin-users.html' },
                 { id: 'navRecruiters',   key: 'recruiters',   icon: 'fa-solid fa-building',         label: 'Recruiters',    href: 'admin-recruiters.html' },
                 { id: 'navJobs',         key: 'jobs',         icon: 'fa-solid fa-briefcase',         label: 'Job Listings',  href: 'admin-jobs.html' },
@@ -70,7 +70,7 @@
             ],
             userIcon: { icon: 'fa-solid fa-shield-halved', bg: 'rgba(220,38,38,0.2)', color: '#FCA5A5' },
             bottomLinks: [
-                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Sign Out', href: '#', id: 'navSignOut', signOut: true },
+                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Log Out', href: '#', id: 'navSignOut', signOut: true },
             ],
             ctaButton: null,
         },
@@ -79,7 +79,7 @@
             sidebarClass: '',
             topbarLabel: 'Recruiter',
             items: [
-                { id: 'navDashboard',  key: 'overview',    icon: 'fa-solid fa-chart-pie',    label: 'Overview',    href: 'recruiter-overview.html' },
+                { id: 'navDashboard',  key: 'overview',    icon: 'fa-solid fa-chart-pie',    label: 'Home',        href: 'recruiter-overview.html' },
                 { id: 'navMyJobs',     key: 'my-jobs',     icon: 'fa-solid fa-briefcase',    label: 'My Jobs',     href: 'recruiter-my-jobs.html' },
                 { id: 'navCandidates', key: 'candidates',  icon: 'fa-solid fa-users',        label: 'Candidates',  href: 'recruiter-candidates.html' },
                 { id: 'navMessages',   key: 'messages',    icon: 'fa-regular fa-envelope',   label: 'Messages',    href: 'recruiter-messages.html' },
@@ -98,7 +98,7 @@
             ],
             userIcon: { icon: 'fa-solid fa-building', bg: 'rgba(126,34,206,0.2)', color: '#c084fc' },
             bottomLinks: [
-                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Sign Out', href: '#', id: 'navSignOut', signOut: true },
+                { icon: 'fa-solid fa-arrow-right-from-bracket', label: 'Log Out', href: '#', id: 'navSignOut', signOut: true },
             ],
             ctaButton: { icon: 'fa-solid fa-plus', label: 'Post a Job', href: 'recruiter-post-job.html', id: 'btnPostJobSidebar' },
         },
@@ -119,6 +119,18 @@
         return items[0]?.key || '';
     }
 
+    function isHomeKey(key) {
+        return key === 'dashboard' || key === 'overview';
+    }
+
+    function signOut() {
+        fetch('api/auth/signout.php', { credentials: 'include' })
+            .catch(() => {})
+            .finally(() => { window.location.href = 'sign-out.html'; });
+    }
+
+    window.JobLynkSignOut = signOut;
+
     // ── Render Sidebar ──
     function renderSidebar() {
         const el = document.getElementById('app-sidebar');
@@ -130,13 +142,16 @@
 
         const activeKey = el.dataset.active || detectActiveKey(cfg.items);
 
-        const navItems = cfg.items.map(item =>
-            `<a href="${esc(item.href)}" class="nav-item${item.key === activeKey ? ' active' : ''}" id="${item.id}"><i class="${item.icon}"></i> <span>${esc(item.label)}</span></a>`
-        ).join('\n            ');
+        const navItems = cfg.items.map(item => {
+            const classNames = ['nav-item'];
+            if (isHomeKey(item.key)) classNames.push('nav-home');
+            if (item.key === activeKey) classNames.push('active');
+            return `<a href="${esc(item.href)}" class="${classNames.join(' ')}" id="${item.id}"><i class="${item.icon}"></i> <span>${esc(item.label)}</span></a>`;
+        }).join('\n            ');
 
         const bottomLinks = cfg.bottomLinks.map(link => {
             if (link.signOut) {
-                return `<a href="#" class="nav-item" id="${link.id || ''}" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).then(()=>window.location.href='sign-out.html');"><i class="${link.icon}"></i> <span>${esc(link.label)}</span></a>`;
+                return `<a href="#" class="nav-item nav-logout" id="${link.id || ''}" onclick="event.preventDefault(); window.JobLynkSignOut();"><i class="${link.icon}"></i> <span>${esc(link.label)}</span></a>`;
             }
             return `<a href="${esc(link.href)}" class="nav-item"${link.id ? ' id="' + link.id + '"' : ''}><i class="${link.icon}"></i> <span>${esc(link.label)}</span></a>`;
         }).join('\n            ');
@@ -191,7 +206,10 @@
             <span class="topbar-logo">JobLynk</span>
             <span class="topbar-badge">${esc(label)}</span>
         </div>
-        <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>
+        <div class="mobile-topbar-actions">
+            <button class="topbar-logout" type="button" onclick="window.JobLynkSignOut();"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span></button>
+            <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>
+        </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>`;
     }
@@ -212,7 +230,7 @@
 
         const tabs = cfg.tabBarItems.map(tab => {
             const isActive = tab.key === activeKey;
-            return `<a href="${esc(tab.href)}" class="btab-item${isActive ? ' btab-active' : ''}">
+            return `<a href="${esc(tab.href)}" class="btab-item${isHomeKey(tab.key) ? ' btab-home' : ''}${isActive ? ' btab-active' : ''}">
                 <i class="${tab.icon}"></i>
                 <span>${esc(tab.label)}</span>
             </a>`;
@@ -224,7 +242,7 @@
                 <i class="${item.icon}"></i>
                 <span>${esc(item.label)}</span>
             </a>`;
-        }).join('');
+        }).join('') + `<button class="btab-more-item btab-logout" type="button" onclick="window.JobLynkSignOut();"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span></button>`;
 
         const bar = document.createElement('div');
         bar.innerHTML = `

@@ -3,7 +3,7 @@
  * /api/ai/generate.php
  * Server-side proxy for DeepSeek AI generation.
  * 
- * POST — Accepts a prompt, calls DeepSeek API using admin-configured key,
+ * POST - Accepts a prompt, calls DeepSeek API using admin-configured key,
  *         returns generated content. Cover letters require auth; CV import may run before sign-in.
  */
 

@@ -190,7 +190,7 @@ try {
     ';
 
     $welcomeEmailHtml = buildEmailTemplate('Welcome to JobLynk', $welcomeEmailBody);
-    sendResendEmail($email, 'Welcome to JobLynk – Your recruiter account is ready', $welcomeEmailHtml);
+    sendResendEmail($email, 'Welcome to JobLynk | Your recruiter account is ready', $welcomeEmailHtml);
 } catch (Throwable $e) {
     error_log('Recruiter welcome email error: ' . $e->getMessage());
 }
@@ -240,7 +240,7 @@ if ($paymentMethod === 'invoice') {
     ';
 
     $invoiceEmailHtml = buildEmailTemplate('Your recruiter invoice', $invoiceEmailBody);
-    sendResendEmail($email, 'Your recruiter invoice – JobLynk', $invoiceEmailHtml);
+    sendResendEmail($email, 'Your recruiter invoice | JobLynk', $invoiceEmailHtml);
 
     jsonResponse([
         'success' => true,

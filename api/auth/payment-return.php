@@ -71,7 +71,7 @@ $emailBody = '
     </p>';
 
 $emailHtml = buildEmailTemplate('Your verification code', $emailBody);
-sendResendEmail($user['email'], 'Your verification code – ' . APP_NAME, $emailHtml);
+sendResendEmail($user['email'], 'Your verification code | ' . APP_NAME, $emailHtml);
 
 header('Location: ' . (defined('APP_URL') ? APP_URL : '') . '/recruiter-verify.html?payment=success');
 exit;

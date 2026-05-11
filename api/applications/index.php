@@ -1,12 +1,12 @@
 <?php
 /**
  * /api/applications/index.php
- * Applications API — role-based access
+ * Applications API - role-based access
  * 
- * GET               — Job seeker: my applications | Recruiter: applications to my jobs
- * GET  ?job_id=X    — Recruiter: applications for a specific job
- * POST              — Job seeker: submit application
- * POST (status)     — Recruiter: update application status
+ * GET               - Job seeker: my applications | Recruiter: applications to my jobs
+ * GET  ?job_id=X    - Recruiter: applications for a specific job
+ * POST              - Job seeker: submit application
+ * POST (status)     - Recruiter: update application status
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -89,7 +89,7 @@ function decodeApplicationDocumentIds($value): array
 ensureApplicationsSchema($pdo);
 
 // ═══════════════════════════
-// GET — List applications
+// GET - List applications
 // ═══════════════════════════
 if ($method === 'GET') {
 
@@ -158,7 +158,7 @@ if ($method === 'GET') {
 }
 
 // ═══════════════════════════
-// POST — Submit or update status
+// POST - Submit or update status
 // ═══════════════════════════
 if ($method === 'POST') {
     // Support both JSON and multipart/form-data (file uploads)
@@ -236,7 +236,7 @@ if ($method === 'POST') {
 
                     $viewedBody = '
                         <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $candidateFirst . ',</p>
-                        <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Good news — <strong>a recruiter has viewed your application</strong> for the position below:</p>
+                        <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Good news. <strong>A recruiter has viewed your application</strong> for the position below:</p>
                         <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0FDF4;border-radius:12px;border:1px solid #BBF7D0;margin:20px 0;">
                             <tr>
                                 <td style="padding:20px;">
@@ -259,11 +259,11 @@ if ($method === 'POST') {
                                 View Your Applications
                             </a>
                         </div>
-                        <p style="font-size:14px;color:#94A3B8;margin:24px 0 0;">Keep going — you\'re on the right track! 💪</p>';
+                        <p style="font-size:14px;color:#94A3B8;margin:24px 0 0;">Keep going. You\'re on the right track! 💪</p>';
 
                     sendResendEmail(
                         $candidate['email'],
-                        'Your application was viewed — ' . ($job['title'] ?? 'Job'),
+                        'Your application was viewed | ' . ($job['title'] ?? 'Job'),
                         buildEmailTemplate('A Recruiter Viewed Your Application 👀', $viewedBody)
                     );
                 }
@@ -445,9 +445,9 @@ if ($method === 'POST') {
             $safeApplicantName = htmlspecialchars($applicantName ?: 'A candidate', ENT_QUOTES);
 
             $jobDetailsHtml = '
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:12px;border:1px solid #E2E8F0;margin:20px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:14px;border:1px solid #E2E8F0;margin:22px 0;">
                     <tr>
-                        <td style="padding:20px;">
+                        <td style="padding:22px;">
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td style="padding:4px 0;font-size:14px;color:#64748B;width:120px;">Position</td>
@@ -473,23 +473,23 @@ if ($method === 'POST') {
             // Email to candidate
             $candidateBody = '
                 <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $safeApplicantName . ',</p>
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Great news — your application has been received! Here\'s a summary:</p>
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Your application has been received. Here is a summary of the position you applied for:</p>
                 ' . $jobDetailsHtml . '
                 <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 8px;"><strong>What happens next?</strong></p>
                 <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.8;color:#475569;">
-                    <li>The recruiter at <strong>' . $jobCompany . '</strong> will review your application</li>
-                    <li>You\'ll receive an email when your application is viewed</li>
-                    <li>You can track your application status anytime from your dashboard</li>
+                    <li>The recruiter at <strong>' . $jobCompany . '</strong> will review your application.</li>
+                    <li>You can track your application status from your dashboard.</li>
+                    <li>If the recruiter needs anything else, they will contact you directly.</li>
                 </ul>
                 <div style="text-align:center;margin:24px 0;">
-                    <a href="' . APP_URL . '/dashboard.html" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#3B4BA6,#7C3AED);color:#fff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;box-shadow:0 4px 14px rgba(59,75,166,0.3);">
+                    <a href="' . APP_URL . '/dashboard.html" style="display:inline-block;padding:13px 30px;background:#4F46E5;color:#fff;font-size:15px;font-weight:800;text-decoration:none;border-radius:12px;box-shadow:0 10px 24px rgba(79,70,229,0.22);">
                         View Application Status
                     </a>
                 </div>
-                <p style="font-size:14px;color:#94A3B8;margin:24px 0 0;">Good luck! 🍀</p>';
+                <p style="font-size:14px;line-height:1.7;color:#64748B;margin:24px 0 0;">Kind regards,<br><strong>The JobLynk Team</strong></p>';
 
             if ($applicantEmail) {
-                sendResendEmail($applicantEmail, 'Application Submitted — ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('Application Submitted ✓', $candidateBody));
+                sendResendEmail($applicantEmail, 'Application Submitted - ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('Application Submitted', $candidateBody));
             }
 
             // Email to recruiter
@@ -497,7 +497,7 @@ if ($method === 'POST') {
                 <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $recruiterFirst . ',</p>
                 <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">You have a new application for your job posting:</p>
                 ' . $jobDetailsHtml . '
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#EEF2FF;border-radius:12px;border:1px solid #C7D2FE;margin:20px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#EEF2FF;border-radius:14px;border:1px solid #C7D2FE;margin:20px 0;">
                     <tr>
                         <td style="padding:20px;">
                             <p style="margin:0 0 4px;font-size:13px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Applicant</p>
@@ -508,7 +508,7 @@ if ($method === 'POST') {
                 <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 24px;">Review the full application and attached documents on your <a href="' . APP_URL . '/recruiter-candidates.html" style="color:#4F46E5;font-weight:600;text-decoration:none;">candidates dashboard</a>.</p>';
 
             if ($recruiterEmail) {
-                sendResendEmail($recruiterEmail, 'New Application — ' . $safeApplicantName . ' for ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('New Application Received', $recruiterBody));
+                sendResendEmail($recruiterEmail, 'New Application - ' . $safeApplicantName . ' for ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('New Application Received', $recruiterBody));
             }
         }
     } catch (Throwable $e) {

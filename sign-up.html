@@ -89,9 +89,13 @@
                     </div>
                     <script>
                         // Preserve return param on "Sign In" link
-                        const _suReturnVal = new URLSearchParams(window.location.search).get('return');
+                        const _suParams = new URLSearchParams(window.location.search);
+                        const _suReturnVal = _suParams.get('return');
+                        const _suReturnJobId = _suParams.get('job');
                         if (_suReturnVal) {
-                            document.querySelector('a[href="sign-in.html"]').href = 'sign-in.html?return=' + encodeURIComponent(_suReturnVal);
+                            const signInParams = new URLSearchParams({ return: _suReturnVal });
+                            if (_suReturnJobId) signInParams.set('job', _suReturnJobId);
+                            document.querySelector('a[href="sign-in.html"]').href = 'sign-in.html?' + signInParams.toString();
                         }
                     </script>
                     <div class="auth-footer" style="margin-top:0.75rem; font-size:0.78rem; color:#94A3B8;">
@@ -153,7 +157,8 @@
 
                             if (data.success) {
                                 const returnParam = new URLSearchParams(window.location.search).get('return');
-                                if (returnParam === 'cv-builder' && data.verificationRequired === false) {
+                                const returnJobId = new URLSearchParams(window.location.search).get('job');
+                                if ((returnParam === 'cv-builder' || returnParam === 'jobs') && data.verificationRequired === false) {
                                     // Auto sign-in and link CV
                                     const signInRes = await fetch('api/auth/signin.php', {
                                         method: 'POST',
@@ -163,17 +168,25 @@
                                     });
                                     const signInData = await signInRes.json();
                                     if (signInData.success) {
-                                        await linkGuestCv();
-                                        window.location.href = 'cv-builder.html';
+                                        if (returnParam === 'cv-builder') {
+                                            await linkGuestCv();
+                                            window.location.href = 'cv-builder.html';
+                                        } else {
+                                            const jobSuffix = returnJobId ? '?job=' + encodeURIComponent(returnJobId) : '';
+                                            window.location.href = 'dashboard.html' + jobSuffix;
+                                        }
                                         return;
                                     }
                                 }
 
                                 if (data.verificationRequired === false) {
-                                    window.location.href = 'sign-in.html?signup=success';
+                                    const signInParams = new URLSearchParams({ signup: 'success' });
+                                    if (returnParam) signInParams.set('return', returnParam);
+                                    if (returnJobId) signInParams.set('job', returnJobId);
+                                    window.location.href = 'sign-in.html?' + signInParams.toString();
                                 } else {
                                     // Pass return param through to verify flow
-                                    const returnSuffix = returnParam ? '&return=' + encodeURIComponent(returnParam) : '';
+                                    const returnSuffix = returnParam ? '&return=' + encodeURIComponent(returnParam) + (returnJobId ? '&job=' + encodeURIComponent(returnJobId) : '') : '';
                                     window.location.href = 'verify-email.html?email=' + encodeURIComponent(email) + returnSuffix;
                                 }
                             } else {

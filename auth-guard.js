@@ -4,9 +4,9 @@
  * It checks the session and redirects to sign-in if not logged in.
  * 
  * Usage:
- *   <script src="auth-guard.js"></script>                         — any logged-in user
- *   <script src="auth-guard.js" data-role="recruiter"></script>   — recruiter only
- *   <script src="auth-guard.js" data-role="admin"></script>       — admin only
+ *   <script src="auth-guard.js"></script>                         - any logged-in user
+ *   <script src="auth-guard.js" data-role="recruiter"></script>   - recruiter only
+ *   <script src="auth-guard.js" data-role="admin"></script>       - admin only
  */
 // Capture script ref synchronously (before any await nullifies document.currentScript)
 const _authScript = document.currentScript || document.querySelector('script[src*="auth-guard"]');
@@ -51,7 +51,7 @@ const _authScript = document.currentScript || document.querySelector('script[src
         const isWrongDashboard = (path.includes('dashboard') && !path.includes(correctDashboard));
         
         if ((requiredRole && data.user.role !== requiredRole) || isWrongDashboard) {
-            // Wrong role — redirect to their correct dashboard
+            // Wrong role - redirect to their correct dashboard
             window.location.replace(correctDashboard);
             return;
         }

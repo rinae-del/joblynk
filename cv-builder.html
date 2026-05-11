@@ -30,6 +30,7 @@
             <button class="topbar-btn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
             <button class="topbar-btn" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
             <button class="topbar-btn mobile-fab" id="btnMobileFab" aria-label="Preview CV" data-label="Preview"><i class="fa-solid fa-eye"></i></button>
+            <button class="topbar-btn topbar-btn-logout" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).finally(()=>window.location.href='sign-out.html');"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Log Out</span></button>
             <button class="topbar-btn-download" id="btnPdf"><i class="fa-solid fa-download"></i> Download</button>
         </div>
     </header>
@@ -484,8 +485,6 @@
 
     </div>
 
-    <datalist id="skillSuggestions"></datalist>
-
     <!-- Guest Auth Modal -->
     <div id="guestAuthModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem;">
         <div style="background:#fff; border-radius:20px; max-width:420px; width:100%; padding:2.5rem; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.25); position:relative;">
@@ -494,7 +493,7 @@
                 <i class="fa-solid fa-download" style="font-size:1.5rem; color:#fff;"></i>
             </div>
             <h3 style="font-size:1.3rem; font-weight:800; color:#1E293B; margin-bottom:0.5rem;">Sign in to download</h3>
-            <p style="color:#64748B; font-size:0.92rem; line-height:1.6; margin-bottom:1.75rem;">Create a free account or sign in to download your CV. Don't worry — your progress is saved and will be waiting for you.</p>
+            <p style="color:#64748B; font-size:0.92rem; line-height:1.6; margin-bottom:1.75rem;">Create a free account or sign in to download your CV. Do not worry, your progress is saved and will be waiting for you.</p>
             <a href="sign-up.html?return=cv-builder" style="display:block; padding:14px; background:linear-gradient(135deg,#3B4BA6,#7C3AED); color:#fff; font-weight:700; font-size:1rem; border-radius:12px; text-decoration:none; margin-bottom:0.75rem; box-shadow:0 4px 14px rgba(59,75,166,0.3);">
                 <i class="fa-solid fa-user-plus" style="margin-right:6px;"></i> Create Free Account
             </a>

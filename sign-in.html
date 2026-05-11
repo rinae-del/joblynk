@@ -128,10 +128,18 @@
 
                             if (data.success) {
                                 // Check for guest CV to link
-                                const returnParam = new URLSearchParams(window.location.search).get('return');
+                                const activeParams = new URLSearchParams(window.location.search);
+                                const returnParam = activeParams.get('return');
+                                const returnJobId = activeParams.get('job');
                                 if (returnParam === 'cv-builder') {
                                     await linkGuestCv();
                                     window.location.href = 'cv-builder.html';
+                                    return;
+                                }
+
+                                if (returnParam === 'jobs' && data.user.role === 'job_seeker') {
+                                    const jobSuffix = returnJobId ? '?job=' + encodeURIComponent(returnJobId) : '';
+                                    window.location.href = 'dashboard.html' + jobSuffix;
                                     return;
                                 }
 
@@ -172,8 +180,11 @@
 
                     // Preserve return param on "Create one" link
                     const returnVal = signInParams.get('return');
+                    const returnJobId = signInParams.get('job');
                     if (returnVal) {
-                        document.querySelector('a[href="sign-up.html"]').href = 'sign-up.html?return=' + encodeURIComponent(returnVal);
+                        const signupParams = new URLSearchParams({ return: returnVal });
+                        if (returnJobId) signupParams.set('job', returnJobId);
+                        document.querySelector('a[href="sign-up.html"]').href = 'sign-up.html?' + signupParams.toString();
                     }
                 </script>
 

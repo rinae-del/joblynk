@@ -54,7 +54,7 @@ $pfResponse = curl_exec($ch);
 curl_close($ch);
 
 if (trim($pfResponse) !== 'VALID') {
-    error_log('PayFast ITN: Server validation failed — ' . $pfResponse);
+    error_log('PayFast ITN: Server validation failed - ' . $pfResponse);
     http_response_code(400);
     exit('Validation failed');
 }
@@ -69,7 +69,7 @@ $customStr3  = $pfData['custom_str3'] ?? '';  // invoice token for invoice payme
 $customInt1  = $pfData['custom_int1'] ?? 0;   // user_id if logged in
 
 if ($paymentStatus !== 'COMPLETE') {
-    error_log("PayFast ITN: Payment not complete — status: $paymentStatus");
+    error_log("PayFast ITN: Payment not complete - status: $paymentStatus");
     http_response_code(200); // Still respond 200 to stop retries
     exit('Not complete');
 }
@@ -128,12 +128,12 @@ try {
         $stmt->execute([$paymentId, $customStr3]);
     }
 
-    error_log("PayFast ITN: Payment $paymentId recorded for user $userId — R$amountGross ($customStr1) — $totalCredits credits activated, expires $expiresAt");
+    error_log("PayFast ITN: Payment $paymentId recorded for user $userId - R$amountGross ($customStr1) - $totalCredits credits activated, expires $expiresAt");
     http_response_code(200);
     exit('OK');
 
 } catch (Exception $e) {
-    error_log('PayFast ITN: DB error — ' . $e->getMessage());
+    error_log('PayFast ITN: DB error - ' . $e->getMessage());
     http_response_code(500);
     exit('Server error');
 }

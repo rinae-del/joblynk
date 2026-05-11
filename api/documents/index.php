@@ -3,10 +3,10 @@
  * /api/documents/index.php
  * CRUD API for user documents (CVs & Cover Letters)
  * 
- * GET    — List all docs for the logged-in user (optional ?type=cv|cl)
- * GET    ?id=123 — Get a single document
- * POST   — Create or update a document
- * DELETE ?id=123 — Delete a document
+ * GET    - List all docs for the logged-in user (optional ?type=cv|cl)
+ * GET    ?id=123 - Get a single document
+ * POST   - Create or update a document
+ * DELETE ?id=123 - Delete a document
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -168,7 +168,7 @@ $allowedDocTypes = ['cv', 'cl', 'supporting'];
 ensureDocumentsSchema($pdo);
 
 // ═══════════════════════════
-// GET — List or single doc
+// GET - List or single doc
 // ═══════════════════════════
 if ($method === 'GET') {
 
@@ -253,7 +253,7 @@ if ($method === 'GET') {
 }
 
 // ═══════════════════════════
-// POST — Create or update
+// POST - Create or update
 // ═══════════════════════════
 if ($method === 'POST') {
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -289,7 +289,7 @@ if ($method === 'POST') {
     $dataJson = $data ? json_encode($data) : null;
 
     if ($docId) {
-        // Update existing — verify ownership
+        // Update existing - verify ownership
         $stmt = $pdo->prepare('SELECT id FROM documents WHERE id = ? AND user_id = ?');
         $stmt->execute([$docId, $userId]);
         if (!$stmt->fetch()) {
@@ -311,7 +311,7 @@ if ($method === 'POST') {
 }
 
 // ═══════════════════════════
-// DELETE — Remove a document
+// DELETE - Remove a document
 // ═══════════════════════════
 if ($method === 'DELETE') {
     $docId = $_GET['id'] ?? null;

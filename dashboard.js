@@ -1,5 +1,5 @@
 /* ======================================
-   JobLynk DASHBOARD – Script
+   JobLynk DASHBOARD - Script
    ====================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     const cvCardGrid = $('cvCardGrid');
     const clCardGrid = $('clCardGrid');
+    const OLD_CV_DAYS = 90;
+    let currentCvs = [];
 
     function getSavedData(key) {
         try {
@@ -94,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastEdited: raw.updated_at || raw.created_at,
                 accentColor: raw.accent_color || '#3B4BA6',
                 type: raw.doc_type,
+                source,
             };
         }
         return {
@@ -102,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastEdited: raw.lastEdited || new Date().toISOString(),
             accentColor: raw.accentColor || '#3B4BA6',
             type: raw.type,
+            source,
         };
     }
 
@@ -128,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
             getSavedData('JobLynk_cvs').forEach(d => cvs.push(normalizeDoc(d, 'local')));
             getSavedData('JobLynk_cls').forEach(d => cls.push(normalizeDoc(d, 'local')));
         }
+
+        currentCvs = cvs.filter(cv => cv.id !== 'sample');
 
         // CVs
         if (cvs.length === 0) {
@@ -162,13 +168,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function createDocCard(doc) {
-        const card = document.createElement('a');
+        const card = document.createElement('article');
         const urlBase = doc.type === 'cv' ? 'cv-builder.html' : 'cover-letter.html';
-        card.href = `${urlBase}${doc.id !== 'sample' ? '?id=' + doc.id : ''}`;
+        const openUrl = `${urlBase}${doc.id !== 'sample' ? '?id=' + doc.id : ''}`;
         card.className = 'doc-card doc-card-existing';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'link');
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('button')) return;
+            window.location.href = openUrl;
+        });
+        card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window.location.href = openUrl;
+            }
+        });
 
         const accent = doc.accentColor || (doc.type === 'cv' ? '#3B4BA6' : '#0F766E');
         const docLabel = doc.type === 'cv' ? 'Curriculum Vitae' : 'Cover Letter';
+        const safeName = escText(doc.name || 'Untitled ' + (doc.type === 'cv' ? 'CV' : 'Cover Letter'));
+        const docTypeLabel = doc.type === 'cv' ? 'CV' : 'cover letter';
+        const actionRowHtml = doc.id === 'sample' ? '' : `
+            <div class="doc-card-action-row" aria-label="${docTypeLabel} actions">
+                <button class="doc-quick-action" type="button" onclick="event.preventDefault(); event.stopPropagation(); editDoc('${doc.id}', '${doc.type}')"><i class="fa-solid fa-pen"></i><span>Edit</span></button>
+                <button class="doc-quick-action" type="button" onclick="event.preventDefault(); event.stopPropagation(); duplicateDoc('${doc.id}', '${doc.type}')"><i class="fa-regular fa-copy"></i><span>Copy</span></button>
+                <button class="doc-quick-action" type="button" onclick="event.preventDefault(); event.stopPropagation(); renameDoc('${doc.id}', '${doc.type}')"><i class="fa-solid fa-i-cursor"></i><span>Name</span></button>
+                <button class="doc-quick-action danger" type="button" onclick="event.preventDefault(); event.stopPropagation(); deleteDoc('${doc.id}', '${doc.type}')"><i class="fa-regular fa-trash-can"></i><span>Trash</span></button>
+            </div>`;
         
         const miniBodyHtml = doc.type === 'cv' ? `
             <div class="cv-mini-line w60"></div>
@@ -196,19 +223,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="cv-mini-wave" style="background:${accent}"></div>
                 </div>
-                <button class="doc-card-actions" onclick="event.preventDefault(); event.stopPropagation(); toggleCardMenu(this);">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <div class="card-action-menu">
-                    <button onclick="event.preventDefault(); editDoc('${doc.id}', '${doc.type}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                    <button onclick="event.preventDefault(); duplicateDoc('${doc.id}', '${doc.type}')"><i class="fa-regular fa-copy"></i> Duplicate</button>
-                    <button onclick="event.preventDefault(); renameDoc('${doc.id}', '${doc.type}')"><i class="fa-solid fa-i-cursor"></i> Rename</button>
-                    <button class="danger" onclick="event.preventDefault(); deleteDoc('${doc.id}', '${doc.type}')"><i class="fa-regular fa-trash-can"></i> Delete</button>
-                </div>
             </div>
             <div class="doc-card-footer">
-                <div class="doc-card-name">${doc.name || 'Untitled ' + (doc.type==='cv'?'CV':'Cover Letter')}</div>
+                <div class="doc-card-name">${safeName}</div>
                 <div class="doc-card-date">Edited ${getTimeAgo(doc.lastEdited)}</div>
+                ${actionRowHtml}
             </div>
         `;
 
@@ -296,7 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.deleteDoc = async function (id, type) {
-        if (!confirm('Are you sure you want to delete this document?')) return;
+        const label = type === 'cv' ? 'CV' : 'cover letter';
+        if (!confirm(`Trash this ${label}? It will be removed from your saved documents.`)) return;
 
         // Try API delete
         try {
@@ -315,6 +335,44 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(key, JSON.stringify(docs));
         renderCards();
     };
+
+    window.trashOldCvs = async function () {
+        const cutoffTime = Date.now() - (OLD_CV_DAYS * 86400000);
+        const oldCvs = currentCvs.filter(cv => {
+            const editedTime = new Date(cv.lastEdited).getTime();
+            return editedTime && editedTime < cutoffTime;
+        });
+
+        if (!oldCvs.length) {
+            alert(`No CVs older than ${OLD_CV_DAYS} days were found.`);
+            return;
+        }
+
+        if (!confirm(`Trash ${oldCvs.length} CV${oldCvs.length === 1 ? '' : 's'} older than ${OLD_CV_DAYS} days?`)) return;
+
+        const localIds = [];
+
+        for (const cv of oldCvs) {
+            if (cv.source === 'api') {
+                try {
+                    await fetch('api/documents/index.php?id=' + encodeURIComponent(cv.id), { method: 'DELETE', credentials: 'include' });
+                } catch (e) {
+                    console.warn('API trash failed:', e);
+                }
+            } else {
+                localIds.push(String(cv.id));
+            }
+        }
+
+        if (localIds.length) {
+            const docs = getSavedData('JobLynk_cvs').filter(cv => !localIds.includes(String(cv.id)));
+            localStorage.setItem('JobLynk_cvs', JSON.stringify(docs));
+        }
+
+        renderCards();
+    };
+
+    $('btnTrashOldCvs')?.addEventListener('click', window.trashOldCvs);
 
     // Close action menus on outside click
     document.addEventListener('click', () => {

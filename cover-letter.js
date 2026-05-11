@@ -217,7 +217,7 @@ ${clData.keyHighlights || 'Focus on general enthusiasm and adaptability.'}
 Job Description:
 ${clData.jobDescription}
 
-Tone: Professional, confident, and concise (around 3-4 paragraphs max). Do not hallucinate experiences not mentioned in the highlights, but lean heavily into enthusiasm and cultural fit.`;
+Tone: Professional, confident, and concise. Keep it to 2-3 short paragraphs and 230-300 words maximum. Do not hallucinate experiences not mentioned in the highlights, but lean into enthusiasm and cultural fit.`;
 
         try {
             const res = await fetch('api/ai/generate.php', {
@@ -252,21 +252,150 @@ Tone: Professional, confident, and concise (around 3-4 paragraphs max). Do not h
     // PDF EXPORT
     // ============================
     $('btnPdf')?.addEventListener('click', () => {
-        const element = $('cvPaper');
         const docName = `${clData.firstName || 'Cover'}_${clData.lastName || 'Letter'}`.replace(/\s+/g, '_');
-        const opt = {
-            margin: 0,
-            filename: `${docName}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        const origTransform = element.style.transform;
-        element.style.transform = 'none';
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.style.transform = origTransform;
-        });
+        try {
+            downloadCoverLetterPdf(`${docName}.pdf`);
+        } catch (err) {
+            console.error(err);
+            alert(err.message || 'PDF generator is not ready yet. Please try again.');
+        }
     });
+
+    function hexToRgb(hex) {
+        const value = String(hex || '#0F766E').replace('#', '').trim();
+        const normalized = value.length === 3
+            ? value.split('').map(ch => ch + ch).join('')
+            : value.padEnd(6, '0').slice(0, 6);
+        const number = parseInt(normalized, 16);
+        return [(number >> 16) & 255, (number >> 8) & 255, number & 255];
+    }
+
+    function normalizePdfText(value) {
+        return String(value || '')
+            .replace(/\r/g, '\n')
+            .replace(/\u00a0/g, ' ')
+            .replace(/[ \t]+/g, ' ')
+            .trim();
+    }
+
+    function getCoverLetterParagraphs() {
+        const content = normalizePdfText(clData.letterContent);
+        if (!content) {
+            return ['Your cover letter content will appear here. Generate or write your letter before downloading.'];
+        }
+        return content.split(/\n+/).map(p => p.trim()).filter(Boolean);
+    }
+
+    function fitBodyText(pdf, paragraphs, width, availableHeight) {
+        const sizes = [10.5, 10, 9.5, 9, 8.5, 8, 7.5];
+        let fitted = null;
+
+        for (const fontSize of sizes) {
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(fontSize);
+            const lineHeight = fontSize * 0.46;
+            const paragraphGap = Math.max(2, fontSize * 0.2);
+            const wrapped = paragraphs.map(paragraph => pdf.splitTextToSize(paragraph, width));
+            const height = wrapped.reduce((total, lines) => total + (lines.length * lineHeight) + paragraphGap, 0);
+            fitted = { fontSize, lineHeight, paragraphGap, wrapped };
+            if (height <= availableHeight) break;
+        }
+
+        return fitted;
+    }
+
+    function downloadCoverLetterPdf(fileName) {
+        const JsPdf = window.jspdf?.jsPDF || window.jsPDF;
+        if (!JsPdf) {
+            throw new Error('PDF generator is not ready yet. Please try again.');
+        }
+
+        const pdf = new JsPdf({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const marginX = 22;
+        const textWidth = pageWidth - (marginX * 2);
+        const accent = hexToRgb(currentAccentColor);
+        const fullName = `${clData.firstName} ${clData.lastName}`.trim() || $('docTitle')?.textContent.trim() || 'Cover Letter';
+        const contact = [clData.email, clData.phone, clData.address].filter(Boolean).join(' | ');
+        const today = new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
+        const recipientLines = [clData.hiringManager, clData.companyName].filter(Boolean);
+        const salutation = clData.hiringManager
+            ? `Dear ${clData.hiringManager},`
+            : clData.companyName
+                ? `Dear Hiring Manager at ${clData.companyName},`
+                : 'Dear Hiring Manager,';
+        const paragraphs = getCoverLetterParagraphs();
+
+        pdf.setProperties({ title: fullName + ' Cover Letter' });
+        pdf.setFillColor(...accent);
+        pdf.rect(0, 0, pageWidth, 5, 'F');
+
+        let y = 22;
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(20);
+        pdf.setTextColor(...accent);
+        pdf.text(fullName, pageWidth / 2, y, { align: 'center' });
+
+        if (contact) {
+            y += 7;
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8.8);
+            pdf.setTextColor(75, 85, 99);
+            pdf.text(pdf.splitTextToSize(contact, textWidth), pageWidth / 2, y, { align: 'center' });
+        }
+
+        y += 9;
+        pdf.setDrawColor(226, 232, 240);
+        pdf.line(marginX, y, pageWidth - marginX, y);
+
+        y += 13;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(31, 41, 55);
+        pdf.text(today, marginX, y);
+
+        if (recipientLines.length) {
+            y += 11;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(recipientLines[0], marginX, y);
+            pdf.setFont('helvetica', 'normal');
+            if (recipientLines[1]) {
+                y += 5;
+                pdf.text(recipientLines[1], marginX, y);
+            }
+        }
+
+        y += 13;
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(salutation, marginX, y);
+        y += 9;
+
+        const bottomLimit = pageHeight - 23;
+        const signoffHeight = 20;
+        const fitted = fitBodyText(pdf, paragraphs, textWidth, bottomLimit - y - signoffHeight);
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(fitted.fontSize);
+        pdf.setTextColor(55, 65, 81);
+        fitted.wrapped.forEach(lines => {
+            lines.forEach(line => {
+                pdf.text(line, marginX, y);
+                y += fitted.lineHeight;
+            });
+            y += fitted.paragraphGap;
+        });
+
+        y = Math.min(y + 5, bottomLimit - 15);
+        pdf.setFontSize(10);
+        pdf.setTextColor(31, 41, 55);
+        pdf.text('Sincerely,', marginX, y);
+        y += 12;
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(fullName, marginX, y);
+
+        pdf.save(fileName);
+    }
 
     // ============================
     // TOOLBAR: Zoom

@@ -213,10 +213,32 @@ body {
     color: rgba(255, 255, 255, .9);
 }
 
+.nav-item.nav-home {
+    background: rgba(255, 255, 255, .08);
+    color: rgba(255, 255, 255, .92);
+    border: 1px solid rgba(129, 140, 248, .24);
+}
+
+.nav-item.nav-home i {
+    color: #A5B4FC;
+}
+
 .nav-item.active {
     background: var(--sidebar-active);
     color: #fff;
     font-weight: 600;
+}
+
+.nav-item.nav-logout {
+    margin-top: 6px;
+    color: #FCA5A5;
+    background: rgba(220, 38, 38, .10);
+    border: 1px solid rgba(248, 113, 113, .20);
+}
+
+.nav-item.nav-logout:hover {
+    color: #FFFFFF;
+    background: rgba(220, 38, 38, .22);
 }
 
 .nav-item.active::before {
@@ -314,6 +336,29 @@ body {
     align-items: center;
     gap: 10px;
     min-width: 0;
+}
+
+.mobile-topbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-logout {
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(248, 113, 113, .24);
+    background: rgba(220, 38, 38, .16);
+    color: #FCA5A5;
+    font-family: var(--font);
+    font-size: .74rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    cursor: pointer;
 }
 
 .mobile-topbar .topbar-logo {
@@ -570,6 +615,7 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+    gap: 14px;
 }
 
 .section-title-row h2 {
@@ -606,6 +652,51 @@ body {
     color: #fff;
     background: var(--accent);
     transform: translateX(2px);
+}
+
+.section-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.section-action-btn {
+    min-height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-white);
+    color: var(--text-secondary);
+    font-family: var(--font);
+    font-size: .78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: var(--shadow-sm);
+}
+
+.section-action-btn:hover {
+    transform: translateY(-1px);
+    border-color: #CBD5E1;
+    color: var(--text);
+}
+
+.section-action-btn.danger {
+    color: #B91C1C;
+    background: #FEF2F2;
+    border-color: #FECACA;
+}
+
+.section-action-btn.danger:hover {
+    color: #FFFFFF;
+    background: #DC2626;
+    border-color: #DC2626;
 }
 
 /* ======================================
@@ -782,6 +873,7 @@ textarea.form-control {
     transition: all .3s cubic-bezier(.4,0,.2,1);
     text-decoration: none;
     color: inherit;
+    display: block;
 }
 
 .doc-card:hover {
@@ -978,6 +1070,49 @@ textarea.form-control {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.doc-card-action-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.doc-quick-action {
+    min-width: 0;
+    min-height: 34px;
+    border: 1px solid #E2E8F0;
+    border-radius: 9px;
+    background: #F8FAFC;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    font-size: .72rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all .18s;
+}
+
+.doc-quick-action:hover {
+    background: #EEF2FF;
+    border-color: #C7D2FE;
+    color: var(--accent);
+}
+
+.doc-quick-action.danger {
+    color: #B91C1C;
+    background: #FEF2F2;
+    border-color: #FECACA;
+}
+
+.doc-quick-action.danger:hover {
+    color: #FFFFFF;
+    background: #DC2626;
+    border-color: #DC2626;
 }
 
 /* Action Menu */
@@ -2261,6 +2396,10 @@ select.app-modal-select {
         color: #818CF8;
     }
 
+    .btab-item.btab-home {
+        color: #C4B5FD;
+    }
+
     .btab-item.btab-active i {
         filter: drop-shadow(0 0 6px rgba(129,140,248,.4));
     }
@@ -2338,6 +2477,9 @@ select.app-modal-select {
         font-size: .75rem;
         font-weight: 600;
         transition: all .2s;
+        border: none;
+        cursor: pointer;
+        font-family: var(--font);
     }
 
     .btab-more-item i {
@@ -2347,6 +2489,11 @@ select.app-modal-select {
     .btab-more-item.btab-more-active {
         background: rgba(129,140,248,.15);
         color: #818CF8;
+    }
+
+    .btab-more-item.btab-logout {
+        background: rgba(220,38,38,.16);
+        color: #FCA5A5;
     }
 
     .dash-row {

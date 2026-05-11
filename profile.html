@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobLynk – My Profile</title>
+    <title>JobLynk | My Profile</title>
     <meta name="description" content="Manage your personal and professional profile on JobLynk.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,8 +28,8 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <i class="fa-solid fa-house"></i> <span>Dashboard</span>
+            <a href="dashboard.html" class="nav-item nav-home">
+                <i class="fa-solid fa-house"></i> <span>Home</span>
             </a>
             <a href="dashboard.html#sectionCvs" class="nav-item">
                 <i class="fa-regular fa-file-lines"></i> <span>CVs</span>
@@ -59,8 +59,8 @@
             <a href="recruiter-overview.html" class="nav-item">
                 <i class="fa-solid fa-user-tie"></i> <span>For Recruiters</span>
             </a>
-            <a href="#" class="nav-item" id="navSignOut" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).then(()=>window.location.href='sign-out.html');">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sign Out</span>
+            <a href="#" class="nav-item nav-logout" id="navSignOut" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).finally(()=>window.location.href='sign-out.html');">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Log Out</span>
             </a>
         </div>
     </aside>
@@ -72,7 +72,10 @@
             <span class="topbar-logo">JobLynk</span>
             <span class="topbar-badge">Profile</span>
         </div>
-        <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>
+        <div class="mobile-topbar-actions">
+            <button class="topbar-logout" type="button" onclick="fetch('api/auth/signout.php',{credentials:'include'}).finally(()=>window.location.href='sign-out.html');"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span></button>
+            <button class="topbar-hamburger" id="btnHamburgerTop"><i class="fa-solid fa-bars"></i></button>
+        </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 

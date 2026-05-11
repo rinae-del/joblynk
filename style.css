@@ -112,6 +112,17 @@ body {
     color: #fff;
 }
 
+.topbar-btn-logout {
+    color: #FCA5A5;
+    background: rgba(220, 38, 38, .14);
+    border: 1px solid rgba(248, 113, 113, .22);
+}
+
+.topbar-btn-logout:hover {
+    background: rgba(220, 38, 38, .26);
+    color: #fff;
+}
+
 .topbar-btn-download {
     background: var(--red);
     color: #fff;
@@ -506,6 +517,47 @@ body {
 
 .list-card-body.open {
     display: block;
+}
+
+.skill-input-group {
+    position: relative;
+}
+
+.skill-suggestion-list {
+    display: none;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #FFFFFF;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.skill-suggestion-list.open {
+    display: block;
+}
+
+.skill-suggestion-option {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #EEF2F7;
+    background: #FFFFFF;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: .86rem;
+    text-align: left;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+.skill-suggestion-option:first-child {
+    border-top: none;
+}
+
+.skill-suggestion-option:hover {
+    background: #EEF2FF;
+    color: var(--accent);
 }
 
 /* ── Add Button ── */
@@ -2065,8 +2117,8 @@ body {
    COVER LETTER STYLES
    ====================================== */
 .cl-preview-container {
-    padding: 20px 30px;
-    height: 100%;
+    padding: 16mm 18mm 14mm;
+    min-height: 297mm;
     display: flex;
     flex-direction: column;
     color: #1F2937;
@@ -2074,11 +2126,11 @@ body {
 
 .cl-sender-info {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 14px;
 }
 
 .cl-name {
-    font-size: 2.2rem;
+    font-size: 1.95rem;
     font-family: inherit;
     font-weight: 700;
     margin-bottom: 8px;
@@ -2094,37 +2146,37 @@ body {
     border: none;
     height: 1px;
     background: #E5E7EB;
-    margin-bottom: 30px;
+    margin-bottom: 18px;
 }
 
 .cl-date {
-    font-size: 0.95rem;
-    margin-bottom: 30px;
+    font-size: 0.9rem;
+    margin-bottom: 18px;
     color: #374151;
 }
 
 .cl-recipient-info {
-    font-size: 0.95rem;
-    margin-bottom: 40px;
+    font-size: 0.9rem;
+    margin-bottom: 22px;
     line-height: 1.5;
     color: #1F2937;
 }
 
 .cl-salutation {
-    font-size: 1rem;
-    margin-bottom: 20px;
+    font-size: 0.94rem;
+    margin-bottom: 12px;
     color: #1F2937;
 }
 
 .cl-body {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 40px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-bottom: 22px;
     color: #374151;
 }
 
 .cl-body p {
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     text-indent: 0;
 }
 
@@ -2135,6 +2187,6 @@ body {
 }
 
 .cl-signoff-name {
-    margin-top: 30px;
+    margin-top: 18px;
     font-weight: 600;
 }

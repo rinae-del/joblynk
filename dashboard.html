@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobLynk – Dashboard</title>
+    <title>JobLynk | Dashboard</title>
     <meta name="description" content="Manage your CVs, job applications and more from your JobLynk dashboard.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <!-- Component placeholders — rendered by components.js -->
+    <!-- Component placeholders - rendered by components.js -->
     <div id="app-sidebar" data-role="seeker" data-active="dashboard"></div>
     <div id="app-topbar" data-label="Dashboard"></div>
 
@@ -28,7 +28,7 @@
         <section class="welcome-hero">
             <div class="welcome-text">
                 <h1>Welcome to <span class="gradient-text">JobLynk</span></h1>
-                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role — all in one place.</p>
+                <p>Build professional CVs, generate tailored cover letters, track job applications, and land your dream role in one place.</p>
             </div>
             <div class="welcome-actions">
                 <a href="cv-builder.html" class="welcome-btn primary"><i class="fa-solid fa-plus"></i> Create a CV</a>
@@ -59,7 +59,10 @@
         <section class="dash-section" id="sectionCvs">
             <div class="section-title-row">
                 <h2><i class="fa-regular fa-file-lines section-icon"></i> My CVs</h2>
-                <button class="section-arrow" title="View all CVs"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="section-actions">
+                    <button class="section-action-btn danger" id="btnTrashOldCvs" type="button" title="Trash CVs older than 90 days"><i class="fa-regular fa-trash-can"></i> Trash old CVs</button>
+                    <button class="section-arrow" title="View all CVs"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
             </div>
             <div class="card-grid" id="cvCardGrid">
                 <!-- "Create new CV" card -->
@@ -217,7 +220,7 @@
                 <label class="app-file-upload-box" id="multiUploadBox">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
                     <span>Click to upload documents</span>
-                    <span class="upload-hint">PDF, DOC, DOCX, JPG or PNG — max 5 MB each — select multiple files</span>
+                    <span class="upload-hint">PDF, DOC, DOCX, JPG or PNG. Max 5 MB each. Select multiple files.</span>
                     <input type="file" id="appFileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display:none;" onchange="onMultiFilesSelected(this)">
                 </label>
                 <div id="appUploadedFilesList" class="app-uploaded-files" style="display:none;"></div>

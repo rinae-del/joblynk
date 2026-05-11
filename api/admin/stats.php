@@ -1,9 +1,9 @@
 <?php
 /**
  * /api/admin/stats.php
- * Admin Statistics API — returns real-time platform stats
+ * Admin Statistics API - returns real-time platform stats
  * 
- * GET — Overview KPIs, 30-day metrics, recent activity, report breakdowns
+ * GET - Overview KPIs, 30-day metrics, recent activity, report breakdowns
  */
 
 require_once __DIR__ . '/../config/session.php';

@@ -463,7 +463,7 @@ function updateProgress() {
         } else if (percent >= 70) {
             hintEl.textContent = 'Almost there! Add a few more details';
         } else if (percent >= 40) {
-            hintEl.textContent = 'Good start — keep going!';
+            hintEl.textContent = 'Good start - keep going!';
         } else {
             hintEl.textContent = 'Complete your profile to stand out';
         }

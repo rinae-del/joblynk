@@ -3,8 +3,8 @@
  * /api/documents/serve.php
  * Serve uploaded document files (PDF, DOC, DOCX).
  * 
- * GET ?id=123                         — Owner: serve own uploaded document
- * GET ?id=123&application_id=456      — Recruiter: serve applicant's uploaded document
+ * GET ?id=123                         - Owner: serve own uploaded document
+ * GET ?id=123&application_id=456      - Recruiter: serve applicant's uploaded document
  */
 
 require_once __DIR__ . '/../config/session.php';

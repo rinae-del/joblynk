@@ -89,19 +89,19 @@ if ($emailVerificationRequired) {
                         <tr>
                             <td style="padding:8px 0;font-size:14px;color:#475569;">
                                 <span style="display:inline-block;width:24px;height:24px;background:#EEF2FF;color:#4F46E5;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:10px;">1</span>
-                                <a href="' . $profileUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Complete your profile</a> — add your skills, experience and contact details
+                                <a href="' . $profileUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Complete your profile</a>. Add your skills, experience and contact details
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:8px 0;font-size:14px;color:#475569;">
                                 <span style="display:inline-block;width:24px;height:24px;background:#EEF2FF;color:#4F46E5;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:10px;">2</span>
-                                <a href="' . $cvBuilderUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Upload or build your CV</a> — stand out to employers with a polished CV
+                                <a href="' . $cvBuilderUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Upload or build your CV</a>. Stand out to employers with a polished CV
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:8px 0;font-size:14px;color:#475569;">
                                 <span style="display:inline-block;width:24px;height:24px;background:#EEF2FF;color:#4F46E5;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:10px;">3</span>
-                                Browse jobs and start applying — we\'ll notify you on every update
+                                Browse jobs and start applying. We\'ll notify you on every update
                             </td>
                         </tr>
                     </table>
@@ -126,7 +126,7 @@ if ($emailVerificationRequired) {
             Hi ' . $safeName . ', 👋
         </p>
         <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
-            <strong>Welcome to ' . APP_NAME . '!</strong> We\'re excited to have you on board. Your account is all set — you can sign in right away and start your job search.
+            <strong>Welcome to ' . APP_NAME . '!</strong> We\'re excited to have you on board. Your account is all set, so you can sign in right away and start your job search.
         </p>
         <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:12px;border:1px solid #E2E8F0;margin:24px 0;">
             <tr>
@@ -136,19 +136,19 @@ if ($emailVerificationRequired) {
                         <tr>
                             <td style="padding:8px 0;font-size:14px;color:#475569;">
                                 <span style="display:inline-block;width:24px;height:24px;background:#EEF2FF;color:#4F46E5;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:10px;">1</span>
-                                <a href="' . $profileUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Complete your profile</a> — add your skills, experience and contact details
+                                <a href="' . $profileUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Complete your profile</a>. Add your skills, experience and contact details
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:8px 0;font-size:14px;color:#475569;">
                                 <span style="display:inline-block;width:24px;height:24px;background:#EEF2FF;color:#4F46E5;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:10px;">2</span>
-                                <a href="' . $cvBuilderUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Upload or build your CV</a> — stand out to employers with a polished CV
+                                <a href="' . $cvBuilderUrl . '" style="color:#4F46E5;font-weight:600;text-decoration:none;">Upload or build your CV</a>. Stand out to employers with a polished CV
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:8px 0;font-size:14px;color:#475569;">
                                 <span style="display:inline-block;width:24px;height:24px;background:#EEF2FF;color:#4F46E5;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:12px;margin-right:10px;">3</span>
-                                Browse jobs and start applying — we\'ll notify you on every update
+                                Browse jobs and start applying. We\'ll notify you on every update
                             </td>
                         </tr>
                     </table>

@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return fields;
     }
 
-    // Form submission — save to jobs-store
+    // Form submission - save to jobs-store
     const postJobFormWizard = document.getElementById('postJobFormWizard');
     if (postJobFormWizard) {
         postJobFormWizard.addEventListener('submit', async (e) => {
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width:50px; height:50px; border-radius:50%; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem;">${getInitials(applicantName)}</div>
                 <div>
                     <div style="font-weight:600; font-size:1.05rem;">${applicantName}</div>
-                    <div style="font-size:0.85rem; color:var(--text-muted);">${app.email || '—'}</div>
+                    <div style="font-size:0.85rem; color:var(--text-muted);">${app.email || '-'}</div>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
@@ -810,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const panel = document.getElementById('candidateDocPanel');
         const data = doc.data || {};
 
-        // Uploaded file — show PDF embed or download link
+        // Uploaded file - show PDF embed or download link
         if (data.uploaded_file) {
             const serveUrl = `api/documents/serve.php?id=${encodeURIComponent(doc.id)}&application_id=${encodeURIComponent(appId)}`;
             const isPdf = (data.mime_type || '').indexOf('pdf') !== -1;
@@ -827,7 +827,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // System-built document — render from JSON data
+        // System-built document - render from JSON data
         if (tab === 'cv') {
             panel.innerHTML = renderCVPreview(data, doc.name);
         } else {
@@ -854,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
             d.experience.forEach(e => {
                 html += `<div class="doc-preview-entry">`;
                 html += `<div class="doc-preview-entry-title">${escHtml(e.jobTitle) || 'Untitled'}${e.employer ? ' at ' + escHtml(e.employer) : ''}</div>`;
-                const dates = [escHtml(e.startDate), escHtml(e.endDate) || 'Present'].filter(Boolean).join(' — ');
+                const dates = [escHtml(e.startDate), escHtml(e.endDate) || 'Present'].filter(Boolean).join(' - ');
                 if (dates || e.city) html += `<div class="doc-preview-entry-meta">${dates}${e.city ? ' &bull; ' + escHtml(e.city) : ''}</div>`;
                 if (e.description) html += `<div class="doc-preview-entry-desc">${escHtml(e.description)}</div>`;
                 html += `</div>`;
@@ -867,7 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
             d.education.forEach(e => {
                 html += `<div class="doc-preview-entry">`;
                 html += `<div class="doc-preview-entry-title">${escHtml(e.degree) || 'Untitled'}${e.school ? ' at ' + escHtml(e.school) : ''}</div>`;
-                const dates = [escHtml(e.startDate), escHtml(e.endDate) || 'Present'].filter(Boolean).join(' — ');
+                const dates = [escHtml(e.startDate), escHtml(e.endDate) || 'Present'].filter(Boolean).join(' - ');
                 if (dates || e.city) html += `<div class="doc-preview-entry-meta">${dates}${e.city ? ' &bull; ' + escHtml(e.city) : ''}</div>`;
                 if (e.description) html += `<div class="doc-preview-entry-desc">${escHtml(e.description)}</div>`;
                 html += `</div>`;
@@ -883,7 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (d.languages && d.languages.length) {
             html += `<div class="doc-preview-section"><div class="doc-preview-section-title">Languages</div><div class="doc-preview-chips">`;
-            d.languages.forEach(l => { html += `<span class="doc-preview-chip">${escHtml(l.name || l)}${l.level ? ' — ' + escHtml(l.level) : ''}</span>`; });
+            d.languages.forEach(l => { html += `<span class="doc-preview-chip">${escHtml(l.name || l)}${l.level ? ' - ' + escHtml(l.level) : ''}</span>`; });
             html += `</div></div>`;
         }
 

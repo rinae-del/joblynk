@@ -1,5 +1,5 @@
 /* ======================================
-   ADMIN DASHBOARD – INTERACTIVITY
+   ADMIN DASHBOARD - INTERACTIVITY
    ====================================== */
 
 const adminState = {
@@ -139,7 +139,7 @@ function showToast(message) {
     }, 2500);
 }
 
-// ── Simulated Live Activity — REMOVED ──
+// ── Simulated Live Activity - REMOVED ──
 // Replaced with real DB-backed activity from api/admin/stats.php
 
 function timeAgo(dateStr) {
@@ -247,9 +247,9 @@ function renderAuditLog(reports) {
     var j = reports.jobs || {};
     var ap = reports.applications || {};
 
-    rows.push({ ts: new Date().toISOString(), action: 'Users', cls: 'create', by: 'Platform', detail: u.total + ' total — ' + u.seekers + ' seekers, ' + u.recruiters + ' recruiters, ' + u.admins + ' admins' });
-    rows.push({ ts: new Date().toISOString(), action: 'Jobs', cls: 'update', by: 'Platform', detail: j.total + ' total — ' + j.active + ' active, ' + j.closed + ' closed, ' + j.draft + ' draft' });
-    rows.push({ ts: new Date().toISOString(), action: 'Applications', cls: 'verify', by: 'Platform', detail: ap.total + ' total — ' + ap.reviewed + ' reviewed, ' + ap.pending + ' pending, ' + ap.rejected + ' rejected' });
+    rows.push({ ts: new Date().toISOString(), action: 'Users', cls: 'create', by: 'Platform', detail: u.total + ' total - ' + u.seekers + ' seekers, ' + u.recruiters + ' recruiters, ' + u.admins + ' admins' });
+    rows.push({ ts: new Date().toISOString(), action: 'Jobs', cls: 'update', by: 'Platform', detail: j.total + ' total - ' + j.active + ' active, ' + j.closed + ' closed, ' + j.draft + ' draft' });
+    rows.push({ ts: new Date().toISOString(), action: 'Applications', cls: 'verify', by: 'Platform', detail: ap.total + ' total - ' + ap.reviewed + ' reviewed, ' + ap.pending + ' pending, ' + ap.rejected + ' rejected' });
 
     tbody.innerHTML = rows.map(function(r) {
         return '<tr><td style="white-space:nowrap;">' + formatDate(r.ts) + '</td>' +
@@ -285,7 +285,7 @@ async function fetchAdminStats() {
 }
 
 // Add a live activity every 12 seconds
-// (removed: was generating fake data — stats now come from the API)
+// (removed: was generating fake data - stats now come from the API)
 
 // ── Initialize ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -419,9 +419,9 @@ async function loadAllSettings() {
         var input = document.getElementById('deepseekApiKey');
         if (data2.success && data2.value) {
             if (statusEl) statusEl.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#059669;"></i> API key is configured';
-            if (input) input.placeholder = '••••••••••••••••  (key is set — enter new value to replace)';
+            if (input) input.placeholder = '••••••••••••••••  (key is set - enter new value to replace)';
         } else {
-            if (statusEl) statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#F59E0B;"></i> No API key configured — AI cover letter generation will be unavailable';
+            if (statusEl) statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#F59E0B;"></i> No API key configured - AI cover letter generation will be unavailable';
         }
     } catch (e) { /* ignore */ }
 }
@@ -446,7 +446,7 @@ window.saveDeepSeekKey = async function() {
             input.value = '';
             var statusEl = document.getElementById('deepseekKeyStatus');
             if (statusEl) statusEl.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#059669;"></i> API key is configured';
-            input.placeholder = '••••••••••••••••  (key is set — enter new value to replace)';
+            input.placeholder = '••••••••••••••••  (key is set - enter new value to replace)';
         } else {
             throw new Error(data.message || 'Save failed');
         }
@@ -625,7 +625,7 @@ function renderUsersPage() {
     const to = Math.min(start + USERS_PER_PAGE, filtered.length);
     if (info) {
         const filterNote = filtered.length < adminState.users.length ? ` (filtered from ${adminState.users.length})` : '';
-        info.textContent = `Showing ${from}–${to} of ${filtered.length} user${filtered.length !== 1 ? 's' : ''}${filterNote}`;
+        info.textContent = `Showing ${from}-${to} of ${filtered.length} user${filtered.length !== 1 ? 's' : ''}${filterNote}`;
     }
 
     // Pagination
@@ -690,7 +690,7 @@ function getStoredData(key) {
 }
 
 function formatDate(dateStr) {
-    if (!dateStr) return '—';
+    if (!dateStr) return '-';
     const d = new Date(dateStr);
     return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 }
@@ -804,7 +804,7 @@ function renderJobsPage() {
             </td>
             <td data-label="Company">
                 <div class="table-value">
-                    <span>${escapeHtml(job.company || '—')}</span>
+                    <span>${escapeHtml(job.company || '-')}</span>
                     <span class="table-note">${recruiterName}</span>
                 </div>
             </td>
@@ -888,7 +888,7 @@ window.openJobDrawer = function(jobId) {
         <div class="drawer-profile" style="border-bottom:1px solid var(--admin-border); padding-bottom:20px; margin-bottom:20px;">
             <div class="drawer-avatar" style="background:rgba(5,150,105,0.1); color:#059669; width:56px; height:56px; border-radius:14px;"><i class="fa-solid fa-briefcase" style="font-size:1.3rem;"></i></div>
             <div class="drawer-profile-name" style="margin-top:12px;">${escapeHtml(job.title)}</div>
-            <div class="drawer-profile-email">${escapeHtml(job.company || '—')}</div>
+            <div class="drawer-profile-email">${escapeHtml(job.company || '-')}</div>
         </div>
         <div class="drawer-details">
             <div class="drawer-detail-row">
@@ -913,7 +913,7 @@ window.openJobDrawer = function(jobId) {
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-envelope"></i> Email</span>
-                <span class="drawer-detail-value">${escapeHtml(job.email || '—')}</span>
+                <span class="drawer-detail-value">${escapeHtml(job.email || '-')}</span>
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-calendar"></i> Posted</span>
@@ -945,13 +945,13 @@ function adminViewJobAlert(jobId) {
     const recruiterName = `${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown';
     const details = [
         `Title: ${job.title}`,
-        `Company: ${job.company || '—'}`,
+        `Company: ${job.company || '-'}`,
         `Location: ${job.location || 'Remote'}`,
         `Type: ${job.type || 'Full-time'}`,
         `Status: ${job.status}`,
         `Applicants: ${job.applicant_count || 0}`,
         `Recruiter: ${recruiterName}`,
-        `Email: ${job.email || '—'}`,
+        `Email: ${job.email || '-'}`,
         `Posted: ${formatDate(job.created_at)}`,
     ];
     alert(details.join('\n'));
@@ -1096,7 +1096,7 @@ function renderRecruitersPage() {
     pageRecruiters.forEach((rec, idx) => {
         const fullName = escapeHtml(`${rec.first_name || ''} ${rec.last_name || ''}`.trim() || 'Unknown');
         const safeEmail = escapeHtml(rec.email);
-        const companyName = escapeHtml(rec.company_name || '—');
+        const companyName = escapeHtml(rec.company_name || '-');
         const color = avatarColors[(start + idx) % avatarColors.length];
         const verified = parseInt(rec.email_verified);
         const activeJobs = jobCounts[rec.id] || 0;
@@ -1182,7 +1182,7 @@ window.openRecruiterDrawer = function(recId) {
 
     const fullName = escapeHtml(`${rec.first_name || ''} ${rec.last_name || ''}`.trim() || 'Unknown');
     const safeEmail = escapeHtml(rec.email);
-    const companyName = escapeHtml(rec.company_name || '—');
+    const companyName = escapeHtml(rec.company_name || '-');
     const verified = parseInt(rec.email_verified);
     const jobCounts = getRecruiterJobCounts();
     const activeJobs = jobCounts[rec.id] || 0;
@@ -1350,7 +1350,7 @@ function renderAppsPage() {
 
     pageApps.forEach(app => {
         const applicantName = escapeHtml(`${app.first_name || ''} ${app.last_name || ''}`.trim() || app.applicant_name || 'Unknown');
-        const safeEmail = escapeHtml(app.email || '—');
+        const safeEmail = escapeHtml(app.email || '-');
         const statusValue = (app.status || 'submitted').toLowerCase();
         const statusClass = { submitted: 'is-submitted', reviewed: 'is-reviewed', shortlisted: 'is-shortlisted', rejected: 'is-rejected' }[statusValue] || 'is-submitted';
         const statusLabel = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
@@ -1447,11 +1447,11 @@ window.openAppDrawer = function(appId) {
     if (!drawer || !body) return;
 
     const applicantName = escapeHtml(`${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Unknown');
-    const safeEmail = escapeHtml(app.email || '—');
+    const safeEmail = escapeHtml(app.email || '-');
     const statusValue = (app.status || 'submitted').toLowerCase();
     const statusClass = { submitted: 'is-submitted', reviewed: 'is-reviewed', shortlisted: 'is-shortlisted', rejected: 'is-rejected' }[statusValue] || 'is-submitted';
     const statusLabel = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
-    const recruiterName = escapeHtml(`${app.recruiter_first_name || ''} ${app.recruiter_last_name || ''}`.trim() || '—');
+    const recruiterName = escapeHtml(`${app.recruiter_first_name || ''} ${app.recruiter_last_name || ''}`.trim() || '-');
 
     body.innerHTML = `
         <div class="drawer-profile">
@@ -1468,11 +1468,11 @@ window.openAppDrawer = function(appId) {
         <div class="drawer-details">
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-briefcase"></i> Job</span>
-                <span class="drawer-detail-value">${escapeHtml(app.job_title || '—')}</span>
+                <span class="drawer-detail-value">${escapeHtml(app.job_title || '-')}</span>
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-building"></i> Company</span>
-                <span class="drawer-detail-value">${escapeHtml(app.job_company || '—')}</span>
+                <span class="drawer-detail-value">${escapeHtml(app.job_company || '-')}</span>
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-user-tie"></i> Recruiter</span>
@@ -1609,7 +1609,7 @@ function renderDocsPage() {
     pageDocs.forEach(doc => {
         const docName = escapeHtml(doc.name || 'Untitled');
         const ownerName = escapeHtml(`${doc.first_name || ''} ${doc.last_name || ''}`.trim() || 'Unknown');
-        const safeEmail = escapeHtml(doc.email || '—');
+        const safeEmail = escapeHtml(doc.email || '-');
         const accent = escapeHtml(doc.accent_color || (doc.doc_type === 'cv' ? '#3B4BA6' : '#0F766E'));
         const ts = typeStyles[doc.doc_type] || typeStyles.cv;
         const docId = parseInt(doc.id);
@@ -1697,7 +1697,7 @@ window.openDocDrawer = function(docId) {
 
     const docName = escapeHtml(doc.name || 'Untitled');
     const ownerName = escapeHtml(`${doc.first_name || ''} ${doc.last_name || ''}`.trim() || 'Unknown');
-    const safeEmail = escapeHtml(doc.email || '—');
+    const safeEmail = escapeHtml(doc.email || '-');
     const accent = escapeHtml(doc.accent_color || (doc.doc_type === 'cv' ? '#3B4BA6' : doc.doc_type === 'cl' ? '#0F766E' : '#475569'));
     const typeStyle = doc.doc_type === 'cv'
         ? { label: 'CV / Resume', icon: 'fa-solid fa-file-lines', bg: 'rgba(59,130,246,0.1)', color: '#3B82F6' }
@@ -1815,7 +1815,7 @@ window.openUserDrawer = function(userId) {
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-building"></i> Company</span>
-                <span class="drawer-detail-value">${escapeHtml(user.company_name || '—')}</span>
+                <span class="drawer-detail-value">${escapeHtml(user.company_name || '-')}</span>
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-calendar"></i> Joined</span>
@@ -1823,7 +1823,7 @@ window.openUserDrawer = function(userId) {
             </div>
             <div class="drawer-detail-row">
                 <span class="drawer-detail-label"><i class="fa-solid fa-clock-rotate-left"></i> Updated</span>
-                <span class="drawer-detail-value">${user.updated_at ? formatDate(user.updated_at) : '—'}</span>
+                <span class="drawer-detail-value">${user.updated_at ? formatDate(user.updated_at) : '-'}</span>
             </div>
         </div>
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * Job Credits API
- * GET — returns the authenticated user's active credit packages.
+ * GET - returns the authenticated user's active credit packages.
  */
 
 require_once __DIR__ . '/../config/database.php';

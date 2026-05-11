@@ -1,8 +1,8 @@
 <?php
 /**
  * Profile API
- * GET  /api/profile/index.php   — Get current user's profile
- * POST /api/profile/index.php   — Update current user's profile
+ * GET  /api/profile/index.php   - Get current user's profile
+ * POST /api/profile/index.php   - Update current user's profile
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -143,7 +143,7 @@ try {
         $pdo->exec("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255) DEFAULT '' {$position}");
     }
 } catch (Throwable $e) {
-    // Columns likely already exist — ignore
+    // Columns likely already exist - ignore
 }
 
 // ── GET: return profile ──

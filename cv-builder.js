@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ============================
-    // AUTH STATE (non-blocking — guests allowed)
+    // AUTH STATE (non-blocking - guests allowed)
     // ============================
     let isLoggedIn = false;
     let currentUser = null;
@@ -110,15 +110,27 @@ document.addEventListener('DOMContentLoaded', () => {
     ].map(city => ({ value: city, label: city }));
 
     const skillSuggestionValues = [
-        'Administration', 'Attention to detail', 'Bookkeeping', 'Budgeting', 'Business analysis',
-        'Call centre support', 'Cash handling', 'Communication', 'Conflict resolution',
-        'Content writing', 'CRM', 'Customer service', 'Data analysis', 'Data capturing',
-        'Digital marketing', 'Email management', 'Excel', 'Financial reporting', 'Graphic design',
-        'Inventory management', 'JavaScript', 'Leadership', 'Microsoft Office', 'Payroll',
-        'Power BI', 'Presentation skills', 'Problem solving', 'Project coordination',
-        'Project management', 'Python', 'Recruitment', 'Report writing', 'Retail sales',
-        'Sales', 'SEO', 'Social media management', 'SQL', 'Stock control', 'Teamwork',
-        'Time management', 'Training', 'UI/UX design', 'WordPress'
+        'Account management', 'Accounting', 'Administration', 'Adobe Photoshop', 'Agile project delivery',
+        'Analytical thinking', 'Attention to detail', 'Auditing', 'AutoCAD', 'Bookkeeping',
+        'Budgeting', 'Business analysis', 'Call centre support', 'Calendar management', 'Cash handling',
+        'Change management', 'Client relations', 'Cloud computing', 'Communication', 'Compliance',
+        'Conflict resolution', 'Content writing', 'Copywriting', 'CRM', 'Customer service',
+        'Cybersecurity', 'Data analysis', 'Data capturing', 'Data entry', 'Database administration',
+        'Digital marketing', 'Documentation', 'Driving', 'Electrical maintenance', 'Email management',
+        'Event coordination', 'Excel', 'Financial reporting', 'Forecasting', 'Forklift operation',
+        'Front-end development', 'Graphic design', 'Health and safety', 'HR administration', 'Inspection',
+        'Inventory management', 'Invoicing', 'Java', 'JavaScript', 'Leadership',
+        'Logistics coordination', 'Machine operation', 'Market research', 'Microsoft Office', 'Negotiation',
+        'Network support', 'Nursing support', 'Office administration', 'Order processing', 'Payroll',
+        'Patient care', 'Performance management', 'Plumbing', 'Power BI', 'Presentation skills',
+        'Problem solving', 'Process improvement', 'Procurement', 'Product knowledge', 'Product management',
+        'Project coordination', 'Project management', 'Public speaking', 'Python', 'Quality assurance',
+        'Reception', 'Recruitment', 'Relationship management', 'Report writing', 'Research',
+        'Retail sales', 'Risk management', 'Scheduling', 'SEO', 'Social media management',
+        'Software support', 'Software testing', 'SQL', 'Stakeholder management', 'Stock control',
+        'Strategic planning', 'Supervision', 'Teaching', 'Technical support', 'Team leadership',
+        'Teamwork', 'Telephone etiquette', 'Time management', 'Training', 'Troubleshooting',
+        'UI/UX design', 'Video editing', 'Warehousing', 'Welding', 'WordPress'
     ];
 
     function escapeHtml(value = '') {
@@ -163,12 +175,69 @@ document.addEventListener('DOMContentLoaded', () => {
         select.innerHTML = buildCityOptions(selectedValue, placeholder);
     }
 
-    function renderSkillSuggestions() {
-        const datalist = $('skillSuggestions');
-        if (!datalist) return;
-        datalist.innerHTML = skillSuggestionValues
-            .map(skill => `<option value="${escapeHtml(skill)}"></option>`)
-            .join('');
+    function normalizeSkillTerm(value = '') {
+        return String(value).trim().toLowerCase();
+    }
+
+    function getMatchingSkillSuggestions(query, currentSkillId) {
+        const normalizedQuery = normalizeSkillTerm(query);
+        if (!normalizedQuery) return [];
+
+        const usedSkills = new Set(
+            cvData.skills
+                .filter(skill => skill.id !== currentSkillId)
+                .map(skill => normalizeSkillTerm(skill.name))
+                .filter(Boolean)
+        );
+
+        return skillSuggestionValues
+            .filter(skill => !usedSkills.has(normalizeSkillTerm(skill)))
+            .filter(skill => normalizeSkillTerm(skill).includes(normalizedQuery))
+            .sort((left, right) => {
+                const leftValue = normalizeSkillTerm(left);
+                const rightValue = normalizeSkillTerm(right);
+                const leftStarts = leftValue.startsWith(normalizedQuery) ? 0 : 1;
+                const rightStarts = rightValue.startsWith(normalizedQuery) ? 0 : 1;
+                if (leftStarts !== rightStarts) return leftStarts - rightStarts;
+                return left.localeCompare(right);
+            })
+            .slice(0, 8);
+    }
+
+    function closeSkillSuggestionPanel(panel) {
+        if (!panel) return;
+        panel.classList.remove('open');
+        panel.innerHTML = '';
+    }
+
+    function closeAllSkillSuggestionPanels() {
+        document.querySelectorAll('.skill-suggestion-list.open').forEach(closeSkillSuggestionPanel);
+    }
+
+    function renderSkillSuggestionPanel(input) {
+        const wrapper = input.closest('.skill-input-group');
+        const panel = wrapper?.querySelector('.skill-suggestion-list');
+        if (!panel) return;
+
+        const suggestions = getMatchingSkillSuggestions(input.value || '', input.getAttribute('data-id'));
+        if (!suggestions.length) {
+            closeSkillSuggestionPanel(panel);
+            return;
+        }
+
+        panel.innerHTML = suggestions.map(skill => `
+            <button type="button" class="skill-suggestion-option" data-skill-value="${escapeHtml(skill)}">${escapeHtml(skill)}</button>
+        `).join('');
+        panel.querySelectorAll('.skill-suggestion-option').forEach(button => {
+            button.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                const value = button.getAttribute('data-skill-value') || '';
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                closeSkillSuggestionPanel(panel);
+            });
+        });
+        panel.classList.add('open');
     }
 
     function parseStoredDate(value) {
@@ -218,9 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const end = fmtDate(endDate);
 
         if (!start && !end) return '';
-        if (start && !end) return `${start} — Present`;
+        if (start && !end) return `${start} - Present`;
         if (!start && end) return end;
-        return `${start} — ${end}`;
+        return `${start} - ${end}`;
     }
 
     function formatDateRangeWithCity(startDate, endDate, city) {
@@ -727,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileFab?.setAttribute('aria-label', isOpen ? 'Back to editor' : 'Preview CV');
         mobileFab?.setAttribute('data-label', isOpen ? 'Edit' : 'Preview');
     });
-    // Close on swipe right or ESC – simplified: click topbar back when preview is open
+    // Close on swipe right or ESC - simplified: click topbar back when preview is open
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             $('previewPane')?.classList.remove('open');
@@ -809,7 +878,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Languages
         preview.languagesList.innerHTML = cvData.languages.map(l => `
-            <div class="cv-skill-entry">${l.name || '(Not specified)'}${l.level ? ' — '+l.level : ''}</div>
+            <div class="cv-skill-entry">${l.name || '(Not specified)'}${l.level ? ' - '+l.level : ''}</div>
         `).join('');
         preview.languagesBlock.style.display = cvData.languages.length ? 'block' : 'none';
 
@@ -909,7 +978,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="list-card-body ${i===cvData.skills.length-1?'open':''}" id="sk-${s.id}">
                     <div class="form-row">
-                        <div class="input-group full-width"><label>Skill</label><input class="dyn" list="skillSuggestions" data-arr="skills" data-id="${s.id}" data-key="name" value="${s.name}" autocomplete="off" placeholder="Start typing a skill"></div>
+                        <div class="input-group full-width skill-input-group">
+                            <label>Skill</label>
+                            <input class="dyn skill-input" data-arr="skills" data-id="${s.id}" data-key="name" value="${escapeHtml(s.name)}" autocomplete="off" placeholder="Start typing a skill">
+                            <div class="skill-suggestion-list" data-skill-suggestions="${s.id}"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -985,6 +1058,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 inp.oninput = syncDynamicField;
                 inp.onchange = syncDynamicField;
             }
+        });
+
+        document.querySelectorAll('.skill-input').forEach(input => {
+            input.addEventListener('input', () => renderSkillSuggestionPanel(input));
+            input.addEventListener('focus', () => renderSkillSuggestionPanel(input));
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    const panel = input.closest('.skill-input-group')?.querySelector('.skill-suggestion-list');
+                    closeSkillSuggestionPanel(panel);
+                }, 120);
+            });
         });
 
         // Delete handlers
@@ -1553,6 +1637,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close template panel when clicking outside
     document.addEventListener('click', (e) => {
+        if (!e.target.closest('.skill-input-group')) {
+            closeAllSkillSuggestionPanels();
+        }
+
         if (!templatePanel.contains(e.target) && !e.target.closest('[data-template-toggle]')) {
             setTemplatePanelOpen(false);
         }
@@ -1562,7 +1650,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // INITIALIZE: Load saved data
     // ============================
     hydrateCitySelect();
-    renderSkillSuggestions();
 
     loadData().then(() => {
         hydrateCitySelect($('city'), cvData.city);

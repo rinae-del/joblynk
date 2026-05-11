@@ -28,6 +28,7 @@
             <i class="fa-solid fa-cloud topbar-cloud" id="saveIcon"></i>
         </div>
         <div class="topbar-right">
+            <button class="topbar-btn topbar-btn-logout" onclick="event.preventDefault(); fetch('api/auth/signout.php',{credentials:'include'}).finally(()=>window.location.href='sign-out.html');"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Log Out</span></button>
             <button class="topbar-btn-download" id="btnPdf"><i class="fa-solid fa-download"></i> Download</button>
         </div>
     </header>
@@ -232,7 +233,7 @@
 
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cover-letter.js?v=20260419"></script>
 </body>
 

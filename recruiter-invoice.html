@@ -374,35 +374,35 @@
                                 <div class="panel">
                                     <h2>Invoice Details</h2>
                                     <div class="stack">
-                                        <span id="invoiceNumber" class="invoice-number">—</span>
+                                        <span id="invoiceNumber" class="invoice-number">-</span>
                                         <span id="invoiceStatus" class="status-pill pending">Pending</span>
                                     </div>
                                     <div class="detail-list" style="margin-top:16px;">
-                                        <div class="detail-row"><span>Issued</span><strong id="invoiceCreatedAt">—</strong></div>
-                                        <div class="detail-row"><span>Due</span><strong id="invoiceExpiresAt">—</strong></div>
-                                        <div class="detail-row"><span>Package</span><strong id="invoicePackage">—</strong></div>
-                                        <div class="detail-row"><span>Credits</span><strong id="invoiceJobs">—</strong></div>
+                                        <div class="detail-row"><span>Issued</span><strong id="invoiceCreatedAt">-</strong></div>
+                                        <div class="detail-row"><span>Due</span><strong id="invoiceExpiresAt">-</strong></div>
+                                        <div class="detail-row"><span>Package</span><strong id="invoicePackage">-</strong></div>
+                                        <div class="detail-row"><span>Credits</span><strong id="invoiceJobs">-</strong></div>
                                     </div>
                                 </div>
 
                                 <div class="panel">
                                     <h3>Billing Contact</h3>
                                     <div class="detail-list">
-                                        <div class="detail-row"><span>Name</span><strong id="contactName">—</strong></div>
-                                        <div class="detail-row"><span>Email</span><strong id="contactEmail">—</strong></div>
-                                        <div class="detail-row"><span>Company</span><strong id="companyName">—</strong></div>
-                                        <div class="detail-row"><span>VAT Number</span><strong id="vatNumber">—</strong></div>
+                                        <div class="detail-row"><span>Name</span><strong id="contactName">-</strong></div>
+                                        <div class="detail-row"><span>Email</span><strong id="contactEmail">-</strong></div>
+                                        <div class="detail-row"><span>Company</span><strong id="companyName">-</strong></div>
+                                        <div class="detail-row"><span>VAT Number</span><strong id="vatNumber">-</strong></div>
                                     </div>
                                 </div>
 
                                 <div class="panel">
                                     <h3>Billing Address</h3>
                                     <div class="detail-list">
-                                        <div class="detail-row"><span>Address</span><strong id="addressLine">—</strong></div>
-                                        <div class="detail-row"><span>City</span><strong id="city">—</strong></div>
-                                        <div class="detail-row"><span>Province</span><strong id="province">—</strong></div>
-                                        <div class="detail-row"><span>Postal Code</span><strong id="postalCode">—</strong></div>
-                                        <div class="detail-row"><span>Country</span><strong id="country">—</strong></div>
+                                        <div class="detail-row"><span>Address</span><strong id="addressLine">-</strong></div>
+                                        <div class="detail-row"><span>City</span><strong id="city">-</strong></div>
+                                        <div class="detail-row"><span>Province</span><strong id="province">-</strong></div>
+                                        <div class="detail-row"><span>Postal Code</span><strong id="postalCode">-</strong></div>
+                                        <div class="detail-row"><span>Country</span><strong id="country">-</strong></div>
                                     </div>
                                 </div>
                             </div>
@@ -412,9 +412,9 @@
                                 <p id="summaryCopy">Your invoice remains available until the due date shown below.</p>
 
                                 <div class="summary-rows">
-                                    <div class="summary-row"><span>Subtotal</span><strong id="summarySubtotal">—</strong></div>
-                                    <div class="summary-row"><span>VAT (15%)</span><strong id="summaryVat">—</strong></div>
-                                    <div class="summary-row total"><span>Total</span><strong id="summaryTotal">—</strong></div>
+                                    <div class="summary-row"><span>Subtotal</span><strong id="summarySubtotal">-</strong></div>
+                                    <div class="summary-row"><span>VAT (15%)</span><strong id="summaryVat">-</strong></div>
+                                    <div class="summary-row total"><span>Total</span><strong id="summaryTotal">-</strong></div>
                                 </div>
 
                                 <button id="payButton" class="cta" type="button">
@@ -451,9 +451,9 @@
         let payfastData = null;
 
         function formatDate(dateString) {
-            if (!dateString) return '—';
+            if (!dateString) return '-';
             const date = new Date(dateString.replace(' ', 'T'));
-            if (Number.isNaN(date.getTime())) return '—';
+            if (Number.isNaN(date.getTime())) return '-';
             return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
@@ -533,15 +533,15 @@
                 document.getElementById('invoiceExpiresAt').textContent = formatDate(invoice.expiresAt);
                 document.getElementById('invoicePackage').textContent = invoice.packageLabel;
                 document.getElementById('invoiceJobs').textContent = invoice.jobs + ' credit' + (invoice.jobs === 1 ? '' : 's');
-                document.getElementById('contactName').textContent = invoice.contactName || '—';
-                document.getElementById('contactEmail').textContent = invoice.contactEmail || '—';
-                document.getElementById('companyName').textContent = invoice.companyName || '—';
-                document.getElementById('vatNumber').textContent = invoice.vatNumber || '—';
-                document.getElementById('addressLine').textContent = invoice.addressLine || '—';
-                document.getElementById('city').textContent = invoice.city || '—';
-                document.getElementById('province').textContent = invoice.province || '—';
-                document.getElementById('postalCode').textContent = invoice.postalCode || '—';
-                document.getElementById('country').textContent = invoice.country || '—';
+                document.getElementById('contactName').textContent = invoice.contactName || '-';
+                document.getElementById('contactEmail').textContent = invoice.contactEmail || '-';
+                document.getElementById('companyName').textContent = invoice.companyName || '-';
+                document.getElementById('vatNumber').textContent = invoice.vatNumber || '-';
+                document.getElementById('addressLine').textContent = invoice.addressLine || '-';
+                document.getElementById('city').textContent = invoice.city || '-';
+                document.getElementById('province').textContent = invoice.province || '-';
+                document.getElementById('postalCode').textContent = invoice.postalCode || '-';
+                document.getElementById('country').textContent = invoice.country || '-';
                 document.getElementById('summarySubtotal').textContent = invoice.currencySubtotal;
                 document.getElementById('summaryVat').textContent = invoice.currencyVat;
                 document.getElementById('summaryTotal').textContent = invoice.currencyAmount;

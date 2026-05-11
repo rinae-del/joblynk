@@ -1,13 +1,13 @@
 <?php
 /**
  * /api/jobs/index.php
- * Jobs API — CRUD with role-based access
+ * Jobs API - CRUD with role-based access
  * 
- * GET               — List active jobs (all users)
- * GET  ?id=X        — Get single job
- * GET  ?mine=1      — Recruiter: list own jobs
- * POST              — Recruiter: create/update a job
- * DELETE ?id=X      — Recruiter: delete own job
+ * GET               - List active jobs (all users)
+ * GET  ?id=X        - Get single job
+ * GET  ?mine=1      - Recruiter: list own jobs
+ * POST              - Recruiter: create/update a job
+ * DELETE ?id=X      - Recruiter: delete own job
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -144,7 +144,7 @@ function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $
         ';
 
         $emailHtml = buildEmailTemplate('Your job ad is live', $emailBody);
-        sendResendEmail($user['email'], 'Job ad live — ' . html_entity_decode($title, ENT_QUOTES, 'UTF-8'), $emailHtml);
+        sendResendEmail($user['email'], 'Job ad live - ' . html_entity_decode($title, ENT_QUOTES, 'UTF-8'), $emailHtml);
     } catch (Throwable $e) {
         error_log('Job live email error: ' . $e->getMessage());
     }
@@ -159,7 +159,7 @@ $userId = $_SESSION['user_id'] ?? null;
 $userRole = $_SESSION['user_role'] ?? null;
 
 // ═══════════════════════════
-// GET — List or single job
+// GET - List or single job
 // ═══════════════════════════
 if ($method === 'GET') {
 
@@ -196,7 +196,7 @@ if ($method === 'GET') {
 }
 
 // ═══════════════════════════
-// POST — Create or update (recruiter only)
+// POST - Create or update (recruiter only)
 // ═══════════════════════════
 if ($method === 'POST') {
     if (!$userId) jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);
@@ -254,7 +254,7 @@ if ($method === 'POST') {
         ];
 
         if ($jobId) {
-            // Update — verify ownership
+            // Update - verify ownership
             $stmt = $pdo->prepare('SELECT id, status FROM jobs WHERE id = ? AND user_id = ?');
             $stmt->execute([$jobId, $userId]);
             $existingJob = $stmt->fetch();
@@ -290,7 +290,7 @@ if ($method === 'POST') {
             jsonResponse(['success' => true, 'id' => (int)$jobId, 'message' => 'Job updated.']);
         }
 
-        // Create new — check job credits (admins bypass)
+        // Create new - check job credits (admins bypass)
         if ($userRole === 'recruiter') {
             $stmt = $pdo->prepare('SELECT id, total_credits, used_credits FROM job_credits WHERE user_id = ? AND used_credits < total_credits AND expires_at > NOW() ORDER BY expires_at ASC LIMIT 1');
             $stmt->execute([$userId]);
@@ -343,7 +343,7 @@ if ($method === 'POST') {
 }
 
 // ═══════════════════════════
-// DELETE — Recruiter deletes own job
+// DELETE - Recruiter deletes own job
 // ═══════════════════════════
 if ($method === 'DELETE') {
     if (!$userId) jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);

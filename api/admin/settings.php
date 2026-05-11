@@ -3,8 +3,8 @@
  * /api/admin/settings.php
  * Admin Platform Settings API
  * 
- * GET           — Retrieve all settings (or a single key via ?key=X)
- * POST          — Save settings (expects JSON body with key-value pairs)
+ * GET           - Retrieve all settings (or a single key via ?key=X)
+ * POST          - Save settings (expects JSON body with key-value pairs)
  * 
  * Settings are stored in a `settings` table (auto-created if missing).
  */
@@ -38,7 +38,7 @@ try {
 $method = $_SERVER['REQUEST_METHOD'];
 
 // ═══════════════════════════
-// GET — Retrieve settings
+// GET - Retrieve settings
 // ═══════════════════════════
 if ($method === 'GET') {
     $key = isset($_GET['key']) ? trim($_GET['key']) : null;
@@ -62,7 +62,7 @@ if ($method === 'GET') {
 }
 
 // ═══════════════════════════
-// POST — Save settings
+// POST - Save settings
 // ═══════════════════════════
 if ($method === 'POST') {
     $body = getJsonBody();

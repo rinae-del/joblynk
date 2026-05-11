@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLynk | Live SA Jobs</title>
+    <meta name="description" content="Search live South African jobs on JobLynk. Browse roles by keyword, location and job type before signing in to apply.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="landing.css?v=20260511-jobs">
+</head>
+
+<body class="landing-page jobs-public-page">
+
+    <nav class="landing-nav">
+        <a href="index.html" class="landing-nav-logo">JobLynk.</a>
+
+        <div class="landing-nav-links">
+            <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
+            <a href="index.html#for-recruiters" class="landing-nav-link">For Recruiters</a>
+            <a href="index.html#faq" class="landing-nav-link">FAQ</a>
+        </div>
+
+        <div class="landing-nav-actions">
+            <a href="sign-in.html" class="btn-landing btn-landing-outline" id="jobsSignInLink">Sign In</a>
+            <a href="sign-up.html" class="btn-landing btn-landing-primary" id="jobsSignupLink">Get Started Free</a>
+        </div>
+
+        <button class="landing-nav-hamburger" id="navHamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    </nav>
+
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a href="jobs.html">For Job Seekers</a>
+        <a href="index.html#for-recruiters">For Recruiters</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="sign-in.html" id="jobsMobileSignInLink">Sign In</a>
+        <a href="sign-up.html" id="jobsMobileSignupLink">Get Started Free</a>
+    </div>
+
+    <main>
+        <section class="jobs-hero-section">
+            <div class="jobs-hero-copy">
+                <span class="hero-eyebrow"><i class="fa-solid fa-briefcase"></i> Live SA Job Board</span>
+                <h1>Browse real South African jobs before you sign in.</h1>
+                <p>Search active roles from verified recruiters, compare salary ranges, and save your application step for when you are ready.</p>
+                <div class="hero-actions">
+                    <a href="#jobsBoard" class="btn-landing btn-landing-primary btn-lg">View Jobs <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="cv-builder.html" class="btn-landing btn-landing-outline btn-lg">Build a Free CV</a>
+                </div>
+                <div class="jobs-hero-trust-row" aria-label="Job board highlights">
+                    <span><i class="fa-solid fa-circle-check"></i> Recruiter posted roles</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Local SA locations</span>
+                    <span><i class="fa-solid fa-file-signature"></i> Apply with your JobLynk CV</span>
+                </div>
+            </div>
+            <div class="jobs-hero-panel" aria-hidden="true">
+                <div class="jobs-hero-stat">
+                    <strong id="jobsHeroCount">0</strong>
+                    <span>Live roles</span>
+                </div>
+                <div class="jobs-hero-stat">
+                    <strong id="jobsLocationCount">0</strong>
+                    <span>Locations</span>
+                </div>
+                <div class="jobs-hero-stat">
+                    <strong id="jobsTypeCount">0</strong>
+                    <span>Job types</span>
+                </div>
+                <div class="jobs-hero-live-card">
+                    <span>Popular searches</span>
+                    <strong>Data, finance, support, logistics, healthcare</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="jobs-market-section" aria-label="Job market categories">
+            <div class="section-container jobs-market-grid">
+                <div class="jobs-market-copy">
+                    <span class="eyebrow eyebrow-amber">Career paths</span>
+                    <h2>Explore roles across practical, high demand fields.</h2>
+                    <p>From entry level support roles to senior technical positions, the board is built for scanning quickly and opening the roles that match your next move.</p>
+                </div>
+                <div class="jobs-market-tiles">
+                    <div class="jobs-market-tile"><i class="fa-solid fa-laptop-code"></i><span>Technology</span><strong>Developers, analysts, QA, cloud support</strong></div>
+                    <div class="jobs-market-tile"><i class="fa-solid fa-chart-line"></i><span>Finance</span><strong>Payroll, compliance, accounting, data</strong></div>
+                    <div class="jobs-market-tile"><i class="fa-solid fa-truck-fast"></i><span>Operations</span><strong>Logistics, warehouse, procurement, admin</strong></div>
+                    <div class="jobs-market-tile"><i class="fa-solid fa-user-nurse"></i><span>Healthcare</span><strong>Clinical systems, nursing, health data</strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="jobs-board-section" id="jobsBoard">
+            <div class="section-container">
+                <div class="jobs-board-header">
+                    <div>
+                        <span class="eyebrow eyebrow-green">Open roles</span>
+                        <h2>Find work that matches your skills and location.</h2>
+                    </div>
+                    <p>Listings can be viewed as a guest. Sign in only when you are ready to submit an application.</p>
+                </div>
+
+                <div class="jobs-quick-filter-row" aria-label="Popular location filters">
+                    <button type="button" class="jobs-location-chip active" data-location-filter="">All SA</button>
+                    <button type="button" class="jobs-location-chip" data-location-filter="Johannesburg, GP">Johannesburg</button>
+                    <button type="button" class="jobs-location-chip" data-location-filter="Cape Town, WC">Cape Town</button>
+                    <button type="button" class="jobs-location-chip" data-location-filter="Durban, KZN">Durban</button>
+                    <button type="button" class="jobs-location-chip" data-location-filter="Remote">Remote</button>
+                </div>
+
+                <div class="jobs-filter-panel" aria-label="Job filters">
+                    <div class="jobs-filter-field jobs-filter-search">
+                        <label for="publicJobKeyword">Keyword</label>
+                        <div class="jobs-filter-input-wrap">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="search" id="publicJobKeyword" placeholder="Search title, company or skills">
+                        </div>
+                    </div>
+                    <div class="jobs-filter-field">
+                        <label for="publicJobLocation">Location</label>
+                        <select id="publicJobLocation">
+                            <option value="">All locations</option>
+                        </select>
+                    </div>
+                    <div class="jobs-filter-field">
+                        <label for="publicJobType">Job type</label>
+                        <select id="publicJobType">
+                            <option value="">All types</option>
+                        </select>
+                    </div>
+                    <div class="jobs-filter-field">
+                        <label for="publicJobSort">Sort</label>
+                        <select id="publicJobSort">
+                            <option value="newest">Newest first</option>
+                            <option value="salary">Highest salary</option>
+                            <option value="closing">Closing soon</option>
+                        </select>
+                    </div>
+                    <button type="button" class="jobs-clear-btn" id="clearJobFilters">Clear filters</button>
+                </div>
+
+                <div class="jobs-board-layout">
+                    <div>
+                        <div class="jobs-results-summary" id="jobsResultsSummary">Loading jobs...</div>
+                        <div class="public-jobs-grid" id="publicJobsList"></div>
+                    </div>
+                    <aside class="jobs-board-aside" aria-label="Job seeker guidance">
+                        <div class="jobs-aside-block">
+                            <span>Application ready</span>
+                            <strong>Build a CV once. Use it every time you apply.</strong>
+                            <a href="cv-builder.html">Open CV Builder</a>
+                        </div>
+                        <div class="jobs-aside-block">
+                            <span>Better applications</span>
+                            <strong>Create a tailored cover letter for the role you want.</strong>
+                            <a href="cover-letter.html">Open Cover Letter Tool</a>
+                        </div>
+                        <div class="jobs-aside-list">
+                            <h3>What to compare</h3>
+                            <ul>
+                                <li>Salary range and benefits</li>
+                                <li>Location and work type</li>
+                                <li>Required skills and closing date</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="jobs-apply-section">
+            <div class="section-container jobs-apply-grid">
+                <div>
+                    <span class="eyebrow eyebrow-green">Ready when you are</span>
+                    <h2>Browse first. Apply when the role feels right.</h2>
+                </div>
+                <div class="jobs-apply-steps">
+                    <div><strong>1</strong><span>View a job and check the requirements.</span></div>
+                    <div><strong>2</strong><span>Sign in or create your free job seeker account.</span></div>
+                    <div><strong>3</strong><span>Attach your CV, add a note, and submit.</span></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="public-job-modal" id="jobPreviewModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="jobPreviewTitle">
+        <div class="public-job-modal-backdrop" data-close-job-modal></div>
+        <div class="public-job-dialog">
+            <button type="button" class="public-job-modal-close" data-close-job-modal aria-label="Close job preview"><i class="fa-solid fa-xmark"></i></button>
+            <span class="eyebrow eyebrow-green" id="jobPreviewCompany"></span>
+            <h2 id="jobPreviewTitle"></h2>
+            <div class="public-job-preview-meta" id="jobPreviewMeta"></div>
+            <div class="public-job-preview-body" id="jobPreviewBody"></div>
+            <div class="public-job-preview-actions">
+                <button type="button" class="btn-landing btn-landing-outline" data-close-job-modal>Close</button>
+                <button type="button" class="btn-landing btn-landing-primary" id="jobPreviewApplyBtn">Apply now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="public-job-modal" id="jobLoginModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="jobLoginTitle">
+        <div class="public-job-modal-backdrop" data-close-login-modal></div>
+        <div class="public-job-dialog public-login-dialog">
+            <button type="button" class="public-job-modal-close" data-close-login-modal aria-label="Close login prompt"><i class="fa-solid fa-xmark"></i></button>
+            <span class="eyebrow eyebrow-amber">Apply for this job</span>
+            <h2 id="jobLoginTitle">Sign in to submit your application.</h2>
+            <p id="jobLoginCopy">You can browse and view jobs as a guest. To apply, sign in or create a free job seeker account.</p>
+            <div class="public-login-actions">
+                <a href="sign-in.html?return=jobs" class="btn-landing btn-landing-primary" id="jobLoginSignIn">Sign In</a>
+                <a href="sign-up.html?return=jobs" class="btn-landing btn-landing-outline" id="jobLoginSignup">Create Free Account</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="landing-footer jobs-footer">
+        <div class="footer-bottom">
+            <p>&copy; 2026 JobLynk. Proudly South African. All rights reserved.</p>
+            <div class="social-links">
+                <a href="index.html">Home</a>
+                <a href="cv-builder.html">CV Builder</a>
+                <a href="cover-letter.html">Cover Letters</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="jobs-store.js?v=20260511-jobs"></script>
+    <script src="jobs.js?v=20260511-jobs"></script>
+</body>
+
+</html>

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         photoUrl: '',
         // Optional fields
         dateOfBirth: '', placeOfBirth: '', drivingLicence: '',
-        gender: '', nationality: '', civilStatus: '',
+        gender: '', nationality: '',
         website: '', linkedin: ''
     };
 
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const optionalLabels = {
         dateOfBirth: 'Date of birth', placeOfBirth: 'Place of birth',
         drivingLicence: 'Driving licence', gender: 'Gender',
-        nationality: 'Nationality', civilStatus: 'Civil status',
+        nationality: 'Nationality',
         website: 'Website', linkedin: 'LinkedIn'
     };
 
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('btnMobileFab')?.addEventListener('click', () => {
         $('previewPane').classList.add('open');
     });
-    // Close on swipe right or ESC – simplified: click topbar back when preview is open
+    // Close on swipe right or ESC - simplified: click topbar back when preview is open
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') $('previewPane')?.classList.remove('open');
     });
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
         preview.experienceList.innerHTML = cvData.experience.map(e => `
             <div class="cv-entry">
                 <div class="cv-entry-title">${e.jobTitle || '(Not specified)'}${e.employer ? ', '+e.employer : ''}</div>
-                <div class="cv-entry-date">${fmtDate(e.startDate)} ${e.startDate || e.endDate ? '—' : ''} ${fmtDate(e.endDate) || 'Present'}${e.city ? ', '+e.city : ''}</div>
+                <div class="cv-entry-date">${fmtDate(e.startDate)} ${e.startDate || e.endDate ? '-' : ''} ${fmtDate(e.endDate) || 'Present'}${e.city ? ', '+e.city : ''}</div>
                 <div class="cv-entry-desc">${e.description || ''}</div>
             </div>
         `).join('');
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
         preview.educationList.innerHTML = cvData.education.map(e => `
             <div class="cv-entry">
                 <div class="cv-entry-title">${e.degree || '(Not specified)'}${e.school ? ', '+e.school : ''}</div>
-                <div class="cv-entry-date">${fmtDate(e.startDate)} ${e.startDate || e.endDate ? '—' : ''} ${fmtDate(e.endDate) || 'Present'}${e.city ? ', '+e.city : ''}</div>
+                <div class="cv-entry-date">${fmtDate(e.startDate)} ${e.startDate || e.endDate ? '-' : ''} ${fmtDate(e.endDate) || 'Present'}${e.city ? ', '+e.city : ''}</div>
                 <div class="cv-entry-desc">${e.description || ''}</div>
             </div>
         `).join('');
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Languages
         preview.languagesList.innerHTML = cvData.languages.map(l => `
-            <div class="cv-skill-entry">${l.name || '(Not specified)'}${l.level ? ' — '+l.level : ''}</div>
+            <div class="cv-skill-entry">${l.name || '(Not specified)'}${l.level ? ' - '+l.level : ''}</div>
         `).join('');
         preview.languagesBlock.style.display = cvData.languages.length ? 'block' : 'none';
 

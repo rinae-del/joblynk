@@ -57,6 +57,6 @@ $emailBody = '
     </p>';
 
 $emailHtml = buildEmailTemplate('Your verification code', $emailBody);
-sendResendEmail($user['email'], 'Your verification code – ' . APP_NAME, $emailHtml);
+sendResendEmail($user['email'], 'Your verification code | ' . APP_NAME, $emailHtml);
 
 jsonResponse(['success' => true, 'message' => 'A new code has been sent to your email.', 'email' => $user['email']]);
