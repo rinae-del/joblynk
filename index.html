@@ -30,7 +30,7 @@
 
         <div class="landing-nav-links">
             <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
-            <a href="#for-recruiters" class="landing-nav-link">For Recruiters</a>
+            <a href="recruiter-pricing.html" class="landing-nav-link">For Recruiters</a>
             <a href="#faq" class="landing-nav-link">FAQ</a>
         </div>
 
@@ -46,7 +46,7 @@
     <!-- Mobile Nav Menu -->
     <div class="mobile-nav-menu" id="mobileNavMenu">
         <a href="jobs.html">For Job Seekers</a>
-        <a href="#for-recruiters">For Recruiters</a>
+        <a href="recruiter-pricing.html">For Recruiters</a>
         <a href="#faq">FAQ</a>
         <a href="jobs.html">View Jobs</a>
         <a href="sign-in.html">Sign In</a>
@@ -54,8 +54,9 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content">
+    <section class="hero-section hero-section--centered">
+        <div class="hero-grid-bg" aria-hidden="true"></div>
+        <div class="hero-content hero-content--centered">
             <span class="hero-eyebrow"><i class="fa-solid fa-location-dot"></i> Built for South Africa</span>
 
             <h1 class="hero-title">The smart link to your next career move in <span>South Africa.</span></h1>
@@ -90,30 +91,6 @@
                         <strong>4.8 / 5</strong>
                     </div>
                     <p class="trust-label">From <strong>2,000+</strong> South African professionals already on JobLynk</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="hero-visual">
-            <div class="hero-image-wrap">
-                <img src="images/hero.png"
-                     alt="South African professionals hired through JobLynk" class="hero-img">
-                <div class="hero-img-glow"></div>
-
-                <div class="floating-stat stat-top-right">
-                    <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
-                    <div class="stat-text">
-                        <h4>Live</h4>
-                        <p>SA job board</p>
-                    </div>
-                </div>
-
-                <div class="floating-stat stat-bottom-left">
-                    <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
-                    <div class="stat-text">
-                        <h4>Free</h4>
-                        <p>CV tools</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -250,7 +227,7 @@
         </div>
     </section>
 
-    <!-- Testimonials Section -->
+    <!-- Success Stories Carousel -->
     <section class="testimonials-section">
         <div class="section-container">
             <div class="section-header">
@@ -258,122 +235,89 @@
                 <h2>Real candidates. Real offers. Real outcomes.</h2>
             </div>
 
-            <div class="testimonials-grid testimonials-grid-expanded">
-                <div class="testimonial-card">
-                    <div class="testimonial-result">Interview ready CV</div>
-                    <p class="testimonial-quote">I rebuilt my CV on JobLynk after struggling with old templates. It looked cleaner, read better and helped me apply with more confidence.</p>
-                    <div class="testimonial-user">
-                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #6366F1, #A78BFA);">SJ</div>
-                        <div class="user-meta">
-                            <h4>Sipho Jacobs</h4>
-                            <p>Call Centre Agent, Johannesburg</p>
+            <div class="testimonials-carousel" id="testimonialsCarousel">
+                <div class="testimonials-track" id="testimonialsTrack">
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-result">Interview ready CV</div>
+                            <p class="testimonial-quote">I rebuilt my CV on JobLynk after struggling with old templates. It looked cleaner, read better and helped me apply with more confidence.</p>
+                            <div class="testimonial-user">
+                                <div class="testimonial-avatar" style="background: linear-gradient(135deg, #6366F1, #A78BFA);">SJ</div>
+                                <div class="user-meta">
+                                    <h4>Sipho Jacobs</h4>
+                                    <p>Call Centre Agent, Johannesburg</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card testimonial-card-featured">
+                            <div class="testimonial-result testimonial-result-green">Stronger applications</div>
+                            <p class="testimonial-quote">The cover letter tool helped me sound professional without overthinking every paragraph. It gave me a solid starting point for each role.</p>
+                            <div class="testimonial-user">
+                                <div class="testimonial-avatar" style="background: linear-gradient(135deg, #059669, #34D399);">DK</div>
+                                <div class="user-meta">
+                                    <h4>Danielle Khan</h4>
+                                    <p>Customer Success Manager, Cape Town</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-result testimonial-result-amber">Better job search flow</div>
+                            <p class="testimonial-quote">I liked being able to view jobs first, then sign in only when I was ready to apply. It feels simple and built for South African job seekers.</p>
+                            <div class="testimonial-user">
+                                <div class="testimonial-avatar" style="background: linear-gradient(135deg, #F59E0B, #D97706);">ER</div>
+                                <div class="user-meta">
+                                    <h4>Elroy Radebe</h4>
+                                    <p>Junior Data Analyst, Pretoria</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-result testimonial-result-green">Saved time</div>
+                            <p class="testimonial-quote">I could update my CV, check roles and prepare a cover letter from one place. That helped me apply after work without losing track.</p>
+                            <div class="testimonial-user">
+                                <div class="testimonial-avatar" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8);">MN</div>
+                                <div class="user-meta">
+                                    <h4>Michelle Naidoo</h4>
+                                    <p>Payroll Administrator, Durban</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-result">Easy to use</div>
+                            <p class="testimonial-quote">The builder made it easy to turn my experience into something presentable. I did not need design skills to get a smart CV.</p>
+                            <div class="testimonial-user">
+                                <div class="testimonial-avatar" style="background: linear-gradient(135deg, #EC4899, #F472B6);">LM</div>
+                                <div class="user-meta">
+                                    <h4>Lerato Maseko</h4>
+                                    <p>Office Administrator, Bloemfontein</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="testimonial-card testimonial-card-featured">
-                    <div class="testimonial-result testimonial-result-green">Stronger applications</div>
-                    <p class="testimonial-quote">The cover letter tool helped me sound professional without overthinking every paragraph. It gave me a solid starting point for each role.</p>
-                    <div class="testimonial-user">
-                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #059669, #34D399);">DK</div>
-                        <div class="user-meta">
-                            <h4>Danielle Khan</h4>
-                            <p>Customer Success Manager, Cape Town</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-result testimonial-result-amber">Better job search flow</div>
-                    <p class="testimonial-quote">I liked being able to view jobs first, then sign in only when I was ready to apply. It feels simple and built for South African job seekers.</p>
-                    <div class="testimonial-user">
-                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #F59E0B, #D97706);">ER</div>
-                        <div class="user-meta">
-                            <h4>Elroy Radebe</h4>
-                            <p>Junior Data Analyst, Pretoria</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-result testimonial-result-green">Saved time</div>
-                    <p class="testimonial-quote">I could update my CV, check roles and prepare a cover letter from one place. That helped me apply after work without losing track.</p>
-                    <div class="testimonial-user">
-                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8);">MN</div>
-                        <div class="user-meta">
-                            <h4>Michelle Naidoo</h4>
-                            <p>Payroll Administrator, Durban</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-result">Easy to use</div>
-                    <p class="testimonial-quote">The builder made it easy to turn my experience into something presentable. I did not need design skills to get a smart CV.</p>
-                    <div class="testimonial-user">
-                        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #EC4899, #F472B6);">LM</div>
-                        <div class="user-meta">
-                            <h4>Lerato Maseko</h4>
-                            <p>Office Administrator, Bloemfontein</p>
-                        </div>
-                    </div>
+                <div class="testimonials-nav">
+                    <button type="button" class="testimonial-arrow testimonial-arrow-prev" id="testimonialPrev" aria-label="Previous story"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="testimonials-dots" id="testimonialsDots"></div>
+                    <button type="button" class="testimonial-arrow testimonial-arrow-next" id="testimonialNext" aria-label="Next story"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Recruiter Section -->
-    <section class="recruiter-section" id="for-recruiters">
-        <div class="section-container">
-            <div class="recruiter-grid">
-                <div class="recruiter-copy">
-                    <span class="eyebrow eyebrow-green">For recruiters &amp; companies</span>
-                    <h2>Hire quality SA talent without paying traditional job board rates.</h2>
-                    <p>JobLynk is candidate focused first, with recruiter tools that help the right South African talent find and apply to your roles.</p>
-                    <ul class="recruiter-points">
-                        <li><i class="fa-solid fa-circle-check"></i> Packages built for single hires or multi-role campaigns</li>
-                        <li><i class="fa-solid fa-circle-check"></i> Unlimited applicants on every listing</li>
-                        <li><i class="fa-solid fa-circle-check"></i> 30 days live per job post</li>
-                        <li><i class="fa-solid fa-circle-check"></i> <strong>FREE</strong> company branding &amp; logo</li>
-                        <li><i class="fa-solid fa-circle-check"></i> Unlimited CV downloads</li>
-                    </ul>
-                    <div class="recruiter-actions">
-                        <a href="recruiter-signup.html" class="btn-landing btn-landing-green btn-lg">Start hiring <i class="fa-solid fa-arrow-right"></i></a>
-                        <a href="recruiter-pricing.html" class="btn-landing btn-landing-ghost btn-lg">View recruiter packages</a>
-                    </div>
-                </div>
 
-                <div class="recruiter-proof-panel">
-                    <div class="proof-panel-header">
-                        <span class="proof-panel-kicker">Recruiter workspace</span>
-                        <h3>One dashboard for posting roles, reviewing candidates and keeping hiring admin under control.</h3>
-                    </div>
-                    <div class="proof-panel-grid">
-                        <div class="proof-panel-metric">
-                            <strong>30 days</strong>
-                            <span>Live per listing</span>
-                        </div>
-                        <div class="proof-panel-metric">
-                            <strong>Unlimited</strong>
-                            <span>Applicants &amp; CV views</span>
-                        </div>
-                        <div class="proof-panel-metric">
-                            <strong>Verified</strong>
-                            <span>Recruiter presence</span>
-                        </div>
-                        <div class="proof-panel-metric">
-                            <strong>Branded</strong>
-                            <span>Company profile</span>
-                        </div>
-                    </div>
-                    <div class="recruiter-insight">
-                        <i class="fa-solid fa-chart-simple"></i>
-                        <p>Designed for lean hiring teams who need clear applicant flow, cleaner shortlists and a better candidate experience.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- FAQ Section -->
     <section class="faq-section" id="faq">
@@ -385,7 +329,7 @@
             </div>
 
             <div class="faq-grid">
-                <details class="faq-item" open>
+                <details class="faq-item">
                     <summary>Is JobLynk really free for job seekers?</summary>
                     <p>Yes. Building your CV, generating cover letters, browsing live jobs and applying are 100% free for job seekers.</p>
                 </details>
@@ -986,15 +930,64 @@ ${normalizeImportedText(extractedText).slice(0, 18000)}`;
                 }
             });
         });
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.addEventListener('toggle', () => {
-                if (item.open) {
-                    document.querySelectorAll('.faq-item').forEach(other => {
-                        if (other !== item) other.open = false;
-                    });
-                }
+        /* FAQ accordion — collapse one at a time */
+        document.querySelectorAll('.faq-item summary').forEach(summary => {
+            summary.addEventListener('click', e => {
+                e.preventDefault();
+                const parent = summary.parentElement;
+                const willOpen = !parent.open;
+                document.querySelectorAll('.faq-item').forEach(item => { item.open = false; });
+                if (willOpen) parent.open = true;
             });
         });
+
+        /* Testimonials carousel */
+        (() => {
+            const track = document.getElementById('testimonialsTrack');
+            const dotsWrap = document.getElementById('testimonialsDots');
+            const prevBtn = document.getElementById('testimonialPrev');
+            const nextBtn = document.getElementById('testimonialNext');
+            if (!track || !dotsWrap) return;
+
+            const slides = track.querySelectorAll('.testimonial-slide');
+            let current = 0;
+            let autoTimer;
+
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'testimonial-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', `Go to story ${i + 1}`);
+                dot.addEventListener('click', () => goTo(i));
+                dotsWrap.appendChild(dot);
+            });
+
+            const dots = dotsWrap.querySelectorAll('.testimonial-dot');
+
+            function goTo(index) {
+                current = ((index % slides.length) + slides.length) % slides.length;
+                track.style.transform = `translateX(-${current * 100}%)`;
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
+                resetAuto();
+            }
+
+            function resetAuto() {
+                clearInterval(autoTimer);
+                autoTimer = setInterval(() => goTo(current + 1), 6000);
+            }
+
+            prevBtn?.addEventListener('click', () => goTo(current - 1));
+            nextBtn?.addEventListener('click', () => goTo(current + 1));
+            resetAuto();
+
+            /* Swipe support */
+            let startX = 0;
+            track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+            track.addEventListener('touchend', e => {
+                const diff = startX - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+            });
+        })();
     </script>
 
 </body>
