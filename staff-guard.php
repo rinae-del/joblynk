@@ -38,11 +38,7 @@ if ($baseName === 'index.html' || $isRoot) {
         header('Location: ' . $dash);
         exit;
     }
-    // Staff preview user? Send them to the site.
-    if (!empty($_SESSION['staff_preview'])) {
-        header('Location: jobs.html');
-        exit;
-    }
+    // Staff preview users and public visitors can view the coming-soon page.
     return;
 }
 
