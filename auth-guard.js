@@ -33,16 +33,29 @@ const _authScript = document.currentScript || document.querySelector('script[src
             return;
         }
 
-        if (!data.loggedIn) {
+        if (!data.loggedIn && !data.staffPreview) {
             window.location.replace('sign-in.html');
             return;
         }
 
         // ── Staff-only preview enforcement ──
         // Any page that includes auth-guard.js is off-limits to non-staff during preview mode.
-        const staffRoles = ['admin', 'recruiter'];
-        if (!staffRoles.includes(data.user.role)) {
-            window.location.replace('index.html');
+        if (data.loggedIn) {
+            const staffRoles = ['admin', 'recruiter'];
+            if (!staffRoles.includes(data.user.role)) {
+                window.location.replace('index.html');
+                return;
+            }
+        }
+
+        // Staff preview users can view pages but not admin/recruiter-specific panels
+        if (data.staffPreview && !data.loggedIn) {
+            const requiredRole = _authScript?.getAttribute('data-role');
+            if (requiredRole === 'admin' || requiredRole === 'recruiter') {
+                window.location.replace('sign-in.html');
+                return;
+            }
+            document.body.classList.add('auth-ready');
             return;
         }
 

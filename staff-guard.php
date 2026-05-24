@@ -7,9 +7,13 @@ $uri        = $_SERVER['REQUEST_URI'] ?? '';
 $path       = parse_url($uri, PHP_URL_PATH) ?? '';
 $baseName   = basename($path);
 
+$hasStaffAccess = !empty($_SESSION['staff_preview']) ||
+                  (!empty($_SESSION['user_role']) && in_array($_SESSION['user_role'], $staffRoles, true));
+
 /*  Pages that are always public  */
 $publicPages = [
     'index.html',
+    'staff-login.html',
     'sign-in.html',
     'sign-up.html',
     'sign-out.html',
@@ -26,12 +30,17 @@ $isRoot = ($path === '/' || $path === '');
 
 /* ── Coming-soon page (index.html / /) ── */
 if ($baseName === 'index.html' || $isRoot) {
-    // Staff already logged in? Send them straight to work.
+    // Actual staff account logged in? Send them to their dashboard.
     if (!empty($_SESSION['user_role']) && in_array($_SESSION['user_role'], $staffRoles, true)) {
         $dash = 'dashboard.html';
         if ($_SESSION['user_role'] === 'recruiter') $dash = 'recruiter-overview.html';
         if ($_SESSION['user_role'] === 'admin')     $dash = 'admin-overview.html';
         header('Location: ' . $dash);
+        exit;
+    }
+    // Staff preview user? Send them to the site.
+    if (!empty($_SESSION['staff_preview'])) {
+        header('Location: jobs.html');
         exit;
     }
     return;
@@ -55,7 +64,7 @@ if (in_array($baseName, $publicPages, true)) {
 }
 
 /* ── Everything else is staff-only ── */
-if (empty($_SESSION['user_role']) || !in_array($_SESSION['user_role'], $staffRoles, true)) {
+if (!$hasStaffAccess) {
     header('Location: index.html');
     exit;
 }

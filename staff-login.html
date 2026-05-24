@@ -1,0 +1,206 @@
+<?php require __DIR__ . '/staff-guard.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal | JobLynk</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        :root{
+            --bg: #050507;
+            --text: #F4F4F5;
+            --text-muted: #A1A1AA;
+            --accent-1: #A78BFA;
+            --accent-2: #38BDF8;
+            --glass: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.08);
+        }
+
+        html, body{
+            width:100%; height:100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow:hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ambient{
+            position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+        }
+        .ambient .orb{
+            position:absolute; border-radius:50%; filter:blur(80px); opacity:.45;
+            animation: breathe 12s ease-in-out infinite;
+        }
+        .ambient .orb-1{
+            width:60vw; height:60vw; top:-10%; left:-10%;
+            background: radial-gradient(circle, var(--accent-1), transparent 70%);
+            animation-delay: 0s;
+        }
+        .ambient .orb-2{
+            width:50vw; height:50vw; bottom:-15%; right:-10%;
+            background: radial-gradient(circle, var(--accent-2), transparent 70%);
+            animation-delay: -4s; animation-duration: 16s;
+        }
+        @keyframes breathe{
+            0%,100%{ transform: scale(1) translate(0,0); }
+            33%{ transform: scale(1.08) translate(2%, -2%); }
+            66%{ transform: scale(0.95) translate(-1%, 1%); }
+        }
+
+        .noise{
+            position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat; background-size: 200px 200px;
+        }
+
+        .stage{
+            position:relative; z-index:10;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            min-height:100vh; padding: 2rem 1.5rem;
+            text-align:center;
+        }
+
+        .brand{
+            font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:1.5rem;
+            letter-spacing:-0.03em; color: var(--text);
+            margin-bottom: 2.5rem; opacity:0;
+            animation: fadeUp .7s cubic-bezier(.22,1,.36,1) .15s forwards;
+        }
+        .brand span{ color: var(--accent-1); }
+
+        .glass-card{
+            padding: 2.5rem 2rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 24px 80px -16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+            max-width: 400px; width:100%;
+            opacity:0; transform: translateY(20px);
+            animation: fadeUp .8s cubic-bezier(.22,1,.36,1) .3s forwards;
+        }
+        .glass-card h1{
+            font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.35rem; margin-bottom:.35rem;
+        }
+        .glass-card p{
+            font-size:.88rem; color: var(--text-muted); margin-bottom:1.5rem;
+        }
+
+        .pass-form{ display:flex; flex-direction:column; gap:.75rem; }
+        .pass-form input{
+            background: rgba(255,255,255,.04);
+            border:1px solid var(--glass-border); border-radius:12px;
+            padding: .85rem 1rem; color: var(--text); font-size:.95rem;
+            outline:none; transition: border-color .2s, box-shadow .2s;
+            text-align:center; letter-spacing:.08em;
+        }
+        .pass-form input:focus{
+            border-color: rgba(167,139,250,.35);
+            box-shadow: 0 0 0 3px rgba(167,139,250,.08);
+        }
+        .pass-form input::placeholder{ color: #52525B; letter-spacing:normal; }
+        .pass-form button{
+            display:inline-flex; align-items:center; justify-content:center; gap:.4rem;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            border:none; border-radius:12px; padding: .85rem 1.25rem;
+            color:#fff; font-weight:600; font-size:.95rem; cursor:pointer;
+            transition: transform .15s, opacity .15s, box-shadow .2s;
+            box-shadow: 0 8px 24px -6px rgba(167,139,250,.35);
+        }
+        .pass-form button:hover{ transform: translateY(-1px); opacity:.95; }
+        .pass-form button:active{ transform: translateY(0); }
+        .pass-form button:disabled{ opacity:.5; cursor:default; transform:none; }
+
+        .status-msg{
+            margin-top:.75rem; font-size:.85rem; min-height:1.4em;
+        }
+        .status-msg.ok{ color:#86EFAC; }
+        .status-msg.err{ color:#FCA5A5; }
+
+        .back-link{
+            margin-top: 1.5rem; font-size:.78rem; color: #52525B;
+            opacity:0; animation: fadeIn 1s ease .8s forwards;
+        }
+        .back-link a{ color: var(--text-muted); text-decoration:none; transition:color .2s; }
+        .back-link a:hover{ color: var(--text); }
+
+        @keyframes fadeUp{ to{ opacity:1; transform: translateY(0); } }
+        @keyframes fadeIn{ to{ opacity:1; } }
+
+        @media (max-width: 480px){
+            .glass-card{ padding:2rem 1.5rem; border-radius:18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    <div class="noise" aria-hidden="true"></div>
+
+    <main class="stage">
+        <div class="brand">Job<span>Lynk</span>.</div>
+
+        <div class="glass-card">
+            <h1>Staff Portal</h1>
+            <p>Enter the team passphrase to unlock preview access.</p>
+            <form class="pass-form" id="staffForm">
+                <input type="password" id="passphrase" placeholder="Enter passphrase" required autocomplete="off" autofocus>
+                <button type="submit" id="submitBtn">Unlock Preview</button>
+            </form>
+            <div class="status-msg" id="statusMsg"></div>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">&larr; Back to Coming Soon</a>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('staffForm');
+        const btn  = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
+        const input  = document.getElementById('passphrase');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const passphrase = input.value.trim();
+            if (!passphrase) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Verifying…';
+            status.className = 'status-msg';
+            status.textContent = '';
+
+            try {
+                const res = await fetch('api/auth/staff-login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passphrase })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    status.className = 'status-msg ok';
+                    status.textContent = 'Access granted. Redirecting…';
+                    window.location.href = 'jobs.html';
+                } else {
+                    throw new Error(data.message || 'Access denied.');
+                }
+            } catch (err) {
+                status.className = 'status-msg err';
+                status.textContent = err.message || 'Could not verify. Try again.';
+                btn.disabled = false;
+                btn.textContent = 'Unlock Preview';
+            }
+        });
+    </script>
+</body>
+</html>
