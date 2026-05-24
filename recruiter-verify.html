@@ -1,3 +1,4 @@
+﻿<?php require __DIR__ . '/staff-guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -198,7 +199,7 @@
             })
             .catch(() => window.location.replace('sign-in.html'));
 
-        // ── Code input handling ──
+        // â”€â”€ Code input handling â”€â”€
         const inputs = document.querySelectorAll('#codeInputs input');
         const btnVerify = document.getElementById('btnVerify');
 
@@ -238,7 +239,7 @@
             el.textContent = text;
         }
 
-        // ── Verify code ──
+        // â”€â”€ Verify code â”€â”€
         btnVerify.addEventListener('click', async () => {
             const code = getCode();
             if (code.length < 6) return;
@@ -274,7 +275,7 @@
             }
         });
 
-        // ── Resend code ──
+        // â”€â”€ Resend code â”€â”€
         document.getElementById('btnResend').addEventListener('click', async function() {
             this.disabled = true;
             this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
@@ -300,7 +301,7 @@
             this.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Resend code';
         });
 
-        // ── Edit email toggle ──
+        // â”€â”€ Edit email toggle â”€â”€
         document.getElementById('btnShowEdit').addEventListener('click', () => {
             const section = document.getElementById('editEmailSection');
             section.style.display = section.style.display === 'none' ? 'block' : 'none';
@@ -310,7 +311,7 @@
             }
         });
 
-        // ── Update email & resend ──
+        // â”€â”€ Update email & resend â”€â”€
         document.getElementById('btnUpdateEmail').addEventListener('click', async function() {
             const newEmail = document.getElementById('newEmailInput').value.trim();
             if (!newEmail) return;

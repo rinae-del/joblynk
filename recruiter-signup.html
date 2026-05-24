@@ -1,3 +1,4 @@
+﻿<?php require __DIR__ . '/staff-guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +14,7 @@
     <link rel="stylesheet" href="style.css?v=20260419">
     <link rel="stylesheet" href="auth.css?v=20260419">
     <style>
-        /* ── Recruiter signup specific ── */
+        /* â”€â”€ Recruiter signup specific â”€â”€ */
         .signup-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -40,7 +41,7 @@
         }
         .section-title:first-of-type { border-top: none; margin-top: 0; }
 
-        /* ── Stepper ── */
+        /* â”€â”€ Stepper â”€â”€ */
         .checkout-stepper {
             display: flex;
             align-items: center;
@@ -95,11 +96,11 @@
         }
         .step-connector.done { background: #059669; }
 
-        /* ── Step Panels ── */
+        /* â”€â”€ Step Panels â”€â”€ */
         .step-panel { display: none; }
         .step-panel.active { display: block; }
 
-        /* ── Package Cards ── */
+        /* â”€â”€ Package Cards â”€â”€ */
         .package-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -188,7 +189,7 @@
             text-decoration: underline;
         }
 
-        /* ── Basket Summary ── */
+        /* â”€â”€ Basket Summary â”€â”€ */
         .basket-summary {
             background: #F8FAFC;
             border: 1px solid #E5E7EB;
@@ -218,7 +219,7 @@
             color: var(--text, #1E293B);
         }
 
-        /* ── Promo Code ── */
+        /* â”€â”€ Promo Code â”€â”€ */
         .promo-row {
             display: flex;
             gap: 0.5rem;
@@ -242,7 +243,7 @@
             cursor: pointer;
         }
 
-        /* ── Review Summary ── */
+        /* â”€â”€ Review Summary â”€â”€ */
         .review-block {
             background: #F8FAFC;
             border: 1px solid #E5E7EB;
@@ -319,7 +320,7 @@
             color: var(--text-secondary, #6B7280);
         }
 
-        /* ── T&C Checkbox ── */
+        /* â”€â”€ T&C Checkbox â”€â”€ */
         .tc-checkbox {
             display: flex;
             align-items: flex-start;
@@ -338,7 +339,7 @@
         }
         .tc-checkbox a { color: var(--accent, #3B4BA6); text-decoration: underline; }
 
-        /* ── Step Navigation Buttons ── */
+        /* â”€â”€ Step Navigation Buttons â”€â”€ */
         .step-nav {
             display: flex;
             gap: 0.75rem;
@@ -360,7 +361,7 @@
             flex: 1;
         }
 
-        /* ── Error / Alert ── */
+        /* â”€â”€ Error / Alert â”€â”€ */
         .form-alert {
             padding: 0.85rem 1rem;
             background: rgba(239,68,68,0.08);
@@ -438,7 +439,7 @@
 
                 <form id="recruiterSignupForm" novalidate>
 
-                    <!-- ══ STEP 1: Choose Plan ══ -->
+                    <!-- â•â• STEP 1: Choose Plan â•â• -->
                     <div class="step-panel active" id="step1">
                         <div class="section-title" style="border-top:none;margin-top:0;">Selected Package</div>
                         <div class="selected-plan-note">
@@ -529,7 +530,7 @@
                         </div>
                     </div>
 
-                    <!-- ══ STEP 2: Company Details ══ -->
+                    <!-- â•â• STEP 2: Company Details â•â• -->
                     <div class="step-panel" id="step2">
                         <div class="section-title" style="border-top:none;margin-top:0;">Create Your JobLynk Account</div>
                         <p style="font-size:0.85rem;color:#6B7280;margin-bottom:1.25rem;">Fields marked with * are mandatory.</p>
@@ -660,7 +661,7 @@
                         </div>
                     </div>
 
-                    <!-- ══ STEP 3: Payment ══ -->
+                    <!-- â•â• STEP 3: Payment â•â• -->
                     <div class="step-panel" id="step3">
                         <div class="section-title" style="border-top:none;margin-top:0;">Review &amp; Pay</div>
 
@@ -746,13 +747,13 @@
     </div>
 
     <script>
-        // ── State ──
+        // â”€â”€ State â”€â”€
         let currentStep = 1;
         const PLAN_LABELS = { intro: 'Intro Listing', '1job': 'Standard Listing', '2job': '2-Job Bundle', '3job': '3-Job Bundle', '4job': '4-Job Bundle', '5job': '5-Job Bundle' };
         const PAYMENT_LABELS = { payfast: 'PayFast', invoice: 'Invoice by email' };
         const PRICING_PAGE_URL = 'recruiter-pricing.html';
 
-        // ── Package card selection UI ──
+        // â”€â”€ Package card selection UI â”€â”€
         function selectPackageCard(card) {
             document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
@@ -828,7 +829,7 @@
         loadConfiguredPricing();
         const preselected = initializeSelectedPackage();
 
-        // ── Basket calculation ──
+        // â”€â”€ Basket calculation â”€â”€
         function getSelectedPackage() {
             const card = document.querySelector('.package-card.selected');
             if (!card) return null;
@@ -856,7 +857,7 @@
         }
         updateBasket();
 
-        // ── Stepper navigation ──
+        // â”€â”€ Stepper navigation â”€â”€
         function goToStep(step) {
             if (step < 1 || step > 3) return;
             hideAlert();
@@ -882,7 +883,7 @@
             if (step === 3) populateReview();
         }
 
-        // ── Step 1 validation ──
+        // â”€â”€ Step 1 validation â”€â”€
         document.getElementById('btnStep1Next').addEventListener('click', () => {
             const pkg = getSelectedPackage();
             if (!pkg) return showAlert('Please select a plan.');
@@ -890,7 +891,7 @@
             goToStep(2);
         });
 
-        // ── Step 2 validation ──
+        // â”€â”€ Step 2 validation â”€â”€
         document.getElementById('btnStep2Next').addEventListener('click', () => {
             const title = document.getElementById('title').value;
             const firstName = document.getElementById('firstName').value.trim();
@@ -920,7 +921,7 @@
             goToStep(3);
         });
 
-        // ── Back buttons ──
+        // â”€â”€ Back buttons â”€â”€
         document.getElementById('btnStep2Back').addEventListener('click', () => goToStep(1));
         document.getElementById('btnStep3Back').addEventListener('click', () => goToStep(2));
 
@@ -958,7 +959,7 @@
 
         syncPaymentMethodState();
 
-        // ── Populate review ──
+        // â”€â”€ Populate review â”€â”€
         function populateReview() {
             const title = document.getElementById('title').value;
             const firstName = document.getElementById('firstName').value.trim();
@@ -991,7 +992,7 @@
             syncPaymentMethodState();
         }
 
-        // ── Alert helpers ──
+        // â”€â”€ Alert helpers â”€â”€
         const alertBox = document.getElementById('formAlert');
         function showAlert(msg) {
             alertBox.textContent = msg;
@@ -1000,7 +1001,7 @@
         }
         function hideAlert() { alertBox.classList.remove('visible'); }
 
-        // ── Form submission ──
+        // â”€â”€ Form submission â”€â”€
         const form = document.getElementById('recruiterSignupForm');
         const btnSubmit = document.getElementById('btnSubmit');
 

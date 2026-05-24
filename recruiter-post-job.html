@@ -1,3 +1,4 @@
+﻿<?php require __DIR__ . '/staff-guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -322,7 +323,7 @@
     <script src="jobs-store.js?v=20260524"></script>
     <script src="recruiter-dashboard.js?v=20260524b"></script>
     <script>
-    // ── Province / City cascade ──
+    // â”€â”€ Province / City cascade â”€â”€
     const SA_LOCATIONS = {
         'Gauteng': ['Johannesburg','Pretoria','Sandton','Midrand','Centurion','Randburg','Roodepoort','Soweto','Benoni','Boksburg','Germiston','Kempton Park','Alberton','Edenvale','Springs','Krugersdorp','Vereeniging','Vanderbijlpark','Tshwane'],
         'Western Cape': ['Cape Town','Stellenbosch','Paarl','George','Knysna','Mossel Bay','Worcester','Bellville','Somerset West','Hermanus','Franschhoek','Plettenberg Bay','Saldanha','Malmesbury'],
@@ -720,7 +721,7 @@ Do not invent salary, benefits or company claims.`;
 
     initJobAdAi();
 
-    // ── Job Preview ──
+    // â”€â”€ Job Preview â”€â”€
     function escHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
     window.previewJobAd = function() {

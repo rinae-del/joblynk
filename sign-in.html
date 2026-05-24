@@ -1,3 +1,4 @@
+﻿<?php require __DIR__ . '/staff-guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,7 +54,7 @@
 
                     <div class="auth-form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" class="auth-input" placeholder="••••••••" required>
+                        <input type="password" id="password" class="auth-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
                     </div>
 
                     <div class="auth-form-row">
@@ -142,7 +143,7 @@
                                 btn.disabled = false;
                                 btn.textContent = 'Sign In';
                             } else if (data.needsVerify) {
-                                infoEl.innerHTML = data.message + ' <a href="verify-email.html?email=' + encodeURIComponent(data.email) + '" style="color:#2563EB;font-weight:600;">Resend verification email →</a>';
+                                infoEl.innerHTML = data.message + ' <a href="verify-email.html?email=' + encodeURIComponent(data.email) + '" style="color:#2563EB;font-weight:600;">Resend verification email â†’</a>';
                                 infoEl.style.display = 'block';
                                 btn.disabled = false;
                                 btn.textContent = 'Sign In';
@@ -179,7 +180,7 @@
 
                     <div class="auth-footer" style="margin-top:1.5rem; font-size:0.78rem; color:#94A3B8;">
                         <a href="terms-and-conditions.html" target="_blank" class="auth-link" style="font-size:0.78rem;">POPIA &amp; Data Policy</a>
-                        &nbsp;·&nbsp;
+                        &nbsp;Â·&nbsp;
                         <a href="recruiter-terms.html" target="_blank" class="auth-link" style="font-size:0.78rem;">Recruiter Terms</a>
                     </div>
             </div>

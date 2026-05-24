@@ -1,3 +1,4 @@
+﻿<?php require __DIR__ . '/staff-guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
@@ -45,7 +46,7 @@
         <a href="recruiter-signup.html">Recruiter Sign Up</a>
     </div>
 
-    <!-- ═══ HEADER ═══ -->
+    <!-- â•â•â• HEADER â•â•â• -->
     <header class="pricing-header">
         <div class="pricing-header-copy">
             <span class="hero-tag tag-green">Recruiter Packages</span>
@@ -72,7 +73,7 @@
         New recruiters choose a package first, then continue to account setup. Existing recruiters can sign in and buy credits directly.
     </div>
 
-    <!-- ═══ INTRO OFFER BANNER ═══ -->
+    <!-- â•â•â• INTRO OFFER BANNER â•â•â• -->
     <div class="intro-banner" id="introBanner">
         <i class="fa-solid fa-fire-flame-curved"></i>
         <div class="intro-text">
@@ -89,7 +90,7 @@
         <span><i class="fa-solid fa-check"></i> Unlimited CV downloads</span>
     </div>
 
-    <!-- ═══ PRICING CARDS ═══ -->
+    <!-- â•â•â• PRICING CARDS â•â•â• -->
     <div class="pricing-grid" id="pricingGrid">
 
         <!-- Intro Offer -->
@@ -200,7 +201,7 @@
 
     </div>
 
-    <!-- ═══ TERMS CHECKBOX ═══ -->
+    <!-- â•â•â• TERMS CHECKBOX â•â•â• -->
     <div class="tc-section">
         <div class="tc-box">
             <input type="checkbox" id="tcAccept">
@@ -211,7 +212,7 @@
         </div>
     </div>
 
-    <!-- ═══ IMPORTANT NOTES ═══ -->
+    <!-- â•â•â• IMPORTANT NOTES â•â•â• -->
     <div class="notes-section">
         <div class="notes-card">
             <h3><i class="fa-solid fa-circle-info"></i> Important Information</h3>
@@ -228,7 +229,7 @@
         </div>
     </div>
 
-    <!-- ═══ FOOTER ═══ -->
+    <!-- â•â•â• FOOTER â•â•â• -->
     <footer class="landing-footer pricing-footer">
         <div class="footer-grid">
             <div class="footer-brand">
@@ -367,7 +368,7 @@
             } catch (e) { console.error('Error loading pricing:', e); }
         })();
 
-        // ── Load user session for recruiter checkout ──
+        // â”€â”€ Load user session for recruiter checkout â”€â”€
         const userSessionPromise = (async function loadUserSession() {
             try {
                 const res = await fetch('api/auth/session.php', { credentials: 'include' });
@@ -455,7 +456,7 @@
             }
         }
 
-        // ── Show payment result banner ──
+        // â”€â”€ Show payment result banner â”€â”€
         (function checkPaymentResult() {
             const params = new URLSearchParams(window.location.search);
             const status = params.get('payment');
