@@ -35,6 +35,16 @@ if (!$user || !password_verify($password, $user['password_hash'])) {
     jsonResponse(['success' => false, 'message' => 'Invalid email or password.'], 401);
 }
 
+// ── Staff-only preview gate ──
+$staffRoles = ['admin', 'recruiter'];
+if (!in_array($user['role'], $staffRoles, true)) {
+    jsonResponse([
+        'success'    => false,
+        'message'    => 'JobLynk is currently in staff-only preview mode. Public access is coming soon.',
+        'comingSoon' => true
+    ], 403);
+}
+
 // ── Check if email is verified ──
 if (isEmailVerificationRequired() && !$user['email_verified'] && $user['role'] !== 'recruiter') {
     jsonResponse([

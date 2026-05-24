@@ -127,23 +127,6 @@
                             const data = await res.json();
 
                             if (data.success) {
-                                // Check for guest CV to link
-                                const activeParams = new URLSearchParams(window.location.search);
-                                const returnParam = activeParams.get('return');
-                                const returnJobId = activeParams.get('job');
-                                if (returnParam === 'cv-builder') {
-                                    await linkGuestCv();
-                                    window.location.href = 'cv-builder.html';
-                                    return;
-                                }
-
-                                if (returnParam === 'jobs' && data.user.role === 'job_seeker') {
-                                    window.location.href = returnJobId
-                                        ? 'job-details.html?id=' + encodeURIComponent(returnJobId) + '&apply=1'
-                                        : 'dashboard-jobs.html';
-                                    return;
-                                }
-
                                 // Redirect based on role
                                 const role = data.user.role;
                                 if (role === 'recruiter') {
@@ -153,6 +136,11 @@
                                 } else {
                                     window.location.href = 'dashboard.html';
                                 }
+                            } else if (data.comingSoon) {
+                                errorEl.textContent = data.message;
+                                errorEl.style.display = 'block';
+                                btn.disabled = false;
+                                btn.textContent = 'Sign In';
                             } else if (data.needsVerify) {
                                 infoEl.innerHTML = data.message + ' <a href="verify-email.html?email=' + encodeURIComponent(data.email) + '" style="color:#2563EB;font-weight:600;">Resend verification email →</a>';
                                 infoEl.style.display = 'block';

@@ -48,6 +48,18 @@
     Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
+# Parse HTML files through PHP so the staff guard can run on every page
+<IfModule mod_php.c>
+    AddHandler application/x-httpd-php .html
+</IfModule>
+
+# Staff-only gate: auto-prepend guard to every HTML request
+<IfModule mod_php.c>
+    <FilesMatch "\.html$">
+        php_value auto_prepend_file "C:/laragon/www/joblynk/staff-guard.php"
+    </FilesMatch>
+</IfModule>
+
 # PHP settings (Afrihost shared hosting)
 <IfModule mod_php.c>
     php_value upload_max_filesize 10M
