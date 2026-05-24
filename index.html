@@ -5,300 +5,285 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobLynk — Coming Soon</title>
-    <meta name="description" content="South Africa's next-generation hiring platform is launching soon. Be the first to know.">
+    <meta name="description" content="South Africa's next-generation hiring platform. Launching soon.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        :root{
-            --bg: #050507;
-            --surface: rgba(255,255,255,0.03);
-            --text: #F4F4F5;
-            --text-muted: #A1A1AA;
-            --accent-1: #A78BFA;
-            --accent-2: #38BDF8;
-            --accent-3: #FBBF24;
-            --glass: rgba(255,255,255,0.06);
-            --glass-border: rgba(255,255,255,0.08);
+        :root {
+            --bg: #FFFFFF;
+            --bg-warm: #FAFAF8;
+            --text: #0F172A;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --border-focus: #CBD5E1;
+            --accent: #1E3A5F;
+            --accent-hover: #152A45;
+            --error: #DC2626;
+            --success: #15803D;
         }
 
-        html, body{
-            width:100%; height:100%;
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            overflow-x:hidden;
-            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* ── Ambient gradient mesh ── */
-        .ambient{
-            position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
-        }
-        .ambient .orb{
-            position:absolute; border-radius:50%; filter:blur(80px); opacity:.45;
-            animation: breathe 12s ease-in-out infinite;
-        }
-        .ambient .orb-1{
-            width:60vw; height:60vw; top:-10%; left:-10%;
-            background: radial-gradient(circle, var(--accent-1), transparent 70%);
-            animation-delay: 0s;
-        }
-        .ambient .orb-2{
-            width:50vw; height:50vw; bottom:-15%; right:-10%;
-            background: radial-gradient(circle, var(--accent-2), transparent 70%);
-            animation-delay: -4s;
-            animation-duration: 16s;
-        }
-        .ambient .orb-3{
-            width:40vw; height:40vw; top:40%; left:45%;
-            background: radial-gradient(circle, var(--accent-3), transparent 70%);
-            opacity:.25;
-            animation-delay: -8s;
-            animation-duration: 20s;
-        }
-        @keyframes breathe{
-            0%,100%{ transform: scale(1) translate(0,0); }
-            33%{ transform: scale(1.08) translate(2%, -2%); }
-            66%{ transform: scale(0.95) translate(-1%, 1%); }
+        /* ── Layout ── */
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
         }
 
-        /* ── Noise texture ── */
-        .noise{
-            position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.035;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 200px 200px;
+        /* ── Header ── */
+        .site-header {
+            padding: 2rem 0;
         }
 
-        /* ── Floating particles ── */
-        .particles{
-            position:fixed; inset:0; z-index:2; pointer-events:none; overflow:hidden;
-        }
-        .particle{
-            position:absolute; background: var(--text); border-radius:50%; opacity:0;
-            animation: floatUp linear infinite;
-        }
-        @keyframes floatUp{
-            0%{ transform: translateY(100vh) scale(0); opacity:0; }
-            10%{ opacity:.4; }
-            90%{ opacity:.2; }
-            100%{ transform: translateY(-10vh) scale(1); opacity:0; }
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.125rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        /* ── Main stage ── */
-        .stage{
-            position:relative; z-index:10;
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
-            min-height:100vh; padding: 2rem 1.5rem;
-            text-align:center;
+        .logo-mark {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
         }
 
-        /* ── Eyebrow ── */
-        .eyebrow{
-            display:inline-flex; align-items:center; gap:.5rem;
-            font-family:'Space Grotesk', sans-serif; font-weight:500; font-size:.75rem;
-            letter-spacing:.2em; text-transform:uppercase; color: var(--text-muted);
-            margin-bottom: 1.5rem; opacity:0; transform: translateY(20px);
-            animation: fadeUp .8s cubic-bezier(.22,1,.36,1) .2s forwards;
-        }
-        .eyebrow::before, .eyebrow::after{
-            content:''; display:block; width:24px; height:1px; background: var(--glass-border);
+        /* ── Hero ── */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem 0 6rem;
         }
 
-        /* ── Display headline ── */
-        .display{
-            font-family:'Space Grotesk', sans-serif; font-weight:700;
-            font-size: clamp(3.5rem, 11vw, 8rem); line-height:1.05;
-            letter-spacing:-0.04em; color: transparent;
-            background: linear-gradient(120deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
-            background-size: 300% 300%;
-            -webkit-background-clip: text; background-clip: text;
-            animation: gradientShift 8s ease infinite;
-            opacity:0; transform: translateY(30px);
-            animation: fadeUp .9s cubic-bezier(.22,1,.36,1) .35s forwards, gradientShift 8s ease infinite 1s;
-        }
-        @keyframes gradientShift{
-            0%,100%{ background-position: 0% 50%; }
-            50%{ background-position: 100% 50%; }
-        }
-        @keyframes fadeUp{
-            to{ opacity:1; transform: translateY(0); }
+        .hero-eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
         }
 
-        /* ── Subheadline ── */
-        .subhead{
-            max-width: 520px; margin-top: 1.5rem;
-            font-size: clamp(1rem, 1.8vw, 1.25rem); line-height:1.65;
-            color: var(--text-muted); font-weight:400;
-            opacity:0; transform: translateY(20px);
-            animation: fadeUp .8s cubic-bezier(.22,1,.36,1) .55s forwards;
+        .hero-headline {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 1.25rem;
         }
 
-        /* ── Glass card (notify form) ── */
-        .glass-card{
-            margin-top: 3rem; padding: 2.25rem 2rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            box-shadow: 0 24px 80px -16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
-            max-width: 460px; width:100%;
-            opacity:0; transform: translateY(20px);
-            animation: fadeUp .8s cubic-bezier(.22,1,.36,1) .75s forwards;
-        }
-        .glass-card h3{
-            font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.15rem; margin-bottom:.25rem;
-        }
-        .glass-card p{
-            font-size:.88rem; color: var(--text-muted); margin-bottom:1.25rem;
+        .hero-body {
+            font-size: clamp(1rem, 1.6vw, 1.125rem);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin-bottom: 2.5rem;
         }
 
         /* ── Form ── */
-        .notify-form{ display:flex; gap:.5rem; }
-        .notify-form input{
-            flex:1; min-width:0;
-            background: rgba(255,255,255,.04);
-            border:1px solid var(--glass-border); border-radius:12px;
-            padding: .75rem 1rem; color: var(--text); font-size:.9rem;
-            outline:none; transition: border-color .2s, box-shadow .2s;
+        .notify-form {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 420px;
         }
-        .notify-form input:focus{
-            border-color: rgba(167,139,250,.35);
-            box-shadow: 0 0 0 3px rgba(167,139,250,.08);
-        }
-        .notify-form input::placeholder{ color: #71717A; }
-        .notify-form button{
-            flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; gap:.35rem;
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            border:none; border-radius:12px; padding: .75rem 1.25rem;
-            color:#fff; font-weight:600; font-size:.9rem; cursor:pointer;
-            transition: transform .15s, opacity .15s, box-shadow .2s;
-            box-shadow: 0 8px 24px -6px rgba(167,139,250,.35);
-        }
-        .notify-form button:hover{ transform: translateY(-1px); opacity:.95; }
-        .notify-form button:active{ transform: translateY(0); }
-        .notify-form button:disabled{ opacity:.5; cursor:default; transform:none; }
 
-        /* ── Toast / status ── */
-        .status-msg{
-            margin-top:.75rem; font-size:.85rem; min-height:1.4em;
-            display:flex; align-items:center; gap:.4rem; justify-content:center;
+        .notify-form input[type="email"] {
+            flex: 1;
+            min-width: 0;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
-        .status-msg.ok{ color:#86EFAC; }
-        .status-msg.err{ color:#FCA5A5; }
-        .status-msg .dot{
-            width:6px; height:6px; border-radius:50%; display:inline-block;
+
+        .notify-form input[type="email"]::placeholder {
+            color: var(--text-muted);
         }
-        .status-msg.ok .dot{ background:#86EFAC; }
-        .status-msg.err .dot{ background:#FCA5A5; }
+
+        .notify-form input[type="email"]:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.08);
+        }
+
+        .notify-form button {
+            flex-shrink: 0;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            font-family: inherit;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .notify-form button:hover {
+            background: var(--accent-hover);
+        }
+
+        .notify-form button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-msg {
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+            min-height: 1.4em;
+        }
+
+        .status-msg.ok { color: var(--success); }
+        .status-msg.err { color: var(--error); }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0;
+        }
 
         /* ── Footer ── */
-        .cs-footer{
-            margin-top: auto; padding-top: 3rem;
-            display:flex; flex-direction:column; align-items:center; gap:1rem;
-            font-size:.78rem; color: #52525B;
-            opacity:0;
-            animation: fadeIn 1s ease 1.2s forwards;
+        .site-footer {
+            padding: 1.5rem 0;
         }
-        .cs-footer a{ color:#A1A1AA; text-decoration:none; transition:color .2s; }
-        .cs-footer a:hover{ color: var(--text); }
-        .cs-footer .staff-link{
-            font-size:.7rem; text-transform:uppercase; letter-spacing:.15em;
-            border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:.15rem;
-        }
-        @keyframes fadeIn{ to{ opacity:1; } }
 
-        /* ── Decorative year badge ── */
-        .year-badge{
-            position:absolute; top:2rem; right:2rem;
-            font-family:'Space Grotesk', sans-serif; font-weight:500; font-size:.7rem;
-            letter-spacing:.15em; text-transform:uppercase; color: var(--text-muted);
-            border:1px solid var(--glass-border); padding:.35rem .7rem; border-radius:99px;
-            opacity:0; animation: fadeIn 1s ease 1s forwards;
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .footer-copy {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .footer-links a {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
         }
 
         /* ── Responsive ── */
-        @media (max-width: 520px){
-            .glass-card{ padding:1.5rem 1.25rem; border-radius:18px; }
-            .notify-form{ flex-direction:column; }
-            .notify-form button{ width:100%; padding:.8rem; }
-            .year-badge{ top:1rem; right:1rem; }
+        @media (max-width: 480px) {
+            .notify-form {
+                flex-direction: column;
+            }
+
+            .notify-form button {
+                width: 100%;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Ambient light orbs -->
-    <div class="ambient" aria-hidden="true">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
+    <header class="site-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <span class="logo-mark">JL</span>
+                JobLynk
+            </a>
+        </div>
+    </header>
 
-    <!-- Film grain -->
-    <div class="noise" aria-hidden="true"></div>
+    <main class="hero">
+        <div class="container">
+            <p class="hero-eyebrow">Launching 2026</p>
 
-    <!-- Particles container -->
-    <div class="particles" id="particles" aria-hidden="true"></div>
+            <h1 class="hero-headline">A better way to hire in South Africa.</h1>
 
-    <!-- Year badge -->
-    <div class="year-badge">Launching Q3 2026</div>
+            <p class="hero-body">
+                We are building JobLynk to connect South African talent with the companies that need them.
+                No noise. No fluff. Just real jobs, real people, and tools that actually work.
+            </p>
 
-    <!-- Main stage -->
-    <main class="stage">
-        <div class="eyebrow">South Africa's Next-Gen Hiring Platform</div>
-
-        <h1 class="display">Coming Soon</h1>
-
-        <p class="subhead">
-            We are building something extraordinary for job seekers and recruiters across South Africa.
-            Be the first to know when doors open.
-        </p>
-
-        <div class="glass-card">
-            <h3>Get early access</h3>
-            <p>Drop your email. We will let you know the moment we go live.</p>
             <form class="notify-form" id="notifyForm">
-                <input type="email" id="notifyEmail" placeholder="you@company.com" required autocomplete="email">
-                <button type="submit" id="notifyBtn">
-                    <span>Notify me</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </button>
+                <input type="email" id="notifyEmail" placeholder="Enter your email" required autocomplete="email">
+                <button type="submit" id="notifyBtn">Get notified</button>
             </form>
+
             <div class="status-msg" id="statusMsg"></div>
         </div>
-
-        <footer class="cs-footer">
-            <div>&copy; <span id="year"></span> JobLynk. Proudly South African.</div>
-            <a href="staff-login.html" class="staff-link">Staff Portal</a>
-        </footer>
     </main>
 
-    <script>
-        /* ── Particles ── */
-        (function(){
-            const container = document.getElementById('particles');
-            const count = window.innerWidth < 768 ? 18 : 35;
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                const size = Math.random() * 3 + 1;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + 'vw';
-                p.style.animationDuration = (Math.random() * 12 + 8) + 's';
-                p.style.animationDelay = (Math.random() * 10) + 's';
-                container.appendChild(p);
-            }
-        })();
+    <hr class="divider">
 
-        /* ── Year ── */
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-inner">
+                <span class="footer-copy">&copy; <span id="year"></span> JobLynk</span>
+                <nav class="footer-links">
+                    <a href="terms-and-conditions.html">Terms</a>
+                    <a href="staff-login.html">Staff</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        /* ── Notify form ── */
         const notifyForm = document.getElementById('notifyForm');
         const notifyBtn  = document.getElementById('notifyBtn');
         const statusMsg  = document.getElementById('statusMsg');
@@ -310,10 +295,10 @@
             if (!email) return;
 
             notifyBtn.disabled = true;
-            const originalBtnHTML = notifyBtn.innerHTML;
-            notifyBtn.innerHTML = '<span>Subscribing…</span>';
+            const originalText = notifyBtn.textContent;
+            notifyBtn.textContent = 'Subscribing…';
             statusMsg.className = 'status-msg';
-            statusMsg.innerHTML = '';
+            statusMsg.textContent = '';
 
             try {
                 const res = await fetch('api/coming-soon/notify.php', {
@@ -324,19 +309,20 @@
                 const data = await res.json();
                 if (data.success) {
                     statusMsg.className = 'status-msg ok';
-                    statusMsg.innerHTML = '<span class="dot"></span> You are on the list. We will be in touch.';
+                    statusMsg.textContent = 'You are on the list. We will be in touch.';
                     notifyEmail.value = '';
-                    notifyBtn.innerHTML = '<span>Subscribed</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                    notifyBtn.textContent = 'Subscribed';
                 } else {
                     throw new Error(data.message || 'Something went wrong.');
                 }
             } catch (err) {
                 statusMsg.className = 'status-msg err';
-                statusMsg.innerHTML = '<span class="dot"></span> ' + (err.message || 'Could not subscribe. Please try again.');
-                notifyBtn.innerHTML = originalBtnHTML;
+                statusMsg.textContent = err.message || 'Could not subscribe. Please try again.';
                 notifyBtn.disabled = false;
+                notifyBtn.textContent = originalText;
             }
         });
     </script>
+
 </body>
 </html>
