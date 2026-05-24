@@ -124,13 +124,14 @@ function renderActivePostingsPreview() {
             <div class="recruiter-mini-posting-head">
                 <div class="entity-block">
                     <span class="recruiter-mini-posting-kicker">Active posting</span>
-                    <span class="entity-title">${job.title}</span>
+                    <span class="entity-title">${escHtml(job.title)}</span>
                 </div>
                 <span class="job-status active">Active</span>
             </div>
             <div class="entity-meta recruiter-mini-posting-meta">
-                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${job.location || 'Remote'}</span>
-                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${job.type || 'Full-time'}</span>
+                ${job.job_reference ? `<span class="meta-chip"><i class="fa-solid fa-hashtag"></i> ${escHtml(job.job_reference)}</span>` : ''}
+                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escHtml(job.location || 'Remote')}</span>
+                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escHtml(job.type || 'Full-time')}</span>
             </div>
             <div class="recruiter-mini-posting-foot">
                 <span>${applicantCount} applicant${applicantCount === 1 ? '' : 's'}</span>
@@ -311,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="cf-options-row" style="${type === 'select' ? '' : 'display:none;'}">
                     <div class="form-group" style="margin-bottom:0;">
-                        <label>Dropdown Options <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(comma separated)</span></label>
+                        <label>Dropdown Options <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Separate each option with a comma</span></label>
                         <input type="text" class="form-control cf-options" value="${escAttr(options)}" placeholder="e.g. 0-1 years, 2-5 years, 5+ years">
                     </div>
                 </div>
@@ -401,6 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Collect all wizard data
             const title = document.getElementById('wizJobTitle').value;
+            const jobReference = document.getElementById('wizJobReference')?.value || '';
             const company = document.getElementById('wizCompany').value;
             const provEl = document.getElementById('wizProvince');
             const cityEl = document.getElementById('wizCity');
@@ -423,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             var jobData = {
-                title, company, location, type,
+                title, jobReference, company, location, type,
                 description, requirements, skills,
                 salaryFrom, salaryTo, salaryNote, salaryPeriod, hideSalary,
                 benefits, closingDate,
@@ -465,6 +467,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert(result.message || 'Failed to post job. Please try again.');
                         return;
                     }
+
+                    if (result.id) {
+                        jobData.id = result.id;
+                    }
                 } catch (err) {
                     console.error('Error posting job:', err);
                     alert('Failed to post job. Please try again.');
@@ -488,8 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('indicator-1').classList.add('active');
             
             alert(editingId ? 'Job updated successfully!' : 'Job successfully posted! It will now appear on the Job Seeker dashboard.');
-            switchView('my-jobs');
-            loadMyJobs();
+            window.location.href = 'recruiter-my-jobs.html' + (jobData.id ? '?job=' + encodeURIComponent(jobData.id) : '');
         });
     }
 
@@ -500,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const queryJobId = new URLSearchParams(window.location.search).get('job') || '';
 
         try {
-            const res = await fetch('api/jobs/index.php?mine=1', { credentials: 'include' });
+            const res = await fetch('api/jobs/index.php?mine=1', { credentials: 'include', cache: 'no-store' });
             const result = await res.json();
             if (!result.success || !Array.isArray(result.jobs)) return;
 
@@ -540,10 +545,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.innerHTML = `
                     <td data-label="Job">
                         <div class="entity-block">
-                            <span class="entity-title">${job.title}</span>
+                            <span class="entity-title">${escHtml(job.title)}</span>
                             <div class="entity-meta">
-                                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${job.location || 'Remote'}</span>
-                                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${job.type || 'Full-time'}</span>
+                                ${job.job_reference ? `<span class="meta-chip"><i class="fa-solid fa-hashtag"></i> ${escHtml(job.job_reference)}</span>` : ''}
+                                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escHtml(job.location || 'Remote')}</span>
+                                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escHtml(job.type || 'Full-time')}</span>
                             </div>
                         </div>
                     </td>

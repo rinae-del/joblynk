@@ -1708,6 +1708,11 @@ body.landing-page {
     margin-bottom: 0.35rem;
 }
 
+.stat-counter-item h3.stat-counter-title-long {
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
 .stat-counter-item p {
     color: var(--muted);
     font-size: 0.85rem;
@@ -2326,6 +2331,29 @@ body.landing-page {
     align-items: center;
     justify-content: center;
     font-size: 0.6rem;
+}
+
+.hero-price-claim {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.85rem;
+    margin: 0 0 1.25rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(16, 185, 129, 0.34);
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--text);
+    border-radius: 10px;
+}
+
+.hero-price-claim strong {
+    font-weight: 900;
+    color: #A7F3D0;
+}
+
+.hero-price-claim span {
+    font-size: 0.88rem;
+    color: var(--muted);
 }
 
 .trust-stars {

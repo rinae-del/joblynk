@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260511-client">
+    <link rel="stylesheet" href="landing.css?v=20260524-client">
     <link rel="stylesheet" href="recruiter-pricing.css?v=20260428">
 </head>
 
@@ -77,7 +77,7 @@
         <i class="fa-solid fa-fire-flame-curved"></i>
         <div class="intro-text">
             <strong>1st Introductory Offer: Limited Time!</strong><br>
-            Post 1 job for only <strong>R750</strong>. Offer ends <strong>31 May 2026</strong>. You have 30 days from purchase to use this offer before it expires.
+            Post 1 job for only <strong>R750 incl. VAT</strong>. Offer ends <strong>31 May 2026</strong>. You have 30 days from purchase to use this offer before it expires.
         </div>
         <span class="intro-price">R750</span>
     </div>
@@ -96,7 +96,7 @@
         <div class="price-card intro">
             <div class="card-icon"><i class="fa-solid fa-bolt"></i></div>
             <div class="card-tier">Introductory</div>
-            <div class="card-price">R750 <small>/ 1 job</small></div>
+            <div class="card-price">R750 <small>/ 1 job incl. VAT</small></div>
             <div class="card-desc">Limited time introductory offer. Post 1 job advert</div>
             <span class="card-savings orange">Ends 31 May 2026</span>
             <ul class="card-features">
@@ -114,7 +114,7 @@
         <div class="price-card">
             <div class="card-icon"><i class="fa-solid fa-briefcase"></i></div>
             <div class="card-tier">Standard</div>
-            <div class="card-price">R1,300 <small>/ 1 job</small></div>
+            <div class="card-price">R1,300 <small>/ 1 job incl. VAT</small></div>
             <div class="card-desc">Single job advert. Standard pricing</div>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 1 job advert</li>
@@ -130,7 +130,7 @@
         <div class="price-card">
             <div class="card-icon"><i class="fa-solid fa-layer-group"></i></div>
             <div class="card-tier">2-Job Bundle</div>
-            <div class="card-price">R2,200 <small>/ 2 jobs</small></div>
+            <div class="card-price">R2,200 <small>/ 2 jobs incl. VAT</small></div>
             <div class="card-desc">Save R400 compared to buying individually</div>
             <span class="card-savings green">Save R400</span>
             <ul class="card-features">
@@ -148,7 +148,7 @@
         <div class="price-card featured">
             <div class="card-icon"><i class="fa-solid fa-star"></i></div>
             <div class="card-tier">3-Job Bundle</div>
-            <div class="card-price">R2,950 <small>/ 3 jobs</small></div>
+            <div class="card-price">R2,950 <small>/ 3 jobs incl. VAT</small></div>
             <div class="card-desc">Save R950. Most popular choice</div>
             <span class="card-savings green">Save R950</span>
             <ul class="card-features">
@@ -166,7 +166,7 @@
         <div class="price-card">
             <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
             <div class="card-tier">4-Job Bundle</div>
-            <div class="card-price">R3,500 <small>/ 4 jobs</small></div>
+            <div class="card-price">R3,500 <small>/ 4 jobs incl. VAT</small></div>
             <div class="card-desc">Save R1,700. Great for growing teams</div>
             <span class="card-savings green">Save R1,700</span>
             <ul class="card-features">
@@ -184,7 +184,7 @@
         <div class="price-card">
             <div class="card-icon"><i class="fa-solid fa-rocket"></i></div>
             <div class="card-tier">5-Job Bundle</div>
-            <div class="card-price">R3,900 <small>/ 5 jobs</small></div>
+            <div class="card-price">R3,900 <small>/ 5 jobs incl. VAT</small></div>
             <div class="card-desc">Save R2,600. Best value for agencies</div>
             <span class="card-savings green">Save R2,600</span>
             <ul class="card-features">
@@ -205,7 +205,7 @@
         <div class="tc-box">
             <input type="checkbox" id="tcAccept">
             <div class="tc-content">
-                <label for="tcAccept">I agree to the <a href="recruiter-terms.html" target="_blank">Terms &amp; Conditions</a> and consent to JobLynk processing my personal data and sharing my profile with potential employers for recruitment purposes in line with POPIA.</label>
+                <label for="tcAccept">I agree to the <a href="recruiter-terms.html" target="_blank">Terms &amp; Conditions</a> and confirm that my recruiter account may access candidate data for recruitment purposes in line with POPIA.</label>
                 <span>All prices include VAT. Bundle purchases must be used within 90 days.</span>
             </div>
         </div>
@@ -336,7 +336,7 @@
                     const bannerPrice = document.querySelector('.intro-banner .intro-price');
                     if (bannerPrice) bannerPrice.textContent = `R${p.intro.toLocaleString()}`;
                     const bannerStrongText = document.querySelectorAll('.intro-banner .intro-text strong');
-                    if (bannerStrongText[1]) bannerStrongText[1].textContent = `R${p.intro.toLocaleString()}`;
+                    if (bannerStrongText[1]) bannerStrongText[1].textContent = `R${p.intro.toLocaleString()} incl. VAT`;
                 }
 
                 if (p.introExpiry) {

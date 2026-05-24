@@ -702,6 +702,33 @@ body {
 }
 
 /* ── CV Header Block (Blue/Navy) ── */
+.a4-paper.export-pdf {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+}
+
+.a4-paper.export-pdf .cv-content .cv-text-body,
+.a4-paper.export-pdf .cv-content .cv-entry-desc,
+.a4-paper.export-pdf .cv-content .cv-detail-row,
+.a4-paper.export-pdf .cv-content .cv-skill-entry,
+.a4-paper.export-pdf .cv-content .cv-text-sm {
+    color: #1F2937 !important;
+    opacity: 1 !important;
+}
+
+.a4-paper.export-pdf .cv-content .cv-entry-date,
+.a4-paper.export-pdf .cv-content .cv-entry-subtitle {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+.a4-paper.export-pdf .cv-header-label,
+.a4-paper.export-pdf .cv-jobtitle,
+.a4-paper.export-pdf .cv-name,
+.a4-paper.export-pdf .cv-entry-title {
+    opacity: 1 !important;
+}
+
 .cv-header-block {
     background: var(--accent);
     color: #fff;

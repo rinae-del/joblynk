@@ -10,6 +10,7 @@ function getRecruiterPackageCatalog(): array {
             'credits' => 1,
             'jobs' => 1,
             'expiry_days' => 30,
+            'available_until' => '2026-05-31 23:59:59',
         ],
         '1job' => [
             'id' => '1job',
@@ -62,6 +63,15 @@ function getRecruiterPackageCatalog(): array {
 function getRecruiterPackage(string $packageId): ?array {
     $packages = getRecruiterPackageCatalog();
     return $packages[$packageId] ?? null;
+}
+
+function isRecruiterPackageAvailable(array $package): bool {
+    $availableUntil = $package['available_until'] ?? null;
+    if (!$availableUntil) {
+        return true;
+    }
+
+    return time() <= strtotime($availableUntil);
 }
 
 function formatRecruiterCurrency(float $amount): string {

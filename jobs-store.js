@@ -46,6 +46,7 @@ const JobsStore = (() => {
         return {
             id: j.id,
             title: j.title,
+            jobReference: j.job_reference || j.jobReference || '',
             company: j.company,
             companyLogoUrl: j.company_logo_url || j.companyLogoUrl || '',
             location: j.location || '',

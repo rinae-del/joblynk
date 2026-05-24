@@ -358,14 +358,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!docId) docId = 'new_' + Date.now().toString();
 
     let currentAccentColor = '#3B4BA6';
-    let serverDocId = isNew ? null : docId; // Track the DB id
+    const isTemporaryDocId = (value) => /^new_\d+/.test(String(value || ''));
+    let serverDocId = (isNew || isTemporaryDocId(docId)) ? null : docId; // Track the DB id
 
     function applyCvRecord(record) {
         const recordData = record?.data || record || {};
         Object.keys(cvData).forEach(key => {
             if (recordData[key] !== undefined) cvData[key] = recordData[key];
         });
-        if (record?.accentColor) currentAccentColor = record.accentColor;
+        if (record?.accentColor || record?.accent_color) {
+            currentAccentColor = record.accentColor || record.accent_color;
+        }
 
         const titleEl = document.querySelector('.topbar-title');
         if (titleEl && record?.name) titleEl.textContent = record.name;
@@ -385,11 +388,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadData() {
-        // Wait for auth check to complete
         await authReady;
 
         if (isNew && startBlank) {
             localStorage.removeItem('JobLynk_imported_cv_draft');
+            localStorage.removeItem('JobLynk_active_cv_draft');
             ensureNewCvName();
             return;
         }
@@ -408,31 +411,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Guest mode with no doc ID: try loading guest CV from localStorage
+        if (isLoggedIn && isNew) {
+            try {
+                const draftRaw = localStorage.getItem('JobLynk_active_cv_draft');
+                if (draftRaw) {
+                    applyCvRecord(JSON.parse(draftRaw));
+                    return;
+                }
+            } catch (error) {
+                console.warn('Saved CV draft load failed:', error);
+                localStorage.removeItem('JobLynk_active_cv_draft');
+            }
+        }
+
         if (!isLoggedIn && isNew) {
             try {
                 const guestRaw = localStorage.getItem('JobLynk_guest_cv');
                 if (guestRaw) {
-                    const guest = JSON.parse(guestRaw);
-                    if (guest.data) {
-                        Object.keys(cvData).forEach(key => {
-                            if (guest.data[key] !== undefined) cvData[key] = guest.data[key];
-                        });
-                    }
-                    if (guest.accentColor) currentAccentColor = guest.accentColor;
-                    const titleEl = document.querySelector('.topbar-title');
-                    if (titleEl && guest.name) titleEl.textContent = guest.name;
-                    hydrateCitySelect($('city'), cvData.city);
-                    document.querySelectorAll('[data-cv]').forEach(inp => {
-                        const key = inp.getAttribute('data-cv');
-                        if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
-                    });
-                    if (cvData.photoUrl) {
-                        const avatarImg = $('avatarPreview');
-                        const avatarIcon = $('avatarIcon');
-                        if (avatarImg) { avatarImg.src = cvData.photoUrl; avatarImg.style.display = 'block'; }
-                        if (avatarIcon) avatarIcon.style.display = 'none';
-                    }
+                    applyCvRecord(JSON.parse(guestRaw));
                 }
             } catch (e) { console.warn('Guest CV load failed:', e); }
             return;
@@ -447,25 +443,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success && result.document) {
                 const doc = result.document;
                 serverDocId = doc.id;
-                if (doc.data) {
-                    Object.keys(cvData).forEach(key => {
-                        if (doc.data[key] !== undefined) cvData[key] = doc.data[key];
-                    });
-                }
-                if (doc.accent_color) currentAccentColor = doc.accent_color;
-                const titleEl = document.querySelector('.topbar-title');
-                if (titleEl) titleEl.textContent = doc.name || TITLE_DEFAULT;
-                hydrateCitySelect($('city'), cvData.city);
-                document.querySelectorAll('[data-cv]').forEach(inp => {
-                    const key = inp.getAttribute('data-cv');
-                    if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
+                docId = String(doc.id);
+                applyCvRecord({
+                    id: doc.id,
+                    name: doc.name || TITLE_DEFAULT,
+                    accentColor: doc.accent_color,
+                    data: doc.data || {}
                 });
-                if (cvData.photoUrl) {
-                    const avatarImg = $('avatarPreview');
-                    const avatarIcon = $('avatarIcon');
-                    if (avatarImg) { avatarImg.src = cvData.photoUrl; avatarImg.style.display = 'block'; }
-                    if (avatarIcon) avatarIcon.style.display = 'none';
-                }
                 return;
             }
         } catch (e) { console.warn('API load failed, trying localStorage:', e); }
@@ -477,110 +461,161 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cvs = JSON.parse(stored);
                 const ex = cvs.find(c => String(c.id) === String(docId));
                 if (ex) {
-                    Object.keys(cvData).forEach(key => {
-                        if (ex.data && ex.data[key] !== undefined) cvData[key] = ex.data[key];
-                    });
-                    if (ex.accentColor) currentAccentColor = ex.accentColor;
-                    const titleEl = document.querySelector('.topbar-title');
-                    if (titleEl) titleEl.textContent = ex.name || TITLE_DEFAULT;
-                    hydrateCitySelect($('city'), cvData.city);
-                    document.querySelectorAll('[data-cv]').forEach(inp => {
-                        const key = inp.getAttribute('data-cv');
-                        if (key && cvData[key] !== undefined && !Array.isArray(cvData[key])) inp.value = cvData[key];
-                    });
-                    if (cvData.photoUrl) {
-                        const avatarImg = $('avatarPreview');
-                        const avatarIcon = $('avatarIcon');
-                        if (avatarImg) { avatarImg.src = cvData.photoUrl; avatarImg.style.display = 'block'; }
-                        if (avatarIcon) avatarIcon.style.display = 'none';
-                    }
+                    serverDocId = isTemporaryDocId(ex.id) ? null : ex.id;
+                    applyCvRecord(ex);
                 }
             }
         } catch (e) { console.error('Error loading CV:', e); }
     }
 
     let saveTimeout;
-    function saveData() {
-        clearTimeout(saveTimeout);
+    let pendingSavePromise = Promise.resolve();
+
+    function setCloudSaving(isSaving) {
         const cloudIcon = document.querySelector('.topbar-cloud');
-        if (cloudIcon) {
+        if (!cloudIcon) return;
+
+        if (isSaving) {
             cloudIcon.classList.replace('fa-cloud', 'fa-arrows-rotate');
             cloudIcon.classList.add('fa-spin');
+        } else {
+            cloudIcon.classList.remove('fa-spin');
+            cloudIcon.classList.replace('fa-arrows-rotate', 'fa-cloud');
         }
+    }
 
-        saveTimeout = setTimeout(async () => {
-            const titleEl = document.querySelector('.topbar-title');
-            const title = titleEl ? titleEl.textContent.trim() : TITLE_DEFAULT;
+    function buildCurrentCvRecord(idOverride = serverDocId || docId) {
+        const title = getCurrentCvTitle() || TITLE_DEFAULT;
+        return {
+            id: idOverride || docId,
+            name: title,
+            lastEdited: new Date().toISOString(),
+            type: 'cv',
+            accentColor: currentAccentColor,
+            data: JSON.parse(JSON.stringify(cvData))
+        };
+    }
 
-            // Guest mode: save to localStorage only
+    function upsertLocalCvRecord(record) {
+        const stored = localStorage.getItem('JobLynk_cvs');
+        const parsed = stored ? JSON.parse(stored) : [];
+        const cvs = Array.isArray(parsed) ? parsed : [];
+        const idx = cvs.findIndex(cv => String(cv.id) === String(record.id));
+        if (idx >= 0) cvs[idx] = record;
+        else cvs.push(record);
+        localStorage.setItem('JobLynk_cvs', JSON.stringify(cvs));
+    }
+
+    function removeLocalCvRecord(id) {
+        if (!id) return;
+        const stored = localStorage.getItem('JobLynk_cvs');
+        const parsed = stored ? JSON.parse(stored) : [];
+        if (!Array.isArray(parsed)) return;
+        const filtered = parsed.filter(cv => String(cv.id) !== String(id));
+        localStorage.setItem('JobLynk_cvs', JSON.stringify(filtered));
+    }
+
+    function saveLocalCvSnapshot(record = buildCurrentCvRecord()) {
+        try {
             if (!isLoggedIn) {
-                try {
-                    const guestRecord = {
-                        id: docId,
-                        name: title || TITLE_DEFAULT,
-                        lastEdited: new Date().toISOString(),
-                        type: 'cv',
-                        accentColor: currentAccentColor,
-                        data: { ...cvData }
-                    };
-                    localStorage.setItem('JobLynk_guest_cv', JSON.stringify(guestRecord));
-                } catch (e) { console.warn('Guest save failed:', e); }
-
-                setTimeout(() => {
-                    if (cloudIcon) {
-                        cloudIcon.classList.remove('fa-spin');
-                        cloudIcon.classList.replace('fa-arrows-rotate', 'fa-cloud');
-                    }
-                }, 500);
+                localStorage.setItem('JobLynk_guest_cv', JSON.stringify(record));
                 return;
             }
 
-            // Logged-in: Try API save
-            try {
-                const payload = {
-                    doc_type: 'cv',
-                    name: title || TITLE_DEFAULT,
-                    accent_color: currentAccentColor,
-                    data: { ...cvData }
-                };
-                if (serverDocId) payload.id = serverDocId;
+            upsertLocalCvRecord(record);
+            if (!serverDocId) {
+                localStorage.setItem('JobLynk_active_cv_draft', JSON.stringify(record));
+            }
+        } catch (e) {
+            console.warn('Local CV snapshot failed:', e);
+        }
+    }
 
-                const res = await fetch('api/documents/index.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(payload)
-                });
-                const result = await res.json();
-                if (result.success && result.id) {
-                    serverDocId = result.id;
-                    // Update URL if this was a new doc
-                    if (isNew || !window.location.search.includes('id=')) {
-                        window.history.replaceState({}, '', '?id=' + serverDocId);
-                    }
-                }
-            } catch (e) {
-                // Fallback: save to localStorage
-                console.warn('API save failed, using localStorage:', e);
-                try {
-                    const stored = localStorage.getItem('JobLynk_cvs');
-                    let cvs = stored ? JSON.parse(stored) : [];
-                    const fallbackId = serverDocId || docId;
-                    const idx = cvs.findIndex(c => String(c.id) === String(fallbackId));
-                    const record = { id: fallbackId, name: title || TITLE_DEFAULT, lastEdited: new Date().toISOString(), type: 'cv', accentColor: currentAccentColor, data: { ...cvData } };
-                    if (idx >= 0) cvs[idx] = record; else cvs.push(record);
-                    localStorage.setItem('JobLynk_cvs', JSON.stringify(cvs));
-                } catch (e2) { console.error('localStorage save failed:', e2); }
+    async function persistCvData() {
+        clearTimeout(saveTimeout);
+        const localIdBeforeSave = docId;
+        const localRecord = buildCurrentCvRecord();
+        setCloudSaving(true);
+        saveLocalCvSnapshot(localRecord);
+
+        if (!isLoggedIn) {
+            setTimeout(() => setCloudSaving(false), 500);
+            return localRecord;
+        }
+
+        try {
+            const payload = {
+                doc_type: 'cv',
+                name: localRecord.name || TITLE_DEFAULT,
+                accent_color: currentAccentColor,
+                data: JSON.parse(JSON.stringify(cvData))
+            };
+            if (serverDocId) payload.id = serverDocId;
+
+            const res = await fetch('api/documents/index.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+
+            if (!result.success || !result.id) {
+                throw new Error(result.message || 'Failed to save CV.');
             }
 
-            setTimeout(() => {
-                if (cloudIcon) {
-                    cloudIcon.classList.remove('fa-spin');
-                    cloudIcon.classList.replace('fa-arrows-rotate', 'fa-cloud');
+            serverDocId = result.id;
+            docId = String(result.id);
+            localStorage.removeItem('JobLynk_active_cv_draft');
+
+            if (String(localIdBeforeSave) !== String(result.id)) {
+                try {
+                    removeLocalCvRecord(localIdBeforeSave);
+                } catch (e) {
+                    console.warn('Old local CV cleanup failed:', e);
                 }
-            }, 500);
+            }
+
+            if (isNew || !window.location.search.includes('id=')) {
+                window.history.replaceState({}, '', '?id=' + serverDocId);
+            }
+
+            const savedRecord = buildCurrentCvRecord(serverDocId);
+            saveLocalCvSnapshot(savedRecord);
+            return savedRecord;
+        } catch (e) {
+            console.warn('API save failed, using local snapshot:', e);
+            return localRecord;
+        } finally {
+            setTimeout(() => setCloudSaving(false), 500);
+        }
+    }
+
+    function saveData() {
+        clearTimeout(saveTimeout);
+        setCloudSaving(true);
+        saveLocalCvSnapshot();
+
+        saveTimeout = setTimeout(() => {
+            pendingSavePromise = pendingSavePromise
+                .catch(() => {})
+                .then(() => persistCvData());
         }, 800);
     }
+
+    function flushSaveData() {
+        clearTimeout(saveTimeout);
+        pendingSavePromise = pendingSavePromise
+            .catch(() => {})
+            .then(() => persistCvData());
+        return pendingSavePromise;
+    }
+
+    window.addEventListener('pagehide', () => saveLocalCvSnapshot());
+    window.addEventListener('beforeunload', () => saveLocalCvSnapshot());
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') saveLocalCvSnapshot();
+    });
 
     // Save on title change
     document.querySelector('.topbar-title')?.addEventListener('input', saveData);
@@ -589,6 +624,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM REFS
     // ============================
     const $ = id => document.getElementById(id);
+
+    $('btnBack')?.addEventListener('click', async (event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+        event.preventDefault();
+        const href = event.currentTarget.getAttribute('href') || 'dashboard.html';
+        try {
+            await flushSaveData();
+        } finally {
+            window.location.href = href;
+        }
+    });
 
     const preview = {
         name: $('previewName'),
@@ -1091,7 +1137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     const A4_WIDTH_MM = 210;
     const A4_HEIGHT_MM = 297;
-    const EXPORT_RENDER_SCALE = 2;
+    const EXPORT_RENDER_SCALE = 3;
 
     function waitForExportImages(root) {
         const pendingImages = Array.from(root.querySelectorAll('img'))
@@ -1297,7 +1343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await waitForExportImages(host);
             await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-            const pdf = new JsPdf({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+            const pdf = new JsPdf({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: false });
 
             for (let pageIndex = 0; pageIndex < pages.length; pageIndex += 1) {
                 const page = pages[pageIndex];
@@ -1310,11 +1356,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     width: Math.ceil(rect.width),
                     height: Math.ceil(rect.height),
                     windowWidth: Math.ceil(rect.width),
-                    windowHeight: Math.ceil(rect.height)
+                    windowHeight: Math.ceil(rect.height),
+                    imageTimeout: 15000
                 });
 
                 if (pageIndex > 0) pdf.addPage('a4', 'portrait');
-                pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'FAST');
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'FAST');
             }
 
             pdf.save(fileName);
@@ -1324,23 +1371,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     $('btnPdf')?.addEventListener('click', async () => {
-        // Guest mode: save state and prompt sign-in
         if (!isLoggedIn) {
-            // Ensure latest state is saved
-            const titleEl = document.querySelector('.topbar-title');
-            const title = titleEl ? titleEl.textContent.trim() : TITLE_DEFAULT;
-            try {
-                localStorage.setItem('JobLynk_guest_cv', JSON.stringify({
-                    id: docId,
-                    name: title || TITLE_DEFAULT,
-                    lastEdited: new Date().toISOString(),
-                    type: 'cv',
-                    accentColor: currentAccentColor,
-                    data: { ...cvData }
-                }));
-            } catch (e) { console.warn('Guest save failed:', e); }
-
-            // Show auth modal
+            await flushSaveData();
             const modal = document.getElementById('guestAuthModal');
             if (modal) modal.style.display = 'flex';
             return;
@@ -1356,6 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.disabled = true;
                 button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing';
             }
+            await flushSaveData();
             await downloadA4Pdf(element, `${cvName}.pdf`);
         } catch (error) {
             console.error('PDF export failed:', error);
@@ -1627,12 +1660,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             $('customColorPicker').value = btn.dataset.color;
+            saveData();
         });
     });
 
     $('customColorPicker')?.addEventListener('input', (e) => {
         applyColor(e.target.value);
         document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
+        saveData();
     });
 
     // Close template panel when clicking outside

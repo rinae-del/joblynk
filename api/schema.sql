@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL COMMENT 'Recruiter who posted',
     `title` VARCHAR(255) NOT NULL,
+    `job_reference` VARCHAR(100) DEFAULT '',
     `company` VARCHAR(255) NOT NULL,
     `location` VARCHAR(255) DEFAULT '',
     `type` VARCHAR(50) DEFAULT 'Full-time',

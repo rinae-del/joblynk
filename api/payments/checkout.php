@@ -42,6 +42,10 @@ if ($package === null) {
     jsonResponse(['success' => false, 'message' => 'Selected package is invalid.'], 422);
 }
 
+if (!isRecruiterPackageAvailable($package)) {
+    jsonResponse(['success' => false, 'message' => 'The selected introductory offer has expired. Please choose another package.'], 422);
+}
+
 try {
     $pdo = getDB();
     $stmt = $pdo->prepare('SELECT first_name, last_name, email FROM users WHERE id = ? LIMIT 1');

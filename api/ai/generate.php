@@ -26,6 +26,10 @@ if ($task !== 'cv_import' && !isset($_SESSION['user_id'])) {
     jsonResponse(['success' => false, 'message' => 'Not authenticated.'], 401);
 }
 
+if ($task === 'job_ad' && !in_array(($_SESSION['user_role'] ?? ''), ['recruiter', 'admin'], true)) {
+    jsonResponse(['success' => false, 'message' => 'Only recruiters can generate job adverts.'], 403);
+}
+
 if (!$prompt) {
     jsonResponse(['success' => false, 'message' => 'Prompt is required.'], 422);
 }
@@ -40,6 +44,9 @@ $temperature = 0.7;
 if ($task === 'cv_import') {
     $systemContent = 'You are an expert CV parser and professional resume writer. Extract only information supported by the CV text, structure it accurately, and write concise professional CV summaries.';
     $temperature = 0.2;
+} elseif ($task === 'job_ad') {
+    $systemContent = 'You are an expert South African recruitment copywriter. Write clear, inclusive job advert copy for recruiters. Return only valid JSON when asked for JSON.';
+    $temperature = 0.45;
 }
 
 // ── Retrieve DeepSeek API key from admin settings ──

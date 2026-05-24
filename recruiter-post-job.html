@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css?v=20260419">
     <link rel="stylesheet" href="recruiter-dashboard.css?v=20260419">
-    <script src="auth-guard.js?v=20260419" data-role="recruiter"></script>
+    <script src="auth-guard.js?v=20260524b" data-role="recruiter"></script>
 </head>
 
 <body>
@@ -54,12 +54,17 @@
                                 <input type="text" id="wizJobTitle" class="form-control" placeholder="e.g. Senior Product Manager" required>
                             </div>
                             <div class="form-group" style="flex: 1;">
-                                <label for="wizCompany">Company Display Name*</label>
+                                <label for="wizJobReference">Job Reference</label>
+                                <input type="text" id="wizJobReference" class="form-control" placeholder="e.g. FS-SALES-2026">
+                                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; line-height:1.5;">For recruiter tracking only. Candidates will not see this reference.</p>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="wizCompany">Display Company Name*</label>
                                 <select id="wizCompany" class="form-control" required>
                                     <option value="" data-company-name>Loading...</option>
-                                    <option value="Confidential">Remain Confidential</option>
+                                    <option value="Confidential">Choose Confidential</option>
                                 </select>
-                                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; line-height:1.5;">Choose Remain Confidential to hide your company name and logo from candidates.</p>
+                                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; line-height:1.5;">Choose Confidential to hide your company name and logo from candidates.</p>
                             </div>
                         </div>
                         <div class="dash-row" style="gap: 20px;">
@@ -119,8 +124,14 @@
                             <label for="wizReqs">Qualifications & Requirements*</label>
                             <textarea id="wizReqs" class="form-control" style="min-height: 100px;" placeholder="List necessary degrees, certifications, or years of experience..." required></textarea>
                         </div>
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:-4px 0 18px;">
+                            <button type="button" id="btnGenerateJobAd" class="welcome-btn primary" style="padding:10px 16px;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate With AI
+                            </button>
+                            <span id="jobAdAiStatus" style="font-size:0.8rem; color:var(--text-muted);"></span>
+                        </div>
                         <div class="form-group">
-                            <label for="wizSkills">Key Skills Tags <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(use comma to separate each skill)</span></label>
+                            <label for="wizSkills">Key Skills <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Use commas to separate each skill</span></label>
                             <input type="text" id="wizSkills" class="form-control" placeholder="e.g. React, Python, Project Management, Agile">
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 24px;">
@@ -308,8 +319,8 @@
     </main>
 
     <script src="components.js?v=20260419"></script>
-    <script src="jobs-store.js?v=20260419"></script>
-    <script src="recruiter-dashboard.js?v=20260424b"></script>
+    <script src="jobs-store.js?v=20260524"></script>
+    <script src="recruiter-dashboard.js?v=20260524b"></script>
     <script>
     // ── Province / City cascade ──
     const SA_LOCATIONS = {
@@ -595,6 +606,120 @@
 
     initPostJobBranding();
 
+    function extractAiJson(content) {
+        const raw = String(content || '').trim();
+        if (!raw) return null;
+
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            const start = raw.indexOf('{');
+            const end = raw.lastIndexOf('}');
+            if (start >= 0 && end > start) {
+                try {
+                    return JSON.parse(raw.slice(start, end + 1));
+                } catch (nestedError) {}
+            }
+        }
+
+        return null;
+    }
+
+    function initJobAdAi() {
+        const button = document.getElementById('btnGenerateJobAd');
+        const status = document.getElementById('jobAdAiStatus');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const title = document.getElementById('wizJobTitle')?.value.trim() || '';
+            const company = document.getElementById('wizCompany')?.value || '';
+            const province = document.getElementById('wizProvince')?.value || '';
+            const city = document.getElementById('wizCity')?.value || '';
+            const location = province === 'Remote' ? 'Remote' : [city, province].filter(Boolean).join(', ');
+            const type = document.getElementById('wizType')?.value || '';
+            const existingDescription = document.getElementById('wizDesc')?.value.trim() || '';
+            const existingRequirements = document.getElementById('wizReqs')?.value.trim() || '';
+            const existingSkills = document.getElementById('wizSkills')?.value.trim() || '';
+
+            if (!title) {
+                alert('Please enter a job title before generating advert copy.');
+                document.getElementById('wizJobTitle')?.focus();
+                return;
+            }
+
+            const prompt = `Create job advert content for JobLynk. Return only valid JSON with these keys: description, requirements, skills.
+
+Job title: ${title}
+Company display name: ${company || 'Not specified'}
+Location: ${location || 'Not specified'}
+Employment type: ${type || 'Not specified'}
+
+Existing description notes:
+${existingDescription || 'None'}
+
+Existing qualifications and requirements notes:
+${existingRequirements || 'None'}
+
+Existing skills:
+${existingSkills || 'None'}
+
+Rules:
+description must be 2 to 4 concise paragraphs.
+requirements must be a clear list of qualifications, experience, responsibilities and must-have requirements, separated by new lines.
+skills must be a comma separated list of 8 to 14 practical skills.
+Use South African business English.
+Do not invent salary, benefits or company claims.`;
+
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating';
+            if (status) status.textContent = 'Creating advert copy...';
+
+            try {
+                const res = await fetch('api/ai/generate.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task: 'job_ad', prompt })
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    throw new Error(data.message || 'AI generation failed.');
+                }
+
+                const parsed = extractAiJson(data.content);
+                if (!parsed) {
+                    throw new Error('AI returned content in an unexpected format.');
+                }
+
+                if (parsed.description && document.getElementById('wizDesc')) {
+                    document.getElementById('wizDesc').value = String(parsed.description).trim();
+                }
+                if (parsed.requirements && document.getElementById('wizReqs')) {
+                    const requirements = Array.isArray(parsed.requirements)
+                        ? parsed.requirements.join('\n')
+                        : String(parsed.requirements);
+                    document.getElementById('wizReqs').value = requirements.trim();
+                }
+                if (parsed.skills && document.getElementById('wizSkills')) {
+                    const skills = Array.isArray(parsed.skills)
+                        ? parsed.skills.join(', ')
+                        : String(parsed.skills);
+                    document.getElementById('wizSkills').value = skills.trim();
+                }
+                if (status) status.textContent = 'AI draft added. Please review and edit before publishing.';
+            } catch (error) {
+                console.error('Job advert AI generation failed:', error);
+                if (status) status.textContent = error.message || 'AI generation failed.';
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        });
+    }
+
+    initJobAdAi();
+
     // ── Job Preview ──
     function escHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
@@ -632,7 +757,7 @@
         const salarySection = document.getElementById('prevSalarySection');
         if (!hideSalary && (salaryFrom || salaryNote)) {
             let salaryText = salaryFrom ? `${salaryFrom} ${salaryPeriod}` : '';
-            if (salaryNote) salaryText = salaryText ? `${salaryText} - ${salaryNote}` : salaryNote;
+            if (salaryNote) salaryText = salaryText ? `${salaryText}, ${salaryNote}` : salaryNote;
             document.getElementById('prevSalary').textContent = salaryText;
             metaEl.innerHTML += `<span style="${pillStyle}"><i class="fa-solid fa-wallet"></i> ${escHtml(salaryText)}</span>`;
             salarySection.style.display = '';
@@ -721,6 +846,7 @@
 
             // Pre-fill wizard fields
             document.getElementById('wizJobTitle').value = job.title || '';
+            if (document.getElementById('wizJobReference')) document.getElementById('wizJobReference').value = job.job_reference || job.jobReference || '';
             const companySelect = document.getElementById('wizCompany');
             if (companySelect) {
                 // Add the company as an option if not present

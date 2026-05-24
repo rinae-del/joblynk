@@ -47,7 +47,7 @@
 
         if (salaryFrom && salaryTo) salary = `${salaryFrom} to ${salaryTo} ${period}`;
         else if (salaryFrom) salary = `${salaryFrom} ${period}`;
-        else if (salaryTo) salary = `Up to ${salaryTo} ${period}`;
+        else if (salaryTo) salary = `${salaryTo} ${period}`;
 
         return [salary, salaryNote].filter(Boolean).join(', ');
     }
@@ -97,8 +97,8 @@
     }
 
     function getSalaryNumber(job) {
-        const salaryTo = String(job.salaryTo || job.salary_to || '').replace(/[\s,]/g, '');
-        const salaryFrom = String(job.salaryFrom || job.salary_from || '').replace(/[\s,]/g, '');
+        const salaryTo = String(job.salaryTo || job.salary_to || '').replace(/[^\d.]/g, '');
+        const salaryFrom = String(job.salaryFrom || job.salary_from || '').replace(/[^\d.]/g, '');
         const value = Number(salaryTo || salaryFrom || 0);
         return Number.isFinite(value) ? value : 0;
     }

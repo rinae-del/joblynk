@@ -16,6 +16,8 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 
 setCorsHeaders();
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
 
 function ensureJobsSchema(PDO $pdo): array {
     $columns = [];
@@ -28,6 +30,7 @@ function ensureJobsSchema(PDO $pdo): array {
         error_log('Jobs schema inspection failed: ' . $e->getMessage());
         return array_fill_keys([
             'title',
+            'job_reference',
             'company',
             'location',
             'type',
@@ -43,6 +46,7 @@ function ensureJobsSchema(PDO $pdo): array {
     }
 
     $migrations = [
+        'job_reference' => "ALTER TABLE jobs ADD COLUMN job_reference VARCHAR(100) DEFAULT '' AFTER title",
         'salary_period' => "ALTER TABLE jobs ADD COLUMN salary_period VARCHAR(50) DEFAULT 'Per Month' AFTER salary_to",
         'salary_note' => "ALTER TABLE jobs ADD COLUMN salary_note VARCHAR(255) DEFAULT '' AFTER salary_period",
         'benefits' => 'ALTER TABLE jobs ADD COLUMN benefits TEXT NULL AFTER salary_period',
@@ -80,6 +84,7 @@ function ensureCompanyBrandingSchema(PDO $pdo): void {
 }
 
 function normalizeJobRow(array &$job): void {
+    $job['job_reference'] = $job['job_reference'] ?? '';
     $job['benefits'] = json_decode($job['benefits'] ?? '[]', true) ?: [];
     $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
     $job['hide_salary'] = (int) ($job['hide_salary'] ?? 0);
@@ -93,9 +98,28 @@ function normalizeJobRow(array &$job): void {
     }
 }
 
+function absoluteJobAssetUrl(string $path): string {
+    $path = trim($path);
+    if ($path === '') {
+        return '';
+    }
+
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+
+    return rtrim(APP_URL, '/') . '/' . ltrim($path, '/');
+}
+
 function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $jobData): void {
     try {
-        $stmt = $pdo->prepare('SELECT first_name, email FROM users WHERE id = ? LIMIT 1');
+        $stmt = $pdo->prepare('
+            SELECT u.first_name, u.email, c.logo_url AS company_logo_url
+            FROM users u
+            LEFT JOIN companies c ON c.id = u.company_id
+            WHERE u.id = ?
+            LIMIT 1
+        ');
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
         if (!$user || empty($user['email'])) {
@@ -103,6 +127,7 @@ function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $
         }
 
         $title = htmlspecialchars((string) ($jobData['title'] ?? 'Your job ad'), ENT_QUOTES, 'UTF-8');
+        $jobReference = htmlspecialchars((string) ($jobData['jobReference'] ?? ''), ENT_QUOTES, 'UTF-8');
         $company = htmlspecialchars((string) ($jobData['company'] ?? 'Your company'), ENT_QUOTES, 'UTF-8');
         $location = htmlspecialchars((string) ($jobData['location'] ?? 'Remote'), ENT_QUOTES, 'UTF-8');
         $type = htmlspecialchars((string) ($jobData['type'] ?? 'Full-time'), ENT_QUOTES, 'UTF-8');
@@ -114,11 +139,23 @@ function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $
         $previewUrl = APP_URL . '/recruiter-my-jobs.html?job=' . urlencode((string) $jobId);
         $editUrl = APP_URL . '/recruiter-post-job.html?edit=' . urlencode((string) $jobId);
         $applicationsUrl = APP_URL . '/recruiter-candidates.html?job=' . urlencode((string) $jobId);
+        $companyLogoUrl = '';
+        if (strcasecmp(trim((string) ($jobData['company'] ?? '')), 'Confidential') !== 0) {
+            $companyLogoUrl = absoluteJobAssetUrl((string) ($user['company_logo_url'] ?? ''));
+        }
+
+        $companyLogoHtml = $companyLogoUrl !== ''
+            ? '<div style="margin:0 0 18px;"><img src="' . htmlspecialchars($companyLogoUrl, ENT_QUOTES, 'UTF-8') . '" width="72" height="72" alt="' . $company . ' logo" style="display:block;width:72px;height:72px;border-radius:16px;object-fit:cover;border:1px solid #E2E8F0;background:#FFFFFF;"></div>'
+            : '';
+        $jobReferenceHtml = $jobReference !== ''
+            ? '<p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Job reference:</strong> ' . $jobReference . '</p>'
+            : '';
 
         $emailBody = '
             <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#475569;">
                 Hi ' . $firstName . ', your job ad is now live on JobLynk.
             </p>
+            ' . $companyLogoHtml . '
             <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#F8FAFC;">
                 <tr>
                     <td style="padding:16px 18px;font-size:13px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.04em;">Live Job Summary</td>
@@ -126,6 +163,7 @@ function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $
                 <tr>
                     <td style="padding:0 18px 18px;">
                         <p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Role:</strong> ' . $title . '</p>
+                        ' . $jobReferenceHtml . '
                         <p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Company:</strong> ' . $company . '</p>
                         <p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Location:</strong> ' . $location . '</p>
                         <p style="margin:0 0 10px;font-size:14px;color:#475569;"><strong style="color:#1E293B;">Job type:</strong> ' . $type . '</p>
@@ -209,6 +247,7 @@ if ($method === 'POST') {
 
         $jobId       = $body['id'] ?? null;
         $title       = trim($body['title'] ?? '');
+        $jobReference = trim($body['jobReference'] ?? $body['job_reference'] ?? '');
         $company     = trim($body['company'] ?? '');
         $location    = trim($body['location'] ?? '');
         $type        = trim($body['type'] ?? 'Full-time');
@@ -235,6 +274,7 @@ if ($method === 'POST') {
 
         $jobFieldValues = [
             'title' => $title,
+            'job_reference' => $jobReference,
             'company' => $company,
             'location' => $location,
             'type' => $type,
@@ -280,6 +320,7 @@ if ($method === 'POST') {
             if ($status === 'active' && ($existingJob['status'] ?? '') !== 'active') {
                 sendJobLiveConfirmationEmail($pdo, (int) $userId, (int) $jobId, [
                     'title' => $title,
+                    'jobReference' => $jobReference,
                     'company' => $company,
                     'location' => $location,
                     'type' => $type,
@@ -328,6 +369,7 @@ if ($method === 'POST') {
         if ($status === 'active') {
             sendJobLiveConfirmationEmail($pdo, (int) $userId, $newId, [
                 'title' => $title,
+                'jobReference' => $jobReference,
                 'company' => $company,
                 'location' => $location,
                 'type' => $type,

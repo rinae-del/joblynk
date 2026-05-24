@@ -56,11 +56,9 @@ const _authScript = document.currentScript || document.querySelector('script[src
             return;
         }
 
-        // Redirect unverified recruiters to verification page (unless already there)
-        if (data.user.role === 'recruiter' && data.user.email_verified === false && !path.includes('recruiter-verify')) {
-            window.location.replace('recruiter-verify.html');
-            return;
-        }
+        const shouldShowRecruiterVerifyReminder = data.user.role === 'recruiter'
+            && data.user.email_verified === false
+            && !path.includes('recruiter-verify');
 
         // Store user data for page scripts to use
         window.__JobLynkUser = data.user;
@@ -71,6 +69,33 @@ const _authScript = document.currentScript || document.querySelector('script[src
                 if (document.readyState !== 'loading') resolve();
                 else document.addEventListener('DOMContentLoaded', resolve);
             });
+        }
+
+        if (shouldShowRecruiterVerifyReminder) {
+            const reminderKey = `JobLynk_recruiter_verify_prompted_${data.user.id || data.user.email}`;
+            let alreadyPrompted = false;
+            try {
+                alreadyPrompted = localStorage.getItem(reminderKey) === '1';
+            } catch (error) {}
+
+            if (!alreadyPrompted) {
+                try {
+                    localStorage.setItem(reminderKey, '1');
+                } catch (error) {}
+
+                const banner = document.createElement('div');
+                banner.style.cssText = 'background:#FFFBEB;color:#92400E;padding:12px 16px;text-align:left;font-weight:600;font-size:0.9rem;z-index:9999;border:1px solid #FDE68A;border-radius:8px;display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px;';
+                banner.innerHTML = `
+                    <span><i class="fa-solid fa-envelope-circle-check"></i> Please verify your recruiter email when convenient. You can continue using your dashboard now.</span>
+                    <a href="recruiter-verify.html" style="background:#92400E;color:#fff;text-decoration:none;padding:6px 12px;border-radius:6px;font-size:0.82rem;white-space:nowrap;">Verify Email</a>
+                `;
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.prepend(banner);
+                } else {
+                    document.body.prepend(banner);
+                }
+            }
         }
 
         // Impersonation Banner

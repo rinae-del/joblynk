@@ -109,6 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    function addUniqueDoc(collection, doc) {
+        if (!doc || !doc.id || !doc.type) return;
+        const existingIndex = collection.findIndex(item => String(item.id) === String(doc.id));
+        if (existingIndex >= 0) {
+            if (doc.source === 'api') collection[existingIndex] = doc;
+            return;
+        }
+        collection.push(doc);
+    }
+
+    function removeLocalDoc(key, id) {
+        const docs = getSavedData(key).filter(doc => String(doc.id) !== String(id));
+        localStorage.setItem(key, JSON.stringify(docs));
+    }
+
     async function renderCards() {
         cvCardGrid.querySelectorAll('.doc-card-existing').forEach(c => c.remove());
         clCardGrid.querySelectorAll('.doc-card-existing').forEach(c => c.remove());
@@ -123,15 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success && result.documents) {
                 result.documents.forEach(d => {
                     const nd = normalizeDoc(d, 'api');
-                    if (nd.type === 'cv') cvs.push(nd);
-                    else if (nd.type === 'cl') cls.push(nd);
+                    if (nd.type === 'cv') addUniqueDoc(cvs, nd);
+                    else if (nd.type === 'cl') addUniqueDoc(cls, nd);
                 });
             }
         } catch (e) {
             console.warn('API failed, using localStorage:', e);
-            getSavedData('JobLynk_cvs').forEach(d => cvs.push(normalizeDoc(d, 'local')));
-            getSavedData('JobLynk_cls').forEach(d => cls.push(normalizeDoc(d, 'local')));
         }
+
+        getSavedData('JobLynk_cvs').forEach(d => addUniqueDoc(cvs, normalizeDoc(d, 'local')));
+        getSavedData('JobLynk_cls').forEach(d => addUniqueDoc(cls, normalizeDoc(d, 'local')));
 
         currentCvs = cvs.filter(cv => cv.id !== 'sample');
 
@@ -317,22 +333,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.deleteDoc = async function (id, type) {
         const label = type === 'cv' ? 'CV' : 'cover letter';
         if (!confirm(`Trash this ${label}? It will be removed from your saved documents.`)) return;
+        const key = type === 'cv' ? 'JobLynk_cvs' : 'JobLynk_cls';
 
         // Try API delete
         try {
             const res = await fetch('api/documents/index.php?id=' + encodeURIComponent(id), { method: 'DELETE', credentials: 'include' });
             const result = await res.json();
             if (result.success) {
+                removeLocalDoc(key, id);
                 renderCards();
                 return;
             }
         } catch (e) { console.warn('API delete failed:', e); }
 
         // Fallback
-        const key = type === 'cv' ? 'JobLynk_cvs' : 'JobLynk_cls';
-        let docs = getSavedData(key);
-        docs = docs.filter(c => String(c.id) !== String(id));
-        localStorage.setItem(key, JSON.stringify(docs));
+        removeLocalDoc(key, id);
         renderCards();
     };
 
@@ -355,7 +370,9 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const cv of oldCvs) {
             if (cv.source === 'api') {
                 try {
-                    await fetch('api/documents/index.php?id=' + encodeURIComponent(cv.id), { method: 'DELETE', credentials: 'include' });
+                    const res = await fetch('api/documents/index.php?id=' + encodeURIComponent(cv.id), { method: 'DELETE', credentials: 'include' });
+                    const result = await res.json();
+                    if (result.success) localIds.push(String(cv.id));
                 } catch (e) {
                     console.warn('API trash failed:', e);
                 }
@@ -423,15 +440,15 @@ document.addEventListener('DOMContentLoaded', () => {
         let salaryText = '';
 
         if (salaryFrom && salaryTo) {
-            salaryText = `${salaryFrom} - ${salaryTo} ${period}`;
+            salaryText = `${salaryFrom} to ${salaryTo} ${period}`;
         } else if (salaryFrom) {
             salaryText = `${salaryFrom} ${period}`;
         } else if (salaryTo) {
-            salaryText = `Up to ${salaryTo} ${period}`;
+            salaryText = `${salaryTo} ${period}`;
         }
 
         if (salaryNote) {
-            return salaryText ? `${salaryText} • ${salaryNote}` : salaryNote;
+            return salaryText ? `${salaryText}, ${salaryNote}` : salaryNote;
         }
 
         return salaryText;

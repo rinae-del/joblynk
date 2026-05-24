@@ -36,7 +36,7 @@ if (!$user || !password_verify($password, $user['password_hash'])) {
 }
 
 // ── Check if email is verified ──
-if (isEmailVerificationRequired() && !$user['email_verified']) {
+if (isEmailVerificationRequired() && !$user['email_verified'] && $user['role'] !== 'recruiter') {
     jsonResponse([
         'success'      => false,
         'message'      => 'Please verify your email before signing in.',
@@ -59,5 +59,6 @@ jsonResponse([
         'name'  => $user['first_name'] . ' ' . $user['last_name'],
         'email' => $user['email'],
         'role'  => $user['role'],
+        'email_verified' => (bool) $user['email_verified'],
     ]
 ]);

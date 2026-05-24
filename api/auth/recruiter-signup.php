@@ -67,6 +67,10 @@ if ($package === null) {
     jsonResponse(['success' => false, 'message' => 'Invalid package selected.'], 400);
 }
 
+if (!isRecruiterPackageAvailable($package)) {
+    jsonResponse(['success' => false, 'message' => 'The selected introductory offer has expired. Please choose another package.'], 422);
+}
+
 $expectedAmount = (float) $package['price'];
 $packageLabel = $package['name'];
 $packagePayFastLabel = $package['payfast_name'];
