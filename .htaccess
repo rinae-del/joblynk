@@ -7,7 +7,6 @@
     Require all denied
 </FilesMatch>
 
-# Block access to .git directory
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
@@ -16,6 +15,13 @@
 
     # Block seed/install scripts in production
     RewriteRule ^(seed-database|install-mock-data)\.php$ - [F,L]
+
+    # Route root to router.php (handles auth + serves file)
+    RewriteRule ^$ router.php [L]
+
+    # Route existing .html files through router.php
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule \.html$ router.php [L]
 
     # Force HTTPS (uncomment once SSL is active on Afrihost)
     # RewriteCond %{HTTPS} off
@@ -46,9 +52,4 @@
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
-</IfModule>
-
-# Parse HTML files through PHP so inline guard includes work
-<IfModule mod_php.c>
-    AddHandler application/x-httpd-php .html
 </IfModule>
