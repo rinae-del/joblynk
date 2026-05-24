@@ -43,12 +43,14 @@ const _authScript = document.currentScript || document.querySelector('script[src
         
         // Strict mapping of dashboard pages to roles
         const path = window.location.pathname.toLowerCase();
+        const currentPage = path.split('/').pop();
         let correctDashboard = 'dashboard.html';
         if (data.user.role === 'recruiter') correctDashboard = 'recruiter-overview.html';
         if (data.user.role === 'admin') correctDashboard = 'admin-overview.html';
 
         // Redirect if they are explicitly forbidden (via data-role) OR if they are on the wrong dashboard
-        const isWrongDashboard = (path.includes('dashboard') && !path.includes(correctDashboard));
+        const dashboardLandingPages = ['dashboard.html', 'recruiter-overview.html', 'admin-overview.html'];
+        const isWrongDashboard = dashboardLandingPages.includes(currentPage) && currentPage !== correctDashboard;
         
         if ((requiredRole && data.user.role !== requiredRole) || isWrongDashboard) {
             // Wrong role - redirect to their correct dashboard

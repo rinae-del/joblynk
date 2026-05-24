@@ -344,7 +344,7 @@
         if (!job) return;
 
         if (state.session.loggedIn && state.session.user?.role === 'job_seeker') {
-            window.location.href = `dashboard.html?job=${encodeURIComponent(job.id)}`;
+            window.location.href = `job-details.html?id=${encodeURIComponent(job.id)}&apply=1`;
             return;
         }
 

@@ -138,8 +138,9 @@
                                 }
 
                                 if (returnParam === 'jobs' && data.user.role === 'job_seeker') {
-                                    const jobSuffix = returnJobId ? '?job=' + encodeURIComponent(returnJobId) : '';
-                                    window.location.href = 'dashboard.html' + jobSuffix;
+                                    window.location.href = returnJobId
+                                        ? 'job-details.html?id=' + encodeURIComponent(returnJobId) + '&apply=1'
+                                        : 'dashboard-jobs.html';
                                     return;
                                 }
 

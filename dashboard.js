@@ -602,8 +602,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filterType) {
             jobs = jobs.filter(j => (j.type || '').toLowerCase() === filterType.toLowerCase());
         }
-        if (previewJobId) {
-            jobs = jobs.filter(j => String(j.id) === String(previewJobId));
+        const totalMatches = jobs.length;
+        if (!previewJobId) {
+            jobs = jobs.slice(0, 4);
         }
 
         jobList.innerHTML = '';
@@ -617,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const statJobs = $('statJobs');
-        if (statJobs) statJobs.textContent = jobs.length;
+        if (statJobs) statJobs.textContent = totalMatches;
 
         jobs.forEach(job => {
             const color = job.color || '#4F46E5';
@@ -640,16 +641,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="job-body">
                     <div class="job-header">
                         <div class="job-heading">
-                            <span class="job-kicker">${job.company}</span>
-                            <button type="button" class="job-title-link" data-job-preview="${job.id}">
-                                <span class="job-title">${job.title}</span>
-                            </button>
+                            <span class="job-kicker">${escText(job.company || 'Company')}</span>
+                            <a class="job-title-link" href="job-details.html?id=${encodeURIComponent(job.id)}">
+                                <span class="job-title">${escText(job.title || 'Untitled role')}</span>
+                            </a>
                         </div>
                         ${badge}
                     </div>
                     <div class="job-meta">
-                        ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>` : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>'}
-                        ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${job.type}</span>` : ''}
+                        ${job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${escText(job.location)}</span>` : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>'}
+                        ${job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${escText(job.type)}</span>` : ''}
                         ${salaryLabel && !job.hideSalary ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${escText(salaryLabel)}</span>` : ''}
                     </div>
                     <div class="job-insights">
@@ -660,16 +661,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="job-footer">
                         ${applied
                             ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
-                            : `<div class="job-action-group"><button type="button" onclick="openPreviewJob('${job.id}')" class="job-preview-btn"><i class="fa-regular fa-eye"></i> View job</button><button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply now</button></div>`
+                            : `<div class="job-action-group"><a href="job-details.html?id=${encodeURIComponent(job.id)}" class="job-preview-btn"><i class="fa-regular fa-eye"></i> View details</a><button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply now</button></div>`
                         }
                         <span class="job-footnote">${footnote}</span>
                     </div>
                 </div>
             `;
-
-            item.querySelector('[data-job-preview]')?.addEventListener('click', () => {
-                openPreviewJobById(job.id);
-            });
             jobList.appendChild(item);
         });
     }
@@ -950,13 +947,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (previewJobId) {
-        const openPreviewFromQuery = async () => {
-            await Promise.all([JobsStore.fetchJobs(), JobsStore.fetchApplications()]);
-            if (JobsStore.getJobById(previewJobId)) {
-                openPreviewJobById(previewJobId);
-            }
-        };
-        openPreviewFromQuery();
+        const target = `job-details.html?id=${encodeURIComponent(previewJobId)}&apply=1`;
+        window.location.replace(target);
     }
 
     window.submitJobApplication = async function() {

@@ -19,20 +19,20 @@
             topbarLabel: 'Dashboard',
             items: [
                 { id: 'navDashboard',    key: 'dashboard',     icon: 'fa-solid fa-house',               label: 'Home',           href: 'dashboard.html' },
-                { id: 'navCvs',          key: 'cvs',           icon: 'fa-regular fa-file-lines',        label: 'CVs',            href: '#sectionCvs' },
-                { id: 'navCoverLetters', key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text',  label: 'Cover Letters',  href: '#sectionCoverLetters' },
-                { id: 'navJobs',         key: 'jobs',          icon: 'fa-solid fa-briefcase',           label: 'Jobs',           href: '#sectionJobs' },
-                { id: 'navApps',         key: 'applications',  icon: 'fa-regular fa-rectangle-list',    label: 'Applications',   href: '#sectionApps' },
+                { id: 'navCvs',          key: 'cvs',           icon: 'fa-regular fa-file-lines',        label: 'CVs',            href: 'dashboard.html#sectionCvs' },
+                { id: 'navCoverLetters', key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text',  label: 'Cover Letters',  href: 'dashboard.html#sectionCoverLetters' },
+                { id: 'navJobs',         key: 'jobs',          icon: 'fa-solid fa-briefcase',           label: 'Jobs',           href: 'dashboard-jobs.html' },
+                { id: 'navApps',         key: 'applications',  icon: 'fa-regular fa-rectangle-list',    label: 'Applications',   href: 'dashboard.html#sectionApps' },
                 { id: 'navProfile',      key: 'profile',       icon: 'fa-solid fa-user-gear',           label: 'My Profile',     href: 'profile.html' },
             ],
             tabBarItems: [
                 { key: 'dashboard',     icon: 'fa-solid fa-house',              label: 'Home',     href: 'dashboard.html' },
-                { key: 'cvs',           icon: 'fa-regular fa-file-lines',       label: 'CVs',      href: '#sectionCvs' },
-                { key: 'jobs',          icon: 'fa-solid fa-briefcase',          label: 'Jobs',     href: '#sectionJobs' },
-                { key: 'applications',  icon: 'fa-regular fa-rectangle-list',   label: 'Apps',     href: '#sectionApps' },
+                { key: 'cvs',           icon: 'fa-regular fa-file-lines',       label: 'CVs',      href: 'dashboard.html#sectionCvs' },
+                { key: 'jobs',          icon: 'fa-solid fa-briefcase',          label: 'Jobs',     href: 'dashboard-jobs.html' },
+                { key: 'applications',  icon: 'fa-regular fa-rectangle-list',   label: 'Apps',     href: 'dashboard.html#sectionApps' },
             ],
             moreItems: [
-                { key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text', label: 'Cover Letters', href: '#sectionCoverLetters' },
+                { key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text', label: 'Cover Letters', href: 'dashboard.html#sectionCoverLetters' },
                 { key: 'profile',       icon: 'fa-solid fa-user-gear',          label: 'My Profile',    href: 'profile.html' },
             ],
             userIcon: { icon: 'fa-solid fa-user', bg: 'rgba(79,70,229,0.15)', color: '#818CF8' },
@@ -113,8 +113,10 @@
 
     function detectActiveKey(items) {
         const path = window.location.pathname.split('/').pop().toLowerCase();
+        if (path === 'dashboard-jobs.html' || path === 'job-details.html') return 'jobs';
         for (const item of items) {
-            if (item.href.toLowerCase() === path) return item.key;
+            const hrefPath = item.href.split('#')[0].toLowerCase();
+            if (hrefPath === path) return item.key;
         }
         return items[0]?.key || '';
     }

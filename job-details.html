@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLynk | Job Details</title>
+    <meta name="description" content="View the full job advert on JobLynk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=20260524-jobs">
+    <script src="auth-guard.js?v=20260524b" data-role="job_seeker"></script>
+</head>
+
+<body data-job-page="detail">
+    <div id="app-sidebar" data-role="seeker" data-active="jobs"></div>
+    <div id="app-topbar" data-label="Job Details"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Home","href":"dashboard.html"},{"label":"Jobs","href":"dashboard-jobs.html"},{"label":"Job Details"}]'></nav>
+
+        <section id="jobDetailsRoot" class="job-detail-page">
+            <div class="job-detail-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Loading job details...</span>
+            </div>
+        </section>
+    </main>
+
+    <div class="app-modal-overlay" id="appModalOverlay">
+        <div class="app-modal">
+            <div class="app-modal-header">
+                <h2>Apply for this job</h2>
+                <button onclick="closeAppModal()" class="app-modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="app-modal-job-info" id="appModalJobInfo">
+                <div class="app-modal-title" id="appModalTitle"></div>
+                <div class="app-modal-company" id="appModalCompany"></div>
+            </div>
+            <div class="app-modal-field">
+                <label><i class="fa-solid fa-paperclip" style="margin-right:4px;color:var(--accent,#4F46E5);"></i> Attach Documents</label>
+                <p style="font-size:0.78rem;color:var(--text-muted,#6b7280);margin:-4px 0 10px;">Choose one saved CV, optionally add a cover letter, include any supporting documents, or upload new files.</p>
+                <div id="appSavedDocs" style="margin-bottom:12px;">
+                    <div id="appSavedDocsList" class="app-docs-checklist"></div>
+                    <div id="appNoSavedDocs" style="display:none;font-size:0.82rem;color:var(--text-muted,#6b7280);padding:12px;text-align:center;background:#F8FAFC;border-radius:10px;border:1px solid var(--border,#e5e7eb);">
+                        <i class="fa-regular fa-folder-open" style="margin-right:4px;"></i> No saved documents yet
+                    </div>
+                </div>
+                <label class="app-file-upload-box" id="multiUploadBox">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Click to upload documents</span>
+                    <span class="upload-hint">PDF, DOC, DOCX, JPG or PNG. Max 5 MB each. Select multiple files.</span>
+                    <input type="file" id="appFileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display:none;" onchange="onMultiFilesSelected(this)">
+                </label>
+                <div id="appUploadedFilesList" class="app-uploaded-files" style="display:none;"></div>
+            </div>
+            <div class="app-modal-field">
+                <label for="appNote">Note to recruiter (optional)</label>
+                <textarea id="appNote" class="app-modal-select" rows="3" style="resize:vertical; min-height:60px;" placeholder="Why are you a great fit for this role?"></textarea>
+            </div>
+            <div id="appCustomQuestions" style="display:none;"></div>
+            <div class="app-modal-notice">
+                <i class="fa-solid fa-circle-info"></i> By submitting, you agree to share your profile and documents with this recruiter.
+            </div>
+            <div class="app-modal-actions">
+                <button onclick="closeAppModal()" class="app-modal-cancel">Cancel</button>
+                <button id="btnSubmitApp" onclick="submitJobApplication()" class="app-modal-submit">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Application
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="components.js?v=20260524-jobs"></script>
+    <script src="jobs-store.js?v=20260524"></script>
+    <script src="job-pages.js?v=20260524-jobs"></script>
+</body>
+
+</html>

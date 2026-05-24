@@ -117,10 +117,14 @@
         const token = params.get('token');
         const emailFromSignup = params.get('email');
         const returnParam = params.get('return');
-        const returnSuffix = returnParam ? '?return=' + encodeURIComponent(returnParam) : '';
+        const returnJobId = params.get('job');
+        const returnParams = new URLSearchParams();
+        if (returnParam) returnParams.set('return', returnParam);
+        if (returnJobId) returnParams.set('job', returnJobId);
+        const returnSuffix = returnParams.toString() ? '?' + returnParams.toString() : '';
 
         // Preserve return param on all sign-in / sign-up links
-        if (returnParam) {
+        if (returnSuffix) {
             document.querySelectorAll('a[href="sign-in.html"]').forEach(a => a.href = 'sign-in.html' + returnSuffix);
             document.querySelectorAll('a[href="sign-up.html"]').forEach(a => a.href = 'sign-up.html' + returnSuffix);
         }
