@@ -1,7 +1,8 @@
 <?php
 /**
  * router.php
- * Routes all .html requests (and the root /) through staff-guard.php,
+ * Routes all .html requests (and the root /) through staff-guard.php for
+ * landing/auth redirects,
  * then serves the matching HTML file. Works with both mod_php and PHP-FPM.
  */
 

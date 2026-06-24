@@ -51,9 +51,5 @@ if (isset($_SESSION['user_id'])) {
         ]
     ]);
 } else {
-    $response = ['loggedIn' => false];
-    if (!empty($_SESSION['staff_preview'])) {
-        $response['staffPreview'] = true;
-    }
-    jsonResponse($response);
+    jsonResponse(['loggedIn' => false]);
 }
