@@ -34,7 +34,6 @@
     }
 
     function formatSalaryLabel(job) {
-        if (job.hideSalary) return '';
         const fmt = v => {
             const raw = String(v || '').trim();
             if (!raw) return '';
@@ -49,11 +48,20 @@
         if (from && to) salary = `${from} – ${to} ${period}`;
         else if (from) salary = `${from} ${period}`;
         else if (to) salary = `${to} ${period}`;
-        return [salary, note].filter(Boolean).join(', ');
+        const combined = [salary, note].filter(Boolean).join(' · ');
+        if (combined) return combined;
+        if (job.hideSalary || job.hide_salary) return '';
+        return '';
+    }
+
+    function jobHasSalary(job) {
+        return Boolean(formatSalaryLabel(job));
     }
 
     function pickFeaturedJobs(jobs) {
-        return jobs.slice(0, FEATURED_LIMIT);
+        return [...jobs]
+            .sort((a, b) => Number(jobHasSalary(b)) - Number(jobHasSalary(a)))
+            .slice(0, FEATURED_LIMIT);
     }
 
     function renderJobRow(job) {
@@ -61,6 +69,7 @@
         const salary = formatSalaryLabel(job);
 
         const meta = [
+            salary ? `<span class="is-salary">${escText(salary)}</span>` : '',
             job.location ? `<span>${escText(job.location)}</span>` : '',
             job.type ? `<span>${escText(job.type)}</span>` : '',
             `<span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>`,
@@ -73,12 +82,18 @@
                 <div class="home-job-body">
                     <h3>${escText(job.title || 'Untitled role')}</h3>
                     <p class="home-job-company">${escText(company)}</p>
-                    ${salary ? `<p class="home-job-salary">${escText(salary)}</p>` : ''}
                     <div class="home-job-meta">${meta}</div>
                 </div>
                 <span class="home-job-cta">View role</span>
             </a>
         `;
+    }
+
+    function updateHeroStats(jobCount) {
+        const heroCount = $('homeHeroJobCount');
+        if (heroCount) {
+            heroCount.textContent = jobCount > 0 ? jobCount.toLocaleString() : '—';
+        }
     }
 
     async function loadFeaturedJobs() {
@@ -103,6 +118,8 @@
                 : (JobsStore?.getActiveJobs?.() || []).slice();
 
             const featured = pickFeaturedJobs(jobs);
+
+            updateHeroStats(jobs.length);
 
             if (lead) {
                 lead.textContent = featured.length
