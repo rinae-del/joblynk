@@ -42,26 +42,28 @@
         };
         const from = fmt(job.salaryFrom || job.salary_from);
         const to = fmt(job.salaryTo || job.salary_to);
-        if (from && to) return `${from} – ${to}`;
-        if (from) return `From ${from}`;
-        if (to) return `Up to ${to}`;
-        return '';
+        const note = String(job.salaryNote || job.salary_note || '').trim();
+        const period = String(job.salaryPeriod || job.salary_period || 'Per Month').replace(/^Per\s+/i, 'per ');
+        let salary = '';
+        if (from && to) salary = `${from} – ${to} ${period}`;
+        else if (from) salary = `${from} ${period}`;
+        else if (to) salary = `${to} ${period}`;
+        return [salary, note].filter(Boolean).join(', ');
+    }
+
+    function hasCompanyLogo(job) {
+        return Boolean(String(job.companyLogoUrl || job.company_logo_url || '').trim());
     }
 
     function renderJobRow(job) {
         const company = job.company || 'Company';
-        const initial = company.trim().charAt(0).toUpperCase() || 'J';
         const logo = job.companyLogoUrl || job.company_logo_url || '';
         const accent = /^#[0-9A-Fa-f]{3,6}$/.test(String(job.color || '').trim()) ? job.color : '#6366F1';
         const salary = formatSalaryLabel(job);
-        const logoHtml = logo
-            ? `<img src="${escAttr(logo)}" alt="" loading="lazy" decoding="async">`
-            : escText(initial);
 
         const meta = [
             job.location ? `<span>${escText(job.location)}</span>` : '',
             job.type ? `<span>${escText(job.type)}</span>` : '',
-            salary ? `<span class="is-salary">${escText(salary)}</span>` : '',
             `<span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>`,
         ].filter(Boolean).join('');
 
@@ -69,10 +71,11 @@
 
         return `
             <a class="home-job-row" href="${escAttr(url)}" style="--job-accent:${escAttr(accent)}">
-                <div class="home-job-logo">${logoHtml}</div>
+                <div class="home-job-logo"><img src="${escAttr(logo)}" alt="" loading="lazy" decoding="async"></div>
                 <div class="home-job-body">
                     <h3>${escText(job.title || 'Untitled role')}</h3>
                     <p class="home-job-company">${escText(company)}</p>
+                    ${salary ? `<p class="home-job-salary"><i class="fa-solid fa-wallet" aria-hidden="true"></i>${escText(salary)}</p>` : ''}
                     <div class="home-job-meta">${meta}</div>
                 </div>
                 <span class="home-job-cta">View role</span>
@@ -100,16 +103,17 @@
                 ? JobsBrowser.sortJobs(JobsStore.getActiveJobs(), 'newest')
                 : (JobsStore?.getActiveJobs?.() || []).slice();
 
-            const featured = jobs.slice(0, 4);
+            const withLogo = jobs.filter(hasCompanyLogo);
+            const featured = withLogo.slice(0, 4);
 
             if (lead) {
                 lead.textContent = featured.length
-                    ? `${jobs.length.toLocaleString()} open roles — four featured below.`
+                    ? `${jobs.length.toLocaleString()} open roles — ${featured.length} featured below.`
                     : 'Check back soon for new roles.';
             }
 
             if (!featured.length) {
-                list.innerHTML = '<div class="home-jobs-empty">No live roles right now. <a href="jobs.html">Browse the job board</a>.</div>';
+                list.innerHTML = '<div class="home-jobs-empty">No featured roles right now. <a href="jobs.html">Browse the job board</a>.</div>';
                 return;
             }
 

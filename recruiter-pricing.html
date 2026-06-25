@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260626">
-    <link rel="stylesheet" href="recruiter-pricing.css?v=20260428">
+    <link rel="stylesheet" href="landing.css?v=20260710">
+    <link rel="stylesheet" href="recruiter-pricing.css?v=20260710">
 </head>
 
 <body class="landing-page pricing-page">
@@ -45,39 +45,40 @@
         <a href="recruiter-signup.html">Recruiter Sign Up</a>
     </div>
 
-    <!-- â•â•â• HEADER â•â•â• -->
+    <!-- Header -->
     <header class="pricing-header">
         <div class="pricing-header-copy">
-            <span class="hero-tag tag-green">Recruiter Packages</span>
+            <div class="rp-section-rule" aria-hidden="true">
+                <span class="rp-section-rule-line"></span>
+                <span class="rp-section-rule-label">For recruiters</span>
+            </div>
             <h1>Recruit <em>smarter</em>, not harder</h1>
-            <p>Choose a clear hiring package, post jobs in minutes, and connect with qualified South African candidates without applicant caps.</p>
+            <p>Clear packages. Post in minutes. Unlimited applicants on every plan.</p>
             <div class="pricing-hero-actions">
-                <a href="#pricingGrid" class="btn-landing btn-landing-green btn-lg">Compare Packages <i class="fa-solid fa-arrow-down"></i></a>
-                <a href="recruiter-overview.html" class="btn-landing btn-landing-outline btn-lg">Back to Dashboard</a>
+                <a href="#pricingGrid" class="btn-landing btn-landing-green btn-lg">Compare packages <i class="fa-solid fa-arrow-down"></i></a>
+                <a href="recruiter-signup.html" class="btn-landing btn-landing-outline btn-lg">Create account</a>
             </div>
         </div>
 
         <aside class="pricing-hero-panel" aria-label="Included in every recruiter package">
-            <h2>Included in every package</h2>
+            <h2>Every package includes</h2>
             <ul>
-                <li><i class="fa-solid fa-building"></i><span>Free company branding and logo on your listings.</span></li>
-                <li><i class="fa-solid fa-users"></i><span>Unlimited applicants, so every role can build a real shortlist.</span></li>
-                <li><i class="fa-solid fa-file-arrow-down"></i><span>Unlimited CV downloads for faster candidate review.</span></li>
-                <li><i class="fa-solid fa-calendar-days"></i><span>Each advert stays live for 30 days.</span></li>
+                <li><i class="fa-solid fa-building"></i><span>Company branding and logo on listings</span></li>
+                <li><i class="fa-solid fa-users"></i><span>Unlimited applicants per role</span></li>
+                <li><i class="fa-solid fa-file-arrow-down"></i><span>Unlimited CV downloads</span></li>
+                <li><i class="fa-solid fa-calendar-days"></i><span>30 days live per advert</span></li>
             </ul>
         </aside>
     </header>
 
-    <div class="signup-hint">
-        New recruiters choose a package first, then continue to account setup. Existing recruiters can sign in and buy credits directly.
-    </div>
+    <p class="signup-hint">New recruiters pick a package, then complete account setup. Existing recruiters can sign in and buy credits anytime.</p>
 
-    <!-- â•â•â• INTRO OFFER BANNER â•â•â• -->
+    <!-- Intro offer -->
     <div class="intro-banner" id="introBanner">
-        <i class="fa-solid fa-fire-flame-curved"></i>
+        <i class="fa-solid fa-bolt" aria-hidden="true"></i>
         <div class="intro-text">
-            <strong>1st Introductory Offer: Limited Time!</strong><br>
-            Post 1 job for only <strong>R750 incl. VAT</strong>. Offer ends <strong>31 May 2026</strong>. You have 30 days from purchase to use this offer before it expires.
+            <strong>Intro offer — limited time</strong><br>
+            Post 1 job for <strong>R750 incl. VAT</strong>. Ends <strong>31 May 2026</strong>. Use within 30 days of purchase.
         </div>
         <span class="intro-price">R750</span>
     </div>
@@ -89,15 +90,15 @@
         <span><i class="fa-solid fa-check"></i> Unlimited CV downloads</span>
     </div>
 
-    <!-- â•â•â• PRICING CARDS â•â•â• -->
+    <!-- Pricing cards -->
     <div class="pricing-grid" id="pricingGrid">
 
-        <!-- Intro Offer -->
+        <!-- Intro offer -->
         <div class="price-card intro">
             <div class="card-icon"><i class="fa-solid fa-bolt"></i></div>
             <div class="card-tier">Introductory</div>
             <div class="card-price">R750 <small>/ 1 job incl. VAT</small></div>
-            <div class="card-desc">Limited time introductory offer. Post 1 job advert</div>
+            <div class="card-desc">Limited intro offer — 1 job advert</div>
             <span class="card-savings orange">Ends 31 May 2026</span>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 1 job advert</li>
@@ -115,7 +116,7 @@
             <div class="card-icon"><i class="fa-solid fa-briefcase"></i></div>
             <div class="card-tier">Standard</div>
             <div class="card-price">R1,300 <small>/ 1 job incl. VAT</small></div>
-            <div class="card-desc">Single job advert. Standard pricing</div>
+            <div class="card-desc">Single job advert at standard rate</div>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 1 job advert</li>
                 <li><i class="fa-solid fa-check"></i> 30 days live</li>
@@ -131,7 +132,7 @@
             <div class="card-icon"><i class="fa-solid fa-layer-group"></i></div>
             <div class="card-tier">2-Job Bundle</div>
             <div class="card-price">R2,200 <small>/ 2 jobs incl. VAT</small></div>
-            <div class="card-desc">Save R400 compared to buying individually</div>
+            <div class="card-desc">Save R400 vs buying individually</div>
             <span class="card-savings green">Save R400</span>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 2 job adverts</li>
@@ -149,7 +150,7 @@
             <div class="card-icon"><i class="fa-solid fa-star"></i></div>
             <div class="card-tier">3-Job Bundle</div>
             <div class="card-price">R2,950 <small>/ 3 jobs incl. VAT</small></div>
-            <div class="card-desc">Save R950. Most popular choice</div>
+            <div class="card-desc">Save R950 — most popular</div>
             <span class="card-savings green">Save R950</span>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 3 job adverts</li>
@@ -167,7 +168,7 @@
             <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
             <div class="card-tier">4-Job Bundle</div>
             <div class="card-price">R3,500 <small>/ 4 jobs incl. VAT</small></div>
-            <div class="card-desc">Save R1,700. Great for growing teams</div>
+            <div class="card-desc">Save R1,700 — for growing teams</div>
             <span class="card-savings green">Save R1,700</span>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 4 job adverts</li>
@@ -185,7 +186,7 @@
             <div class="card-icon"><i class="fa-solid fa-rocket"></i></div>
             <div class="card-tier">5-Job Bundle</div>
             <div class="card-price">R3,900 <small>/ 5 jobs incl. VAT</small></div>
-            <div class="card-desc">Save R2,600. Best value for agencies</div>
+            <div class="card-desc">Save R2,600 — best for agencies</div>
             <span class="card-savings green">Save R2,600</span>
             <ul class="card-features">
                 <li><i class="fa-solid fa-check"></i> 5 job adverts</li>
@@ -200,35 +201,33 @@
 
     </div>
 
-    <!-- â•â•â• TERMS CHECKBOX â•â•â• -->
+    <!-- Terms -->
     <div class="tc-section">
         <div class="tc-box">
             <input type="checkbox" id="tcAccept">
             <div class="tc-content">
-                <label for="tcAccept">I agree to the <a href="recruiter-terms.html" target="_blank">Terms &amp; Conditions</a> and confirm that my recruiter account may access candidate data for recruitment purposes in line with POPIA.</label>
-                <span>All prices include VAT. Bundle purchases must be used within 90 days.</span>
+                <label for="tcAccept">I agree to the <a href="recruiter-terms.html" target="_blank">Terms &amp; Conditions</a> and confirm my account may access candidate data for recruitment under POPIA.</label>
+                <span>All prices include VAT. Bundles must be used within 90 days.</span>
             </div>
         </div>
     </div>
 
-    <!-- â•â•â• IMPORTANT NOTES â•â•â• -->
+    <!-- Notes -->
     <div class="notes-section">
         <div class="notes-card">
-            <h3><i class="fa-solid fa-circle-info"></i> Important Information</h3>
+            <h3><i class="fa-solid fa-circle-info"></i> Good to know</h3>
             <ul class="notes-list">
-                <li><strong>FREE company branding and logo</strong> is included to help every listing look more credible and recognizable.</li>
-                <li><strong>Unlimited CV downloads</strong> are included on all plans so you can review as many candidate profiles as you need.</li>
-                <li><strong>Unlimited applicants</strong> on all plans. No cap on the number of candidates who can apply to your listing.</li>
-                <li>Each job advert is <strong>live for 30 days</strong> from the date it is posted.</li>
-                <li>Bundle purchases (2 to 5 jobs) must be used <strong>within 90 days</strong> of purchase before they expire.</li>
-                <li>The <strong>R750 introductory offer</strong> is valid for 1 month only (ends 31 May 2026) and must be used within <strong>30 days</strong> of purchase.</li>
-                <li><strong>All prices include VAT.</strong></li>
-                <li>You must accept our <strong>Terms and Conditions</strong> before purchasing.</li>
+                <li><strong>Company branding and logo</strong> included on every listing.</li>
+                <li><strong>Unlimited CV downloads</strong> and <strong>unlimited applicants</strong> on all plans.</li>
+                <li>Each advert stays <strong>live for 30 days</strong> from posting.</li>
+                <li>Bundles (2–5 jobs) must be used <strong>within 90 days</strong> of purchase.</li>
+                <li>The <strong>R750 intro offer</strong> ends 31 May 2026 and must be used within <strong>30 days</strong> of purchase.</li>
+                <li><strong>All prices include VAT.</strong> Terms must be accepted before purchase.</li>
             </ul>
         </div>
     </div>
 
-    <!-- â•â•â• FOOTER â•â•â• -->
+    <!-- Footer -->
     <footer class="landing-footer pricing-footer">
         <div class="footer-grid">
             <div class="footer-brand">
@@ -236,7 +235,7 @@
                     <img src="images/logo.png" alt="">
                     <span>JobLynk</span>
                 </a>
-                <p>Recruiter tools for clearer job adverts, faster candidate review, and simpler hiring campaigns.</p>
+                <p>Recruiter tools for clearer adverts, faster review, and simpler hiring.</p>
             </div>
 
             <div class="footer-links">
@@ -278,6 +277,14 @@
     </footer>
 
     <script>
+        const syncNavHeight = () => {
+            const nav = document.querySelector('.landing-nav');
+            if (!nav) return;
+            document.documentElement.style.setProperty('--landing-nav-h', `${nav.offsetHeight}px`);
+        };
+        syncNavHeight();
+        window.addEventListener('resize', syncNavHeight, { passive: true });
+
         const hamburger = document.getElementById('navHamburger');
         const mobileMenu = document.getElementById('mobileNavMenu');
         if (hamburger && mobileMenu) {

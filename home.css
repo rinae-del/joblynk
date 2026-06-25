@@ -435,6 +435,23 @@ html[data-theme="dark"] body.home-public-page {
     text-overflow: ellipsis;
 }
 
+.home-public-page .home-job-salary {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.35rem;
+    color: #6ee7b7;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.home-public-page .home-job-salary i {
+    font-size: 0.72rem;
+    opacity: 0.85;
+    flex-shrink: 0;
+}
+
 .home-public-page .home-job-meta {
     display: flex;
     flex-wrap: wrap;
