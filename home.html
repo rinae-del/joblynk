@@ -47,8 +47,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260628">
-    <link rel="stylesheet" href="home.css?v=20260630">
+    <link rel="stylesheet" href="landing.css?v=20260701">
+    <link rel="stylesheet" href="home.css?v=20260701">
 </head>
 
 <body class="landing-page home-public-page">
@@ -523,6 +523,17 @@
         const cvStartModal = document.getElementById('cvStartModal');
         const cvImportFile = document.getElementById('cvImportFile');
         const cvImportStatus = document.getElementById('cvImportStatus');
+
+        const syncNavHeight = () => {
+            const nav = document.querySelector('.landing-nav');
+            if (!nav) return;
+            const height = `${nav.offsetHeight}px`;
+            document.documentElement.style.setProperty('--landing-nav-h', height);
+            document.documentElement.style.setProperty('--jb-nav-h', height);
+        };
+
+        syncNavHeight();
+        window.addEventListener('resize', syncNavHeight, { passive: true });
 
         const syncStickyCta = () => {
             if (!stickyCta) return;

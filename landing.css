@@ -18,6 +18,7 @@
     --green: #059669;
     --green-light: #34D399;
     --orange: #F59E0B;
+    --landing-nav-h: 68px;
 }
 
 body.modal-open {
@@ -882,6 +883,7 @@ body.landing-page {
     color: var(--text);
     line-height: 1.6;
     overflow-x: hidden;
+    padding-top: var(--landing-nav-h, 68px);
 }
 
 /* ── Navigation ── */
@@ -892,8 +894,11 @@ body.landing-page {
     padding: 1rem max(1.25rem, calc((100vw - 1200px) / 2 + 2.5rem));
     max-width: none;
     margin: 0 auto;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
     z-index: 100;
     background: rgba(15, 23, 42, 0.82);
     border-bottom: 1px solid rgba(148, 163, 184, 0.14);
@@ -1047,6 +1052,11 @@ body.landing-page {
 .mobile-nav-menu {
     display: none;
     flex-direction: column;
+    position: fixed;
+    top: var(--landing-nav-h, 68px);
+    left: 0;
+    right: 0;
+    z-index: 99;
     background: rgba(15, 23, 42, 0.96);
     border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     padding: 0;
@@ -3414,6 +3424,10 @@ html[data-theme="dark"] .recruiter-section {
 }
 
 @media (max-width: 700px) {
+    :root {
+        --landing-nav-h: 58px;
+    }
+
     .announce-bar {
         display: grid;
         gap: 0.35rem;
