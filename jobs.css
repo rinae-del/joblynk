@@ -4,6 +4,7 @@
 
 .jobs-public-page {
     --jb-nav-h: 64px;
+    --jb-sticky-gap: 0.75rem;
     --jb-gutter: 1rem;
     --jb-max: 1320px;
     --jb-border: rgba(148, 163, 184, 0.14);
@@ -45,15 +46,16 @@
     font-weight: 600;
 }
 
-/* ── Sticky toolbar — sits flush below nav, full width ───── */
+/* ── Sticky toolbar — sits below nav with breathing room when stuck ── */
 .jobs-public-page .jobs-toolbar-wrap {
     position: sticky;
-    top: var(--jb-nav-h);
+    top: calc(var(--jb-nav-h) + var(--jb-sticky-gap));
     z-index: 90;
     background: var(--jb-surface);
     border-bottom: 1px solid var(--jb-border);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35);
 }
 
 .jobs-public-page .jobs-toolbar-inner {
