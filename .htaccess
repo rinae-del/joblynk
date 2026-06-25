@@ -16,6 +16,12 @@
     # Block seed/install scripts in production
     RewriteRule ^(seed-database|install-mock-data)\.php$ - [F,L]
 
+    # SEO-friendly single job pages: /job/{id}-{slug} -> job.php
+    RewriteRule ^job/([0-9]+)(?:-[^/]*)?/?$ job.php?id=$1 [L,QSA]
+
+    # XML sitemap for search engines
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
     # Route root to router.php (handles auth + serves file)
     RewriteRule ^$ router.php [L]
 

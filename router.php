@@ -9,6 +9,19 @@
 $uri  = $_SERVER['REQUEST_URI'] ?? '';
 $path = parse_url($uri, PHP_URL_PATH) ?? '';
 
+// SEO-friendly single job pages: /job/{id}-{slug}
+if (preg_match('#^/job/(\d+)(?:-[^/]*)?/?$#', $path, $m)) {
+    $_GET['id'] = $m[1];
+    require __DIR__ . '/job.php';
+    exit;
+}
+
+// XML sitemap
+if ($path === '/sitemap.xml') {
+    require __DIR__ . '/sitemap.php';
+    exit;
+}
+
 // Only serve the root path or .html files — reject everything else
 if ($path !== '/' && !str_ends_with($path, '.html')) {
     // Pass through to the real file (needed for .php / .css / .js / images)

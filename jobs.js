@@ -113,6 +113,18 @@
         return state.jobs.find(job => String(job.id) === String(jobId)) || null;
     }
 
+    function slugify(value) {
+        return String(value || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    function jobPageUrl(job) {
+        const slug = slugify([job.title, job.location].filter(Boolean).join(' ')) || 'job';
+        return `job/${encodeURIComponent(job.id)}-${slug}`;
+    }
+
     function getFilters() {
         return {
             keyword: $('publicJobKeyword')?.value || '',
@@ -301,12 +313,14 @@
             applicantCount ? `<span>${escText(applicantCount + ' applied')}</span>` : '',
         ].filter(Boolean).join('');
 
+        const url = jobPageUrl(job);
+
         return `
             <article class="job-row" style="--job-accent:${escAttr(accent)}">
-                <div class="job-row-logo">${logoHtml}</div>
+                <a class="job-row-logo" href="${escAttr(url)}" aria-label="${escAttr(job.title || 'View job')}">${logoHtml}</a>
                 <div class="job-row-body">
                     <div class="job-row-title-line">
-                        <h3>${escText(job.title || 'Untitled role')}</h3>
+                        <h3><a href="${escAttr(url)}">${escText(job.title || 'Untitled role')}</a></h3>
                         <div class="job-row-badges">${getSourceBadge(job)}${JobsBrowser.isFresh(job, 3) ? '<span class="job-pill job-pill--new">New</span>' : ''}</div>
                     </div>
                     <p class="job-row-company">${escText(job.company || 'Company')}</p>
@@ -314,8 +328,8 @@
                     <div class="job-row-foot">${footBits}</div>
                 </div>
                 <div class="job-row-actions">
-                    <button type="button" class="job-row-btn job-row-btn--ghost" data-view-job="${escAttr(job.id)}">View</button>
-                    <button type="button" class="job-row-btn job-row-btn--primary" data-apply-job="${escAttr(job.id)}">Apply</button>
+                    <a class="job-row-btn job-row-btn--ghost" href="${escAttr(url)}">View</a>
+                    <a class="job-row-btn job-row-btn--primary" href="${escAttr(url)}#jpApplyForm">Apply</a>
                 </div>
             </article>
         `;
