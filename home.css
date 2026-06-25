@@ -7,36 +7,37 @@
     --home-gutter: 1.25rem;
     --home-border: rgba(148, 163, 184, 0.14);
     --home-surface: rgba(15, 23, 42, 0.55);
+    --home-section-pad: 3.75rem;
 }
 
-/* ── Announce bar — quieter ─────────────────────────────── */
-.home-public-page .announce-bar {
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    background: rgba(15, 23, 42, 0.92);
-    border-bottom: 1px solid var(--home-border);
-}
-
-.home-public-page .announce-bar strong {
-    font-weight: 700;
+.home-public-page .section-container {
+    max-width: var(--home-max);
+    padding-left: var(--home-gutter);
+    padding-right: var(--home-gutter);
 }
 
 /* ── Hero ────────────────────────────────────────────────── */
 .home-public-page .home-hero {
     position: relative;
-    padding: 4.5rem 0 3.5rem;
+    padding: 5rem 0 3.75rem;
     border-bottom: 1px solid var(--home-border);
     background:
-        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(99, 102, 241, 0.14), transparent 55%),
-        linear-gradient(180deg, rgba(15, 23, 42, 0.4) 0%, transparent 100%);
+        radial-gradient(ellipse 70% 55% at 18% -10%, rgba(99, 102, 241, 0.12), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 88% 20%, rgba(16, 185, 129, 0.08), transparent 55%);
 }
 
 .home-public-page .home-hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 2.5rem 3rem;
+    align-items: center;
     max-width: var(--home-max);
     margin: 0 auto;
     padding: 0 var(--home-gutter);
-    text-align: center;
+}
+
+.home-public-page .home-hero-copy {
+    min-width: 0;
 }
 
 .home-public-page .home-kicker {
@@ -54,9 +55,9 @@
 }
 
 .home-public-page .home-hero h1 {
-    margin: 0 auto 1rem;
-    max-width: 16ch;
-    font-size: clamp(2rem, 5vw, 3.15rem);
+    margin: 0 0 1rem;
+    max-width: 14ch;
+    font-size: clamp(2rem, 4.2vw, 3rem);
     font-weight: 800;
     line-height: 1.06;
     letter-spacing: -0.03em;
@@ -64,10 +65,10 @@
 }
 
 .home-public-page .home-hero-lead {
-    margin: 0 auto 1.75rem;
-    max-width: 38rem;
+    margin: 0 0 1.5rem;
+    max-width: 34rem;
     color: var(--muted);
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     line-height: 1.65;
     font-weight: 500;
 }
@@ -75,21 +76,19 @@
 .home-public-page .home-hero-actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 0.65rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .home-public-page .home-hero-points {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem 1.25rem;
+    gap: 0.45rem 1.1rem;
     margin: 0;
     padding: 0;
     list-style: none;
     color: #94a3b8;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 600;
 }
 
@@ -108,17 +107,26 @@
     flex-shrink: 0;
 }
 
-/* ── Featured jobs ───────────────────────────────────────── */
-.home-public-page .home-jobs-section {
-    padding: 3.25rem 0 3.5rem;
-    background: rgba(11, 17, 32, 0.45);
-    border-bottom: 1px solid var(--home-border);
+.home-public-page .home-hero-visual {
+    margin: 0;
+    min-width: 0;
 }
 
-.home-public-page .home-jobs-section .section-container {
-    max-width: var(--home-max);
-    padding-left: var(--home-gutter);
-    padding-right: var(--home-gutter);
+.home-public-page .home-hero-img {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 28px 56px rgba(0, 0, 0, 0.32);
+}
+
+/* ── Featured jobs ───────────────────────────────────────── */
+.home-public-page .home-jobs-section {
+    padding: var(--home-section-pad) 0;
+    background: rgba(11, 17, 32, 0.4);
+    border-bottom: 1px solid var(--home-border);
 }
 
 .home-public-page .home-jobs-header {
@@ -127,11 +135,11 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .home-public-page .home-jobs-header h2 {
-    margin: 0.35rem 0 0.5rem;
+    margin: 0.35rem 0 0.45rem;
     font-size: clamp(1.45rem, 3vw, 1.85rem);
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -142,7 +150,7 @@
     margin: 0;
     max-width: 36rem;
     color: var(--muted);
-    font-size: 0.95rem;
+    font-size: 0.94rem;
     line-height: 1.55;
 }
 
@@ -160,7 +168,7 @@
     grid-template-columns: 44px minmax(0, 1fr) auto;
     gap: 0.85rem;
     align-items: center;
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 1rem;
     border-bottom: 1px solid var(--home-border);
     text-decoration: none;
     color: inherit;
@@ -241,8 +249,8 @@
     height: 34px;
     padding: 0 0.85rem;
     border-radius: 9px;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid rgba(129, 140, 248, 0.35);
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.28);
     color: #c7d2fe;
     font-size: 0.8rem;
     font-weight: 700;
@@ -258,7 +266,7 @@
 
 .home-public-page .home-jobs-empty,
 .home-public-page .home-jobs-loading {
-    padding: 2.5rem 1.5rem;
+    padding: 2rem 1.5rem;
     text-align: center;
     color: var(--muted);
     font-size: 0.92rem;
@@ -271,7 +279,7 @@
 }
 
 .home-public-page .home-jobs-foot {
-    margin-top: 1.25rem;
+    margin-top: 1.15rem;
 }
 
 .home-public-page .home-jobs-search {
@@ -315,7 +323,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
-    margin-top: 1rem;
+    margin-top: 0.85rem;
 }
 
 .home-public-page .home-location-links a {
@@ -338,34 +346,209 @@
     border-color: rgba(148, 163, 184, 0.35);
 }
 
-/* ── Tone down generic landing sections on home ──────────── */
-.home-public-page .why-section .section-header h2,
-.home-public-page .features-header h2,
-.home-public-page .section-header h2 {
-    letter-spacing: -0.02em;
+/* ── Section rhythm & polish ─────────────────────────────── */
+.home-public-page .why-section,
+.home-public-page .how-it-works,
+.home-public-page .testimonials-section,
+.home-public-page .faq-section {
+    padding: var(--home-section-pad) 0;
 }
 
-.home-public-page .stats-counter-section {
-    border-top: 1px solid var(--home-border);
+.home-public-page .features-section {
+    padding: var(--home-section-pad) var(--home-gutter);
+    max-width: none;
+}
+
+.home-public-page .features-header,
+.home-public-page .section-header {
+    margin-bottom: 2rem;
+}
+
+.home-public-page .section-header h2,
+.home-public-page .features-header h2 {
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+}
+
+.home-public-page .section-header p,
+.home-public-page .features-header p {
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.65;
+    color: var(--muted);
+}
+
+.home-public-page .why-section {
     border-bottom: 1px solid var(--home-border);
 }
 
-.home-public-page .stat-counter-item h3 {
-    letter-spacing: -0.02em;
+.home-public-page .why-grid {
+    gap: 1rem;
+}
+
+.home-public-page .why-card {
+    border-radius: 14px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-public-page .why-card:hover {
+    transform: translateY(-2px);
+}
+
+.home-public-page .features-section {
+    border-bottom: 1px solid var(--home-border);
+}
+
+.home-public-page .feature-card {
+    border-radius: 16px;
+}
+
+.home-public-page .how-it-works {
+    border-bottom: 1px solid var(--home-border);
+}
+
+.home-public-page .how-it-works .how-cta {
+    margin-top: 2rem;
+}
+
+.home-public-page .stats-counter-section {
+    padding: var(--home-section-pad) 0;
+    border-top: none;
+    border-bottom: 1px solid var(--home-border);
+    background: rgba(11, 17, 32, 0.35);
+}
+
+.home-public-page .stats-counter-grid {
+    gap: 1rem;
+}
+
+.home-public-page .stat-counter-item {
+    border-radius: 14px;
+}
+
+.home-public-page .testimonials-section {
+    border-bottom: 1px solid var(--home-border);
+}
+
+.home-public-page .testimonial-card {
+    border-radius: 16px;
+}
+
+.home-public-page .faq-section {
+    background: rgba(11, 17, 32, 0.25);
+}
+
+.home-public-page .faq-grid {
+    gap: 0.65rem;
+}
+
+.home-public-page .faq-item {
+    border: 1px solid var(--home-border);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.45);
+    overflow: hidden;
+}
+
+.home-public-page .faq-item {
+    padding: 0;
+}
+
+.home-public-page .faq-item[open] {
+    border-color: rgba(129, 140, 248, 0.45);
+    background: rgba(15, 23, 42, 0.65);
+}
+
+.home-public-page .faq-item summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.home-public-page .faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.home-public-page .faq-item summary::after {
+    content: "+";
+    font-size: 1.35rem;
+    color: var(--accent-light);
+    font-weight: 400;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.home-public-page .faq-item[open] summary::after {
+    content: "−";
+}
+
+.home-public-page .faq-item p {
+    padding: 0 1.15rem 1rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.65;
+}
+
+.home-public-page .final-cta-section {
+    margin-top: 0;
+}
+
+.home-public-page .final-cta-inner {
+    border-radius: 18px;
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */
-@media (max-width: 720px) {
-    .home-public-page {
-        --home-gutter: 1rem;
-    }
-
-    .home-public-page .home-hero {
-        padding: 3.75rem 0 2.75rem;
+@media (max-width: 900px) {
+    .home-public-page .home-hero-inner {
+        grid-template-columns: 1fr;
+        gap: 0;
+        text-align: center;
     }
 
     .home-public-page .home-hero h1 {
         max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .home-public-page .home-hero-lead {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .home-public-page .home-hero-actions,
+    .home-public-page .home-hero-points {
+        justify-content: center;
+    }
+
+    .home-public-page .home-hero-visual {
+        order: -1;
+        margin: 0 auto 1.5rem;
+        max-width: min(100%, 320px);
+    }
+
+    .home-public-page .home-hero-img {
+        max-width: 100%;
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 720px) {
+    .home-public-page {
+        --home-gutter: 1rem;
+        --home-section-pad: 3rem;
+    }
+
+    .home-public-page .home-hero {
+        padding: 4.25rem 0 2.75rem;
     }
 
     .home-public-page .home-hero-actions {
@@ -422,5 +605,9 @@
         grid-column: 1 / -1;
         width: 100%;
         justify-content: center;
+    }
+
+    .home-public-page .stats-counter-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }

@@ -100,11 +100,11 @@
                 ? JobsBrowser.sortJobs(JobsStore.getActiveJobs(), 'newest')
                 : (JobsStore?.getActiveJobs?.() || []).slice();
 
-            const featured = jobs.slice(0, 8);
+            const featured = jobs.slice(0, 4);
 
             if (lead) {
                 lead.textContent = featured.length
-                    ? `${jobs.length.toLocaleString()} open roles across South Africa — here are the latest additions.`
+                    ? `A hand-picked sample of ${jobs.length.toLocaleString()} open roles — view the full board for every listing.`
                     : 'New roles are added regularly. Check back soon or browse the full board.';
             }
 

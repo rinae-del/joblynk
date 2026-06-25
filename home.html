@@ -48,16 +48,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="landing.css?v=20260628">
-    <link rel="stylesheet" href="home.css?v=20260628">
+    <link rel="stylesheet" href="home.css?v=20260630">
 </head>
 
 <body class="landing-page home-public-page">
-
-    <!-- Announcement Bar -->
-    <div class="announce-bar">
-        <span>Live vacancies across South Africa — updated daily</span>
-        <a href="#jobs">Browse roles <i class="fa-solid fa-arrow-right-long"></i></a>
-    </div>
 
     <!-- Navigation -->
     <nav class="landing-nav">
@@ -96,20 +90,25 @@
     <!-- Hero -->
     <section class="home-hero" id="top">
         <div class="home-hero-inner">
-            <p class="home-kicker">South African job board</p>
-            <h1>Find work that fits your skills and city</h1>
-            <p class="home-hero-lead">
-                Browse live vacancies from Johannesburg to Cape Town. Build a CV, prepare your application, and track progress — free for job seekers.
-            </p>
-            <div class="home-hero-actions">
-                <a href="#jobs" class="btn-landing btn-landing-primary btn-lg">Browse live jobs</a>
-                <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build your CV</a>
+            <div class="home-hero-copy">
+                <p class="home-kicker">South African job board</p>
+                <h1>Find work that fits your skills and city</h1>
+                <p class="home-hero-lead">
+                    Browse live vacancies from Johannesburg to Cape Town. Build a CV, prepare your application, and track progress — free for job seekers.
+                </p>
+                <div class="home-hero-actions">
+                    <a href="#jobs" class="btn-landing btn-landing-primary btn-lg">Browse live jobs</a>
+                    <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build your CV</a>
+                </div>
+                <ul class="home-hero-points">
+                    <li>New roles added daily</li>
+                    <li>Apply before you create an account</li>
+                    <li>POPIA-compliant and secure</li>
+                </ul>
             </div>
-            <ul class="home-hero-points">
-                <li>New roles added daily</li>
-                <li>Apply before you create an account</li>
-                <li>POPIA-compliant and secure</li>
-            </ul>
+            <figure class="home-hero-visual">
+                <img src="images/hero.png" alt="JobLynk job board and career tools on desktop and mobile" class="home-hero-img" width="560" height="560" loading="eager" decoding="async">
+            </figure>
         </div>
     </section>
 
@@ -118,8 +117,8 @@
         <div class="section-container">
             <div class="home-jobs-header">
                 <div>
-                    <p class="home-kicker">Live vacancies</p>
-                    <h2 id="homeJobsHeading">Roles hiring across South Africa</h2>
+                    <p class="home-kicker">Featured</p>
+                    <h2 id="homeJobsHeading">Latest roles on JobLynk</h2>
                     <p class="home-jobs-lead" id="homeJobsLead">Loading openings…</p>
                 </div>
                 <a href="jobs.html" class="btn-landing btn-landing-outline">View all jobs</a>
@@ -151,7 +150,6 @@
                 <span class="eyebrow">Why JobLynk</span>
                 <h2>A job board built for how South Africans actually search</h2>
                 <p>Clear listings, practical tools, and a straightforward path from browsing to applying — without the clutter of generic global boards.</p>
-                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg" style="margin-top: 1rem;">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
             <div class="why-grid">
@@ -169,7 +167,6 @@
                     <div class="why-icon" style="background: rgba(14, 165, 233, 0.16); color: #38BDF8;"><i class="fa-solid fa-user-plus"></i></div>
                     <h3>Get started in under 2 minutes</h3>
                     <p>Create your free account, build your CV and start applying. No credit card, no commitments, no catch.</p>
-                    <a href="sign-up.html" class="btn-landing btn-landing-primary" style="margin-top: 1rem;">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
                 <div class="why-card">
                     <div class="why-icon why-icon-green"><i class="fa-solid fa-handshake"></i></div>
@@ -218,10 +215,6 @@
                 <p>Search active South African jobs by keyword, location and job type. View listings as a guest and sign in only when you apply.</p>
                 <a href="jobs.html" class="feature-link">View Jobs <i class="fa-solid fa-arrow-right"></i></a>
             </div>
-        </div>
-
-        <div class="how-cta">
-            <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </section>
 
@@ -280,9 +273,6 @@
                     <h3>Apply first</h3>
                     <p>Start an application before creating an account</p>
                 </div>
-            </div>
-            <div class="how-cta">
-                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -397,6 +387,7 @@
                     <summary>Are the jobs on JobLynk verified?</summary>
                     <p>Yes. Every recruiter and company is verified before they can post on JobLynk. We review each listing for quality and relevance so you only see real opportunities from legitimate South African recruiters and hiring teams.</p>
                 </details>
+                <details class="faq-item">
                     <summary>Can I apply before creating an account?</summary>
                     <p>Yes. Browse jobs and start an application on the job page. You can create a free account when you submit — your details are saved as you go.</p>
                 </details>
@@ -524,7 +515,7 @@
 
     <script src="jobs-store.js?v=20260524-jobs"></script>
     <script src="jobs-browser.js?v=20260625-board"></script>
-    <script src="home.js?v=20260628"></script>
+    <script src="home.js?v=20260629"></script>
     <script>
         const hamburger = document.getElementById('navHamburger');
         const mobileMenu = document.getElementById('mobileNavMenu');
