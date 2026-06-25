@@ -1,5 +1,6 @@
 (() => {
     const $ = id => document.getElementById(id);
+    const FEATURED_LIMIT = 4;
 
     function escText(value = '') {
         const div = document.createElement('div');
@@ -67,11 +68,30 @@
         return Boolean(resolveLogoUrl(job.companyLogoUrl || job.company_logo_url || ''));
     }
 
+    function companyInitial(company) {
+        return String(company || 'J').trim().charAt(0).toUpperCase() || 'J';
+    }
+
+    function pickFeaturedJobs(jobs) {
+        return [...jobs]
+            .sort((a, b) => {
+                const aLogo = hasCompanyLogo(a) ? 1 : 0;
+                const bLogo = hasCompanyLogo(b) ? 1 : 0;
+                if (bLogo !== aLogo) return bLogo - aLogo;
+                const aNative = (a.source || 'native') === 'native' ? 1 : 0;
+                const bNative = (b.source || 'native') === 'native' ? 1 : 0;
+                return bNative - aNative;
+            })
+            .slice(0, FEATURED_LIMIT);
+    }
+
     function renderJobRow(job) {
         const company = job.company || 'Company';
         const logo = resolveLogoUrl(job.companyLogoUrl || job.company_logo_url || '');
+        const hasLogo = Boolean(logo);
         const accent = /^#[0-9A-Fa-f]{3,6}$/.test(String(job.color || '').trim()) ? job.color : '#6366F1';
         const salary = formatSalaryLabel(job);
+        const rowClass = hasLogo ? 'home-job-row' : 'home-job-row home-job-row--mono';
 
         const meta = [
             job.location ? `<span>${escText(job.location)}</span>` : '',
@@ -79,13 +99,15 @@
             `<span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>`,
         ].filter(Boolean).join('');
 
+        const avatarHtml = hasLogo
+            ? `<div class="home-job-logo"><img src="${escAttr(logo)}" alt="${escAttr(company)} logo" loading="lazy" decoding="async"></div>`
+            : `<div class="home-job-monogram" aria-hidden="true"><span>${escText(companyInitial(company))}</span></div>`;
+
         const url = jobPageUrl(job);
 
         return `
-            <a class="home-job-row" href="${escAttr(url)}" style="--job-accent:${escAttr(accent)}">
-                <div class="home-job-logo">
-                    <img src="${escAttr(logo)}" alt="${escAttr(company)} logo" loading="lazy" decoding="async">
-                </div>
+            <a class="${rowClass}" href="${escAttr(url)}" style="--job-accent:${escAttr(accent)}">
+                ${avatarHtml}
                 <div class="home-job-body">
                     <h3>${escText(job.title || 'Untitled role')}</h3>
                     <p class="home-job-company">${escText(company)}</p>
@@ -117,27 +139,16 @@
                 ? JobsBrowser.sortJobs(JobsStore.getActiveJobs(), 'newest')
                 : (JobsStore?.getActiveJobs?.() || []).slice();
 
-            const withLogo = jobs.filter(hasCompanyLogo);
-            const featured = withLogo
-                .sort((a, b) => {
-                    const aNative = (a.source || 'native') === 'native' ? 1 : 0;
-                    const bNative = (b.source || 'native') === 'native' ? 1 : 0;
-                    return bNative - aNative;
-                })
-                .slice(0, 4);
+            const featured = pickFeaturedJobs(jobs);
 
             if (lead) {
                 lead.textContent = featured.length
-                    ? `${jobs.length.toLocaleString()} open roles — live picks with company branding below.`
-                    : withLogo.length
-                        ? 'Check back soon for new roles.'
-                        : `${jobs.length.toLocaleString()} open roles — upload a company logo to appear here.`;
+                    ? `${jobs.length.toLocaleString()} open roles — ${featured.length} live picks below.`
+                    : 'Check back soon for new roles.';
             }
 
             if (!featured.length) {
-                list.innerHTML = withLogo.length
-                    ? '<div class="home-jobs-empty">No featured roles right now. <a href="jobs.html">Browse the job board</a>.</div>'
-                    : `<div class="home-jobs-empty">${jobs.length ? 'Featured roles need a company logo. <a href="jobs.html">Browse all ' + jobs.length.toLocaleString() + ' roles</a>.' : 'No live roles right now. <a href="jobs.html">Browse the job board</a>.'}</div>`;
+                list.innerHTML = '<div class="home-jobs-empty">No live roles right now. <a href="jobs.html">Browse the job board</a>.</div>';
                 return;
             }
 

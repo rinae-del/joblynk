@@ -26,9 +26,12 @@ html body.home-public-page,
 html[data-theme="dark"] body.home-public-page {
     position: relative;
     background:
-        radial-gradient(ellipse 60% 40% at 80% 8%, rgba(99, 102, 241, 0.1), transparent 60%),
-        radial-gradient(ellipse 55% 45% at 12% 42%, rgba(79, 70, 229, 0.07), transparent 60%),
-        radial-gradient(ellipse 50% 40% at 88% 78%, rgba(99, 102, 241, 0.06), transparent 60%),
+        radial-gradient(ellipse 65% 45% at 85% 4%, rgba(99, 102, 241, 0.14), transparent 58%),
+        radial-gradient(ellipse 55% 40% at 8% 18%, rgba(52, 211, 153, 0.07), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 15% 55%, rgba(79, 70, 229, 0.09), transparent 58%),
+        radial-gradient(ellipse 55% 45% at 92% 62%, rgba(99, 102, 241, 0.08), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 50% 88%, rgba(52, 211, 153, 0.05), transparent 60%),
+        radial-gradient(ellipse 45% 35% at 78% 92%, rgba(99, 102, 241, 0.07), transparent 55%),
         var(--home-page-bg);
     background-attachment: fixed;
 }
@@ -44,11 +47,14 @@ html[data-theme="dark"] body.home-public-page {
     max-width: var(--home-max);
     padding-left: var(--home-gutter);
     padding-right: var(--home-gutter);
+    position: relative;
+    z-index: 1;
 }
 
 /* ── Reusable section intro (rule + label + heading) ─────── */
 .home-public-page .home-why-intro,
-.home-public-page .home-features-intro {
+.home-public-page .home-features-intro,
+.home-public-page .home-section-intro {
     text-align: left;
     max-width: 40rem;
     margin: 0 0 2.25rem;
@@ -79,7 +85,8 @@ html[data-theme="dark"] body.home-public-page {
 }
 
 .home-public-page .home-why-intro h2,
-.home-public-page .home-features-intro h2 {
+.home-public-page .home-features-intro h2,
+.home-public-page .home-section-intro h2 {
     margin: 0 0 0.6rem;
     font-size: clamp(1.55rem, 3.2vw, 2.1rem);
     font-weight: 800;
@@ -260,18 +267,68 @@ html[data-theme="dark"] body.home-public-page {
     }
 }
 
-/* ── Section rhythm ──────────────────────────────────────── */
+/* ── Section rhythm + ambient washes ─────────────────────── */
 .home-public-page .home-jobs-section,
 .home-public-page .features-section,
 .home-public-page .why-section,
 .home-public-page .how-it-works,
 .home-public-page .stats-counter-section,
 .home-public-page .testimonials-section,
-.home-public-page .faq-section {
+.home-public-page .faq-section,
+.home-public-page .final-cta-section {
+    position: relative;
+    isolation: isolate;
     padding: var(--home-section-pad) 0;
     border-top: none;
     border-bottom: 1px solid var(--home-border);
     background: transparent;
+}
+
+.home-public-page .home-jobs-section::before,
+.home-public-page .why-section::before,
+.home-public-page .features-section::before,
+.home-public-page .how-it-works::before,
+.home-public-page .stats-counter-section::before,
+.home-public-page .testimonials-section::before,
+.home-public-page .faq-section::before,
+.home-public-page .final-cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.home-public-page .home-jobs-section::before {
+    background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(52, 211, 153, 0.08), transparent 68%);
+}
+
+.home-public-page .why-section::before {
+    background: radial-gradient(ellipse 65% 50% at 8% 45%, rgba(99, 102, 241, 0.1), transparent 65%);
+}
+
+.home-public-page .features-section::before {
+    background: radial-gradient(ellipse 70% 55% at 92% 40%, rgba(99, 102, 241, 0.09), transparent 68%);
+}
+
+.home-public-page .how-it-works::before {
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(79, 70, 229, 0.07), transparent 70%);
+}
+
+.home-public-page .stats-counter-section::before {
+    background: radial-gradient(ellipse 65% 50% at 20% 60%, rgba(52, 211, 153, 0.07), transparent 65%);
+}
+
+.home-public-page .testimonials-section::before {
+    background: radial-gradient(ellipse 70% 55% at 88% 30%, rgba(99, 102, 241, 0.08), transparent 68%);
+}
+
+.home-public-page .faq-section::before {
+    background: radial-gradient(ellipse 60% 45% at 12% 80%, rgba(99, 102, 241, 0.06), transparent 65%);
+}
+
+.home-public-page .final-cta-section::before {
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(99, 102, 241, 0.12), transparent 70%);
 }
 
 .home-public-page .features-section {
@@ -502,6 +559,63 @@ html[data-theme="dark"] body.home-public-page {
     background: linear-gradient(135deg, #6366f1, #4f46e5);
     border-color: transparent;
     color: #fff;
+}
+
+/* No-logo variant — clean monogram card */
+.home-public-page .home-job-row--mono {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.42), rgba(15, 23, 42, 0.58));
+    border-color: rgba(148, 163, 184, 0.1);
+}
+
+.home-public-page .home-job-row--mono::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, var(--job-accent, #6366f1), transparent);
+    opacity: 0.9;
+}
+
+.home-public-page .home-job-row--mono:hover {
+    border-color: rgba(129, 140, 248, 0.28);
+}
+
+.home-public-page .home-job-row--mono:hover .home-job-cta {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--job-accent, #6366f1) 85%, #fff 15%), var(--job-accent, #6366f1));
+    border-color: transparent;
+    color: #fff;
+}
+
+.home-public-page .home-job-monogram {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.08), transparent 55%),
+        rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    box-shadow: 0 4px 14px rgba(2, 6, 23, 0.35);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-public-page .home-job-monogram span {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--job-accent, var(--home-accent-light));
+    text-shadow: 0 0 18px color-mix(in srgb, var(--job-accent, #6366f1) 45%, transparent);
+}
+
+.home-public-page .home-job-row--mono:hover .home-job-monogram {
+    transform: scale(1.05);
+    border-color: color-mix(in srgb, var(--job-accent, #6366f1) 35%, transparent);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--job-accent, #6366f1) 22%, transparent);
 }
 
 .home-public-page .home-jobs-empty,
@@ -786,7 +900,8 @@ html[data-theme="dark"] body.home-public-page {
 }
 
 /* ── How it works ────────────────────────────────────────── */
-.home-public-page .how-it-works .section-header {
+.home-public-page .how-it-works .section-header,
+.home-public-page .how-it-works .home-how-intro {
     margin-bottom: 1.75rem;
 }
 
@@ -862,7 +977,8 @@ html[data-theme="dark"] body.home-public-page {
 }
 
 /* ── Stats / at a glance ─────────────────────────────────── */
-.home-public-page .stats-counter-section .section-header {
+.home-public-page .stats-counter-section .section-header,
+.home-public-page .stats-counter-section .home-stats-intro {
     margin-bottom: 1.75rem;
 }
 
@@ -922,16 +1038,29 @@ html[data-theme="dark"] body.home-public-page {
 }
 
 /* ── Testimonials ────────────────────────────────────────── */
+.home-public-page .testimonials-section .testimonials-carousel {
+    position: relative;
+    z-index: 1;
+}
+
 .home-public-page .testimonial-card {
     border-radius: 18px;
     background: var(--home-card) !important;
     border: 1px solid var(--home-border) !important;
     box-shadow: var(--home-card-shadow);
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-public-page .testimonial-slide:hover .testimonial-card {
+    transform: translateY(-3px);
+    border-color: var(--home-border-hover) !important;
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 .home-public-page .testimonial-card-featured {
     background: var(--home-card) !important;
     border-color: var(--home-accent-border) !important;
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 /* ── FAQ ─────────────────────────────────────────────────── */
@@ -996,10 +1125,19 @@ html[data-theme="dark"] body.home-public-page {
 .home-public-page .final-cta-section {
     margin-top: 0;
     border-bottom: none;
+    padding-bottom: 5rem;
 }
 
 .home-public-page .final-cta-inner {
+    position: relative;
+    z-index: 1;
     border-radius: 22px;
+    border: 1px solid var(--home-accent-border);
+    box-shadow: var(--home-card-shadow-hover);
+    background:
+        radial-gradient(ellipse 80% 80% at 20% 0%, rgba(99, 102, 241, 0.18), transparent 60%),
+        radial-gradient(ellipse 60% 60% at 90% 100%, rgba(52, 211, 153, 0.08), transparent 55%),
+        var(--home-card);
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */
@@ -1080,7 +1218,8 @@ html[data-theme="dark"] body.home-public-page {
         align-items: start;
     }
 
-    .home-public-page .home-job-logo {
+    .home-public-page .home-job-logo,
+    .home-public-page .home-job-monogram {
         width: 40px;
         height: 40px;
         grid-row: 1 / 3;
