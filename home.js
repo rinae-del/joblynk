@@ -104,8 +104,8 @@
 
             if (lead) {
                 lead.textContent = featured.length
-                    ? `A hand-picked sample of ${jobs.length.toLocaleString()} open roles — view the full board for every listing.`
-                    : 'New roles are added regularly. Check back soon or browse the full board.';
+                    ? `${jobs.length.toLocaleString()} open roles — four featured below.`
+                    : 'Check back soon for new roles.';
             }
 
             if (!featured.length) {
@@ -116,7 +116,7 @@
             list.innerHTML = featured.map(job => renderJobRow(job)).join('');
         } catch (error) {
             console.warn('Featured jobs failed:', error);
-            if (lead) lead.textContent = 'Browse vacancies across Johannesburg, Cape Town, Durban and nationwide.';
+            if (lead) lead.textContent = 'Browse jobs across SA cities.';
             list.innerHTML = '<div class="home-jobs-empty">Could not load jobs right now. <a href="jobs.html">Open the job board</a>.</div>';
         }
     }

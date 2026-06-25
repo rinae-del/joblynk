@@ -6,8 +6,12 @@
     --home-max: 1180px;
     --home-gutter: 1.25rem;
     --home-border: rgba(148, 163, 184, 0.14);
-    --home-surface: rgba(15, 23, 42, 0.55);
+    --home-surface: rgba(15, 23, 42, 0.72);
     --home-section-pad: 3.75rem;
+    --home-accent: #6366f1;
+    --home-accent-light: #a5b4fc;
+    --home-accent-soft: rgba(99, 102, 241, 0.12);
+    --home-accent-border: rgba(129, 140, 248, 0.28);
 }
 
 /* Prevent iOS Safari zoom-on-focus for form fields */
@@ -28,9 +32,7 @@
     position: relative;
     padding: 0 0 3.25rem;
     border-bottom: 1px solid var(--home-border);
-    background:
-        radial-gradient(ellipse 70% 55% at 18% 100%, rgba(99, 102, 241, 0.1), transparent 58%),
-        radial-gradient(ellipse 50% 40% at 88% 80%, rgba(16, 185, 129, 0.06), transparent 55%);
+    background: transparent;
 }
 
 .home-public-page .home-hero-media {
@@ -139,7 +141,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #6366f1;
+    background: var(--home-accent);
     flex-shrink: 0;
 }
 
@@ -196,7 +198,11 @@
 }
 
 .home-public-page .home-jobs-all-link {
-    margin-top: 1.1rem;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin: 0 0 0.75rem;
+    box-sizing: border-box;
 }
 
 .home-public-page .home-jobs-list {
@@ -214,23 +220,21 @@
     gap: 0.85rem;
     align-items: center;
     padding: 0.95rem 1.05rem;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: 1px solid var(--home-border);
     border-radius: 14px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+    background: var(--home-surface);
     text-decoration: none;
     color: inherit;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .home-public-page .home-job-row:last-child {
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    border-bottom: 1px solid var(--home-border);
 }
 
 .home-public-page .home-job-row:hover {
-    transform: translateY(-2px);
-    border-color: rgba(129, 140, 248, 0.45);
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.98));
+    border-color: var(--home-accent-border);
+    background: rgba(30, 41, 59, 0.82);
 }
 
 .home-public-page .home-job-logo {
@@ -240,7 +244,7 @@
     display: grid;
     place-items: center;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--job-accent, #6366f1), rgba(15, 23, 42, 0.5));
+    background: var(--home-accent);
     color: #fff;
     font-size: 1rem;
     font-weight: 800;
@@ -289,7 +293,7 @@
 }
 
 .home-public-page .home-job-meta .is-salary {
-    color: #6ee7b7;
+    color: var(--home-accent-light);
 }
 
 .home-public-page .home-job-cta {
@@ -299,9 +303,9 @@
     height: 34px;
     padding: 0 0.85rem;
     border-radius: 9px;
-    background: rgba(99, 102, 241, 0.12);
-    border: 1px solid rgba(129, 140, 248, 0.28);
-    color: #c7d2fe;
+    background: var(--home-accent-soft);
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light);
     font-size: 0.8rem;
     font-weight: 700;
     white-space: nowrap;
@@ -321,22 +325,17 @@
     color: var(--muted);
     font-size: 0.92rem;
     font-weight: 600;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: 1px solid var(--home-border);
     border-radius: 14px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
-}
-
-.home-public-page .home-jobs-loading i {
-    margin-right: 0.4rem;
-    color: var(--accent);
+    background: var(--home-surface);
 }
 
 .home-public-page .home-jobs-foot {
     margin-top: 1.35rem;
     padding: 1.15rem 1.15rem 1rem;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: 1px solid var(--home-border);
     border-radius: 14px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+    background: var(--home-surface);
 }
 
 .home-public-page .home-jobs-search {
@@ -407,11 +406,62 @@
 
 .home-public-page .home-location-links a:hover {
     color: #e2e8f0;
-    border-color: rgba(129, 140, 248, 0.4);
-    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--home-accent-border);
+    background: var(--home-accent-soft);
 }
 
-/* ── Section rhythm & polish ─────────────────────────────── */
+/* ── Unified palette (indigo + slate only) ───────────────── */
+.home-public-page .eyebrow,
+.home-public-page .eyebrow-amber,
+.home-public-page .eyebrow-green {
+    background: var(--home-accent-soft);
+    color: var(--home-accent-light);
+    border-color: var(--home-accent-border);
+}
+
+.home-public-page .why-icon,
+.home-public-page .stat-counter-icon {
+    background: var(--home-accent-soft) !important;
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light) !important;
+}
+
+.home-public-page .testimonial-result,
+.home-public-page .testimonial-result-green,
+.home-public-page .testimonial-result-amber {
+    background: var(--home-accent-soft);
+    color: var(--home-accent-light);
+    border-color: var(--home-accent-border);
+}
+
+.home-public-page .features-section {
+    border-bottom: 1px solid var(--home-border);
+}
+
+.home-public-page .feature-card {
+    border-radius: 16px;
+    background: var(--home-surface);
+}
+
+.home-public-page .feature-card.featured {
+    background: var(--home-surface);
+    border-color: var(--home-accent-border);
+}
+
+.home-public-page .testimonial-card-featured {
+    background: var(--home-surface) !important;
+    border-color: var(--home-accent-border) !important;
+}
+
+.home-public-page .home-jobs-loading i {
+    margin-right: 0.4rem;
+    color: var(--home-accent);
+}
+
+.home-public-page .home-jobs-header {
+    margin-bottom: 1rem;
+}
+
 .home-public-page .why-section,
 .home-public-page .how-it-works,
 .home-public-page .testimonials-section,
@@ -454,19 +504,12 @@
 
 .home-public-page .why-card {
     border-radius: 14px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    background: var(--home-surface);
+    transition: border-color 0.2s ease;
 }
 
 .home-public-page .why-card:hover {
-    transform: translateY(-2px);
-}
-
-.home-public-page .features-section {
-    border-bottom: 1px solid var(--home-border);
-}
-
-.home-public-page .feature-card {
-    border-radius: 16px;
+    border-color: var(--home-accent-border);
 }
 
 .home-public-page .how-it-works {
@@ -488,17 +531,15 @@
 .home-public-page .step-item {
     padding: 1.45rem 1.3rem;
     border-radius: 14px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: var(--home-surface);
+    border: 1px solid var(--home-border);
     text-align: left;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .home-public-page .step-item:hover {
-    transform: translateY(-2px);
-    border-color: rgba(129, 140, 248, 0.45);
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.98));
+    border-color: var(--home-accent-border);
+    background: rgba(30, 41, 59, 0.82);
 }
 
 .home-public-page .step-number {
@@ -513,10 +554,10 @@
     font-size: 0.82rem;
     font-weight: 800;
     letter-spacing: 0.04em;
-    background: rgba(16, 185, 129, 0.14);
-    border: 1px solid rgba(52, 211, 153, 0.32);
-    -webkit-text-fill-color: #6ee7b7;
-    color: #6ee7b7;
+    background: var(--home-accent-soft);
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light);
+    -webkit-text-fill-color: var(--home-accent-light);
     background-clip: border-box;
 }
 
@@ -535,7 +576,7 @@
 }
 
 .home-public-page .step-arrow {
-    color: rgba(129, 140, 248, 0.4);
+    color: rgba(148, 163, 184, 0.45);
     font-size: 1.05rem;
     padding: 0 0.1rem;
 }
@@ -568,17 +609,16 @@
 .home-public-page .stat-counter-item {
     padding: 1.25rem 1.15rem;
     border-radius: 14px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: var(--home-surface);
+    border: 1px solid var(--home-border);
     box-shadow: none;
     text-align: left;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .home-public-page .stat-counter-item:hover {
-    transform: translateY(-2px);
-    border-color: rgba(129, 140, 248, 0.45);
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+    border-color: var(--home-accent-border);
+    background: rgba(30, 41, 59, 0.82);
 }
 
 .home-public-page .stat-counter-icon {
@@ -589,28 +629,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 0.85rem;
-    background: rgba(99, 102, 241, 0.14);
-    border: 1px solid rgba(129, 140, 248, 0.28);
-    color: #c7d2fe;
     font-size: 1rem;
-}
-
-.home-public-page .stat-counter-icon-green {
-    background: rgba(16, 185, 129, 0.14);
-    border-color: rgba(52, 211, 153, 0.32);
-    color: #6ee7b7;
-}
-
-.home-public-page .stat-counter-icon-violet {
-    background: rgba(139, 92, 246, 0.16);
-    border-color: rgba(167, 139, 250, 0.32);
-    color: #c4b5fd;
-}
-
-.home-public-page .stat-counter-icon-sky {
-    background: rgba(14, 165, 233, 0.16);
-    border-color: rgba(56, 189, 248, 0.32);
-    color: #7dd3fc;
 }
 
 .home-public-page .stat-counter-item h3 {
@@ -642,7 +661,7 @@
 }
 
 .home-public-page .faq-section {
-    background: rgba(11, 17, 32, 0.25);
+    background: transparent;
 }
 
 .home-public-page .faq-grid {
@@ -661,8 +680,8 @@
 }
 
 .home-public-page .faq-item[open] {
-    border-color: rgba(129, 140, 248, 0.45);
-    background: rgba(15, 23, 42, 0.65);
+    border-color: var(--home-accent-border);
+    background: rgba(30, 41, 59, 0.82);
 }
 
 .home-public-page .faq-item summary {
@@ -752,7 +771,6 @@
 
     .home-public-page .home-jobs-all-link {
         width: 100%;
-        max-width: 340px;
         justify-content: center;
     }
 
@@ -795,11 +813,6 @@
     .home-public-page .home-jobs-header {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .home-public-page .home-jobs-all-link {
-        width: 100%;
-        justify-content: center;
     }
 
     .home-public-page .home-job-row {
