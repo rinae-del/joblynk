@@ -218,6 +218,16 @@ if ($notFound) {
     $companyInitial = strtoupper(mb_substr($company, 0, 1)) ?: 'J';
     $accent = preg_match('/^#[0-9A-Fa-f]{3,6}$/', (string) ($job['color'] ?? '')) ? $job['color'] : '#6366F1';
 }
+
+// Root path for assets — pretty URLs (/job/123-slug) break relative href/src without this.
+$basePath = parse_url(APP_URL, PHP_URL_PATH);
+$baseHref = ($basePath && $basePath !== '/') ? rtrim((string) $basePath, '/') . '/' : '/';
+
+function jp_asset(string $path): string
+{
+    global $baseHref;
+    return $baseHref . ltrim($path, '/');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -225,6 +235,7 @@ if ($notFound) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="<?= e($baseHref) ?>">
     <title><?= e($pageTitle) ?></title>
     <meta name="description" content="<?= e($metaDesc) ?>">
     <link rel="canonical" href="<?= e($canonical) ?>">
@@ -246,8 +257,8 @@ if ($notFound) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260626">
-    <link rel="stylesheet" href="job-page.css?v=20260626">
+    <link rel="stylesheet" href="<?= e(jp_asset('landing.css?v=20260627b')) ?>">
+    <link rel="stylesheet" href="<?= e(jp_asset('job-page.css?v=20260627b')) ?>">
     <?php if (!$notFound): ?>
     <script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
@@ -257,7 +268,7 @@ if ($notFound) {
 
     <nav class="landing-nav">
         <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
-            <img src="images/logo.png" alt="" class="landing-logo-img">
+            <img src="<?= e(jp_asset('images/logo.png')) ?>" alt="" class="landing-logo-img">
             <span class="landing-logo-text">JobLynk</span>
         </a>
         <div class="landing-nav-links">
@@ -518,7 +529,7 @@ if ($notFound) {
             externalUrl: <?= json_encode($externalUrl) ?>
         };
     </script>
-    <script src="job-page.js?v=20260626"></script>
+    <script src="<?= e(jp_asset('job-page.js?v=20260627b')) ?>"></script>
     <?php endif; ?>
 </body>
 

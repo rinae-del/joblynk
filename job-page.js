@@ -211,7 +211,7 @@
     }
 
     async function createAccount() {
-        const { res, data } = await postJson('api/auth/guest-signup.php', {
+        const { res, data } = await postJson('/api/auth/guest-signup.php', {
             firstName: els.firstName.value.trim(),
             lastName: els.lastName.value.trim(),
             email: els.email.value.trim().toLowerCase(),
@@ -231,7 +231,7 @@
     }
 
     async function signIn() {
-        const { data } = await postJson('api/auth/signin.php', {
+        const { data } = await postJson('/api/auth/signin.php', {
             email: els.email.value.trim().toLowerCase(),
             password: els.password.value,
         });
@@ -259,7 +259,7 @@
         if (responses.length) fd.append('form_responses', JSON.stringify(responses));
         if (state.file) fd.append('cv_file', state.file);
 
-        const res = await fetch('api/applications/index.php', {
+        const res = await fetch('/api/applications/index.php', {
             method: 'POST',
             credentials: 'include',
             body: fd,
