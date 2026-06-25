@@ -86,11 +86,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getJobStatus(job) {
+        if (job.status === 'closed') return { cls: 'is-closed', label: 'Closed' };
         const applied = JobsStore.hasApplied(job.id);
         if (applied) return { cls: 'is-applied', label: 'Applied' };
         if (getDaysSince(job.postedAt) <= 3) return { cls: 'new', label: 'New' };
         if ((Number(job.applicants) || 0) >= 40) return { cls: 'hot', label: 'Hot' };
         return { cls: 'is-open', label: 'Open' };
+    }
+
+    function getSourceBadge(job) {
+        const source = job.source || 'native';
+        if (source === 'native') return '<span class="job-source-badge is-native">JobLynk</span>';
+        if (source === 'adzuna') return '<span class="job-source-badge is-adzuna">Adzuna</span>';
+        if (source === 'dpsa') return '<span class="job-source-badge is-dpsa">Gov</span>';
+        return `<span class="job-source-badge">${escText(source)}</span>`;
+    }
+
+    function isJobClosed(job) {
+        return job && job.status === 'closed';
     }
 
     function buildLogo(job, className = 'job-avatar') {
@@ -162,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>
                             <span class="job-kicker">${escText(job.company || 'Company')}</span>
                             <a href="${detailUrl}" class="jobs-page-title">${escText(job.title || 'Untitled role')}</a>
+                            ${getSourceBadge(job)}
                         </div>
                         <span class="job-badge ${status.cls}">${status.label}</span>
                     </div>
@@ -259,11 +273,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function renderDetailPage() {
+    async function renderDetailPage() {
         const root = $('jobDetailsRoot');
         const jobId = params.get('id');
-        const job = JobsStore.getJobById(jobId);
         if (!root) return;
+
+        root.innerHTML = '<div class="job-empty-state"><i class="fa-solid fa-spinner fa-spin job-empty-icon"></i><p>Loading job...</p></div>';
+
+        const job = jobId ? await JobsStore.fetchJobById(jobId) : null;
 
         if (!job) {
             root.innerHTML = `
@@ -278,9 +295,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const status = getJobStatus(job);
+        const closed = isJobClosed(job);
         const applied = JobsStore.hasApplied(job.id);
         const closingLabel = formatClosingLabel(job);
         const applicants = Number(job.applicants) || 0;
+        const applyLabel = (job.applyMode === 'external_completion') ? 'Apply via JobLynk' : 'Apply now';
 
         root.innerHTML = `
             <section class="job-detail-hero" style="--job-accent:${escAttr(job.color || '#3B4BA6')}">
@@ -289,17 +308,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div>
                         <div class="job-detail-kicker-row">
                             <span>${escText(job.company || 'Company')}</span>
+                            ${getSourceBadge(job)}
                             <span class="job-badge ${status.cls}">${status.label}</span>
                         </div>
                         <h1>${escText(job.title || 'Untitled role')}</h1>
                         <div class="job-meta job-detail-meta">${buildMetaPills(job)}</div>
+                        ${closed ? '<p class="job-closed-notice"><i class="fa-solid fa-circle-xmark"></i> This position is no longer accepting applications.</p>' : ''}
                     </div>
                 </div>
                 <div class="job-detail-actions">
                     <a href="dashboard-jobs.html" class="job-preview-btn"><i class="fa-solid fa-arrow-left"></i> Back to jobs</a>
-                    ${applied
-                        ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
-                        : `<button type="button" class="job-apply-btn" id="jobDetailApply"><i class="fa-solid fa-paper-plane"></i> Apply now</button>`
+                    ${closed
+                        ? '<span class="job-applied-label job-closed-label"><i class="fa-solid fa-lock"></i> Position closed</span>'
+                        : applied
+                            ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
+                            : `<button type="button" class="job-apply-btn" id="jobDetailApply"><i class="fa-solid fa-paper-plane"></i> ${escText(applyLabel)}</button>`
                     }
                 </div>
             </section>
@@ -327,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         $('jobDetailApply')?.addEventListener('click', () => openAppModal(job.id));
-        if (params.get('apply') === '1' && !applied) {
+        if (params.get('apply') === '1' && !applied && !closed) {
             setTimeout(() => openAppModal(job.id), 250);
         }
     }
@@ -466,8 +489,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.openAppModal = async function(jobId) {
         currentApplyJobId = jobId;
-        const job = JobsStore.getJobById(jobId);
-        if (!job || JobsStore.hasApplied(job.id)) return;
+        const job = await JobsStore.fetchJobById(jobId);
+        if (!job || isJobClosed(job) || JobsStore.hasApplied(job.id)) return;
 
         $('appModalTitle').textContent = job.title || 'Untitled role';
         $('appModalCompany').textContent = [job.company, job.location, job.type].filter(Boolean).join(', ');
@@ -584,6 +607,17 @@ document.addEventListener('DOMContentLoaded', () => {
             await Promise.all([JobsStore.fetchApplications(), JobsStore.fetchJobs()]);
             button.innerHTML = '<i class="fa-solid fa-check"></i> Submitted';
 
+            if (result.apply_mode === 'external_completion' && result.external_url) {
+                closeAppModal();
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+                const proceed = confirm('Your application was saved on JobLynk. Complete your application on the employer site to finish the process.\n\nOpen employer site now?');
+                if (proceed) window.open(result.external_url, '_blank', 'noopener,noreferrer');
+                if (pageMode === 'list') renderListPage();
+                if (pageMode === 'detail') renderDetailPage();
+                return;
+            }
+
             setTimeout(() => {
                 closeAppModal();
                 button.disabled = false;
@@ -613,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (pageMode === 'detail') {
-            renderDetailPage();
+            await renderDetailPage();
         }
     }
 

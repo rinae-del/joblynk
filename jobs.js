@@ -232,6 +232,14 @@
         });
     }
 
+    function getSourceBadge(job) {
+        const source = job.source || 'native';
+        if (source === 'native') return '<span class="job-source-badge is-native">JobLynk</span>';
+        if (source === 'adzuna') return '<span class="job-source-badge is-adzuna">Live · Adzuna</span>';
+        if (source === 'dpsa') return '<span class="job-source-badge is-dpsa">Gov vacancy</span>';
+        return `<span class="job-source-badge">${escText(source)}</span>`;
+    }
+
     function renderJobCard(job) {
         const meta = buildJobMeta(job);
         const companyInitial = String(job.company || 'J').trim().charAt(0).toUpperCase() || 'J';
@@ -254,7 +262,7 @@
                     </div>
                 </div>
                 <div class="public-job-badges">
-                    <span><i class="fa-solid fa-circle-check"></i> Verified recruiter</span>
+                    ${getSourceBadge(job)}
                     <span>${applicantCount ? escText(applicantCount + ' applicant' + (applicantCount === 1 ? '' : 's')) : 'New listing'}</span>
                 </div>
                 <div class="public-job-meta">

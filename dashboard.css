@@ -1625,6 +1625,53 @@ textarea.form-control {
     color: #DC2626;
 }
 
+.job-badge.is-closed {
+    background: #F1F5F9;
+    color: #64748B;
+}
+
+.job-source-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+}
+
+.job-source-badge.is-native {
+    background: #EEF2FF;
+    color: #4338CA;
+}
+
+.job-source-badge.is-adzuna {
+    background: #ECFEFF;
+    color: #0E7490;
+}
+
+.job-source-badge.is-dpsa {
+    background: #FFFBEB;
+    color: #B45309;
+}
+
+.job-closed-notice {
+    margin: 0.75rem 0 0;
+    color: #64748B;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.job-closed-label {
+    color: #64748B !important;
+}
+
 .job-item-application {
     grid-template-columns: 46px minmax(0, 1fr);
     padding: 16px 18px;

@@ -745,6 +745,21 @@ body.modal-open {
     color: var(--green-light);
 }
 
+.public-job-badges .job-source-badge.is-native {
+    background: rgba(79, 70, 229, 0.18);
+    color: #C7D2FE;
+}
+
+.public-job-badges .job-source-badge.is-adzuna {
+    background: rgba(14, 116, 144, 0.22);
+    color: #A5F3FC;
+}
+
+.public-job-badges .job-source-badge.is-dpsa {
+    background: rgba(180, 83, 9, 0.22);
+    color: #FDE68A;
+}
+
 .public-job-footnotes {
     display: flex;
     flex-wrap: wrap;

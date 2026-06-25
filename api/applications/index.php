@@ -301,9 +301,10 @@ if ($method === 'POST') {
     if (!$jobId) jsonResponse(['success' => false, 'message' => 'Job ID is required.'], 422);
 
     // Check job exists and is active
-    $stmt = $pdo->prepare('SELECT id FROM jobs WHERE id = ? AND status = "active"');
+    $stmt = $pdo->prepare('SELECT id, title, company, location, type, apply_mode, apply_email, external_url, source, user_id FROM jobs WHERE id = ? AND status = "active"');
     $stmt->execute([$jobId]);
-    if (!$stmt->fetch()) {
+    $jobRow = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$jobRow) {
         jsonResponse(['success' => false, 'message' => 'Job not found or no longer active.'], 404);
     }
 
@@ -428,95 +429,122 @@ if ($method === 'POST') {
     $stmt->execute([$jobId, $userId, $cvId ?: null, $clId ?: null, $documentIdsJson, $applicantName, $note, $formResponsesJson]);
     $appId = (int)$pdo->lastInsertId();
 
-    // ── Send notification emails ──
+    // ── Send notification emails (by apply_mode) ──
+    $applyMode = $jobRow['apply_mode'] ?? 'native';
+    $externalUrl = trim((string) ($jobRow['external_url'] ?? ''));
+    $responseExtra = [];
+
     try {
-        // Fetch job and recruiter info
-        $stmt = $pdo->prepare('SELECT j.title, j.company, j.location, j.type, u.email AS recruiter_email, u.first_name AS recruiter_first FROM jobs j JOIN users u ON j.user_id = u.id WHERE j.id = ?');
-        $stmt->execute([$jobId]);
-        $jobInfo = $stmt->fetch();
+        $jobTitle = htmlspecialchars($jobRow['title'] ?? '', ENT_QUOTES);
+        $jobCompany = htmlspecialchars($jobRow['company'] ?? '', ENT_QUOTES);
+        $jobLocation = htmlspecialchars($jobRow['location'] ?? 'Not specified', ENT_QUOTES);
+        $jobType = htmlspecialchars($jobRow['type'] ?? 'Full-time', ENT_QUOTES);
+        $safeApplicantName = htmlspecialchars($applicantName ?: 'A candidate', ENT_QUOTES);
 
-        if ($jobInfo) {
-            $jobTitle = htmlspecialchars($jobInfo['title'] ?? '', ENT_QUOTES);
-            $jobCompany = htmlspecialchars($jobInfo['company'] ?? '', ENT_QUOTES);
-            $jobLocation = htmlspecialchars($jobInfo['location'] ?? 'Not specified', ENT_QUOTES);
-            $jobType = htmlspecialchars($jobInfo['type'] ?? 'Full-time', ENT_QUOTES);
-            $recruiterEmail = $jobInfo['recruiter_email'];
-            $recruiterFirst = htmlspecialchars($jobInfo['recruiter_first'] ?? 'Recruiter', ENT_QUOTES);
-            $safeApplicantName = htmlspecialchars($applicantName ?: 'A candidate', ENT_QUOTES);
+        $jobDetailsHtml = '
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:14px;border:1px solid #E2E8F0;margin:22px 0;">
+                <tr>
+                    <td style="padding:22px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr><td style="padding:4px 0;font-size:14px;color:#64748B;width:120px;">Position</td><td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobTitle . '</td></tr>
+                            <tr><td style="padding:4px 0;font-size:14px;color:#64748B;">Company</td><td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobCompany . '</td></tr>
+                            <tr><td style="padding:4px 0;font-size:14px;color:#64748B;">Location</td><td style="padding:4px 0;font-size:14px;color:#1E293B;">' . $jobLocation . '</td></tr>
+                            <tr><td style="padding:4px 0;font-size:14px;color:#64748B;">Type</td><td style="padding:4px 0;font-size:14px;color:#1E293B;">' . $jobType . '</td></tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>';
 
-            $jobDetailsHtml = '
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:14px;border:1px solid #E2E8F0;margin:22px 0;">
-                    <tr>
-                        <td style="padding:22px;">
-                            <table width="100%" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td style="padding:4px 0;font-size:14px;color:#64748B;width:120px;">Position</td>
-                                    <td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobTitle . '</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:4px 0;font-size:14px;color:#64748B;">Company</td>
-                                    <td style="padding:4px 0;font-size:14px;font-weight:600;color:#1E293B;">' . $jobCompany . '</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:4px 0;font-size:14px;color:#64748B;">Location</td>
-                                    <td style="padding:4px 0;font-size:14px;color:#1E293B;">' . $jobLocation . '</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:4px 0;font-size:14px;color:#64748B;">Type</td>
-                                    <td style="padding:4px 0;font-size:14px;color:#1E293B;">' . $jobType . '</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>';
-
-            // Email to candidate
-            $candidateBody = '
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $safeApplicantName . ',</p>
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Your application has been received. Here is a summary of the position you applied for:</p>
+        if ($applyMode === 'email_relay' && !empty($jobRow['apply_email'])) {
+            $relayEmail = trim((string) $jobRow['apply_email']);
+            $relayBody = '
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">A candidate applied via JobLynk for the following public vacancy:</p>
                 ' . $jobDetailsHtml . '
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 8px;"><strong>What happens next?</strong></p>
+                <p style="margin:0 0 8px;font-size:14px;color:#475569;"><strong>Applicant:</strong> ' . $safeApplicantName . '</p>
+                <p style="margin:0 0 8px;font-size:14px;color:#475569;"><strong>Email:</strong> ' . htmlspecialchars($applicantEmail, ENT_QUOTES) . '</p>
+                ' . ($note ? '<p style="margin:0 0 8px;font-size:14px;color:#475569;"><strong>Note:</strong> ' . htmlspecialchars($note, ENT_QUOTES) . '</p>' : '') . '
+                <p style="font-size:14px;line-height:1.7;color:#64748B;margin:16px 0 0;">Review attached documents in your recruitment process. This application was relayed by JobLynk.</p>';
+            sendResendEmail($relayEmail, 'JobLynk Application - ' . html_entity_decode($jobRow['title'] ?? 'Vacancy', ENT_QUOTES, 'UTF-8'), buildEmailTemplate('Application via JobLynk', $relayBody));
+        }
+
+        if ($applyMode === 'native') {
+            $stmt = $pdo->prepare('SELECT u.email AS recruiter_email, u.first_name AS recruiter_first FROM users u WHERE u.id = ?');
+            $stmt->execute([(int) $jobRow['user_id']]);
+            $jobInfo = $stmt->fetch();
+
+            if ($jobInfo) {
+                $recruiterEmail = $jobInfo['recruiter_email'];
+                $recruiterFirst = htmlspecialchars($jobInfo['recruiter_first'] ?? 'Recruiter', ENT_QUOTES);
+
+                $recruiterBody = '
+                    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $recruiterFirst . ',</p>
+                    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">You have a new application for your job posting:</p>
+                    ' . $jobDetailsHtml . '
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#EEF2FF;border-radius:14px;border:1px solid #C7D2FE;margin:20px 0;">
+                        <tr>
+                            <td style="padding:20px;">
+                                <p style="margin:0 0 4px;font-size:13px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Applicant</p>
+                                <p style="margin:0;font-size:16px;font-weight:700;color:#1E293B;">' . $safeApplicantName . '</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 24px;">Review the full application and attached documents on your <a href="' . APP_URL . '/recruiter-candidates.html" style="color:#4F46E5;font-weight:600;text-decoration:none;">candidates dashboard</a>.</p>';
+
+                if ($recruiterEmail) {
+                    sendResendEmail($recruiterEmail, 'New Application - ' . $safeApplicantName . ' for ' . ($jobRow['title'] ?? 'Job'), buildEmailTemplate('New Application Received', $recruiterBody));
+                }
+            }
+        }
+
+        // Email to candidate (all modes)
+        $nextSteps = '';
+        if ($applyMode === 'external_completion' && $externalUrl !== '') {
+            $nextSteps = '
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;"><strong>Important:</strong> Complete your application on the employer site to finish the process.</p>
+                <div style="text-align:center;margin:24px 0;">
+                    <a href="' . htmlspecialchars($externalUrl, ENT_QUOTES) . '" style="display:inline-block;padding:13px 30px;background:#059669;color:#fff;font-size:15px;font-weight:800;text-decoration:none;border-radius:12px;">Complete on employer site</a>
+                </div>';
+            $responseExtra['apply_mode'] = 'external_completion';
+            $responseExtra['external_url'] = $externalUrl;
+        } elseif ($applyMode === 'email_relay') {
+            $nextSteps = '<p style="font-size:14px;line-height:1.7;color:#475569;margin:0 0 16px;">Your application has been emailed to the hiring department.</p>';
+            $responseExtra['apply_mode'] = 'email_relay';
+        } elseif ($applyMode === 'native') {
+            $nextSteps = '
                 <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.8;color:#475569;">
                     <li>The recruiter at <strong>' . $jobCompany . '</strong> will review your application.</li>
                     <li>You can track your application status from your dashboard.</li>
                     <li>If the recruiter needs anything else, they will contact you directly.</li>
-                </ul>
-                <div style="text-align:center;margin:24px 0;">
-                    <a href="' . APP_URL . '/dashboard.html" style="display:inline-block;padding:13px 30px;background:#4F46E5;color:#fff;font-size:15px;font-weight:800;text-decoration:none;border-radius:12px;box-shadow:0 10px 24px rgba(79,70,229,0.22);">
-                        View Application Status
-                    </a>
-                </div>
-                <p style="font-size:14px;line-height:1.7;color:#64748B;margin:24px 0 0;">Kind regards,<br><strong>The JobLynk Team</strong></p>';
+                </ul>';
+        } else {
+            $nextSteps = '
+                <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.8;color:#475569;">
+                    <li>The recruiter at <strong>' . $jobCompany . '</strong> will review your application.</li>
+                    <li>You can track your application status from your dashboard.</li>
+                </ul>';
+        }
 
-            if ($applicantEmail) {
-                sendResendEmail($applicantEmail, 'Application Submitted - ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('Application Submitted', $candidateBody));
-            }
+        $candidateBody = '
+            <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $safeApplicantName . ',</p>
+            <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Your application has been received. Here is a summary of the position you applied for:</p>
+            ' . $jobDetailsHtml . $nextSteps . '
+            <div style="text-align:center;margin:24px 0;">
+                <a href="' . APP_URL . '/dashboard.html" style="display:inline-block;padding:13px 30px;background:#4F46E5;color:#fff;font-size:15px;font-weight:800;text-decoration:none;border-radius:12px;">View Application Status</a>
+            </div>
+            <p style="font-size:14px;line-height:1.7;color:#64748B;margin:24px 0 0;">Kind regards,<br><strong>The JobLynk Team</strong></p>';
 
-            // Email to recruiter
-            $recruiterBody = '
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $recruiterFirst . ',</p>
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">You have a new application for your job posting:</p>
-                ' . $jobDetailsHtml . '
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#EEF2FF;border-radius:14px;border:1px solid #C7D2FE;margin:20px 0;">
-                    <tr>
-                        <td style="padding:20px;">
-                            <p style="margin:0 0 4px;font-size:13px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Applicant</p>
-                            <p style="margin:0;font-size:16px;font-weight:700;color:#1E293B;">' . $safeApplicantName . '</p>
-                        </td>
-                    </tr>
-                </table>
-                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 24px;">Review the full application and attached documents on your <a href="' . APP_URL . '/recruiter-candidates.html" style="color:#4F46E5;font-weight:600;text-decoration:none;">candidates dashboard</a>.</p>';
-
-            if ($recruiterEmail) {
-                sendResendEmail($recruiterEmail, 'New Application - ' . $safeApplicantName . ' for ' . ($jobInfo['title'] ?? 'Job'), buildEmailTemplate('New Application Received', $recruiterBody));
-            }
+        if ($applicantEmail) {
+            sendResendEmail($applicantEmail, 'Application Submitted - ' . ($jobRow['title'] ?? 'Job'), buildEmailTemplate('Application Submitted', $candidateBody));
         }
     } catch (Throwable $e) {
-        // Don't fail the application if email sending fails
         error_log('Application email error: ' . $e->getMessage());
     }
 
-    jsonResponse(['success' => true, 'id' => $appId, 'message' => 'Application submitted!'], 201);
+    jsonResponse(array_merge([
+        'success' => true,
+        'id' => $appId,
+        'message' => 'Application submitted!',
+    ], $responseExtra), 201);
 }
 
 jsonResponse(['success' => false, 'message' => 'Method not allowed.'], 405);

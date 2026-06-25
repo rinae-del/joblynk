@@ -158,7 +158,48 @@ Make sure your `.env` file has the correct `APP_URL` matching your domain.
 
 ---
 
-## 8. Ongoing Deployment Workflow
+## 9. Live Job Sync (Adzuna + Cron)
+
+Add these variables to your server `.env`:
+
+```
+ADZUNA_APP_ID=your_app_id
+ADZUNA_APP_KEY=your_app_key
+SYNC_SECRET=long-random-secret-string
+JOBS_SYNC_ENABLED=1
+```
+
+Register for free Adzuna API keys at https://developer.adzuna.com/signup (country: South Africa / `za`).
+
+### 9.1 cPanel Cron Jobs
+
+In cPanel → **Cron Jobs**, add:
+
+```bash
+# Adzuna sync — 4 times daily
+0 6,12,18,23 * * * /usr/bin/php /home/cpuser/public_html/api/jobs/sync-adzuna.php >> /home/cpuser/logs/job-sync.log 2>&1
+
+# Close expired / stale aggregated jobs — daily
+15 1 * * * /usr/bin/php /home/cpuser/public_html/api/jobs/close-expired.php >> /home/cpuser/logs/job-sync.log 2>&1
+```
+
+Replace `/home/cpuser/public_html` with your actual document root path.
+
+### 9.2 Manual sync (admin)
+
+Admins can trigger sync from **Admin → Job Listings** or via HTTP:
+
+```
+GET https://yourdomain.co.za/api/jobs/sync-adzuna.php?secret=YOUR_SYNC_SECRET
+```
+
+### 9.3 DPSA government vacancies
+
+Upload a parsed DPSA vacancy circular JSON via **Admin → Job Listings → Import DPSA JSON**.
+
+---
+
+## 10. Ongoing Deployment Workflow
 
 ```
 # Local development
@@ -176,7 +217,7 @@ Make sure your `.env` file has the correct `APP_URL` matching your domain.
 
 ---
 
-## 9. Troubleshooting
+## 11. Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -189,7 +230,7 @@ Make sure your `.env` file has the correct `APP_URL` matching your domain.
 
 ---
 
-## 10. PHP Version
+## 12. PHP Version
 
 Afrihost supports multiple PHP versions. This app requires **PHP 7.4+** (PHP 8.x recommended).
 Set this in cPanel → **MultiPHP Manager** → select your domain → choose PHP 8.1 or 8.2.

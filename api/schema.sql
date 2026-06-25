@@ -125,9 +125,33 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     `custom_fields` TEXT NULL,
     `status` ENUM('active', 'closed', 'draft') NOT NULL DEFAULT 'active',
     `color` VARCHAR(20) DEFAULT '#3B4BA6',
+    `source` ENUM('native', 'adzuna', 'dpsa', 'careerjet') NOT NULL DEFAULT 'native',
+    `external_id` VARCHAR(100) NULL,
+    `external_url` VARCHAR(500) NULL,
+    `apply_mode` ENUM('native', 'email_relay', 'external_completion') NOT NULL DEFAULT 'native',
+    `apply_email` VARCHAR(255) NULL,
+    `source_payload` JSON NULL,
+    `last_seen_at` DATETIME NULL,
+    `synced_at` DATETIME NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    UNIQUE KEY `uq_jobs_source_external` (`source`, `external_id`),
+    INDEX `idx_jobs_status_seen` (`status`, `last_seen_at`)
+) ENGINE=InnoDB;
+
+-- Job sync run log (Adzuna, DPSA imports, etc.)
+CREATE TABLE IF NOT EXISTS `job_sync_runs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `source` VARCHAR(50) NOT NULL,
+    `status` ENUM('running', 'success', 'failed') NOT NULL DEFAULT 'running',
+    `jobs_fetched` INT NOT NULL DEFAULT 0,
+    `jobs_upserted` INT NOT NULL DEFAULT 0,
+    `jobs_closed` INT NOT NULL DEFAULT 0,
+    `api_calls` INT NOT NULL DEFAULT 0,
+    `error_message` TEXT NULL,
+    `started_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `finished_at` DATETIME NULL
 ) ENGINE=InnoDB;
 
 -- Applications

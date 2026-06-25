@@ -9,6 +9,7 @@ require_once __DIR__ . '/../config/session.php';
 startSecureSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
+require_once __DIR__ . '/../lib/job-schema.php';
 
 setCorsHeaders();
 
@@ -17,20 +18,38 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
 }
 
 $pdo = getDB();
+ensureJobsSchema($pdo);
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    $stmt = $pdo->query('
+    $sourceFilter = trim($_GET['source'] ?? '');
+
+    $sql = '
         SELECT j.*, u.first_name, u.last_name, u.email,
                (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count
         FROM jobs j
-        JOIN users u ON u.id = j.user_id
-        ORDER BY j.created_at DESC
-    ');
+        LEFT JOIN users u ON u.id = j.user_id
+    ';
+    $params = [];
+
+    if ($sourceFilter !== '') {
+        $sql .= ' WHERE j.source = ?';
+        $params[] = $sourceFilter;
+    }
+
+    $sql .= ' ORDER BY j.created_at DESC';
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($jobs as &$job) {
+        normalizeJobRow($job);
+    }
 
     jsonResponse([
         'success' => true,
-        'jobs' => $stmt->fetchAll(PDO::FETCH_ASSOC),
+        'jobs' => $jobs,
     ]);
 }
 

@@ -73,13 +73,37 @@
                         <option value="Contract">Contract</option>
                         <option value="Internship">Internship</option>
                     </select>
+                    <select class="filter-select" id="jobSourceFilter" onchange="advancedFilterJobs()">
+                        <option value="">All Sources</option>
+                        <option value="native">JobLynk (native)</option>
+                        <option value="adzuna">Adzuna</option>
+                        <option value="dpsa">DPSA / Gov</option>
+                    </select>
                     <span class="filter-result-count" id="jobCountBadge">0</span>
                 </div>
             </div>
+
+            <div class="users-toolbar" style="margin-top:1rem; padding:1rem; border:1px solid var(--border); border-radius:12px; background:var(--surface-elevated, #fff);">
+                <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between; width:100%;">
+                    <div>
+                        <strong style="display:block; margin-bottom:0.25rem;">Live job sync</strong>
+                        <span id="syncStatusText" style="font-size:0.85rem; color:var(--text-muted);">Loading sync status...</span>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+                        <button type="button" class="tbl-btn" id="btnRunAdzunaSync" onclick="runAdzunaSync()"><i class="fa-solid fa-rotate"></i> Run Adzuna sync</button>
+                        <button type="button" class="tbl-btn" id="btnCloseExpiredJobs" onclick="closeExpiredJobsAdmin()"><i class="fa-solid fa-calendar-xmark"></i> Close expired</button>
+                        <label class="tbl-btn" style="cursor:pointer; margin:0;">
+                            <i class="fa-solid fa-file-import"></i> Import DPSA JSON
+                            <input type="file" id="dpsaImportFile" accept=".json,application/json" hidden onchange="importDpsaJson(this)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="admin-table-wrapper">
                 <table class="admin-table">
                     <thead>
-                        <tr><th>Job Title</th><th>Company</th><th>Applicants</th><th>Status</th><th>Posted</th><th>Actions</th></tr>
+                        <tr><th>Job Title</th><th>Company</th><th>Source</th><th>Applicants</th><th>Status</th><th>Posted</th><th>Actions</th></tr>
                     </thead>
                     <tbody id="jobsTableBody"></tbody>
                 </table>

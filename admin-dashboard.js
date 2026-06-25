@@ -715,10 +715,11 @@ async function renderAdminJobs() {
         updateJobPageStats();
         renderJobsPage();
         updateOverviewStats();
+        loadSyncStatus();
     } catch (err) {
         adminState.jobs = [];
         console.error('Error fetching jobs:', err);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load jobs</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#DC2626;">Failed to load jobs</td></tr>';
         if (info) info.textContent = 'API unavailable';
         updateOverviewStats();
     }
@@ -743,6 +744,7 @@ function getFilteredJobs() {
     const search = (document.getElementById('jobSearch')?.value || '').toLowerCase();
     const statusFilter = document.getElementById('jobStatusFilter')?.value || '';
     const typeFilter = document.getElementById('jobTypeFilter')?.value || '';
+    const sourceFilter = document.getElementById('jobSourceFilter')?.value || '';
 
     return adminState.jobs.filter(job => {
         const title = (job.title || '').toLowerCase();
@@ -751,8 +753,16 @@ function getFilteredJobs() {
         const matchSearch = !search || title.includes(search) || company.includes(search) || location.includes(search);
         const matchStatus = !statusFilter || job.status === statusFilter;
         const matchType = !typeFilter || (job.type || 'Full-time') === typeFilter;
-        return matchSearch && matchStatus && matchType;
+        const matchSource = !sourceFilter || (job.source || 'native') === sourceFilter;
+        return matchSearch && matchStatus && matchType && matchSource;
     });
+}
+
+function formatJobSourceLabel(source) {
+    if (source === 'adzuna') return 'Adzuna';
+    if (source === 'dpsa') return 'DPSA';
+    if (source === 'careerjet') return 'CareerJet';
+    return 'JobLynk';
 }
 
 function advancedFilterJobs() {
@@ -779,7 +789,7 @@ function renderJobsPage() {
     tbody.innerHTML = '';
 
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No jobs match your filters</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No jobs match your filters</td></tr>';
         if (info) info.textContent = 'No results';
         if (pagDiv) pagDiv.innerHTML = '';
         return;
@@ -790,6 +800,7 @@ function renderJobsPage() {
         const recruiterName = escapeHtml(`${job.first_name || ''} ${job.last_name || ''}`.trim() || 'Unknown recruiter');
         const jobId = parseInt(job.id);
         const applicantCount = parseInt(job.applicant_count, 10) || 0;
+        const sourceLabel = formatJobSourceLabel(job.source || 'native');
         const tr = document.createElement('tr');
         tr.className = 'card-row card-row-jobs';
         tr.innerHTML = `
@@ -808,6 +819,7 @@ function renderJobsPage() {
                     <span class="table-note">${recruiterName}</span>
                 </div>
             </td>
+            <td data-label="Source"><span class="meta-chip">${escapeHtml(sourceLabel)}</span></td>
             <td data-label="Applicants">
                 <div class="table-value">
                     <span class="table-metric">${applicantCount}</span>
@@ -1899,4 +1911,105 @@ window.adminDeleteUser = async function(userId) {
         console.error('Error deleting user:', err);
         showToast('Failed to delete user');
     }
+};
+
+async function loadSyncStatus() {
+    const el = document.getElementById('syncStatusText');
+    if (!el) return;
+
+    try {
+        const res = await fetch('api/admin/sync.php', { credentials: 'include' });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Failed');
+
+        const counts = data.source_counts || {};
+        const native = counts.native?.active || 0;
+        const adzuna = counts.adzuna?.active || 0;
+        const dpsa = counts.dpsa?.active || 0;
+        const lastRun = (data.runs && data.runs[0]) ? data.runs[0] : null;
+        const lastLabel = lastRun
+            ? `${lastRun.source} ${lastRun.status} · ${lastRun.jobs_upserted || 0} upserted · ${formatDate(lastRun.finished_at || lastRun.started_at)}`
+            : 'No sync runs yet';
+
+        el.textContent = `Active: ${native} native, ${adzuna} Adzuna, ${dpsa} gov. Last run: ${lastLabel}. Adzuna ${data.adzuna_configured ? 'configured' : 'not configured'}.`;
+    } catch (err) {
+        el.textContent = 'Sync status unavailable.';
+        console.warn('loadSyncStatus failed:', err);
+    }
+}
+
+window.runAdzunaSync = async function() {
+    const btn = document.getElementById('btnRunAdzunaSync');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+    }
+
+    try {
+        const res = await fetch('api/admin/sync.php', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'adzuna' }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Sync failed');
+        showToast(data.message || 'Adzuna sync completed');
+        await renderAdminJobs();
+    } catch (err) {
+        console.error('Adzuna sync failed:', err);
+        showToast(err.message || 'Adzuna sync failed');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Run Adzuna sync';
+        }
+        loadSyncStatus();
+    }
+};
+
+window.closeExpiredJobsAdmin = async function() {
+    try {
+        const res = await fetch('api/admin/sync.php', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'close_expired' }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Failed');
+        showToast(`Closed ${data.closed_expired + data.closed_stale} job(s)`);
+        await renderAdminJobs();
+    } catch (err) {
+        showToast('Failed to close expired jobs');
+    }
+};
+
+window.importDpsaJson = function(input) {
+    const file = input?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+        try {
+            const payload = JSON.parse(String(reader.result || '{}'));
+            const res = await fetch('api/jobs/import-dpsa.php', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || 'Import failed');
+            showToast(data.message || 'DPSA import completed');
+            await renderAdminJobs();
+        } catch (err) {
+            console.error('DPSA import failed:', err);
+            showToast(err.message || 'DPSA import failed');
+        } finally {
+            input.value = '';
+            loadSyncStatus();
+        }
+    };
+    reader.readAsText(file);
 };

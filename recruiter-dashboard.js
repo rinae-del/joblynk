@@ -568,6 +568,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>
                     <td class="actions-cell" data-label="Actions">
                         <button class="tbl-btn" title="Edit" onclick="editMyJob(${job.id})"><i class="fa-solid fa-pen"></i></button>
+                        ${job.status === 'active'
+                            ? `<button class="tbl-btn" title="Close job" onclick="closeMyJob(${job.id})"><i class="fa-solid fa-circle-xmark"></i></button>`
+                            : `<button class="tbl-btn" title="Re-open job" onclick="reopenMyJob(${job.id})"><i class="fa-solid fa-rotate-left"></i></button>`
+                        }
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -588,6 +592,50 @@ document.addEventListener('DOMContentLoaded', () => {
     window.editMyJob = async function(jobId) {
         // Redirect to post-job page with edit parameter
         window.location.href = 'recruiter-post-job.html?edit=' + encodeURIComponent(jobId);
+    };
+
+    async function updateJobStatus(jobId, status) {
+        const job = recruiterState.jobs.find(item => String(item.id) === String(jobId));
+        if (!job) {
+            alert('Job not found.');
+            return;
+        }
+
+        try {
+            const res = await fetch('api/jobs/index.php', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: jobId,
+                    status,
+                    title: job.title,
+                    company: job.company,
+                    location: job.location || '',
+                    type: job.type || 'Full-time',
+                    description: job.description || '',
+                    requirements: job.requirements || '',
+                }),
+            });
+            const result = await res.json();
+            if (!result.success) {
+                alert(result.message || 'Failed to update job status.');
+                return;
+            }
+            await loadMyJobs();
+        } catch (e) {
+            console.warn('updateJobStatus failed:', e);
+            alert('Failed to update job status. Please try again.');
+        }
+    }
+
+    window.closeMyJob = function(jobId) {
+        if (!confirm('Close this job listing? It will no longer accept applications.')) return;
+        updateJobStatus(jobId, 'closed');
+    };
+
+    window.reopenMyJob = function(jobId) {
+        updateJobStatus(jobId, 'active');
     };
 
     window.reviewCandidate = function(applicationId) {

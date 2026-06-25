@@ -63,6 +63,10 @@ const JobsStore = (() => {
             closingDate: j.closing_date || j.closingDate || '',
             customFields: j.custom_fields || j.customFields || [],
             status: j.status || 'active',
+            source: j.source || 'native',
+            externalUrl: j.external_url || j.externalUrl || '',
+            applyMode: j.apply_mode || j.applyMode || 'native',
+            applyEmail: j.apply_email || j.applyEmail || '',
             postedAt: j.created_at || j.postedAt || new Date().toISOString(),
             applicants: j.applicant_count || j.applicants || 0,
             color: j.color || '#3B4BA6',
@@ -87,6 +91,29 @@ const JobsStore = (() => {
 
     function getJobById(id) {
         return getJobs().find(j => String(j.id) === String(id)) || null;
+    }
+
+    async function fetchJobById(id) {
+        const cached = getJobById(id);
+        if (cached) return cached;
+
+        try {
+            const result = await apiFetch(`${API_JOBS}?id=${encodeURIComponent(id)}`);
+            if (result.success && result.job) {
+                const job = normalizeJob(result.job);
+                if (_jobsCache) {
+                    const idx = _jobsCache.findIndex(j => String(j.id) === String(id));
+                    if (idx >= 0) _jobsCache[idx] = job;
+                    else _jobsCache.push(job);
+                } else {
+                    _jobsCache = [job];
+                }
+                return job;
+            }
+        } catch (e) {
+            console.warn('fetchJobById failed:', e);
+        }
+        return null;
     }
 
     async function addJob(jobData) {
@@ -183,8 +210,8 @@ const JobsStore = (() => {
             const result = await apiFetch(API_APPS, { method: 'POST', body: payload });
             if (result.success) {
                 await fetchApplications();
-                await fetchJobs(); // Refresh applicant counts
-                return { id: result.id, jobId, ...applicationData };
+                await fetchJobs();
+                return { id: result.id, jobId, ...applicationData, ...result };
             }
         } catch (e) { console.warn('API submitApplication failed:', e); }
 
@@ -224,7 +251,8 @@ const JobsStore = (() => {
 
     return {
         init, fetchJobs, fetchApplications,
-        getJobs, getActiveJobs, getJobById, addJob, updateJob,
-        getApplications, submitApplication, hasApplied
+        getJobs, getActiveJobs, getJobById, fetchJobById, addJob, updateJob,
+        getApplications, submitApplication, hasApplied,
+        normalizeJob,
     };
 })();

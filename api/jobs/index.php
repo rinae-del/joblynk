@@ -14,63 +14,11 @@ require_once __DIR__ . '/../config/session.php';
 startSecureSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
+require_once __DIR__ . '/../lib/job-schema.php';
 
 setCorsHeaders();
 header('Cache-Control: no-store, no-cache, must-revalidate');
 header('Pragma: no-cache');
-
-function ensureJobsSchema(PDO $pdo): array {
-    $columns = [];
-
-    try {
-        foreach ($pdo->query('SHOW COLUMNS FROM jobs') ?: [] as $column) {
-            $columns[$column['Field']] = $column;
-        }
-    } catch (Throwable $e) {
-        error_log('Jobs schema inspection failed: ' . $e->getMessage());
-        return array_fill_keys([
-            'title',
-            'job_reference',
-            'company',
-            'location',
-            'type',
-            'description',
-            'requirements',
-            'skills',
-            'salary_from',
-            'salary_to',
-            'salary_note',
-            'status',
-            'color',
-        ], true);
-    }
-
-    $migrations = [
-        'job_reference' => "ALTER TABLE jobs ADD COLUMN job_reference VARCHAR(100) DEFAULT '' AFTER title",
-        'salary_period' => "ALTER TABLE jobs ADD COLUMN salary_period VARCHAR(50) DEFAULT 'Per Month' AFTER salary_to",
-        'salary_note' => "ALTER TABLE jobs ADD COLUMN salary_note VARCHAR(255) DEFAULT '' AFTER salary_period",
-        'benefits' => 'ALTER TABLE jobs ADD COLUMN benefits TEXT NULL AFTER salary_period',
-        'closing_date' => 'ALTER TABLE jobs ADD COLUMN closing_date DATE NULL AFTER benefits',
-        'custom_fields' => 'ALTER TABLE jobs ADD COLUMN custom_fields TEXT NULL AFTER closing_date',
-        'hide_salary' => 'ALTER TABLE jobs ADD COLUMN hide_salary TINYINT(1) NOT NULL DEFAULT 0 AFTER salary_period',
-        'color' => "ALTER TABLE jobs ADD COLUMN color VARCHAR(20) DEFAULT '#3B4BA6' AFTER status",
-    ];
-
-    foreach ($migrations as $field => $sql) {
-        if (isset($columns[$field])) {
-            continue;
-        }
-
-        try {
-            $pdo->exec($sql);
-            $columns[$field] = ['Field' => $field];
-        } catch (Throwable $e) {
-            error_log('Jobs schema migration skipped for ' . $field . ': ' . $e->getMessage());
-        }
-    }
-
-    return $columns;
-}
 
 function ensureCompanyBrandingSchema(PDO $pdo): void {
     try {
@@ -80,21 +28,6 @@ function ensureCompanyBrandingSchema(PDO $pdo): void {
         }
     } catch (Throwable $e) {
         error_log('Company branding schema inspection failed: ' . $e->getMessage());
-    }
-}
-
-function normalizeJobRow(array &$job): void {
-    $job['job_reference'] = $job['job_reference'] ?? '';
-    $job['benefits'] = json_decode($job['benefits'] ?? '[]', true) ?: [];
-    $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
-    $job['hide_salary'] = (int) ($job['hide_salary'] ?? 0);
-    $job['salary_period'] = $job['salary_period'] ?? 'Per Month';
-    $job['salary_note'] = $job['salary_note'] ?? '';
-    $job['closing_date'] = $job['closing_date'] ?? null;
-    $job['company_logo_url'] = trim((string) ($job['company_logo_url'] ?? ''));
-
-    if (strcasecmp(trim((string) ($job['company'] ?? '')), 'Confidential') === 0) {
-        $job['company_logo_url'] = '';
     }
 }
 
@@ -294,11 +227,14 @@ if ($method === 'POST') {
         ];
 
         if ($jobId) {
-            // Update - verify ownership
-            $stmt = $pdo->prepare('SELECT id, status FROM jobs WHERE id = ? AND user_id = ?');
+            // Update - verify ownership (native recruiter jobs only)
+            $stmt = $pdo->prepare('SELECT id, status, source FROM jobs WHERE id = ? AND user_id = ?');
             $stmt->execute([$jobId, $userId]);
             $existingJob = $stmt->fetch();
             if (!$existingJob) jsonResponse(['success' => false, 'message' => 'Job not found or not authorized.'], 404);
+            if (($existingJob['source'] ?? 'native') !== 'native') {
+                jsonResponse(['success' => false, 'message' => 'Aggregated jobs cannot be edited via the portal.'], 403);
+            }
 
             $updateParts = [];
             $updateValues = [];
