@@ -499,17 +499,161 @@
 }
 
 .home-public-page .features-section {
+    padding: var(--home-section-pad) 0;
+    max-width: none;
     border-bottom: 1px solid var(--home-border);
 }
 
+.home-public-page .features-section .section-container {
+    max-width: var(--home-max);
+}
+
+.home-public-page .home-features-intro {
+    text-align: left;
+    max-width: 38rem;
+    margin: 0 0 1.75rem;
+}
+
+.home-public-page .home-features-intro h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    color: #f1f5f9;
+}
+
+.home-public-page .home-features-intro p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.6;
+}
+
+.home-public-page .features-grid {
+    gap: 0.85rem;
+}
+
 .home-public-page .feature-card {
-    border-radius: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
     background: var(--home-surface);
+    border: 1px solid var(--home-border);
+    padding: 1.1rem;
+    box-shadow: none;
+    overflow: hidden;
+    transition: border-color 0.22s ease, background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.home-public-page .feature-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1rem;
+    bottom: 1rem;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--home-accent);
+    opacity: 0.35;
+    transition: opacity 0.22s ease;
+}
+
+.home-public-page .feature-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--home-accent-border);
+    background: rgba(30, 41, 59, 0.88);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+}
+
+.home-public-page .feature-card:hover::before {
+    opacity: 1;
 }
 
 .home-public-page .feature-card.featured {
     background: var(--home-surface);
-    border-color: var(--home-accent-border);
+    border-color: var(--home-border);
+}
+
+.home-public-page .feature-img-wrap {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0 0 0.9rem;
+    padding: 0.55rem;
+    border-radius: 10px;
+    background: rgba(11, 17, 32, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.home-public-page .feature-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 72px;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 4px;
+    transform: none;
+}
+
+.home-public-page .feature-card:hover .feature-img {
+    transform: none;
+}
+
+.home-public-page .feature-card .feature-icon,
+.home-public-page .feature-card h3,
+.home-public-page .feature-card p,
+.home-public-page .feature-card .feature-link {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.home-public-page .feature-icon {
+    width: 38px;
+    height: 38px;
+    margin: 0 0 0.65rem;
+    border-radius: 10px;
+    background: var(--home-accent-soft);
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light);
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.home-public-page .feature-card h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.02em;
+    color: #f1f5f9;
+}
+
+.home-public-page .feature-card p {
+    flex: 1;
+    margin: 0 0 0.85rem;
+    padding-bottom: 0;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+.home-public-page .feature-link {
+    margin-top: auto;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--home-accent-light);
+}
+
+.home-public-page .feature-link:hover {
+    color: #fff;
 }
 
 .home-public-page .testimonial-card-featured {
@@ -531,11 +675,6 @@
 .home-public-page .testimonials-section,
 .home-public-page .faq-section {
     padding: var(--home-section-pad) 0;
-}
-
-.home-public-page .features-section {
-    padding: var(--home-section-pad) var(--home-gutter);
-    max-width: none;
 }
 
 .home-public-page .features-header,
@@ -874,6 +1013,16 @@
 
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
+    .home-public-page .features-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    .home-public-page .feature-img {
+        max-height: 80px;
+    }
+
     .home-public-page .home-hero-media {
         height: clamp(200px, 42vw, 240px);
     }
