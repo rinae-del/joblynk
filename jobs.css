@@ -56,6 +56,11 @@
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35);
+    transition: box-shadow 0.25s ease;
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-compact {
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.28);
 }
 
 .jobs-public-page .jobs-toolbar-inner {
@@ -64,6 +69,92 @@
     max-width: var(--jb-max);
     margin: 0 auto;
     padding: 0.55rem var(--jb-gutter) 0.6rem;
+    transition: padding 0.25s ease, gap 0.25s ease;
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-compact .jobs-toolbar-inner {
+    gap: 0;
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+}
+
+/* Collapsible chip rows + extra filter fields */
+.jobs-public-page .jobs-toolbar-secondary,
+.jobs-public-page .jobs-filter-extras {
+    overflow: hidden;
+    max-height: 160px;
+    opacity: 1;
+    transition: max-height 0.28s ease, opacity 0.22s ease, margin 0.28s ease;
+}
+
+.jobs-public-page .jobs-filter-extras {
+    display: contents;
+    max-height: none;
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-compact:not(.is-expanded) .jobs-toolbar-secondary {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    pointer-events: none;
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-compact:not(.is-expanded) .jobs-filter-extras {
+    display: none;
+}
+
+/* Compact "Filters" toggle — hidden until toolbar collapses */
+.jobs-public-page .jobs-toolbar-reveal {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    height: 38px;
+    padding: 0 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 9px;
+    background: rgba(15, 23, 42, 0.55);
+    color: #cbd5e1;
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-compact .jobs-toolbar-reveal {
+    display: inline-flex;
+}
+
+.jobs-public-page .jobs-toolbar-reveal-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.jobs-public-page .jobs-toolbar-reveal-chevron {
+    font-size: 0.65rem;
+    opacity: 0.65;
+    transition: transform 0.25s ease;
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-expanded .jobs-toolbar-reveal-chevron {
+    transform: rotate(180deg);
+}
+
+.jobs-public-page .jobs-toolbar-wrap.is-compact .jobs-filter-panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
 }
 
 /* ── Filter row ──────────────────────────────────────────── */
@@ -825,6 +916,23 @@
 
     .jobs-public-page .jobs-filter-search {
         grid-column: 1 / 2;
+    }
+
+    .jobs-public-page .jobs-toolbar-wrap.is-compact .jobs-filter-panel {
+        grid-template-columns: 1fr auto;
+        gap: 0.5rem;
+    }
+
+    .jobs-public-page .jobs-toolbar-wrap.is-compact.is-expanded .jobs-filter-panel {
+        grid-template-columns: 1fr auto;
+    }
+
+    .jobs-public-page .jobs-toolbar-wrap.is-compact.is-expanded .jobs-filter-extras {
+        display: contents;
+    }
+
+    .jobs-public-page .jobs-toolbar-wrap.is-compact .jobs-toolbar-reveal {
+        height: 44px;
     }
 
     .jobs-public-page .jobs-filter-toggle-btn {

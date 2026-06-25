@@ -433,6 +433,8 @@
                 btn.textContent = `Load more (${Math.min(pageData.page * JobsBrowser.PAGE_SIZE, pageData.total)} of ${pageData.total})`;
             }
         }
+
+        updateFilterBadge();
     }
 
     function clearFilters() {
@@ -444,6 +446,7 @@
         state.browsePage = 1;
         renderCategoryChips();
         renderJobs();
+        updateFilterBadge();
     }
 
     function buildJobDetailsHtml(job) {
@@ -590,8 +593,92 @@
         document.documentElement.style.setProperty('--jb-nav-h', `${nav.offsetHeight}px`);
     }
 
+    function countActiveFilters() {
+        let count = 0;
+        const f = getFilters();
+        if (f.keyword.trim()) count += 1;
+        if (f.location) count += 1;
+        if (f.type) count += 1;
+        if (f.category) count += 1;
+        return count;
+    }
+
+    function updateFilterBadge() {
+        const badge = $('jobsActiveFilterCount');
+        if (!badge) return;
+        const count = countActiveFilters();
+        if (count > 0) {
+            badge.textContent = String(count);
+            badge.hidden = false;
+        } else {
+            badge.hidden = true;
+        }
+    }
+
+    function setToolbarExpanded(expanded) {
+        const wrap = $('jobsToolbarWrap');
+        const btn = $('jobsToolbarReveal');
+        if (!wrap) return;
+        wrap.classList.toggle('is-expanded', expanded);
+        if (btn) btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+
+    function bindToolbarScroll() {
+        const wrap = $('jobsToolbarWrap');
+        const reveal = $('jobsToolbarReveal');
+        if (!wrap) return;
+
+        let lastY = window.scrollY;
+        let ticking = false;
+        const TOP_ZONE = 96;
+        const MIN_DELTA = 8;
+
+        const applyScrollState = () => {
+            ticking = false;
+            const y = window.scrollY;
+            const delta = y - lastY;
+
+            if (y <= TOP_ZONE) {
+                wrap.classList.remove('is-compact');
+                setToolbarExpanded(false);
+            } else if (delta > MIN_DELTA) {
+                wrap.classList.add('is-compact');
+                if (wrap.classList.contains('is-expanded')) {
+                    // Collapse expanded panel when user keeps scrolling down.
+                    setToolbarExpanded(false);
+                }
+            } else if (delta < -MIN_DELTA) {
+                wrap.classList.remove('is-compact');
+                setToolbarExpanded(false);
+            }
+
+            lastY = y;
+        };
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(applyScrollState);
+            }
+        }, { passive: true });
+
+        reveal?.addEventListener('click', () => {
+            if (!wrap.classList.contains('is-compact')) return;
+            const next = !wrap.classList.contains('is-expanded');
+            setToolbarExpanded(next);
+        });
+
+        $('publicJobKeyword')?.addEventListener('focus', () => {
+            if (window.scrollY > TOP_ZONE) {
+                wrap.classList.add('is-compact');
+                setToolbarExpanded(true);
+            }
+        });
+    }
+
     async function init() {
         bindEvents();
+        bindToolbarScroll();
         syncNavOffset();
         window.addEventListener('resize', syncNavOffset, { passive: true });
         renderCategoryChips();
