@@ -1926,23 +1926,32 @@ async function loadSyncStatus() {
         const native = counts.native?.active || 0;
         const adzuna = counts.adzuna?.active || 0;
         const dpsa = counts.dpsa?.active || 0;
-        const lastRun = (data.runs && data.runs[0]) ? data.runs[0] : null;
-        const lastLabel = lastRun
-            ? `${lastRun.source} ${lastRun.status} · ${lastRun.jobs_upserted || 0} upserted · ${formatDate(lastRun.finished_at || lastRun.started_at)}`
-            : 'No sync runs yet';
+        const last = data.last_refresh || null;
+        const lastLabel = last
+            ? `${last.jobs_upserted || 0} imported · ${last.jobs_closed || 0} closed · ${formatDate(last.finished_at || last.started_at)}`
+            : 'never — click Refresh job feed to import';
 
-        el.textContent = `Active: ${native} native, ${adzuna} Adzuna, ${dpsa} gov. Last run: ${lastLabel}. Adzuna ${data.adzuna_configured ? 'configured' : 'not configured'}.`;
+        if (!data.adzuna_configured) {
+            el.textContent = 'Add ADZUNA_APP_ID and ADZUNA_APP_KEY to .env, then click Refresh job feed (weekly).';
+            return;
+        }
+
+        el.textContent = `Active listings: ${native} JobLynk, ${adzuna} Adzuna, ${dpsa} gov. Last weekly refresh: ${lastLabel}. Run refresh once per week — no cron required.`;
     } catch (err) {
-        el.textContent = 'Sync status unavailable.';
+        el.textContent = 'Feed status unavailable.';
         console.warn('loadSyncStatus failed:', err);
     }
 }
 
-window.runAdzunaSync = async function() {
-    const btn = document.getElementById('btnRunAdzunaSync');
+window.refreshJobFeed = async function() {
+    const btn = document.getElementById('btnRefreshJobFeed');
+    if (!confirm('Run weekly job feed refresh? This may take several minutes and will import jobs from Adzuna, then close listings from the previous batch that were not re-imported.')) {
+        return;
+    }
+
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Refreshing...';
     }
 
     try {
@@ -1950,40 +1959,26 @@ window.runAdzunaSync = async function() {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'adzuna' }),
+            body: JSON.stringify({ action: 'refresh' }),
         });
         const data = await res.json();
-        if (!data.success) throw new Error(data.message || 'Sync failed');
-        showToast(data.message || 'Adzuna sync completed');
+        if (!data.success) throw new Error(data.message || 'Refresh failed');
+        showToast(data.message || 'Weekly refresh completed');
         await renderAdminJobs();
     } catch (err) {
-        console.error('Adzuna sync failed:', err);
-        showToast(err.message || 'Adzuna sync failed');
+        console.error('Job feed refresh failed:', err);
+        showToast(err.message || 'Job feed refresh failed');
     } finally {
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Run Adzuna sync';
+            btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Refresh job feed (weekly)';
         }
         loadSyncStatus();
     }
 };
 
-window.closeExpiredJobsAdmin = async function() {
-    try {
-        const res = await fetch('api/admin/sync.php', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'close_expired' }),
-        });
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message || 'Failed');
-        showToast(`Closed ${data.closed_expired + data.closed_stale} job(s)`);
-        await renderAdminJobs();
-    } catch (err) {
-        showToast('Failed to close expired jobs');
-    }
-};
+/** @deprecated Use refreshJobFeed */
+window.runAdzunaSync = window.refreshJobFeed;
 
 window.importDpsaJson = function(input) {
     const file = input?.files?.[0];

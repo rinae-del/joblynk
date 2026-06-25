@@ -158,42 +158,52 @@ Make sure your `.env` file has the correct `APP_URL` matching your domain.
 
 ---
 
-## 9. Live Job Sync (Adzuna + Cron)
+## 9. Weekly Job Feed (Adzuna — no cron required)
 
 Add these variables to your server `.env`:
 
 ```
 ADZUNA_APP_ID=your_app_id
 ADZUNA_APP_KEY=your_app_key
-SYNC_SECRET=long-random-secret-string
 JOBS_SYNC_ENABLED=1
+```
+
+Optional tuning (defaults are fine):
+
+```
+ADZUNA_MAX_API_CALLS=180
+ADZUNA_MAX_PAGES_PER_QUERY=5
 ```
 
 Register for free Adzuna API keys at https://developer.adzuna.com/signup (country: South Africa / `za`).
 
-### 9.1 cPanel Cron Jobs
+### 9.1 Weekly refresh (recommended)
 
-In cPanel → **Cron Jobs**, add:
+1. Deploy the latest code to Afrihost
+2. Add `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` to `.env`
+3. Log in as **admin**
+4. Go to **Admin → Job Listings**
+5. Click **Refresh job feed (weekly)** once
+
+The refresh runs for several minutes, imports thousands of SA jobs from Adzuna (up to the free daily API limit), and closes Adzuna listings from the previous batch that were not re-imported.
+
+Repeat **once per week** — no cPanel cron jobs needed.
+
+### 9.2 Optional: CLI or cron
+
+If you prefer automation later, you can run via SSH/CLI:
 
 ```bash
-# Adzuna sync — 4 times daily
-0 6,12,18,23 * * * /usr/bin/php /home/cpuser/public_html/api/jobs/sync-adzuna.php >> /home/cpuser/logs/job-sync.log 2>&1
-
-# Close expired / stale aggregated jobs — daily
-15 1 * * * /usr/bin/php /home/cpuser/public_html/api/jobs/close-expired.php >> /home/cpuser/logs/job-sync.log 2>&1
+php /home/cpuser/public_html/api/jobs/sync-adzuna.php
 ```
 
-Replace `/home/cpuser/public_html` with your actual document root path.
-
-### 9.2 Manual sync (admin)
-
-Admins can trigger sync from **Admin → Job Listings** or via HTTP:
+Optional HTTP trigger (only if you set `SYNC_SECRET` in `.env`):
 
 ```
 GET https://yourdomain.co.za/api/jobs/sync-adzuna.php?secret=YOUR_SYNC_SECRET
 ```
 
-### 9.3 DPSA government vacancies
+### 9.3 DPSA government vacancies (optional)
 
 Upload a parsed DPSA vacancy circular JSON via **Admin → Job Listings → Import DPSA JSON**.
 

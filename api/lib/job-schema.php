@@ -166,3 +166,24 @@ function closeStaleAggregatedJobs(PDO $pdo, int $staleDays = 7): int
         return 0;
     }
 }
+
+/**
+ * Close aggregated jobs not updated during the current weekly refresh run.
+ */
+function closeAggregatedJobsNotSeenSince(PDO $pdo, string $since, string $source = 'adzuna'): int
+{
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE jobs
+            SET status = 'closed', updated_at = NOW()
+            WHERE status = 'active'
+              AND source = ?
+              AND (last_seen_at IS NULL OR last_seen_at < ?)
+        ");
+        $stmt->execute([$source, $since]);
+        return (int) $stmt->rowCount();
+    } catch (Throwable $e) {
+        error_log('closeAggregatedJobsNotSeenSince failed: ' . $e->getMessage());
+        return 0;
+    }
+}

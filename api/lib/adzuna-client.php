@@ -108,7 +108,7 @@ class AdzunaClient
 
     private function throttle(): void
     {
-        $minInterval = 2.5;
+        $minInterval = 2.0;
         $elapsed = microtime(true) - $this->lastRequestAt;
         if ($elapsed < $minInterval) {
             usleep((int) (($minInterval - $elapsed) * 1000000));
@@ -118,22 +118,55 @@ class AdzunaClient
 }
 
 /**
- * Default sync query rotation for South Africa.
+ * Weekly refresh query rotation — broad coverage for South Africa.
+ * Duplicates are deduped in the database by (source, external_id).
  *
  * @return array<int, array<string, mixed>>
  */
-function adzunaDefaultSyncQueries(): array
+function adzunaWeeklySyncQueries(): array
 {
-    $locations = ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Remote'];
-    $categories = ['it-jobs', 'accounting-finance-jobs', 'engineering-jobs', 'sales-jobs', 'healthcare-nursing-jobs'];
+    $queries = [
+        ['max_days_old' => 30, 'sort_by' => 'date'],
+    ];
 
-    $queries = [];
+    $locations = [
+        'Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth',
+        'Sandton', 'Centurion', 'Stellenbosch', 'Remote', 'Gauteng',
+    ];
+
+    $categories = [
+        'it-jobs', 'accounting-finance-jobs', 'engineering-jobs', 'sales-jobs',
+        'healthcare-nursing-jobs', 'admin-jobs', 'retail-jobs', 'hr-jobs',
+        'customer-services-jobs', 'legal-jobs', 'marketing-jobs', 'trade-construction-jobs',
+        'hospitality-catering-jobs', 'logistics-warehouse-jobs', 'teaching-jobs',
+    ];
+
     foreach ($locations as $location) {
-        $queries[] = ['where' => $location, 'max_days_old' => 14, 'sort_by' => 'date'];
+        $queries[] = ['where' => $location, 'max_days_old' => 30, 'sort_by' => 'date'];
     }
+
     foreach ($categories as $category) {
-        $queries[] = ['category' => $category, 'max_days_old' => 14, 'sort_by' => 'date'];
+        $queries[] = ['category' => $category, 'max_days_old' => 30, 'sort_by' => 'date'];
+    }
+
+    $topLocations = ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria'];
+    $topCategories = ['it-jobs', 'sales-jobs', 'accounting-finance-jobs', 'engineering-jobs'];
+    foreach ($topLocations as $location) {
+        foreach ($topCategories as $category) {
+            $queries[] = [
+                'where' => $location,
+                'category' => $category,
+                'max_days_old' => 30,
+                'sort_by' => 'date',
+            ];
+        }
     }
 
     return $queries;
+}
+
+/** @deprecated Use adzunaWeeklySyncQueries() */
+function adzunaDefaultSyncQueries(): array
+{
+    return adzunaWeeklySyncQueries();
 }

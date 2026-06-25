@@ -1,9 +1,9 @@
 <?php
 /**
- * Admin job sync status and manual trigger.
+ * Admin job feed refresh — status and weekly trigger.
  *
- * GET  — last sync runs + counts by source
- * POST — trigger sync (action: adzuna | close_expired)
+ * GET  — last refresh runs + counts by source
+ * POST — action: refresh (default) | close_expired
  */
 
 require_once __DIR__ . '/../config/session.php';
@@ -12,6 +12,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../lib/job-schema.php';
+require_once __DIR__ . '/../lib/adzuna-sync.php';
 
 setCorsHeaders();
 
@@ -31,7 +32,7 @@ if ($method === 'GET') {
                    error_message, started_at, finished_at
             FROM job_sync_runs
             ORDER BY started_at DESC
-            LIMIT 20
+            LIMIT 10
         ');
         $runs = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     } catch (Throwable $e) {
@@ -59,10 +60,19 @@ if ($method === 'GET') {
         error_log('Source counts failed: ' . $e->getMessage());
     }
 
+    $lastSuccess = null;
+    foreach ($runs as $run) {
+        if (($run['status'] ?? '') === 'success') {
+            $lastSuccess = $run;
+            break;
+        }
+    }
+
     jsonResponse([
         'success' => true,
         'sync_enabled' => filter_var(env('JOBS_SYNC_ENABLED', '1'), FILTER_VALIDATE_BOOLEAN),
         'adzuna_configured' => env('ADZUNA_APP_ID', '') !== '' && env('ADZUNA_APP_KEY', '') !== '',
+        'last_refresh' => $lastSuccess,
         'runs' => $runs,
         'source_counts' => $sourceCounts,
     ]);
@@ -70,48 +80,20 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $body = getJsonBody();
-    $action = $body['action'] ?? 'adzuna';
+    $action = $body['action'] ?? 'refresh';
 
     if ($action === 'close_expired') {
-        require_once __DIR__ . '/../lib/job-schema.php';
         $closedExpired = closeExpiredJobs($pdo);
-        $closedStale = closeStaleAggregatedJobs($pdo, 7);
         jsonResponse([
             'success' => true,
-            'message' => 'Expired jobs closed.',
+            'message' => "Closed {$closedExpired} job(s) past their closing date.",
             'closed_expired' => $closedExpired,
-            'closed_stale' => $closedStale,
         ]);
     }
 
-    if ($action === 'adzuna') {
-        $secret = env('SYNC_SECRET', '');
-        if ($secret === '') {
-            jsonResponse(['success' => false, 'message' => 'SYNC_SECRET is not configured on the server.'], 500);
-        }
-
-        $syncUrl = rtrim(APP_URL, '/') . '/api/jobs/sync-adzuna.php?secret=' . urlencode($secret);
-        $ch = curl_init($syncUrl);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 300,
-            CURLOPT_HTTPHEADER => ['X-Sync-Secret: ' . $secret],
-        ]);
-        $response = curl_exec($ch);
-        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        $data = json_decode((string) $response, true);
-        if ($httpCode >= 400 || !is_array($data)) {
-            jsonResponse([
-                'success' => false,
-                'message' => 'Sync trigger failed.',
-                'http_code' => $httpCode,
-                'raw' => substr((string) $response, 0, 500),
-            ], 500);
-        }
-
-        jsonResponse($data);
+    if ($action === 'refresh' || $action === 'adzuna') {
+        $result = runAdzunaWeeklyRefresh($pdo);
+        jsonResponse($result, $result['success'] ? 200 : 500);
     }
 
     jsonResponse(['success' => false, 'message' => 'Unknown action.'], 422);
