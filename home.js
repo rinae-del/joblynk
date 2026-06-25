@@ -130,7 +130,8 @@
             if (typeof JobsStore !== 'undefined') {
                 await JobsStore.fetchJobs();
             } else {
-                const res = await fetch('api/jobs/index.php', { credentials: 'include' });
+                const res = await fetch('api/jobs/index.php', { credentials: 'include', cache: 'no-store' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 if (!data.success || !Array.isArray(data.jobs)) throw new Error('No jobs');
             }

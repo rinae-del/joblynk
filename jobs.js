@@ -188,14 +188,19 @@
                 await JobsStore.fetchJobs();
                 state.jobs = JobsStore.getActiveJobs();
             } else {
-                const response = await fetch('api/jobs/index.php', { credentials: 'include' });
+                const response = await fetch('api/jobs/index.php', { credentials: 'include', cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const result = await response.json();
                 state.jobs = result.success && Array.isArray(result.jobs) ? result.jobs : [];
             }
         } catch (error) {
             console.warn('Unable to load jobs:', error);
             state.jobs = [];
-            if (summary) summary.textContent = 'We could not load jobs right now. Please refresh the page.';
+            if (summary) {
+                summary.textContent = navigator.onLine === false
+                    ? 'You appear to be offline. Check your connection and refresh.'
+                    : 'We could not load jobs right now. Please refresh the page.';
+            }
         } finally {
             state.loading = false;
         }
@@ -386,7 +391,8 @@
         if (!filtering) {
             const grouped = JobsBrowser.buildJobSections(sorted);
             renderCuratedSections(grouped.sections);
-            browseJobs = JobsBrowser.sortJobs(grouped.browse, sort);
+            const dedupedBrowse = grouped.browse.length ? grouped.browse : sorted;
+            browseJobs = JobsBrowser.sortJobs(dedupedBrowse, sort);
             if (curatedRoot) curatedRoot.hidden = false;
             if (browseHeader) browseHeader.hidden = grouped.sections.length === 0;
         } else {

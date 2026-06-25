@@ -18,12 +18,25 @@ const JobsStore = (() => {
     // ── Helper for fetch ──
     async function apiFetch(url, opts = {}) {
         opts.credentials = 'include';
+        opts.cache = opts.cache || 'no-store';
         if (opts.body && typeof opts.body === 'object') {
             opts.headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
             opts.body = JSON.stringify(opts.body);
         }
         const res = await fetch(url, opts);
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
         return res.json();
+    }
+
+    function persistJobsLocal(jobs) {
+        try {
+            localStorage.setItem(JOBS_KEY, JSON.stringify(jobs));
+        } catch (e) {
+            // Mobile browsers often reject multi-MB localStorage writes — keep in-memory cache only.
+            console.warn('Jobs local cache skipped:', e);
+        }
     }
 
     // ── JOBS ──
@@ -33,7 +46,7 @@ const JobsStore = (() => {
             const result = await apiFetch(API_JOBS);
             if (result.success && Array.isArray(result.jobs)) {
                 _jobsCache = result.jobs.map(normalizeJob);
-                localStorage.setItem(JOBS_KEY, JSON.stringify(_jobsCache));
+                persistJobsLocal(_jobsCache);
                 return _jobsCache;
             }
             console.warn('Jobs API error:', result.message || result);
@@ -42,7 +55,10 @@ const JobsStore = (() => {
         }
 
         const local = getJobsLocal();
-        if (local.length) return local;
+        if (local.length) {
+            _jobsCache = local.map(normalizeJob);
+            return _jobsCache;
+        }
         _jobsCache = [];
         return _jobsCache;
     }

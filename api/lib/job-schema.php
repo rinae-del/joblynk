@@ -117,16 +117,42 @@ function absoluteJobAssetUrl(string $path): string
 }
 
 /**
- * Shared SELECT + JOIN for job listings with company logo resolution.
+ * Logo + applicant count columns appended to job listing queries.
  */
-function jobListingSelectSql(string $jobAlias = 'j'): string
+function jobListingLogoSql(string $jobAlias = 'j'): string
 {
-    return "{$jobAlias}.*,
-        COALESCE(
+    return "COALESCE(
             NULLIF(TRIM(c.logo_url), ''),
             NULLIF(TRIM(cn.logo_url), '')
         ) AS company_logo_url,
         (SELECT COUNT(*) FROM applications a WHERE a.job_id = {$jobAlias}.id) AS applicant_count";
+}
+
+/**
+ * Slim listing payload for public job boards (excludes heavy JSON blobs).
+ */
+function jobListingSummarySelectSql(string $jobAlias = 'j'): string
+{
+    $a = $jobAlias;
+
+    return "{$a}.id, {$a}.user_id, {$a}.title, {$a}.job_reference, {$a}.company,
+        {$a}.location, {$a}.type, {$a}.skills,
+        {$a}.salary_from, {$a}.salary_to, {$a}.salary_note, {$a}.salary_period, {$a}.hide_salary,
+        {$a}.closing_date, {$a}.status, {$a}.color, {$a}.source,
+        {$a}.external_id, {$a}.external_url, {$a}.apply_mode, {$a}.apply_email,
+        {$a}.created_at, {$a}.updated_at, {$a}.last_seen_at, {$a}.synced_at,
+        SUBSTRING({$a}.description, 1, 600) AS description,
+        SUBSTRING({$a}.requirements, 1, 400) AS requirements,
+        " . jobListingLogoSql($jobAlias);
+}
+
+/**
+ * Full SELECT + JOIN for single job views and recruiter management.
+ */
+function jobListingSelectSql(string $jobAlias = 'j'): string
+{
+    return "{$jobAlias}.*,
+        " . jobListingLogoSql($jobAlias);
 }
 
 function jobListingJoinSql(string $jobAlias = 'j'): string

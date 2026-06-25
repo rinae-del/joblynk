@@ -145,8 +145,8 @@ if ($method === 'GET') {
             jsonResponse(['success' => true, 'jobs' => $jobs]);
         }
 
-        // All active jobs
-        $stmt = $pdo->query('SELECT ' . jobListingSelectSql('j') . ' ' . jobListingJoinSql('j') . ' WHERE j.status = "active" ORDER BY j.created_at DESC');
+        // All active jobs — slim payload so mobile clients can load thousands of roles
+        $stmt = $pdo->query('SELECT ' . jobListingSummarySelectSql('j') . ' ' . jobListingJoinSql('j') . ' WHERE j.status = "active" ORDER BY j.created_at DESC');
         $jobs = $stmt->fetchAll();
         foreach ($jobs as &$j) {
             normalizeJobRow($j);
