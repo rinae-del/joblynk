@@ -140,5 +140,19 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', loadFeaturedJobs);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadFeaturedJobs();
+        initHomeNavScroll();
+    });
+
+    function initHomeNavScroll() {
+        const SCROLL_THRESHOLD = 12;
+
+        function syncNavScrollState() {
+            document.body.classList.toggle('is-nav-scrolled', window.scrollY > SCROLL_THRESHOLD);
+        }
+
+        syncNavScrollState();
+        window.addEventListener('scroll', syncNavScrollState, { passive: true });
+    }
 })();
