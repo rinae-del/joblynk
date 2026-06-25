@@ -131,7 +131,7 @@ function jobListingSelectSql(string $jobAlias = 'j'): string
 
 function jobListingJoinSql(string $jobAlias = 'j'): string
 {
-    return "FROM {$jobAlias}
+    return "FROM jobs {$jobAlias}
         LEFT JOIN users u ON {$jobAlias}.user_id = u.id
         LEFT JOIN companies c ON c.id = u.company_id
         LEFT JOIN companies cn ON cn.id = (

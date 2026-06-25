@@ -123,34 +123,39 @@ if ($method === 'GET') {
 
     $jobId = $_GET['id'] ?? null;
 
-    // Single job
-    if ($jobId) {
-        $stmt = $pdo->prepare('SELECT ' . jobListingSelectSql('j') . ', u.first_name, u.last_name FROM ' . jobListingJoinSql('j') . ' WHERE j.id = ?');
-        $stmt->execute([$jobId]);
-        $job = $stmt->fetch();
-        if (!$job) jsonResponse(['success' => false, 'message' => 'Job not found.'], 404);
-        normalizeJobRow($job);
-        jsonResponse(['success' => true, 'job' => $job]);
-    }
+    try {
+        // Single job
+        if ($jobId) {
+            $stmt = $pdo->prepare('SELECT ' . jobListingSelectSql('j') . ', u.first_name, u.last_name ' . jobListingJoinSql('j') . ' WHERE j.id = ?');
+            $stmt->execute([$jobId]);
+            $job = $stmt->fetch();
+            if (!$job) jsonResponse(['success' => false, 'message' => 'Job not found.'], 404);
+            normalizeJobRow($job);
+            jsonResponse(['success' => true, 'job' => $job]);
+        }
 
-    // Recruiter: my jobs
-    if (isset($_GET['mine']) && $userId) {
-        $stmt = $pdo->prepare('SELECT ' . jobListingSelectSql('j') . ' FROM ' . jobListingJoinSql('j') . ' WHERE j.user_id = ? ORDER BY j.created_at DESC');
-        $stmt->execute([$userId]);
+        // Recruiter: my jobs
+        if (isset($_GET['mine']) && $userId) {
+            $stmt = $pdo->prepare('SELECT ' . jobListingSelectSql('j') . ' ' . jobListingJoinSql('j') . ' WHERE j.user_id = ? ORDER BY j.created_at DESC');
+            $stmt->execute([$userId]);
+            $jobs = $stmt->fetchAll();
+            foreach ($jobs as &$j) {
+                normalizeJobRow($j);
+            }
+            jsonResponse(['success' => true, 'jobs' => $jobs]);
+        }
+
+        // All active jobs
+        $stmt = $pdo->query('SELECT ' . jobListingSelectSql('j') . ' ' . jobListingJoinSql('j') . ' WHERE j.status = "active" ORDER BY j.created_at DESC');
         $jobs = $stmt->fetchAll();
         foreach ($jobs as &$j) {
             normalizeJobRow($j);
         }
         jsonResponse(['success' => true, 'jobs' => $jobs]);
+    } catch (Throwable $e) {
+        error_log('Jobs GET failed: ' . $e->getMessage());
+        jsonResponse(['success' => false, 'message' => 'Unable to load jobs right now.'], 500);
     }
-
-    // All active jobs
-    $stmt = $pdo->query('SELECT ' . jobListingSelectSql('j') . ' FROM ' . jobListingJoinSql('j') . ' WHERE j.status = "active" ORDER BY j.created_at DESC');
-    $jobs = $stmt->fetchAll();
-    foreach ($jobs as &$j) {
-        normalizeJobRow($j);
-    }
-    jsonResponse(['success' => true, 'jobs' => $jobs]);
 }
 
 // ═══════════════════════════

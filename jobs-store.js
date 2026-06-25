@@ -31,15 +31,20 @@ const JobsStore = (() => {
     async function fetchJobs() {
         try {
             const result = await apiFetch(API_JOBS);
-            if (result.success && result.jobs) {
+            if (result.success && Array.isArray(result.jobs)) {
                 _jobsCache = result.jobs.map(normalizeJob);
-                // Sync to localStorage as backup
                 localStorage.setItem(JOBS_KEY, JSON.stringify(_jobsCache));
                 return _jobsCache;
             }
-        } catch (e) { console.warn('Jobs API failed:', e); }
-        // Fallback
-        return getJobsLocal();
+            console.warn('Jobs API error:', result.message || result);
+        } catch (e) {
+            console.warn('Jobs API failed:', e);
+        }
+
+        const local = getJobsLocal();
+        if (local.length) return local;
+        _jobsCache = [];
+        return _jobsCache;
     }
 
     function resolveAssetUrl(url) {
