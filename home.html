@@ -47,7 +47,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260716">
+    <link rel="stylesheet" href="landing.css?v=20260722">
     <link rel="stylesheet" href="home.css?v=20260721">
 </head>
 
@@ -494,24 +494,30 @@
         <div class="cv-start-backdrop" data-close-cv-modal></div>
         <div class="cv-start-dialog" id="cv-start">
             <button class="cv-start-close" type="button" data-close-cv-modal aria-label="Close CV start dialog"><i class="fa-solid fa-xmark"></i></button>
-            <span class="eyebrow eyebrow-green">Create your CV</span>
-            <h2 id="cvStartTitle">Customise your existing CV or create a new CV using our free tools and templates.</h2>
-            <p>Import your current CV and JobLynk will extract the basics into the builder, or create a new CV from a guided template.</p>
+            <div class="cv-start-header">
+                <span class="cv-start-eyebrow">CV Builder</span>
+                <h2 id="cvStartTitle">Import or start fresh</h2>
+                <p>Upload a file to prefill your CV, or open a blank template and fill it in step by step.</p>
+            </div>
 
             <div class="cv-start-options">
                 <label class="cv-start-card cv-import-card" for="cvImportFile">
-                    <span class="cv-start-card-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
-                    <strong>Customise current CV</strong>
-                    <small>Upload PDF, DOCX or TXT. We will prefill names, contact details, summary, skills, experience and education where possible.</small>
-                    <span class="cv-start-card-action">Choose file <i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="cv-start-card-icon" aria-hidden="true"><i class="fa-solid fa-file-arrow-up"></i></span>
+                    <span class="cv-start-card-body">
+                        <strong>Import existing CV</strong>
+                        <small>PDF, DOCX or TXT. We extract contact info, summary, skills, experience and education.</small>
+                    </span>
+                    <span class="cv-start-card-action">Choose file <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></span>
                     <input id="cvImportFile" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain">
                 </label>
 
                 <a class="cv-start-card cv-blank-card" href="cv-builder.html?blank=1">
-                    <span class="cv-start-card-icon"><i class="fa-solid fa-pen-to-square"></i></span>
-                    <strong>Create new CV</strong>
-                    <small>Open a fresh CV builder and fill in your details step by step.</small>
-                    <span class="cv-start-card-action">Create new CV <i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="cv-start-card-icon" aria-hidden="true"><i class="fa-solid fa-pen-to-square"></i></span>
+                    <span class="cv-start-card-body">
+                        <strong>Start from scratch</strong>
+                        <small>Blank CV with guided sections — add your details at your own pace.</small>
+                    </span>
+                    <span class="cv-start-card-action">Open builder <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></span>
                 </a>
             </div>
 

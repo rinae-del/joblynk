@@ -3566,7 +3566,7 @@ body.modal-open {
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 1.25rem;
+    padding: max(0.75rem, env(safe-area-inset-top, 0)) 0.75rem max(0.75rem, env(safe-area-inset-bottom, 0));
 }
 
 .cv-start-modal.open {
@@ -3576,99 +3576,121 @@ body.modal-open {
 .cv-start-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(15, 23, 42, 0.54);
-    backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .cv-start-dialog {
     position: relative;
     z-index: 1;
-    width: min(100%, 760px);
-    max-height: min(88vh, 720px);
+    width: min(100%, 520px);
+    max-height: min(calc(100dvh - 1.5rem), 560px);
+    overflow-x: hidden;
     overflow-y: auto;
-    padding: clamp(1.4rem, 4vw, 2.3rem);
+    overscroll-behavior: contain;
+    padding: 1.15rem 1.2rem 1.1rem;
     background: var(--surface-strong);
     border: 1px solid var(--border-soft);
-    border-radius: 24px;
+    border-radius: 18px;
     box-shadow: var(--shadow-lg);
 }
 
 .cv-start-close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 40px;
-    height: 40px;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 34px;
+    height: 34px;
     border: 1px solid var(--border-soft);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--field-bg);
     color: var(--muted);
     cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    font-size: 0.9rem;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .cv-start-close:hover {
     color: var(--text);
     border-color: var(--accent-light);
-    transform: translateY(-1px);
+}
+
+.cv-start-header {
+    padding-right: 2rem;
+    margin-bottom: 1rem;
+}
+
+.cv-start-eyebrow {
+    display: inline-block;
+    margin: 0 0 0.45rem;
+    color: var(--green);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .cv-start-dialog h2 {
-    max-width: 620px;
+    margin: 0 0 0.4rem;
     color: var(--text);
-    font-size: clamp(1.65rem, 4vw, 2.3rem);
+    font-size: 1.28rem;
     font-weight: 800;
-    line-height: 1.12;
-    letter-spacing: -0.6px;
-    margin-bottom: 0.8rem;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
 }
 
-.cv-start-dialog > p {
-    max-width: 600px;
+.cv-start-dialog .cv-start-header > p {
+    margin: 0;
     color: var(--muted);
-    font-size: 0.98rem;
-    line-height: 1.65;
-    margin-bottom: 1.5rem;
+    font-size: 0.84rem;
+    line-height: 1.5;
 }
 
 .cv-start-options {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
 }
 
 .cv-start-card {
     position: relative;
     display: grid;
-    gap: 0.7rem;
-    min-height: 260px;
-    padding: 1.3rem;
-    border-radius: 18px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 0.75rem;
+    row-gap: 0.35rem;
+    align-items: start;
+    min-height: 0;
+    padding: 0.85rem 0.9rem;
+    border-radius: 14px;
     border: 1px solid var(--border-soft);
     background: var(--card-bg);
     color: var(--text);
     text-decoration: none;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cv-start-card:hover {
-    transform: translateY(-3px);
     border-color: var(--accent-light);
+    background: var(--card-bg-hover, var(--card-bg));
     box-shadow: var(--shadow-md);
 }
 
 .cv-start-card-icon {
-    width: 54px;
-    height: 54px;
+    grid-row: 1 / 3;
+    width: 38px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 15px;
+    border-radius: 11px;
     background: rgba(99, 102, 241, 0.14);
     color: var(--accent);
-    font-size: 1.3rem;
+    font-size: 0.95rem;
+    flex-shrink: 0;
 }
 
 .cv-import-card .cv-start-card-icon {
@@ -3676,25 +3698,42 @@ body.modal-open {
     color: var(--green);
 }
 
-.cv-start-card strong {
-    font-size: 1.15rem;
-    line-height: 1.25;
+.cv-start-card-body {
+    grid-column: 2;
+    min-width: 0;
 }
 
-.cv-start-card small {
+.cv-start-card-body strong {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.15rem;
+}
+
+.cv-start-card-body small {
+    display: block;
     color: var(--muted);
-    font-size: 0.88rem;
-    line-height: 1.55;
+    font-size: 0.78rem;
+    line-height: 1.45;
 }
 
 .cv-start-card-action {
-    align-self: end;
+    grid-column: 3;
+    grid-row: 1 / 3;
+    align-self: center;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.25rem;
     color: var(--accent);
-    font-size: 0.9rem;
-    font-weight: 800;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cv-start-card-action i {
+    font-size: 0.62rem;
+    opacity: 0.85;
 }
 
 .cv-import-card input {
@@ -3706,11 +3745,12 @@ body.modal-open {
 }
 
 .cv-import-status {
-    min-height: 24px;
-    margin-top: 1rem;
+    min-height: 1.25rem;
+    margin-top: 0.65rem;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
+    line-height: 1.4;
 }
 
 .cv-import-status[data-state="loading"] {
@@ -3725,6 +3765,39 @@ body.modal-open {
     color: #DC2626;
 }
 
+@media (min-width: 540px) {
+    .cv-start-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .cv-start-card {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+        row-gap: 0.45rem;
+        padding: 0.9rem;
+    }
+
+    .cv-start-card-icon {
+        grid-row: 1;
+    }
+
+    .cv-start-card-body {
+        grid-column: 1 / -1;
+        padding-left: 0;
+    }
+
+    .cv-start-card-action {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        align-self: auto;
+        justify-content: flex-start;
+        padding-top: 0.35rem;
+        border-top: 1px solid var(--border-soft);
+        font-size: 0.78rem;
+    }
+}
+
 @media (max-width: 700px) {
     .cv-start-modal {
         align-items: flex-end;
@@ -3733,14 +3806,17 @@ body.modal-open {
 
     .cv-start-dialog {
         width: 100%;
-        max-height: 92vh;
-        border-radius: 24px 24px 0 0;
-        padding: 1.35rem 1rem calc(1.2rem + env(safe-area-inset-bottom, 0));
+        max-height: min(88dvh, 520px);
+        border-radius: 18px 18px 0 0;
+        padding: 1rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0));
+    }
+
+    .cv-start-header {
+        margin-bottom: 0.85rem;
     }
 
     .cv-start-dialog h2 {
-        padding-right: 2.4rem;
-        font-size: 1.55rem;
+        font-size: 1.15rem;
     }
 
     .cv-start-options {
@@ -3748,8 +3824,7 @@ body.modal-open {
     }
 
     .cv-start-card {
-        min-height: 0;
-        padding: 1rem;
+        padding: 0.8rem 0.85rem;
     }
 
     .faq-section {
