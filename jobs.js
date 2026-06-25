@@ -163,12 +163,14 @@
     function renderSkeleton() {
         const list = $('publicJobsList');
         if (!list) return;
-        list.innerHTML = Array.from({ length: 6 }, () => `
-            <article class="public-job-card public-job-card--skeleton" aria-hidden="true">
+        list.innerHTML = Array.from({ length: 8 }, () => `
+            <article class="job-row job-row--skeleton" aria-hidden="true">
                 <div class="skeleton-block skeleton-logo"></div>
-                <div class="skeleton-block skeleton-line skeleton-line--lg"></div>
-                <div class="skeleton-block skeleton-line"></div>
-                <div class="skeleton-block skeleton-line skeleton-line--sm"></div>
+                <div class="job-row-body">
+                    <div class="skeleton-block skeleton-line skeleton-line--lg"></div>
+                    <div class="skeleton-block skeleton-line"></div>
+                    <div class="skeleton-block skeleton-line skeleton-line--sm"></div>
+                </div>
             </article>
         `).join('');
     }
@@ -276,10 +278,10 @@
         return `<span class="job-source-badge">${escText(source)}</span>`;
     }
 
-    function renderJobCard(job, compact = false) {
+    function renderJobRow(job) {
         const companyInitial = String(job.company || 'J').trim().charAt(0).toUpperCase() || 'J';
         const companyLogo = job.companyLogoUrl || job.company_logo_url || '';
-        const description = String(job.description || job.requirements || 'Open this listing to view the full role details and requirements.').trim();
+        const salary = formatSalaryLabel(job);
         const applicantCount = getApplicantCount(job);
         const closingLabel = formatClosingLabel(job);
         const accent = getSafeAccent(job);
@@ -287,28 +289,33 @@
             ? `<img src="${escAttr(companyLogo)}" alt="" loading="lazy" decoding="async">`
             : escText(companyInitial);
 
+        const metaBits = [
+            job.location ? `<span>${escText(job.location)}</span>` : '',
+            job.type ? `<span>${escText(job.type)}</span>` : '',
+            salary ? `<span class="job-row-meta-salary">${escText(salary)}</span>` : '',
+        ].filter(Boolean).join('');
+
+        const footBits = [
+            `<span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>`,
+            closingLabel ? `<span>${escText(closingLabel)}</span>` : '',
+            applicantCount ? `<span>${escText(applicantCount + ' applied')}</span>` : '',
+        ].filter(Boolean).join('');
+
         return `
-            <article class="public-job-card${compact ? ' public-job-card--compact' : ''}" style="--job-accent:${escAttr(accent)}">
-                <div class="public-job-card-top">
-                    <div class="public-job-logo">${logoHtml}</div>
-                    <div class="public-job-card-head">
-                        <span class="public-job-company">${escText(job.company || 'Company')}</span>
+            <article class="job-row" style="--job-accent:${escAttr(accent)}">
+                <div class="job-row-logo">${logoHtml}</div>
+                <div class="job-row-body">
+                    <div class="job-row-title-line">
                         <h3>${escText(job.title || 'Untitled role')}</h3>
-                        <div class="public-job-card-badges public-job-badges">${getSourceBadge(job)}${JobsBrowser.isFresh(job, 3) ? '<span class="job-pill job-pill--new">New</span>' : ''}</div>
+                        <div class="job-row-badges">${getSourceBadge(job)}${JobsBrowser.isFresh(job, 3) ? '<span class="job-pill job-pill--new">New</span>' : ''}</div>
                     </div>
+                    <p class="job-row-company">${escText(job.company || 'Company')}</p>
+                    ${metaBits ? `<div class="job-row-meta">${metaBits}</div>` : ''}
+                    <div class="job-row-foot">${footBits}</div>
                 </div>
-                <div class="public-job-meta">${renderMetaPills(job)}</div>
-                <p>${escText(description)}</p>
-                <div class="public-job-card-footer">
-                    <div class="public-job-footnotes">
-                        <span><i class="fa-regular fa-clock"></i>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>
-                        ${closingLabel ? `<span><i class="fa-regular fa-calendar"></i>${escText(closingLabel)}</span>` : ''}
-                        ${applicantCount ? `<span><i class="fa-solid fa-users"></i>${escText(applicantCount + ' applied')}</span>` : ''}
-                    </div>
-                    <div class="public-job-actions">
-                        <button type="button" class="public-job-secondary" data-view-job="${escAttr(job.id)}">View</button>
-                        <button type="button" class="public-job-primary" data-apply-job="${escAttr(job.id)}">Apply</button>
-                    </div>
+                <div class="job-row-actions">
+                    <button type="button" class="job-row-btn job-row-btn--ghost" data-view-job="${escAttr(job.id)}">View</button>
+                    <button type="button" class="job-row-btn job-row-btn--primary" data-apply-job="${escAttr(job.id)}">Apply</button>
                 </div>
             </article>
         `;
@@ -325,14 +332,14 @@
 
         root.innerHTML = sections.map(section => {
             const title = JobsBrowser.SECTION_LABELS[section.id] || section.id;
-            const cards = section.jobs.map(job => renderJobCard(job, true)).join('');
+            const rows = section.jobs.map(job => renderJobRow(job)).join('');
             return `
                 <section class="jobs-curated-block" aria-label="${escAttr(title)}">
                     <div class="jobs-curated-block-head">
-                        <h3>${escText(title)}</h3>
+                        <h2>${escText(title)}</h2>
                         <span>${section.jobs.length} role${section.jobs.length === 1 ? '' : 's'}</span>
                     </div>
-                    <div class="jobs-curated-scroll">${cards}</div>
+                    <div class="jobs-curated-list">${rows}</div>
                 </section>
             `;
         }).join('');
@@ -377,8 +384,8 @@
 
         if (summary) {
             summary.textContent = filtering
-                ? `${sorted.length.toLocaleString()} match${sorted.length === 1 ? '' : 'es'} · ${state.jobs.length.toLocaleString()} total`
-                : `${state.jobs.length.toLocaleString()} roles across South Africa — browse picks below or filter to narrow down`;
+                ? `${sorted.length.toLocaleString()} match${sorted.length === 1 ? '' : 'es'} of ${state.jobs.length.toLocaleString()} live roles`
+                : `${state.jobs.length.toLocaleString()} live roles across South Africa`;
         }
 
         if (browseCount) {
@@ -400,9 +407,9 @@
         }
 
         if (state.browsePage === 1) {
-            list.innerHTML = pageData.items.map(job => renderJobCard(job)).join('');
+            list.innerHTML = pageData.items.map(job => renderJobRow(job)).join('');
         } else {
-            list.insertAdjacentHTML('beforeend', pageData.items.map(job => renderJobCard(job)).join(''));
+            list.insertAdjacentHTML('beforeend', pageData.items.map(job => renderJobRow(job)).join(''));
         }
 
         if (pagination) {
@@ -563,8 +570,16 @@
         });
     }
 
+    function syncNavOffset() {
+        const nav = document.querySelector('.landing-nav');
+        if (!nav) return;
+        document.documentElement.style.setProperty('--jb-nav-h', `${nav.offsetHeight}px`);
+    }
+
     async function init() {
         bindEvents();
+        syncNavOffset();
+        window.addEventListener('resize', syncNavOffset, { passive: true });
         renderCategoryChips();
         await Promise.all([loadSession(), loadJobs()]);
         populateFilters();
