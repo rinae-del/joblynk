@@ -509,6 +509,15 @@
 
         $('clearJobFilters')?.addEventListener('click', clearFilters);
 
+        $('jobsFilterToggle')?.addEventListener('click', () => {
+            const panel = $('jobsAdvancedFilters');
+            const btn = $('jobsFilterToggle');
+            if (!panel || !btn) return;
+            const open = panel.classList.toggle('is-open');
+            btn.classList.toggle('is-active', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+
         $('jobsLoadMore')?.addEventListener('click', () => {
             state.browsePage += 1;
             renderJobs();

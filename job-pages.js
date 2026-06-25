@@ -827,6 +827,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             $('jobsPageClearFilters')?.addEventListener('click', clearListFilters);
+
+            $('jobsPageFilterToggle')?.addEventListener('click', () => {
+                const panel = $('jobsPageAdvancedFilters');
+                const btn = $('jobsPageFilterToggle');
+                if (!panel || !btn) return;
+                const open = panel.classList.toggle('is-open');
+                btn.classList.toggle('is-active', open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+
             $('jobsPageLoadMore')?.addEventListener('click', () => {
                 browsePage += 1;
                 renderListPage();

@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css?v=20260524-jobs">
+    <link rel="stylesheet" href="dashboard.css?v=20260625-mobile">
     <script src="auth-guard.js?v=20260524b" data-role="job_seeker"></script>
 </head>
 
@@ -46,26 +46,34 @@
                 <div class="jobs-page-toolbar">
                     <div class="jobs-page-search">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="search" id="jobsPageKeyword" placeholder="Search title, company, or skill..." autocomplete="off">
+                        <input type="search" id="jobsPageKeyword" placeholder="Search jobs..." autocomplete="off" enterkeyhint="search">
                     </div>
-                    <select id="jobsPageLocation">
-                        <option value="">All locations</option>
-                    </select>
-                    <select id="jobsPageType">
-                        <option value="">All job types</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Contract">Contract</option>
-                        <option value="Freelance">Freelance</option>
-                        <option value="Internship">Internship</option>
-                    </select>
-                    <select id="jobsPageSort">
-                        <option value="recommended">Recommended</option>
-                        <option value="newest">Newest first</option>
-                        <option value="closing">Closing soon</option>
-                        <option value="salary">Highest salary</option>
-                    </select>
-                    <button type="button" class="jobs-clear-btn jobs-clear-btn--dashboard" id="jobsPageClearFilters">Clear</button>
+
+                    <button type="button" class="jobs-filter-toggle-btn jobs-filter-toggle-btn--dashboard" id="jobsPageFilterToggle" aria-expanded="false" aria-controls="jobsPageAdvancedFilters">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Refine</span>
+                    </button>
+
+                    <div class="jobs-filter-advanced jobs-filter-advanced--dashboard" id="jobsPageAdvancedFilters">
+                        <select id="jobsPageLocation">
+                            <option value="">All locations</option>
+                        </select>
+                        <select id="jobsPageType">
+                            <option value="">All job types</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Internship">Internship</option>
+                        </select>
+                        <select id="jobsPageSort">
+                            <option value="recommended">Recommended</option>
+                            <option value="newest">Newest first</option>
+                            <option value="closing">Closing soon</option>
+                            <option value="salary">Highest salary</option>
+                        </select>
+                        <button type="button" class="jobs-clear-btn jobs-clear-btn--dashboard" id="jobsPageClearFilters">Clear</button>
+                    </div>
                 </div>
             </div>
 

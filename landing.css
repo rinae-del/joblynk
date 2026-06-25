@@ -107,7 +107,7 @@ body.modal-open {
 
 .jobs-filter-panel {
     display: grid;
-    grid-template-columns: minmax(240px, 1.4fr) minmax(180px, 0.8fr) minmax(170px, 0.7fr) auto;
+    grid-template-columns: minmax(240px, 1.35fr) minmax(170px, 0.75fr) minmax(140px, 0.65fr) minmax(140px, 0.65fr) auto;
     gap: 0.9rem;
     align-items: end;
     padding: 1rem;
@@ -115,6 +115,14 @@ body.modal-open {
     border-radius: 22px;
     background: rgba(30, 41, 59, 0.68);
     margin-bottom: 1rem;
+}
+
+.jobs-filter-toggle-btn {
+    display: none;
+}
+
+.jobs-filter-advanced {
+    display: contents;
 }
 
 .jobs-filter-field {
@@ -623,7 +631,6 @@ body.modal-open {
 }
 
 .jobs-filter-panel {
-    grid-template-columns: minmax(250px, 1.35fr) minmax(170px, 0.75fr) minmax(150px, 0.65fr) minmax(150px, 0.65fr) auto;
     backdrop-filter: blur(14px);
 }
 
@@ -881,26 +888,29 @@ body.landing-page {
 .landing-nav-logo {
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.55rem;
     color: var(--text);
     text-decoration: none;
     min-width: 0;
+    flex-shrink: 0;
 }
 
 .landing-logo-img {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    object-fit: cover;
-    object-position: center;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    display: block;
+    width: auto;
+    height: 32px;
+    max-width: 108px;
+    object-fit: contain;
+    object-position: left center;
+    flex-shrink: 0;
 }
 
 .landing-logo-text {
     color: var(--text);
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 900;
     letter-spacing: 0;
+    white-space: nowrap;
 }
 
 .landing-nav-links {
@@ -3398,17 +3408,22 @@ html[data-theme="dark"] .recruiter-section {
     }
 
     .landing-nav {
-        padding-top: 0.85rem;
-        padding-bottom: 0.85rem;
+        padding: 0.65rem 1rem;
+        gap: 0.75rem;
     }
 
     .landing-logo-img {
-        width: 40px;
-        height: 40px;
+        height: 26px;
+        max-width: 88px;
     }
 
     .landing-logo-text {
-        font-size: 1.12rem;
+        font-size: 1.05rem;
+    }
+
+    .landing-nav-logo {
+        gap: 0.45rem;
+        max-width: calc(100% - 52px);
     }
 
     .theme-toggle,
@@ -4167,11 +4182,212 @@ body.modal-open {
 
 @media (max-width: 700px) {
     .jobs-filter-sticky {
-        top: 64px;
+        top: 52px;
+        padding: 0.5rem 0 0.75rem;
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+    }
+
+    .jobs-hero-compact {
+        padding: 4.25rem 0 1.25rem;
+    }
+
+    .jobs-hero-compact h1 {
+        font-size: clamp(1.65rem, 7vw, 2.1rem);
+    }
+
+    .jobs-hero-lead {
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    .jobs-board-section {
+        padding: 1rem 0 4.5rem;
+    }
+
+    .jobs-board-section .section-container {
+        padding: 0 1rem;
+    }
+
+    .jobs-board-header--compact {
+        margin-bottom: 0.75rem;
+    }
+
+    .jobs-board-header--compact h2 {
+        font-size: 1.35rem;
+        line-height: 1.15;
+    }
+
+    .jobs-board-header-note {
+        display: none;
+    }
+
+    .jobs-board-stats {
+        margin-bottom: 0.5rem;
+    }
+
+    .jobs-quick-filter-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        padding-bottom: 0.35rem;
+        margin-bottom: 0.65rem;
+        scrollbar-width: none;
+    }
+
+    .jobs-quick-filter-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .jobs-location-chip,
+    .jobs-category-chip {
+        flex: 0 0 auto;
+        min-height: 44px;
+        scroll-snap-align: start;
+    }
+
+    .jobs-filter-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        padding: 0.85rem;
+        border-radius: 18px;
+        margin-bottom: 0.65rem;
+    }
+
+    .jobs-filter-field label {
+        font-size: 0.72rem;
+    }
+
+    .jobs-filter-field input,
+    .jobs-filter-field select,
+    .jobs-filter-input-wrap input {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+
+    .jobs-filter-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.55);
+        color: #E2E8F0;
+        font: inherit;
+        font-size: 0.92rem;
+        font-weight: 800;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .jobs-filter-toggle-btn.is-active {
+        border-color: rgba(129, 140, 248, 0.55);
+        background: rgba(79, 70, 229, 0.22);
+        color: #FFFFFF;
+    }
+
+    .jobs-filter-advanced {
+        display: none;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .jobs-filter-advanced.is-open {
+        display: flex;
+    }
+
+    .jobs-clear-btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .jobs-results-summary {
+        font-size: 0.88rem;
+        margin: 0.5rem 0 0.85rem;
+    }
+
+    .jobs-curated-block {
+        padding: 0.85rem;
+        border-radius: 16px;
     }
 
     .jobs-curated-scroll .public-job-card {
-        flex-basis: min(280px, 92vw);
+        flex-basis: min(86vw, 300px);
+    }
+
+    .public-jobs-grid {
+        gap: 0.85rem;
+    }
+
+    .public-job-card {
+        padding: 1rem;
+        border-radius: 18px;
+    }
+
+    .public-job-card h3 {
+        font-size: 1.08rem;
+    }
+
+    .public-job-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .public-job-footnotes {
+        font-size: 0.82rem;
+    }
+
+    .public-job-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 0.55rem;
+    }
+
+    .public-job-primary,
+    .public-job-secondary {
+        min-height: 48px;
+        width: 100%;
+        font-size: 0.92rem;
+    }
+
+    .jobs-pagination {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .jobs-pagination .btn-landing {
+        width: 100%;
+        min-height: 52px;
+        font-size: 1rem;
+    }
+
+    .public-job-dialog {
+        width: 100%;
+        max-height: 92vh;
+        padding: 1.25rem;
+        border-radius: 20px 20px 0 0;
+        align-self: flex-end;
+    }
+
+    .public-job-modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .jobs-public-page {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+}
+
+@media (max-width: 380px) {
+    .landing-logo-text {
+        display: none;
     }
 }
 

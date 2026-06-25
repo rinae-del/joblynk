@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260524-client">
+    <link rel="stylesheet" href="landing.css?v=20260625-mobile">
 </head>
 
 <body class="landing-page jobs-public-page">
@@ -48,20 +48,20 @@
     <main>
         <section class="jobs-hero-compact">
             <div class="section-container">
-                <span class="hero-eyebrow"><i class="fa-solid fa-briefcase"></i> Live SA Job Board</span>
-                <h1>Find your next role in South Africa.</h1>
-                <p>Browse active jobs from verified recruiters. View listings as a guest and sign in only when you're ready to apply.</p>
+                <span class="hero-eyebrow"><i class="fa-solid fa-briefcase"></i> Live SA Jobs</span>
+                <h1>Find your next role.</h1>
+                <p class="jobs-hero-lead">Browse listings free — sign in only when you're ready to apply.</p>
             </div>
         </section>
 
         <section class="jobs-board-section" id="jobsBoard">
             <div class="section-container">
-                <div class="jobs-board-header">
+                <div class="jobs-board-header jobs-board-header--compact">
                     <div>
                         <span class="eyebrow eyebrow-green">Open roles</span>
-                        <h2>Find work that matches your skills and location.</h2>
+                        <h2>Jobs matched to you</h2>
                     </div>
-                    <p>Listings can be viewed as a guest. Sign in only when you are ready to submit an application.</p>
+                    <p class="jobs-board-header-note">Filter by city, category, or keyword to narrow results.</p>
                 </div>
 
                 <div class="jobs-board-stats" id="jobsBoardStats" aria-live="polite">
@@ -85,30 +85,38 @@
                             <label for="publicJobKeyword">Search</label>
                             <div class="jobs-filter-input-wrap">
                                 <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="search" id="publicJobKeyword" placeholder="Title, company, skill..." autocomplete="off">
+                                <input type="search" id="publicJobKeyword" placeholder="Job title, company, skill..." autocomplete="off" enterkeyhint="search">
                             </div>
                         </div>
-                        <div class="jobs-filter-field">
-                            <label for="publicJobLocation">Location</label>
-                            <select id="publicJobLocation">
-                                <option value="">All locations</option>
-                            </select>
+
+                        <button type="button" class="jobs-filter-toggle-btn" id="jobsFilterToggle" aria-expanded="false" aria-controls="jobsAdvancedFilters">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>Refine</span>
+                        </button>
+
+                        <div class="jobs-filter-advanced" id="jobsAdvancedFilters">
+                            <div class="jobs-filter-field">
+                                <label for="publicJobLocation">Location</label>
+                                <select id="publicJobLocation">
+                                    <option value="">All locations</option>
+                                </select>
+                            </div>
+                            <div class="jobs-filter-field">
+                                <label for="publicJobType">Type</label>
+                                <select id="publicJobType">
+                                    <option value="">All types</option>
+                                </select>
+                            </div>
+                            <div class="jobs-filter-field">
+                                <label for="publicJobSort">Sort</label>
+                                <select id="publicJobSort">
+                                    <option value="newest">Newest first</option>
+                                    <option value="salary">Highest salary</option>
+                                    <option value="closing">Closing soon</option>
+                                </select>
+                            </div>
+                            <button type="button" class="jobs-clear-btn" id="clearJobFilters">Clear</button>
                         </div>
-                        <div class="jobs-filter-field">
-                            <label for="publicJobType">Type</label>
-                            <select id="publicJobType">
-                                <option value="">All types</option>
-                            </select>
-                        </div>
-                        <div class="jobs-filter-field">
-                            <label for="publicJobSort">Sort</label>
-                            <select id="publicJobSort">
-                                <option value="newest">Newest first</option>
-                                <option value="salary">Highest salary</option>
-                                <option value="closing">Closing soon</option>
-                            </select>
-                        </div>
-                        <button type="button" class="jobs-clear-btn" id="clearJobFilters">Clear</button>
                     </div>
                 </div>
 
