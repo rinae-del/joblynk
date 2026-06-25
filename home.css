@@ -5,14 +5,32 @@
 .home-public-page {
     --home-max: 1180px;
     --home-gutter: 1.25rem;
-    --home-border: rgba(148, 163, 184, 0.14);
-    --home-surface: rgba(15, 23, 42, 0.72);
-    --home-section-pad: 3.75rem;
+    --home-border: rgba(148, 163, 184, 0.12);
+    --home-border-hover: rgba(129, 140, 248, 0.4);
+    --home-section-pad: 4.5rem;
     --home-accent: #6366f1;
     --home-accent-light: #a5b4fc;
     --home-accent-soft: rgba(99, 102, 241, 0.12);
     --home-accent-border: rgba(129, 140, 248, 0.28);
-    --home-page-bg: #0f172a;
+    --home-page-bg: #0b1120;
+
+    /* Premium glass card surface + lighting */
+    --home-card: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.68));
+    --home-card-hover: linear-gradient(180deg, rgba(40, 51, 71, 0.72), rgba(20, 28, 46, 0.78));
+    --home-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px rgba(2, 6, 23, 0.35);
+    --home-card-shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 22px 48px rgba(2, 6, 23, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.12);
+}
+
+/* Ambient depth that continues the hero mood across the page */
+html body.home-public-page,
+html[data-theme="dark"] body.home-public-page {
+    position: relative;
+    background:
+        radial-gradient(ellipse 60% 40% at 80% 8%, rgba(99, 102, 241, 0.1), transparent 60%),
+        radial-gradient(ellipse 55% 45% at 12% 42%, rgba(79, 70, 229, 0.07), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 88% 78%, rgba(99, 102, 241, 0.06), transparent 60%),
+        var(--home-page-bg);
+    background-attachment: fixed;
 }
 
 /* Prevent iOS Safari zoom-on-focus for form fields */
@@ -28,10 +46,60 @@
     padding-right: var(--home-gutter);
 }
 
+/* ── Reusable section intro (rule + label + heading) ─────── */
+.home-public-page .home-why-intro,
+.home-public-page .home-features-intro {
+    text-align: left;
+    max-width: 40rem;
+    margin: 0 0 2.25rem;
+}
+
+.home-public-page .home-section-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.15rem;
+}
+
+.home-public-page .home-section-rule-line {
+    width: 2.5rem;
+    height: 2px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, var(--home-accent), transparent);
+    flex-shrink: 0;
+}
+
+.home-public-page .home-section-rule-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--home-accent-light);
+    white-space: nowrap;
+}
+
+.home-public-page .home-why-intro h2,
+.home-public-page .home-features-intro h2 {
+    margin: 0 0 0.6rem;
+    font-size: clamp(1.55rem, 3.2vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: #f8fafc;
+}
+
+.home-public-page .home-why-intro p,
+.home-public-page .home-features-intro p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
 /* ── Hero ────────────────────────────────────────────────── */
 .home-public-page .home-hero {
     position: relative;
-    padding: 0 0 3rem;
+    padding: 0 0 3.25rem;
     border-bottom: none;
     background: transparent;
 }
@@ -39,7 +107,7 @@
 .home-public-page .home-hero-media {
     position: relative;
     width: 100%;
-    height: clamp(210px, 32vw, 340px);
+    height: clamp(220px, 33vw, 360px);
     overflow: hidden;
     margin-bottom: 0;
 }
@@ -57,15 +125,15 @@
 /* Soft blend under the nav */
 .home-public-page .home-hero-media::before {
     top: 0;
-    height: 32%;
+    height: 34%;
     background: linear-gradient(to bottom, var(--home-page-bg) 0%, transparent 100%);
 }
 
 /* Fade image into page background */
 .home-public-page .home-hero-media::after {
     bottom: 0;
-    height: 68%;
-    background: linear-gradient(to bottom, transparent 0%, var(--home-page-bg) 88%);
+    height: 70%;
+    background: linear-gradient(to bottom, transparent 0%, var(--home-page-bg) 90%);
 }
 
 .home-public-page .home-hero-img {
@@ -80,32 +148,32 @@
     position: relative;
     z-index: 2;
     max-width: var(--home-max);
-    margin: -0.5rem auto 0;
+    margin: -1.25rem auto 0;
     padding: 0 var(--home-gutter);
 }
 
 .home-public-page .home-hero-copy {
     min-width: 0;
-    max-width: 40rem;
+    max-width: 42rem;
     text-align: left;
 }
 
 .home-public-page .home-hero h1 {
-    margin: 0 0 0.85rem;
-    max-width: 16ch;
-    font-size: clamp(2rem, 4.2vw, 3rem);
+    margin: 0 0 0.95rem;
+    max-width: 17ch;
+    font-size: clamp(2.1rem, 4.6vw, 3.25rem);
     font-weight: 800;
-    line-height: 1.06;
-    letter-spacing: -0.03em;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
     color: #f8fafc;
 }
 
 .home-public-page .home-hero-lead {
-    margin: 0 0 1.35rem;
-    max-width: 32rem;
-    color: var(--muted);
-    font-size: 1.02rem;
-    line-height: 1.65;
+    margin: 0 0 1.5rem;
+    max-width: 33rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    line-height: 1.6;
     font-weight: 500;
 }
 
@@ -113,14 +181,16 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    gap: 0.65rem;
-    margin-bottom: 1.1rem;
+    gap: 0.7rem;
+    margin-bottom: 1.25rem;
 }
 
 .home-public-page .home-hero-marquee {
     position: relative;
     overflow: hidden;
-    margin-top: 0.15rem;
+    margin-top: 0.35rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--home-border);
     mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
@@ -128,7 +198,7 @@
 .home-public-page .home-hero-marquee-track {
     display: flex;
     width: max-content;
-    animation: home-hero-marquee 26s linear infinite;
+    animation: home-hero-marquee 28s linear infinite;
 }
 
 .home-public-page .home-hero-marquee-group {
@@ -144,8 +214,8 @@
 .home-public-page .home-hero-marquee-group li {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0 1.35rem;
+    gap: 0.5rem;
+    padding: 0 1.5rem;
     color: #94a3b8;
     font-size: 0.86rem;
     font-weight: 600;
@@ -154,10 +224,11 @@
 
 .home-public-page .home-hero-marquee-group li::before {
     content: '';
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--home-accent);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.7);
     flex-shrink: 0;
 }
 
@@ -189,51 +260,85 @@
     }
 }
 
-/* ── Featured jobs ───────────────────────────────────────── */
-.home-public-page .home-jobs-section {
+/* ── Section rhythm ──────────────────────────────────────── */
+.home-public-page .home-jobs-section,
+.home-public-page .features-section,
+.home-public-page .why-section,
+.home-public-page .how-it-works,
+.home-public-page .stats-counter-section,
+.home-public-page .testimonials-section,
+.home-public-page .faq-section {
     padding: var(--home-section-pad) 0;
-    border-bottom: 1px solid var(--home-border);
     border-top: none;
+    border-bottom: 1px solid var(--home-border);
+    background: transparent;
 }
 
+.home-public-page .features-section {
+    max-width: none;
+}
+
+.home-public-page .features-section .section-container {
+    max-width: var(--home-max);
+}
+
+/* Keep legacy centered headers tidy where still used */
+.home-public-page .section-header {
+    margin-bottom: 2rem;
+}
+
+.home-public-page .section-header h2 {
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+}
+
+.home-public-page .section-header p {
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.65;
+    color: var(--muted);
+}
+
+/* ── Featured jobs ───────────────────────────────────────── */
 .home-public-page .home-jobs-header {
     max-width: none;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.4rem;
     text-align: left;
 }
 
 .home-public-page .home-jobs-header h2 {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    margin-bottom: 0.45rem;
-    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    font-size: clamp(1.55rem, 3.2vw, 2.1rem);
     font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #f1f5f9;
+    letter-spacing: -0.025em;
+    color: #f8fafc;
 }
 
 .home-public-page .home-live-dot {
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    background: var(--home-accent);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.55);
+    background: #34d399;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
     animation: home-live-pulse 2.2s ease-out infinite;
     flex-shrink: 0;
 }
 
 @keyframes home-live-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5); }
-    70% { box-shadow: 0 0 0 7px rgba(99, 102, 241, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 
 .home-public-page .home-jobs-lead {
     margin: 0;
     max-width: 36rem;
     color: var(--muted);
-    font-size: 0.94rem;
+    font-size: 0.96rem;
     line-height: 1.55;
 }
 
@@ -241,13 +346,13 @@
     display: flex;
     width: 100%;
     justify-content: center;
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.85rem;
     box-sizing: border-box;
 }
 
 .home-public-page .home-jobs-list {
     display: grid;
-    gap: 0.75rem;
+    gap: 0.85rem;
     border: none;
     border-radius: 0;
     overflow: visible;
@@ -257,62 +362,45 @@
 .home-public-page .home-job-row {
     position: relative;
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
-    gap: 0.85rem;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    gap: 0.95rem;
     align-items: center;
-    padding: 0.95rem 1.05rem 0.95rem 1.15rem;
+    padding: 1rem 1.15rem;
     border: 1px solid var(--home-border);
-    border-radius: 14px;
-    background: var(--home-surface);
+    border-radius: 16px;
+    background: var(--home-card);
+    box-shadow: var(--home-card-shadow);
     text-decoration: none;
     color: inherit;
-    overflow: hidden;
-    transition: border-color 0.22s ease, background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.home-public-page .home-job-row::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--home-accent);
-    opacity: 0.45;
-    transition: opacity 0.22s ease, width 0.22s ease;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .home-job-row:hover {
-    transform: translateY(-2px);
-    border-color: var(--home-accent-border);
-    background: rgba(30, 41, 59, 0.88);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
-}
-
-.home-public-page .home-job-row:hover::before {
-    opacity: 1;
-    width: 4px;
+    transform: translateY(-3px);
+    border-color: var(--home-border-hover);
+    background: var(--home-card-hover);
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 .home-public-page .home-job-logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 11px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
     display: grid;
     place-items: center;
     overflow: hidden;
-    background: var(--home-accent);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 800;
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.28);
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.32);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .home-job-row:hover .home-job-logo {
-    transform: scale(1.04);
-    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.38);
+    transform: scale(1.05);
+    box-shadow: 0 8px 22px rgba(79, 70, 229, 0.45);
 }
 
 .home-public-page .home-job-logo img {
@@ -327,8 +415,8 @@
 }
 
 .home-public-page .home-job-body h3 {
-    margin: 0 0 0.2rem;
-    font-size: 0.95rem;
+    margin: 0 0 0.22rem;
+    font-size: 0.98rem;
     font-weight: 800;
     line-height: 1.3;
     color: #f1f5f9;
@@ -338,9 +426,9 @@
 }
 
 .home-public-page .home-job-company {
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.3rem;
     color: var(--muted);
-    font-size: 0.84rem;
+    font-size: 0.85rem;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -350,23 +438,23 @@
 .home-public-page .home-job-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 0.65rem;
+    gap: 0.35rem 0.7rem;
     color: #64748b;
-    font-size: 0.76rem;
+    font-size: 0.77rem;
     font-weight: 600;
 }
 
 .home-public-page .home-job-meta .is-salary {
-    color: var(--home-accent-light);
+    color: #6ee7b7;
 }
 
 .home-public-page .home-job-cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 34px;
-    padding: 0 0.85rem;
-    border-radius: 9px;
+    height: 36px;
+    padding: 0 0.95rem;
+    border-radius: 10px;
     background: var(--home-accent-soft);
     border: 1px solid var(--home-accent-border);
     color: var(--home-accent-light);
@@ -374,32 +462,40 @@
     font-weight: 700;
     white-space: nowrap;
     flex-shrink: 0;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
 .home-public-page .home-job-row:hover .home-job-cta {
-    background: var(--accent);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     border-color: transparent;
     color: #fff;
 }
 
 .home-public-page .home-jobs-empty,
 .home-public-page .home-jobs-loading {
-    padding: 2rem 1.5rem;
+    padding: 2.25rem 1.5rem;
     text-align: center;
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 0.94rem;
     font-weight: 600;
     border: 1px solid var(--home-border);
-    border-radius: 14px;
-    background: var(--home-surface);
+    border-radius: 16px;
+    background: var(--home-card);
+    box-shadow: var(--home-card-shadow);
+}
+
+.home-public-page .home-jobs-loading i {
+    margin-right: 0.4rem;
+    color: var(--home-accent);
 }
 
 .home-public-page .home-jobs-foot {
-    margin-top: 1.35rem;
-    padding: 1.15rem 1.15rem 1rem;
+    margin-top: 1.5rem;
+    padding: 1.25rem;
     border: 1px solid var(--home-border);
-    border-radius: 14px;
-    background: var(--home-surface);
+    border-radius: 16px;
+    background: var(--home-card);
+    box-shadow: var(--home-card-shadow);
 }
 
 .home-public-page .home-jobs-search {
@@ -407,11 +503,17 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.65rem 0.65rem 0.65rem 1rem;
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    border-radius: 12px;
-    background: rgba(11, 17, 32, 0.55);
-    min-height: 56px;
+    padding: 0.6rem 0.6rem 0.6rem 1.05rem;
+    border: 1px solid var(--home-border);
+    border-radius: 13px;
+    background: rgba(2, 6, 23, 0.5);
+    min-height: 58px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-public-page .home-jobs-search:focus-within {
+    border-color: var(--home-border-hover);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
 }
 
 .home-public-page .home-jobs-search > i {
@@ -441,7 +543,7 @@
 
 .home-public-page .home-jobs-search .btn-landing {
     height: 46px;
-    padding: 0 1.25rem;
+    padding: 0 1.3rem;
     font-size: 0.95rem;
     white-space: nowrap;
 }
@@ -449,23 +551,23 @@
 .home-public-page .home-location-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.45rem;
-    margin-top: 0.85rem;
+    gap: 0.5rem;
+    margin-top: 0.95rem;
 }
 
 .home-public-page .home-location-links a {
     display: inline-flex;
     align-items: center;
-    height: 30px;
-    padding: 0 0.75rem;
+    height: 32px;
+    padding: 0 0.85rem;
     border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    background: rgba(11, 17, 32, 0.45);
+    border: 1px solid var(--home-border);
+    background: rgba(2, 6, 23, 0.4);
     color: #94a3b8;
     font-size: 0.78rem;
     font-weight: 600;
     text-decoration: none;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .home-public-page .home-location-links a:hover {
@@ -474,20 +576,13 @@
     background: var(--home-accent-soft);
 }
 
-/* ── Unified palette (indigo + slate only) ───────────────── */
+/* ── Unified palette accents ─────────────────────────────── */
 .home-public-page .eyebrow,
 .home-public-page .eyebrow-amber,
 .home-public-page .eyebrow-green {
     background: var(--home-accent-soft);
     color: var(--home-accent-light);
     border-color: var(--home-accent-border);
-}
-
-.home-public-page .why-icon,
-.home-public-page .stat-counter-icon {
-    background: var(--home-accent-soft) !important;
-    border: 1px solid var(--home-accent-border);
-    color: var(--home-accent-light) !important;
 }
 
 .home-public-page .testimonial-result,
@@ -498,81 +593,43 @@
     border-color: var(--home-accent-border);
 }
 
-.home-public-page .features-section {
-    padding: var(--home-section-pad) 0;
-    max-width: none;
-    border-bottom: 1px solid var(--home-border);
+/* Shared icon tile (why + stats + features) */
+.home-public-page .why-icon,
+.home-public-page .stat-counter-icon,
+.home-public-page .feature-icon {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.08)) !important;
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light) !important;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.16);
 }
 
-.home-public-page .features-section .section-container {
-    max-width: var(--home-max);
-}
-
-.home-public-page .home-features-intro {
-    text-align: left;
-    max-width: 38rem;
-    margin: 0 0 1.75rem;
-}
-
-.home-public-page .home-features-intro h2 {
-    margin: 0 0 0.5rem;
-    font-size: clamp(1.45rem, 3vw, 1.85rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.12;
-    color: #f1f5f9;
-}
-
-.home-public-page .home-features-intro p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.94rem;
-    line-height: 1.6;
-}
-
+/* ── Career tools / features ─────────────────────────────── */
 .home-public-page .features-grid {
-    gap: 0.85rem;
+    gap: 1rem;
 }
 
 .home-public-page .feature-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    border-radius: 14px;
-    background: var(--home-surface);
+    border-radius: 18px;
+    background: var(--home-card);
     border: 1px solid var(--home-border);
-    padding: 1.1rem;
-    box-shadow: none;
+    padding: 1.25rem;
+    box-shadow: var(--home-card-shadow);
     overflow: hidden;
-    transition: border-color 0.22s ease, background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.home-public-page .feature-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 1rem;
-    bottom: 1rem;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-    background: var(--home-accent);
-    opacity: 0.35;
-    transition: opacity 0.22s ease;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .feature-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--home-accent-border);
-    background: rgba(30, 41, 59, 0.88);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
-}
-
-.home-public-page .feature-card:hover::before {
-    opacity: 1;
+    transform: translateY(-3px);
+    border-color: var(--home-border-hover);
+    background: var(--home-card-hover);
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 .home-public-page .feature-card.featured {
-    background: var(--home-surface);
+    background: var(--home-card);
     border-color: var(--home-border);
 }
 
@@ -581,11 +638,13 @@
     height: auto;
     min-height: 0;
     max-height: none;
-    margin: 0 0 0.9rem;
-    padding: 0.55rem;
-    border-radius: 10px;
-    background: rgba(11, 17, 32, 0.5);
-    border: 1px solid rgba(148, 163, 184, 0.12);
+    margin: 0 0 1rem;
+    padding: 0.7rem;
+    border-radius: 12px;
+    background:
+        radial-gradient(ellipse 80% 80% at 50% 0%, rgba(99, 102, 241, 0.1), transparent 70%),
+        rgba(2, 6, 23, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -597,10 +656,10 @@
     width: auto;
     max-width: 100%;
     height: auto;
-    max-height: 72px;
+    max-height: 78px;
     object-fit: contain;
     object-position: center;
-    border-radius: 4px;
+    border-radius: 6px;
     transform: none;
 }
 
@@ -617,233 +676,132 @@
 }
 
 .home-public-page .feature-icon {
-    width: 38px;
-    height: 38px;
-    margin: 0 0 0.65rem;
-    border-radius: 10px;
-    background: var(--home-accent-soft);
-    border: 1px solid var(--home-accent-border);
-    color: var(--home-accent-light);
-    font-size: 0.95rem;
+    width: 42px;
+    height: 42px;
+    margin: 0 0 0.75rem;
+    border-radius: 11px;
+    font-size: 1rem;
     flex-shrink: 0;
 }
 
 .home-public-page .feature-card h3 {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 800;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
     letter-spacing: -0.02em;
     color: #f1f5f9;
 }
 
 .home-public-page .feature-card p {
     flex: 1;
-    margin: 0 0 0.85rem;
+    margin: 0 0 0.95rem;
     padding-bottom: 0;
-    font-size: 0.86rem;
+    font-size: 0.88rem;
     line-height: 1.55;
     color: var(--muted);
 }
 
 .home-public-page .feature-link {
     margin-top: auto;
-    font-size: 0.86rem;
+    font-size: 0.87rem;
     font-weight: 700;
     color: var(--home-accent-light);
+    transition: gap 0.2s ease, color 0.2s ease;
 }
 
 .home-public-page .feature-link:hover {
     color: #fff;
 }
 
-.home-public-page .testimonial-card-featured {
-    background: var(--home-surface) !important;
-    border-color: var(--home-accent-border) !important;
+.home-public-page .feature-link i {
+    transition: transform 0.25s ease;
 }
 
-.home-public-page .home-jobs-loading i {
-    margin-right: 0.4rem;
-    color: var(--home-accent);
+.home-public-page .feature-card:hover .feature-link i {
+    transform: translateX(3px);
 }
 
-.home-public-page .home-jobs-header {
-    margin-bottom: 1rem;
-}
-
-.home-public-page .why-section,
-.home-public-page .how-it-works,
-.home-public-page .testimonials-section,
-.home-public-page .faq-section {
-    padding: var(--home-section-pad) 0;
-}
-
-.home-public-page .features-header,
-.home-public-page .section-header {
-    margin-bottom: 2rem;
-}
-
-.home-public-page .section-header h2,
-.home-public-page .features-header h2 {
-    letter-spacing: -0.02em;
-    line-height: 1.12;
-}
-
-.home-public-page .section-header p,
-.home-public-page .features-header p {
-    max-width: 40rem;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.65;
-    color: var(--muted);
-}
-
-.home-public-page .why-section {
-    border-bottom: 1px solid var(--home-border);
-}
-
-.home-public-page .home-why-intro {
-    text-align: left;
-    max-width: 38rem;
-    margin: 0 0 2rem;
-}
-
-.home-public-page .home-section-rule {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    margin-bottom: 1.1rem;
-}
-
-.home-public-page .home-section-rule-line {
-    width: 2.75rem;
-    height: 2px;
-    border-radius: 1px;
-    background: var(--home-accent);
-    flex-shrink: 0;
-}
-
-.home-public-page .home-section-rule-label {
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--home-accent-light);
-    white-space: nowrap;
-}
-
-.home-public-page .home-why-intro h2 {
-    margin: 0 0 0.55rem;
-    font-size: clamp(1.45rem, 3vw, 1.85rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.12;
-    color: #f1f5f9;
-}
-
-.home-public-page .home-why-intro p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.94rem;
-    line-height: 1.6;
-}
-
+/* ── Why JobLynk ─────────────────────────────────────────── */
 .home-public-page .why-grid {
-    gap: 0.85rem;
+    gap: 1rem;
 }
 
 .home-public-page .why-card {
     position: relative;
-    border-radius: 14px;
-    background: var(--home-surface);
-    padding: 1.35rem 1.2rem 1.35rem 1.5rem;
+    border-radius: 18px;
+    background: var(--home-card);
+    border: 1px solid var(--home-border);
+    padding: 1.5rem 1.4rem;
+    box-shadow: var(--home-card-shadow);
     overflow: hidden;
-    transition: border-color 0.22s ease, background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.home-public-page .why-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 1rem;
-    bottom: 1rem;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-    background: var(--home-accent);
-    opacity: 0.4;
-    transition: opacity 0.22s ease;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .why-card:hover {
-    border-color: var(--home-accent-border);
-    background: rgba(30, 41, 59, 0.88);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
-}
-
-.home-public-page .why-card:hover::before {
-    opacity: 1;
+    border-color: var(--home-border-hover);
+    background: var(--home-card-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 .home-public-page .why-icon {
-    transition: transform 0.22s ease, background 0.22s ease;
+    transition: transform 0.25s ease;
 }
 
 .home-public-page .why-card:hover .why-icon {
-    transform: scale(1.06);
-    background: rgba(99, 102, 241, 0.2) !important;
+    transform: scale(1.08) rotate(-3deg);
 }
 
-.home-public-page .how-it-works {
-    background: transparent;
-    border-top: none;
-    border-bottom: 1px solid var(--home-border);
-}
-
+/* ── How it works ────────────────────────────────────────── */
 .home-public-page .how-it-works .section-header {
     margin-bottom: 1.75rem;
 }
 
 .home-public-page .steps-grid {
     max-width: var(--home-max);
-    gap: 0.75rem;
+    gap: 0.85rem;
     align-items: stretch;
 }
 
 .home-public-page .step-item {
-    padding: 1.45rem 1.3rem;
-    border-radius: 14px;
-    background: var(--home-surface);
+    padding: 1.6rem 1.4rem;
+    border-radius: 18px;
+    background: var(--home-card);
     border: 1px solid var(--home-border);
+    box-shadow: var(--home-card-shadow);
     text-align: left;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .step-item:hover {
-    border-color: var(--home-accent-border);
-    background: rgba(30, 41, 59, 0.82);
+    border-color: var(--home-border-hover);
+    background: var(--home-card-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 .home-public-page .step-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.35rem;
-    height: 2.35rem;
-    padding: 0 0.55rem;
-    margin-bottom: 0.85rem;
-    border-radius: 10px;
-    font-size: 0.82rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.6rem;
+    margin-bottom: 0.95rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 0.04em;
-    background: var(--home-accent-soft);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.08));
     border: 1px solid var(--home-accent-border);
     color: var(--home-accent-light);
     -webkit-text-fill-color: var(--home-accent-light);
     background-clip: border-box;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.16);
 }
 
 .home-public-page .step-item h3 {
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     font-weight: 800;
     margin-bottom: 0.45rem;
     color: #f1f5f9;
@@ -857,64 +815,60 @@
 }
 
 .home-public-page .step-arrow {
-    color: rgba(148, 163, 184, 0.45);
-    font-size: 1.05rem;
+    color: rgba(148, 163, 184, 0.4);
+    font-size: 1.1rem;
     padding: 0 0.1rem;
 }
 
 .home-public-page .how-it-works .how-cta {
-    margin-top: 1.75rem;
+    margin-top: 2rem;
 }
 
 .home-public-page .how-it-works .how-cta .btn-landing {
     min-width: min(100%, 320px);
 }
 
-.home-public-page .stats-counter-section {
-    padding: var(--home-section-pad) 0;
-    border-top: none;
-    border-bottom: 1px solid var(--home-border);
-    background: transparent;
-}
-
+/* ── Stats / at a glance ─────────────────────────────────── */
 .home-public-page .stats-counter-section .section-header {
     margin-bottom: 1.75rem;
 }
 
 .home-public-page .stats-counter-grid {
-    gap: 0.75rem;
+    gap: 0.85rem;
     max-width: var(--home-max);
     text-align: left;
 }
 
 .home-public-page .stat-counter-item {
-    padding: 1.25rem 1.15rem;
-    border-radius: 14px;
-    background: var(--home-surface);
+    padding: 1.4rem 1.3rem;
+    border-radius: 18px;
+    background: var(--home-card);
     border: 1px solid var(--home-border);
-    box-shadow: none;
+    box-shadow: var(--home-card-shadow);
     text-align: left;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .stat-counter-item:hover {
-    border-color: var(--home-accent-border);
-    background: rgba(30, 41, 59, 0.82);
+    border-color: var(--home-border-hover);
+    background: var(--home-card-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--home-card-shadow-hover);
 }
 
 .home-public-page .stat-counter-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 11px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.9rem;
     font-size: 1rem;
 }
 
 .home-public-page .stat-counter-item h3 {
-    font-size: 1.08rem;
+    font-size: 1.1rem;
     font-weight: 800;
     margin-bottom: 0.4rem;
     color: #f1f5f9;
@@ -929,40 +883,42 @@
 }
 
 .home-public-page .stat-counter-item p {
-    font-size: 0.86rem;
+    font-size: 0.87rem;
     line-height: 1.55;
+    color: var(--muted);
 }
 
-.home-public-page .testimonials-section {
-    border-bottom: 1px solid var(--home-border);
-}
-
+/* ── Testimonials ────────────────────────────────────────── */
 .home-public-page .testimonial-card {
-    border-radius: 16px;
+    border-radius: 18px;
+    background: var(--home-card) !important;
+    border: 1px solid var(--home-border) !important;
+    box-shadow: var(--home-card-shadow);
 }
 
-.home-public-page .faq-section {
-    background: transparent;
+.home-public-page .testimonial-card-featured {
+    background: var(--home-card) !important;
+    border-color: var(--home-accent-border) !important;
 }
 
+/* ── FAQ ─────────────────────────────────────────────────── */
 .home-public-page .faq-grid {
-    gap: 0.65rem;
+    gap: 0.7rem;
 }
 
 .home-public-page .faq-item {
     border: 1px solid var(--home-border);
-    border-radius: 12px;
-    background: rgba(15, 23, 42, 0.45);
+    border-radius: 14px;
+    background: var(--home-card);
+    box-shadow: var(--home-card-shadow);
     overflow: hidden;
-}
-
-.home-public-page .faq-item {
     padding: 0;
+    transition: border-color 0.25s ease, background 0.25s ease;
 }
 
 .home-public-page .faq-item[open] {
     border-color: var(--home-accent-border);
-    background: rgba(30, 41, 59, 0.82);
+    background: var(--home-card-hover);
 }
 
 .home-public-page .faq-item summary {
@@ -970,12 +926,12 @@
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    padding: 1rem 1.15rem;
+    padding: 1.05rem 1.25rem;
     font-weight: 700;
     cursor: pointer;
     list-style: none;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.96rem;
 }
 
 .home-public-page .faq-item summary::-webkit-details-marker {
@@ -984,8 +940,8 @@
 
 .home-public-page .faq-item summary::after {
     content: "+";
-    font-size: 1.35rem;
-    color: var(--accent-light);
+    font-size: 1.4rem;
+    color: var(--home-accent-light);
     font-weight: 400;
     line-height: 1;
     flex-shrink: 0;
@@ -996,43 +952,45 @@
 }
 
 .home-public-page .faq-item p {
-    padding: 0 1.15rem 1rem;
+    padding: 0 1.25rem 1.1rem;
     margin: 0;
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 0.93rem;
     line-height: 1.65;
 }
 
+/* ── Final CTA ───────────────────────────────────────────── */
 .home-public-page .final-cta-section {
     margin-top: 0;
+    border-bottom: none;
 }
 
 .home-public-page .final-cta-inner {
-    border-radius: 18px;
+    border-radius: 22px;
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
     .home-public-page .features-grid {
         grid-template-columns: 1fr;
-        max-width: 420px;
+        max-width: 440px;
         margin: 0 auto;
     }
 
     .home-public-page .feature-img {
-        max-height: 80px;
+        max-height: 88px;
     }
 
     .home-public-page .home-hero-media {
-        height: clamp(200px, 42vw, 240px);
+        height: clamp(210px, 44vw, 260px);
     }
 
     .home-public-page .home-hero-inner {
-        margin-top: -0.35rem;
+        margin-top: -1rem;
     }
 
     .home-public-page .home-hero h1 {
-        max-width: 18ch;
+        max-width: 20ch;
     }
 
     .home-public-page .home-hero-marquee {
@@ -1053,7 +1011,7 @@
 
     .home-public-page .steps-grid {
         grid-template-columns: 1fr !important;
-        gap: 0.65rem;
+        gap: 0.7rem;
     }
 
     .home-public-page .step-arrow {
@@ -1065,7 +1023,7 @@
 @media (max-width: 720px) {
     .home-public-page {
         --home-gutter: 1rem;
-        --home-section-pad: 3rem;
+        --home-section-pad: 3.25rem;
     }
 
     .home-public-page .home-hero {
