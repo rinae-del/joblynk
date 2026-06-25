@@ -31,19 +31,6 @@ function ensureCompanyBrandingSchema(PDO $pdo): void {
     }
 }
 
-function absoluteJobAssetUrl(string $path): string {
-    $path = trim($path);
-    if ($path === '') {
-        return '';
-    }
-
-    if (preg_match('#^https?://#i', $path)) {
-        return $path;
-    }
-
-    return rtrim(APP_URL, '/') . '/' . ltrim($path, '/');
-}
-
 function sendJobLiveConfirmationEmail(PDO $pdo, int $userId, int $jobId, array $jobData): void {
     try {
         $stmt = $pdo->prepare('

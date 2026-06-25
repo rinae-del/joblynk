@@ -43,12 +43,13 @@ const JobsStore = (() => {
     }
 
     function normalizeJob(j) {
+        const logoRaw = j.company_logo_url || j.companyLogoUrl || '';
         return {
             id: j.id,
             title: j.title,
             jobReference: j.job_reference || j.jobReference || '',
             company: j.company,
-            companyLogoUrl: j.company_logo_url || j.companyLogoUrl || '',
+            companyLogoUrl: logoRaw,
             location: j.location || '',
             type: j.type || 'Full-time',
             description: j.description || '',

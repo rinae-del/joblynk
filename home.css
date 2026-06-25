@@ -301,17 +301,32 @@ html[data-theme="dark"] body.home-public-page {
 }
 
 /* ── Featured jobs ───────────────────────────────────────── */
+.home-public-page .home-jobs-intro {
+    max-width: none;
+    margin: 0 0 1.4rem;
+    text-align: left;
+}
+
 .home-public-page .home-jobs-header {
     max-width: none;
     margin: 0 0 1.4rem;
     text-align: left;
 }
 
-.home-public-page .home-jobs-header h2 {
-    display: flex;
+.home-public-page .home-section-rule-line-live {
+    background: linear-gradient(90deg, #34d399, transparent);
+}
+
+.home-public-page .home-section-rule-label-live {
+    display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.5rem;
+    gap: 0.45rem;
+    color: #34d399;
+}
+
+.home-public-page .home-jobs-intro h2,
+.home-public-page .home-jobs-header h2 {
+    margin: 0 0 0.5rem;
     font-size: clamp(1.55rem, 3.2vw, 2.1rem);
     font-weight: 800;
     letter-spacing: -0.025em;

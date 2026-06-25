@@ -101,6 +101,25 @@ function ensureJobsSourceIndex(PDO $pdo): void
     }
 }
 
+function absoluteJobAssetUrl(string $path): string
+{
+    $path = trim($path);
+    if ($path === '') {
+        return '';
+    }
+
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+
+    $base = defined('APP_URL') ? rtrim((string) APP_URL, '/') : '';
+    if ($base === '') {
+        return ltrim($path, '/');
+    }
+
+    return $base . '/' . ltrim($path, '/');
+}
+
 function normalizeJobRow(array &$job): void
 {
     $job['job_reference'] = $job['job_reference'] ?? '';
@@ -125,6 +144,8 @@ function normalizeJobRow(array &$job): void
 
     if (strcasecmp(trim((string) ($job['company'] ?? '')), 'Confidential') === 0) {
         $job['company_logo_url'] = '';
+    } else {
+        $job['company_logo_url'] = absoluteJobAssetUrl($job['company_logo_url']);
     }
 }
 

@@ -573,39 +573,57 @@ html[data-theme="dark"] body.pricing-page {
     color: var(--rp-accent-light);
 }
 
-.notes-list {
+.notes-intro {
+    margin-bottom: 1.15rem;
+}
+
+.notes-intro .rp-section-rule {
+    margin-bottom: 0;
+}
+
+.notes-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 1.5rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    color: var(--muted);
-    font-size: 0.86rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
 }
 
-.notes-list li {
+.notes-item {
     display: flex;
-    align-items: baseline;
-    gap: 0.55rem;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-    line-height: 1.5;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.38);
+    border: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.notes-list li::before {
-    content: '';
-    flex: 0 0 6px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--rp-green-light);
-    box-shadow: 0 0 8px rgba(52, 211, 153, 0.45);
+.notes-item-icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--rp-green-soft);
+    border: 1px solid var(--rp-green-border);
+    color: var(--rp-green-light);
+    font-size: 0.82rem;
+    flex-shrink: 0;
 }
 
-.notes-list li strong {
-    color: #e2e8f0;
+.notes-item-copy strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.86rem;
+    color: #f1f5f9;
     font-weight: 700;
+    line-height: 1.35;
+}
+
+.notes-item-copy p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.45;
 }
 
 /* ── Payment result ────────────────────────────────────────── */
@@ -658,6 +676,10 @@ html[data-theme="dark"] body.pricing-page {
     .pricing-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .notes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 680px) {
@@ -691,7 +713,7 @@ html[data-theme="dark"] body.pricing-page {
 
     .pricing-benefit-strip,
     .pricing-grid,
-    .notes-list {
+    .notes-grid {
         grid-template-columns: 1fr;
     }
 

@@ -48,7 +48,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="landing.css?v=20260701">
-    <link rel="stylesheet" href="home.css?v=20260711">
+    <link rel="stylesheet" href="home.css?v=20260712">
 </head>
 
 <body class="landing-page home-public-page">
@@ -123,8 +123,12 @@
     <!-- Featured jobs -->
     <section class="home-jobs-section" id="jobs" aria-labelledby="homeJobsHeading">
         <div class="section-container">
-            <div class="section-header home-jobs-header">
-                <h2 id="homeJobsHeading"><span class="home-live-dot" aria-hidden="true"></span> Latest roles</h2>
+            <div class="section-header home-jobs-header home-jobs-intro">
+                <div class="home-section-rule" aria-hidden="true">
+                    <span class="home-section-rule-line home-section-rule-line-live"></span>
+                    <span class="home-section-rule-label home-section-rule-label-live"><span class="home-live-dot" aria-hidden="true"></span> Live</span>
+                </div>
+                <h2 id="homeJobsHeading">Roles</h2>
                 <p class="home-jobs-lead" id="homeJobsLead">Loading…</p>
             </div>
 
@@ -536,7 +540,7 @@
 
     <script src="jobs-store.js?v=20260524-jobs"></script>
     <script src="jobs-browser.js?v=20260625-board"></script>
-    <script src="home.js?v=20260711"></script>
+    <script src="home.js?v=20260712"></script>
     <script>
         const hamburger = document.getElementById('navHamburger');
         const mobileMenu = document.getElementById('mobileNavMenu');

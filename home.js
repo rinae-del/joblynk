@@ -51,13 +51,21 @@
         return [salary, note].filter(Boolean).join(', ');
     }
 
+    function resolveLogoUrl(url) {
+        const path = String(url || '').trim();
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) return path;
+        const root = window.location.pathname.replace(/[^/]*$/, '');
+        return `${window.location.origin}${root}${path.replace(/^\//, '')}`;
+    }
+
     function hasCompanyLogo(job) {
-        return Boolean(String(job.companyLogoUrl || job.company_logo_url || '').trim());
+        return Boolean(resolveLogoUrl(job.companyLogoUrl || job.company_logo_url || ''));
     }
 
     function renderJobRow(job) {
         const company = job.company || 'Company';
-        const logo = job.companyLogoUrl || job.company_logo_url || '';
+        const logo = resolveLogoUrl(job.companyLogoUrl || job.company_logo_url || '');
         const accent = /^#[0-9A-Fa-f]{3,6}$/.test(String(job.color || '').trim()) ? job.color : '#6366F1';
         const salary = formatSalaryLabel(job);
 
@@ -108,12 +116,16 @@
 
             if (lead) {
                 lead.textContent = featured.length
-                    ? `${jobs.length.toLocaleString()} open roles — ${featured.length} featured below.`
-                    : 'Check back soon for new roles.';
+                    ? `${jobs.length.toLocaleString()} open roles — live picks with company branding below.`
+                    : withLogo.length
+                        ? 'Check back soon for new roles.'
+                        : `${jobs.length.toLocaleString()} open roles — upload a company logo to appear here.`;
             }
 
             if (!featured.length) {
-                list.innerHTML = '<div class="home-jobs-empty">No featured roles right now. <a href="jobs.html">Browse the job board</a>.</div>';
+                list.innerHTML = withLogo.length
+                    ? '<div class="home-jobs-empty">No featured roles right now. <a href="jobs.html">Browse the job board</a>.</div>'
+                    : `<div class="home-jobs-empty">${jobs.length ? 'Featured roles need a company logo. <a href="jobs.html">Browse all ' + jobs.length.toLocaleString() + ' roles</a>.' : 'No live roles right now. <a href="jobs.html">Browse the job board</a>.'}</div>`;
                 return;
             }
 
