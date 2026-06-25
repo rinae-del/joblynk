@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260625-mobile">
+    <link rel="stylesheet" href="landing.css?v=20260625-mobile2">
 </head>
 
 <body class="landing-page jobs-public-page">
@@ -69,16 +69,20 @@
                 </div>
 
                 <div class="jobs-filter-sticky">
-                    <div class="jobs-quick-filter-row" aria-label="Popular location filters">
-                        <button type="button" class="jobs-location-chip active" data-location-filter="">All SA</button>
-                        <button type="button" class="jobs-location-chip" data-location-filter="johannesburg">Johannesburg</button>
-                        <button type="button" class="jobs-location-chip" data-location-filter="cape town">Cape Town</button>
-                        <button type="button" class="jobs-location-chip" data-location-filter="durban">Durban</button>
-                        <button type="button" class="jobs-location-chip" data-location-filter="pretoria">Pretoria</button>
-                        <button type="button" class="jobs-location-chip" data-location-filter="remote">Remote</button>
+                    <div class="jobs-chip-scroller" aria-label="Popular location filters">
+                        <div class="jobs-quick-filter-row">
+                            <button type="button" class="jobs-location-chip active" data-location-filter="">All SA</button>
+                            <button type="button" class="jobs-location-chip" data-location-filter="johannesburg">Johannesburg</button>
+                            <button type="button" class="jobs-location-chip" data-location-filter="cape town">Cape Town</button>
+                            <button type="button" class="jobs-location-chip" data-location-filter="durban">Durban</button>
+                            <button type="button" class="jobs-location-chip" data-location-filter="pretoria">Pretoria</button>
+                            <button type="button" class="jobs-location-chip" data-location-filter="remote">Remote</button>
+                        </div>
                     </div>
 
-                    <div class="jobs-quick-filter-row jobs-category-chips" id="jobsCategoryChips" aria-label="Job category filters"></div>
+                    <div class="jobs-chip-scroller" aria-label="Job category filters">
+                        <div class="jobs-quick-filter-row jobs-category-chips" id="jobsCategoryChips"></div>
+                    </div>
 
                     <div class="jobs-filter-panel" aria-label="Job filters">
                         <div class="jobs-filter-field jobs-filter-search">
