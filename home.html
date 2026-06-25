@@ -48,7 +48,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="landing.css?v=20260701">
-    <link rel="stylesheet" href="home.css?v=20260703">
+    <link rel="stylesheet" href="home.css?v=20260704">
 </head>
 
 <body class="landing-page home-public-page">
@@ -103,11 +103,20 @@
                     <a href="#jobs" class="btn-landing btn-landing-primary btn-lg">Browse live jobs</a>
                     <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build your CV</a>
                 </div>
-                <ul class="home-hero-points">
-                    <li>New roles added daily</li>
-                    <li>Apply before you create an account</li>
-                    <li>POPIA-compliant and secure</li>
-                </ul>
+                <div class="home-hero-marquee" aria-label="Platform highlights">
+                    <div class="home-hero-marquee-track">
+                        <ul class="home-hero-marquee-group">
+                            <li>New roles added daily</li>
+                            <li>Apply before you create an account</li>
+                            <li>POPIA-compliant and secure</li>
+                        </ul>
+                        <ul class="home-hero-marquee-group" aria-hidden="true">
+                            <li>New roles added daily</li>
+                            <li>Apply before you create an account</li>
+                            <li>POPIA-compliant and secure</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -115,13 +124,11 @@
     <!-- Featured jobs -->
     <section class="home-jobs-section" id="jobs" aria-labelledby="homeJobsHeading">
         <div class="section-container">
-            <div class="home-jobs-header">
-                <div>
-                    <p class="home-kicker">Featured</p>
-                    <h2 id="homeJobsHeading">Latest roles on JobLynk</h2>
-                    <p class="home-jobs-lead" id="homeJobsLead">Loading openings…</p>
-                </div>
-                <a href="jobs.html" class="btn-landing btn-landing-outline">View all jobs</a>
+            <div class="section-header home-jobs-header">
+                <span class="eyebrow">Featured</span>
+                <h2 id="homeJobsHeading">Latest roles on JobLynk</h2>
+                <p class="home-jobs-lead" id="homeJobsLead">Loading openings…</p>
+                <a href="jobs.html" class="btn-landing btn-landing-outline home-jobs-all-link">View all jobs</a>
             </div>
 
             <div class="home-jobs-list" id="homeFeaturedJobs" aria-live="polite"></div>
