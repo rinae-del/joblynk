@@ -3,9 +3,13 @@
         jobs: [],
         session: { loggedIn: false, user: null },
         selectedJobId: null,
+        browsePage: 1,
+        activeCategory: '',
+        loading: true,
     };
 
     const $ = id => document.getElementById(id);
+    const debouncedRender = JobsBrowser.debounce(() => renderJobs(), 280);
 
     function escText(value = '') {
         const div = document.createElement('div');
@@ -17,15 +21,8 @@
         return escText(value).replace(/"/g, '&quot;');
     }
 
-    function normalizeSearch(value = '') {
-        return String(value).trim().toLowerCase();
-    }
-
     function compactMoney(value) {
-        return new Intl.NumberFormat('en-ZA', {
-            notation: 'compact',
-            maximumFractionDigits: 1,
-        }).format(value);
+        return new Intl.NumberFormat('en-ZA', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
     }
 
     function formatSalaryValue(value) {
@@ -44,11 +41,9 @@
         const salaryNote = String(job.salaryNote || job.salary_note || '').trim();
         const period = String(job.salaryPeriod || job.salary_period || 'Per Month').replace(/^Per\s+/i, 'per ');
         let salary = '';
-
         if (salaryFrom && salaryTo) salary = `${salaryFrom} to ${salaryTo} ${period}`;
         else if (salaryFrom) salary = `${salaryFrom} ${period}`;
         else if (salaryTo) salary = `${salaryTo} ${period}`;
-
         return [salary, salaryNote].filter(Boolean).join(', ');
     }
 
@@ -66,11 +61,7 @@
     }
 
     function buildJobMeta(job) {
-        return [
-            job.location || 'Remote friendly',
-            job.type || 'Role type not specified',
-            formatSalaryLabel(job),
-        ].filter(Boolean);
+        return [job.location || 'Remote friendly', job.type || 'Full-time', formatSalaryLabel(job)].filter(Boolean);
     }
 
     function normalizeList(value) {
@@ -96,13 +87,6 @@
         return 'Closes ' + parsed.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
-    function getSalaryNumber(job) {
-        const salaryTo = String(job.salaryTo || job.salary_to || '').replace(/[^\d.]/g, '');
-        const salaryFrom = String(job.salaryFrom || job.salary_from || '').replace(/[^\d.]/g, '');
-        const value = Number(salaryTo || salaryFrom || 0);
-        return Number.isFinite(value) ? value : 0;
-    }
-
     function getApplicantCount(job) {
         const count = Number(job.applicants || job.applicant_count || 0);
         return Number.isFinite(count) ? count : 0;
@@ -115,6 +99,24 @@
 
     function getJobById(jobId) {
         return state.jobs.find(job => String(job.id) === String(jobId)) || null;
+    }
+
+    function getFilters() {
+        return {
+            keyword: $('publicJobKeyword')?.value || '',
+            location: $('publicJobLocation')?.value || '',
+            type: $('publicJobType')?.value || '',
+            category: state.activeCategory,
+        };
+    }
+
+    function hasActiveFilters() {
+        const f = getFilters();
+        return !!(f.keyword.trim() || f.location || f.type || f.category);
+    }
+
+    function getSortMode() {
+        return $('publicJobSort')?.value || 'newest';
     }
 
     async function loadSession() {
@@ -146,8 +148,25 @@
         }
     }
 
+    function renderSkeleton() {
+        const list = $('publicJobsList');
+        if (!list) return;
+        list.innerHTML = Array.from({ length: 6 }, () => `
+            <article class="public-job-card public-job-card--skeleton" aria-hidden="true">
+                <div class="skeleton-block skeleton-logo"></div>
+                <div class="skeleton-block skeleton-line skeleton-line--lg"></div>
+                <div class="skeleton-block skeleton-line"></div>
+                <div class="skeleton-block skeleton-line skeleton-line--sm"></div>
+            </article>
+        `).join('');
+    }
+
     async function loadJobs() {
+        state.loading = true;
+        renderSkeleton();
         const summary = $('jobsResultsSummary');
+        if (summary) summary.textContent = 'Loading jobs...';
+
         try {
             if (typeof JobsStore !== 'undefined') {
                 await JobsStore.fetchJobs();
@@ -161,26 +180,53 @@
             console.warn('Unable to load jobs:', error);
             state.jobs = [];
             if (summary) summary.textContent = 'We could not load jobs right now. Please refresh the page.';
+        } finally {
+            state.loading = false;
         }
+    }
+
+    function renderCategoryChips() {
+        const container = $('jobsCategoryChips');
+        if (!container) return;
+
+        container.innerHTML = JobsBrowser.CATEGORIES.map(cat => `
+            <button type="button" class="jobs-category-chip${state.activeCategory === cat.id ? ' active' : ''}"
+                data-category-filter="${escAttr(cat.id)}" aria-pressed="${state.activeCategory === cat.id}">
+                <i class="fa-solid ${escAttr(cat.icon)}"></i> ${escText(cat.label)}
+            </button>
+        `).join('');
+
+        container.querySelectorAll('[data-category-filter]').forEach(button => {
+            button.addEventListener('click', () => {
+                const next = button.getAttribute('data-category-filter') || '';
+                state.activeCategory = state.activeCategory === next ? '' : next;
+                state.browsePage = 1;
+                renderCategoryChips();
+                renderJobs();
+            });
+        });
     }
 
     function populateFilters() {
         const locationSelect = $('publicJobLocation');
         const typeSelect = $('publicJobType');
-        const locations = [...new Set(state.jobs.map(job => job.location).filter(Boolean))].sort();
-        const types = [...new Set(state.jobs.map(job => job.type).filter(Boolean))].sort();
+        const topLocations = JobsBrowser.getTopLocations(state.jobs, 20);
+        const types = JobsBrowser.getUniqueTypes(state.jobs);
 
         if (locationSelect) {
+            const current = locationSelect.value;
             locationSelect.innerHTML = '<option value="">All locations</option>';
-            locations.forEach(location => {
+            topLocations.forEach(({ region, count, label }) => {
                 const option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
+                option.value = region;
+                option.textContent = `${label} (${count})`;
                 locationSelect.appendChild(option);
             });
+            if (current) locationSelect.value = current;
         }
 
         if (typeSelect) {
+            const current = typeSelect.value;
             typeSelect.innerHTML = '<option value="">All types</option>';
             types.forEach(type => {
                 const option = document.createElement('option');
@@ -188,94 +234,69 @@
                 option.textContent = type;
                 typeSelect.appendChild(option);
             });
+            if (current) typeSelect.value = current;
         }
 
-        const heroCount = $('jobsHeroCount');
-        const locationCount = $('jobsLocationCount');
-        const typeCount = $('jobsTypeCount');
-        if (heroCount) heroCount.textContent = String(state.jobs.length);
-        if (locationCount) locationCount.textContent = String(locations.length);
-        if (typeCount) typeCount.textContent = String(types.length);
+        const statEl = $('jobsStatTotal');
+        if (statEl) {
+            const locCount = topLocations.length;
+            statEl.innerHTML = `<i class="fa-solid fa-briefcase"></i> ${state.jobs.length.toLocaleString()} live jobs · ${locCount} regions`;
+        }
     }
 
     function syncLocationChips() {
-        const selectedLocation = $('publicJobLocation')?.value || '';
+        const selected = normalizeLocationKey($('publicJobLocation')?.value || '');
         document.querySelectorAll('[data-location-filter]').forEach(button => {
-            button.classList.toggle('active', button.getAttribute('data-location-filter') === selectedLocation);
+            const key = normalizeLocationKey(button.getAttribute('data-location-filter') || '');
+            button.classList.toggle('active', key === selected);
         });
     }
 
-    function getFilteredJobs() {
-        const keyword = normalizeSearch($('publicJobKeyword')?.value || '');
-        const location = $('publicJobLocation')?.value || '';
-        const type = $('publicJobType')?.value || '';
-        const sort = $('publicJobSort')?.value || 'newest';
-
-        const filtered = state.jobs.filter(job => {
-            const searchable = [job.title, job.company, job.location, job.description, job.requirements, job.skills, normalizeList(job.benefits).join(' ')]
-                .map(normalizeSearch)
-                .join(' ');
-            const matchesKeyword = !keyword || searchable.includes(keyword);
-            const matchesLocation = !location || job.location === location;
-            const matchesType = !type || String(job.type || '').toLowerCase() === type.toLowerCase();
-            return matchesKeyword && matchesLocation && matchesType;
-        });
-
-        return filtered.sort((left, right) => {
-            if (sort === 'salary') return getSalaryNumber(right) - getSalaryNumber(left);
-            if (sort === 'closing') {
-                const leftTime = new Date(getClosingDate(left)).getTime() || Number.MAX_SAFE_INTEGER;
-                const rightTime = new Date(getClosingDate(right)).getTime() || Number.MAX_SAFE_INTEGER;
-                return leftTime - rightTime;
-            }
-            return (new Date(right.postedAt || right.created_at).getTime() || 0) - (new Date(left.postedAt || left.created_at).getTime() || 0);
-        });
+    function normalizeLocationKey(value) {
+        return String(value || '').trim().toLowerCase();
     }
 
     function getSourceBadge(job) {
         const source = job.source || 'native';
         if (source === 'native') return '<span class="job-source-badge is-native">JobLynk</span>';
-        if (source === 'adzuna') return '<span class="job-source-badge is-adzuna">Live · Adzuna</span>';
-        if (source === 'dpsa') return '<span class="job-source-badge is-dpsa">Gov vacancy</span>';
+        if (source === 'adzuna') return '<span class="job-source-badge is-adzuna">Adzuna</span>';
+        if (source === 'dpsa') return '<span class="job-source-badge is-dpsa">Gov</span>';
         return `<span class="job-source-badge">${escText(source)}</span>`;
     }
 
-    function renderJobCard(job) {
+    function renderJobCard(job, compact = false) {
         const meta = buildJobMeta(job);
         const companyInitial = String(job.company || 'J').trim().charAt(0).toUpperCase() || 'J';
         const companyLogo = job.companyLogoUrl || job.company_logo_url || '';
-        const description = String(job.description || job.requirements || 'Open this listing to view more details from the recruiter.').trim();
+        const description = String(job.description || job.requirements || 'Open this listing to view more details.').trim();
         const applicantCount = getApplicantCount(job);
         const closingLabel = formatClosingLabel(job);
         const accent = getSafeAccent(job);
         const logoHtml = companyLogo
-            ? `<img src="${escAttr(companyLogo)}" alt="" loading="lazy">`
+            ? `<img src="${escAttr(companyLogo)}" alt="" loading="lazy" decoding="async">`
             : escText(companyInitial);
+        const descLimit = compact ? 120 : 160;
 
         return `
-            <article class="public-job-card" style="--job-accent:${escAttr(accent)}">
+            <article class="public-job-card${compact ? ' public-job-card--compact' : ''}" style="--job-accent:${escAttr(accent)}">
                 <div class="public-job-card-top">
                     <div class="public-job-logo">${logoHtml}</div>
-                    <div>
+                    <div class="public-job-card-head">
                         <span class="public-job-company">${escText(job.company || 'Company')}</span>
                         <h3>${escText(job.title || 'Untitled role')}</h3>
+                        <div class="public-job-card-badges public-job-badges">${getSourceBadge(job)}${JobsBrowser.isFresh(job, 3) ? '<span class="job-pill job-pill--new">New</span>' : ''}</div>
                     </div>
                 </div>
-                <div class="public-job-badges">
-                    ${getSourceBadge(job)}
-                    <span>${applicantCount ? escText(applicantCount + ' applicant' + (applicantCount === 1 ? '' : 's')) : 'New listing'}</span>
-                </div>
-                <div class="public-job-meta">
-                    ${meta.map(item => `<span>${escText(item)}</span>`).join('')}
-                </div>
-                <p>${escText(description).slice(0, 190)}${description.length > 190 ? '...' : ''}</p>
+                <div class="public-job-meta">${meta.map(item => `<span>${escText(item)}</span>`).join('')}</div>
+                <p>${escText(description).slice(0, descLimit)}${description.length > descLimit ? '…' : ''}</p>
                 <div class="public-job-card-footer">
                     <div class="public-job-footnotes">
                         <span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>
                         ${closingLabel ? `<span>${escText(closingLabel)}</span>` : ''}
+                        ${applicantCount ? `<span>${escText(applicantCount + ' applicants')}</span>` : ''}
                     </div>
                     <div class="public-job-actions">
-                        <button type="button" class="public-job-secondary" data-view-job="${escAttr(job.id)}">View Job</button>
+                        <button type="button" class="public-job-secondary" data-view-job="${escAttr(job.id)}">View</button>
                         <button type="button" class="public-job-primary" data-apply-job="${escAttr(job.id)}">Apply</button>
                     </div>
                 </div>
@@ -283,32 +304,115 @@
         `;
     }
 
-    function renderJobs() {
-        const list = $('publicJobsList');
-        const summary = $('jobsResultsSummary');
-        if (!list) return;
+    function renderCuratedSections(sections) {
+        const root = $('jobsCuratedSections');
+        if (!root) return;
 
-        const jobs = getFilteredJobs();
-        syncLocationChips();
-        if (summary) {
-            summary.textContent = jobs.length === 1
-                ? `Showing 1 of ${state.jobs.length} live jobs.`
-                : `Showing ${jobs.length} of ${state.jobs.length} live jobs.`;
-        }
-
-        if (!jobs.length) {
-            const hasLiveJobs = state.jobs.length > 0;
-            list.innerHTML = `
-                <div class="public-jobs-empty">
-                    <i class="fa-solid fa-briefcase"></i>
-                    <h3>${hasLiveJobs ? 'No matching jobs found' : 'No live jobs available yet'}</h3>
-                    <p>${hasLiveJobs ? 'Try clearing the filters or searching a different keyword.' : 'New roles will appear here as recruiters publish them.'}</p>
-                </div>
-            `;
+        if (!sections.length) {
+            root.innerHTML = '';
             return;
         }
 
-        list.innerHTML = jobs.map(renderJobCard).join('');
+        root.innerHTML = sections.map(section => {
+            const title = JobsBrowser.SECTION_LABELS[section.id] || section.id;
+            const cards = section.jobs.map(job => renderJobCard(job, true)).join('');
+            return `
+                <section class="jobs-curated-block" aria-label="${escAttr(title)}">
+                    <div class="jobs-curated-block-head">
+                        <h3>${escText(title)}</h3>
+                        <span>${section.jobs.length} role${section.jobs.length === 1 ? '' : 's'}</span>
+                    </div>
+                    <div class="jobs-curated-scroll">${cards}</div>
+                </section>
+            `;
+        }).join('');
+    }
+
+    function renderJobs() {
+        if (state.loading) return;
+
+        const list = $('publicJobsList');
+        const summary = $('jobsResultsSummary');
+        const curatedRoot = $('jobsCuratedSections');
+        const browseHeader = document.querySelector('.jobs-browse-header');
+        const pagination = $('jobsPagination');
+        const browseCount = $('jobsBrowseCount');
+        if (!list) return;
+
+        populateFilters();
+        syncLocationChips();
+
+        const filters = getFilters();
+        const sort = getSortMode();
+        const filtered = JobsBrowser.filterJobs(state.jobs, filters);
+        const sorted = JobsBrowser.sortJobs(filtered, sort);
+        const filtering = hasActiveFilters();
+
+        let browseJobs = sorted;
+        if (!filtering) {
+            const grouped = JobsBrowser.buildJobSections(sorted);
+            renderCuratedSections(grouped.sections);
+            browseJobs = JobsBrowser.sortJobs(grouped.browse, sort);
+            if (curatedRoot) curatedRoot.hidden = false;
+            if (browseHeader) browseHeader.hidden = grouped.sections.length === 0;
+        } else {
+            if (curatedRoot) {
+                curatedRoot.innerHTML = '';
+                curatedRoot.hidden = true;
+            }
+            if (browseHeader) browseHeader.hidden = true;
+        }
+
+        const pageData = JobsBrowser.paginate(browseJobs, state.browsePage);
+
+        if (summary) {
+            summary.textContent = filtering
+                ? `${sorted.length.toLocaleString()} match${sorted.length === 1 ? '' : 'es'} · ${state.jobs.length.toLocaleString()} total`
+                : `${state.jobs.length.toLocaleString()} roles across South Africa — browse picks below or filter to narrow down`;
+        }
+
+        if (browseCount) {
+            browseCount.textContent = `${browseJobs.length.toLocaleString()} listing${browseJobs.length === 1 ? '' : 's'}`;
+        }
+
+        if (!sorted.length) {
+            list.innerHTML = `
+                <div class="public-jobs-empty">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h3>${state.jobs.length ? 'No matching jobs' : 'No jobs available yet'}</h3>
+                    <p>${state.jobs.length ? 'Try a different keyword, location, or category.' : 'Check back soon or ask admin to refresh the job feed.'}</p>
+                    ${state.jobs.length ? '<button type="button" class="jobs-clear-btn" id="emptyClearFilters">Clear filters</button>' : ''}
+                </div>
+            `;
+            $('emptyClearFilters')?.addEventListener('click', clearFilters);
+            if (pagination) pagination.hidden = true;
+            return;
+        }
+
+        if (state.browsePage === 1) {
+            list.innerHTML = pageData.items.map(job => renderJobCard(job)).join('');
+        } else {
+            list.insertAdjacentHTML('beforeend', pageData.items.map(job => renderJobCard(job)).join(''));
+        }
+
+        if (pagination) {
+            pagination.hidden = !pageData.hasMore;
+            const btn = $('jobsLoadMore');
+            if (btn) {
+                btn.textContent = `Load more (${Math.min(pageData.page * JobsBrowser.PAGE_SIZE, pageData.total)} of ${pageData.total})`;
+            }
+        }
+    }
+
+    function clearFilters() {
+        if ($('publicJobKeyword')) $('publicJobKeyword').value = '';
+        if ($('publicJobLocation')) $('publicJobLocation').value = '';
+        if ($('publicJobType')) $('publicJobType').value = '';
+        if ($('publicJobSort')) $('publicJobSort').value = 'newest';
+        state.activeCategory = '';
+        state.browsePage = 1;
+        renderCategoryChips();
+        renderJobs();
     }
 
     function buildJobDetailsHtml(job) {
@@ -317,18 +421,12 @@
         if (job.requirements) sections.push(`<section><h3>Requirements</h3><p>${escText(job.requirements)}</p></section>`);
         const skills = normalizeList(job.skills);
         if (skills.length) {
-            const chips = skills.map(skill => `<span>${escText(skill)}</span>`).join('');
-            sections.push(`<section><h3>Skills</h3><div class="public-job-skill-chips">${chips}</div></section>`);
-        }
-        const benefits = normalizeList(job.benefits);
-        if (benefits.length) {
-            const chips = benefits.map(benefit => `<span>${escText(benefit)}</span>`).join('');
-            sections.push(`<section><h3>Benefits</h3><div class="public-job-skill-chips">${chips}</div></section>`);
+            sections.push(`<section><h3>Skills</h3><div class="public-job-skill-chips">${skills.map(s => `<span>${escText(s)}</span>`).join('')}</div></section>`);
         }
         if (getClosingDate(job)) {
             sections.push(`<section><h3>Closing date</h3><p>${new Date(getClosingDate(job)).toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' })}</p></section>`);
         }
-        return sections.join('') || '<p>The recruiter has not added more details for this listing yet.</p>';
+        return sections.join('') || '<p>More details available on the full listing.</p>';
     }
 
     function openPreview(jobId) {
@@ -343,8 +441,7 @@
     }
 
     function buildApplyUrl(base, jobId) {
-        const params = new URLSearchParams({ return: 'jobs', job: String(jobId || '') });
-        return `${base}?${params.toString()}`;
+        return `${base}?${new URLSearchParams({ return: 'jobs', job: String(jobId || '') })}`;
     }
 
     function applyForJob(jobId) {
@@ -365,7 +462,7 @@
         if (copy) {
             copy.textContent = state.session.loggedIn
                 ? 'Please use a job seeker account to apply for this role.'
-                : 'You can browse and view jobs as a guest. To apply, sign in or create a free job seeker account.';
+                : 'Browse as a guest — sign in or create a free account when you are ready to apply.';
         }
         openModal('jobLoginModal');
     }
@@ -387,32 +484,44 @@
     }
 
     function bindEvents() {
-        $('navHamburger')?.addEventListener('click', () => {
-            $('mobileNavMenu')?.classList.toggle('open');
+        $('navHamburger')?.addEventListener('click', () => $('mobileNavMenu')?.classList.toggle('open'));
+
+        $('publicJobKeyword')?.addEventListener('input', () => {
+            state.browsePage = 1;
+            debouncedRender();
         });
 
-        [$('publicJobKeyword'), $('publicJobLocation'), $('publicJobType'), $('publicJobSort')].forEach(input => {
-            input?.addEventListener('input', renderJobs);
-            input?.addEventListener('change', renderJobs);
+        [$('publicJobLocation'), $('publicJobType'), $('publicJobSort')].forEach(input => {
+            input?.addEventListener('change', () => {
+                state.browsePage = 1;
+                renderJobs();
+            });
         });
 
         document.querySelectorAll('[data-location-filter]').forEach(button => {
             button.addEventListener('click', () => {
                 const location = button.getAttribute('data-location-filter') || '';
                 if ($('publicJobLocation')) $('publicJobLocation').value = location;
+                state.browsePage = 1;
                 renderJobs();
             });
         });
 
-        $('clearJobFilters')?.addEventListener('click', () => {
-            if ($('publicJobKeyword')) $('publicJobKeyword').value = '';
-            if ($('publicJobLocation')) $('publicJobLocation').value = '';
-            if ($('publicJobType')) $('publicJobType').value = '';
-            if ($('publicJobSort')) $('publicJobSort').value = 'newest';
+        $('clearJobFilters')?.addEventListener('click', clearFilters);
+
+        $('jobsLoadMore')?.addEventListener('click', () => {
+            state.browsePage += 1;
             renderJobs();
         });
 
         $('publicJobsList')?.addEventListener('click', event => {
+            const viewButton = event.target.closest('[data-view-job]');
+            const applyButton = event.target.closest('[data-apply-job]');
+            if (viewButton) openPreview(viewButton.getAttribute('data-view-job'));
+            if (applyButton) applyForJob(applyButton.getAttribute('data-apply-job'));
+        });
+
+        $('jobsCuratedSections')?.addEventListener('click', event => {
             const viewButton = event.target.closest('[data-view-job]');
             const applyButton = event.target.closest('[data-apply-job]');
             if (viewButton) openPreview(viewButton.getAttribute('data-view-job'));
@@ -425,13 +534,8 @@
             applyForJob(state.selectedJobId);
         });
 
-        document.querySelectorAll('[data-close-job-modal]').forEach(button => {
-            button.addEventListener('click', () => closeModal('jobPreviewModal'));
-        });
-
-        document.querySelectorAll('[data-close-login-modal]').forEach(button => {
-            button.addEventListener('click', () => closeModal('jobLoginModal'));
-        });
+        document.querySelectorAll('[data-close-job-modal]').forEach(btn => btn.addEventListener('click', () => closeModal('jobPreviewModal')));
+        document.querySelectorAll('[data-close-login-modal]').forEach(btn => btn.addEventListener('click', () => closeModal('jobLoginModal')));
 
         document.addEventListener('keydown', event => {
             if (event.key !== 'Escape') return;
@@ -442,12 +546,12 @@
 
     async function init() {
         bindEvents();
+        renderCategoryChips();
         await Promise.all([loadSession(), loadJobs()]);
         populateFilters();
         renderJobs();
 
-        const params = new URLSearchParams(window.location.search);
-        const jobId = params.get('job');
+        const jobId = new URLSearchParams(window.location.search).get('job');
         if (jobId && getJobById(jobId)) openPreview(jobId);
     }
 

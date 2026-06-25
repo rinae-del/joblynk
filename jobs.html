@@ -64,49 +64,66 @@
                     <p>Listings can be viewed as a guest. Sign in only when you are ready to submit an application.</p>
                 </div>
 
-                <div class="jobs-quick-filter-row" aria-label="Popular location filters">
-                    <button type="button" class="jobs-location-chip active" data-location-filter="">All SA</button>
-                    <button type="button" class="jobs-location-chip" data-location-filter="Johannesburg, GP">Johannesburg</button>
-                    <button type="button" class="jobs-location-chip" data-location-filter="Cape Town, WC">Cape Town</button>
-                    <button type="button" class="jobs-location-chip" data-location-filter="Durban, KZN">Durban</button>
-                    <button type="button" class="jobs-location-chip" data-location-filter="Remote">Remote</button>
+                <div class="jobs-board-stats" id="jobsBoardStats" aria-live="polite">
+                    <span id="jobsStatTotal"><i class="fa-solid fa-briefcase"></i> Loading...</span>
                 </div>
 
-                <div class="jobs-filter-panel" aria-label="Job filters">
-                    <div class="jobs-filter-field jobs-filter-search">
-                        <label for="publicJobKeyword">Keyword</label>
-                        <div class="jobs-filter-input-wrap">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="search" id="publicJobKeyword" placeholder="Search title, company or skills">
+                <div class="jobs-filter-sticky">
+                    <div class="jobs-quick-filter-row" aria-label="Popular location filters">
+                        <button type="button" class="jobs-location-chip active" data-location-filter="">All SA</button>
+                        <button type="button" class="jobs-location-chip" data-location-filter="johannesburg">Johannesburg</button>
+                        <button type="button" class="jobs-location-chip" data-location-filter="cape town">Cape Town</button>
+                        <button type="button" class="jobs-location-chip" data-location-filter="durban">Durban</button>
+                        <button type="button" class="jobs-location-chip" data-location-filter="pretoria">Pretoria</button>
+                        <button type="button" class="jobs-location-chip" data-location-filter="remote">Remote</button>
+                    </div>
+
+                    <div class="jobs-quick-filter-row jobs-category-chips" id="jobsCategoryChips" aria-label="Job category filters"></div>
+
+                    <div class="jobs-filter-panel" aria-label="Job filters">
+                        <div class="jobs-filter-field jobs-filter-search">
+                            <label for="publicJobKeyword">Search</label>
+                            <div class="jobs-filter-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="search" id="publicJobKeyword" placeholder="Title, company, skill..." autocomplete="off">
+                            </div>
                         </div>
+                        <div class="jobs-filter-field">
+                            <label for="publicJobLocation">Location</label>
+                            <select id="publicJobLocation">
+                                <option value="">All locations</option>
+                            </select>
+                        </div>
+                        <div class="jobs-filter-field">
+                            <label for="publicJobType">Type</label>
+                            <select id="publicJobType">
+                                <option value="">All types</option>
+                            </select>
+                        </div>
+                        <div class="jobs-filter-field">
+                            <label for="publicJobSort">Sort</label>
+                            <select id="publicJobSort">
+                                <option value="newest">Newest first</option>
+                                <option value="salary">Highest salary</option>
+                                <option value="closing">Closing soon</option>
+                            </select>
+                        </div>
+                        <button type="button" class="jobs-clear-btn" id="clearJobFilters">Clear</button>
                     </div>
-                    <div class="jobs-filter-field">
-                        <label for="publicJobLocation">Location</label>
-                        <select id="publicJobLocation">
-                            <option value="">All locations</option>
-                        </select>
-                    </div>
-                    <div class="jobs-filter-field">
-                        <label for="publicJobType">Job type</label>
-                        <select id="publicJobType">
-                            <option value="">All types</option>
-                        </select>
-                    </div>
-                    <div class="jobs-filter-field">
-                        <label for="publicJobSort">Sort</label>
-                        <select id="publicJobSort">
-                            <option value="newest">Newest first</option>
-                            <option value="salary">Highest salary</option>
-                            <option value="closing">Closing soon</option>
-                        </select>
-                    </div>
-                    <button type="button" class="jobs-clear-btn" id="clearJobFilters">Clear filters</button>
                 </div>
 
                 <div class="jobs-board-layout jobs-board-layout--full">
-                    <div>
+                    <div class="jobs-board-main">
                         <div class="jobs-results-summary" id="jobsResultsSummary">Loading jobs...</div>
+                        <div id="jobsCuratedSections" class="jobs-curated-sections"></div>
+                        <div class="jobs-browse-header">
+                            <h3>All listings</h3>
+                            <span id="jobsBrowseCount"></span>
+                        </div>
                         <div class="public-jobs-grid" id="publicJobsList"></div>
+                        <div class="jobs-pagination" id="jobsPagination" hidden>
+                            <button type="button" class="btn-landing btn-landing-outline" id="jobsLoadMore">Load more jobs</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -154,7 +171,8 @@
     </footer>
 
     <script src="jobs-store.js?v=20260524-jobs"></script>
-    <script src="jobs.js?v=20260524-details"></script>
+    <script src="jobs-browser.js?v=20260625"></script>
+    <script src="jobs.js?v=20260625"></script>
 </body>
 
 </html>

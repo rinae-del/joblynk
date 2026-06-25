@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentApplyJobId = null;
     let uploadedFiles = [];
     let allJobs = [];
+    let userProfile = null;
+    let browsePage = 1;
+    let activeCategory = '';
+    const debouncedListRender = typeof JobsBrowser !== 'undefined'
+        ? JobsBrowser.debounce(() => renderListPage(), 280)
+        : () => renderListPage();
 
     function escText(value = '') {
         const div = document.createElement('div');
@@ -202,75 +208,231 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getFilteredJobs() {
-        const keyword = ($('jobsPageKeyword')?.value || '').trim().toLowerCase();
-        const location = $('jobsPageLocation')?.value || '';
-        const type = $('jobsPageType')?.value || '';
-        const sort = $('jobsPageSort')?.value || 'newest';
-
-        const filtered = allJobs.filter(job => {
-            const haystack = [
-                job.title, job.company, job.location, job.type, job.description,
-                job.requirements, job.skills, formatSalaryLabel(job)
-            ].join(' ').toLowerCase();
-
-            return (!keyword || haystack.includes(keyword))
-                && (!location || String(job.location || '') === location)
-                && (!type || String(job.type || '').toLowerCase() === type.toLowerCase());
+        return JobsBrowser.filterJobs(allJobs, {
+            keyword: $('jobsPageKeyword')?.value || '',
+            location: $('jobsPageLocation')?.value || '',
+            type: $('jobsPageType')?.value || '',
+            category: activeCategory,
         });
+    }
 
-        return filtered.sort((left, right) => {
-            if (sort === 'salary') return getSalaryNumber(right) - getSalaryNumber(left);
-            if (sort === 'closing') {
-                const leftTime = getDateTime(left.closingDate) || Number.MAX_SAFE_INTEGER;
-                const rightTime = getDateTime(right.closingDate) || Number.MAX_SAFE_INTEGER;
-                return leftTime - rightTime;
-            }
-            return getDateTime(right.postedAt) - getDateTime(left.postedAt);
+    function hasActiveListFilters() {
+        const keyword = ($('jobsPageKeyword')?.value || '').trim();
+        return !!(keyword || $('jobsPageLocation')?.value || $('jobsPageType')?.value || activeCategory);
+    }
+
+    function renderListSkeleton() {
+        const list = $('jobsPageList');
+        if (!list) return;
+        list.innerHTML = Array.from({ length: 4 }, () => `
+            <article class="jobs-page-card jobs-page-card--skeleton" aria-hidden="true">
+                <div class="skeleton-block skeleton-logo"></div>
+                <div class="jobs-page-card-body">
+                    <div class="skeleton-block skeleton-line skeleton-line--lg"></div>
+                    <div class="skeleton-block skeleton-line"></div>
+                    <div class="skeleton-block skeleton-line skeleton-line--sm"></div>
+                </div>
+            </article>
+        `).join('');
+    }
+
+    function renderCategoryChips() {
+        const container = $('jobsPageCategoryChips');
+        if (!container || typeof JobsBrowser === 'undefined') return;
+
+        container.innerHTML = JobsBrowser.CATEGORIES.filter(cat => cat.id).map(cat => `
+            <button type="button" class="jobs-category-chip${activeCategory === cat.id ? ' active' : ''}"
+                data-category-filter="${escAttr(cat.id)}" aria-pressed="${activeCategory === cat.id}">
+                <i class="fa-solid ${escAttr(cat.icon)}"></i> ${escText(cat.label)}
+            </button>
+        `).join('');
+
+        container.querySelectorAll('[data-category-filter]').forEach(button => {
+            button.addEventListener('click', () => {
+                const next = button.getAttribute('data-category-filter') || '';
+                activeCategory = activeCategory === next ? '' : next;
+                browsePage = 1;
+                renderCategoryChips();
+                renderListPage();
+            });
+        });
+    }
+
+    function renderLocationChips() {
+        const container = $('jobsPageLocationChips');
+        if (!container || typeof JobsBrowser === 'undefined') return;
+
+        const topLocations = JobsBrowser.getTopLocations(allJobs, 5);
+        const chips = [
+            { region: '', label: 'All SA' },
+            ...topLocations.map(item => ({ region: item.region, label: item.label })),
+        ];
+
+        container.innerHTML = chips.map(({ region, label }) => `
+            <button type="button" class="jobs-location-chip${($('jobsPageLocation')?.value || '') === region ? ' active' : ''}"
+                data-location-filter="${escAttr(region)}">${escText(label)}</button>
+        `).join('');
+
+        container.querySelectorAll('[data-location-filter]').forEach(button => {
+            button.addEventListener('click', () => {
+                const region = button.getAttribute('data-location-filter') || '';
+                if ($('jobsPageLocation')) $('jobsPageLocation').value = region;
+                browsePage = 1;
+                renderListPage();
+            });
         });
     }
 
     function populateListFilters() {
         const locationSelect = $('jobsPageLocation');
-        if (!locationSelect || locationSelect.options.length > 1) return;
-        [...new Set(allJobs.map(job => job.location).filter(Boolean))].sort().forEach(location => {
+        if (!locationSelect || typeof JobsBrowser === 'undefined') return;
+
+        const current = locationSelect.value;
+        const topLocations = JobsBrowser.getTopLocations(allJobs, 20);
+
+        locationSelect.innerHTML = '<option value="">All locations</option>';
+        topLocations.forEach(({ region, count, label }) => {
             const option = document.createElement('option');
-            option.value = location;
-            option.textContent = location;
+            option.value = region;
+            option.textContent = `${label} (${count})`;
             locationSelect.appendChild(option);
         });
+        if (current) locationSelect.value = current;
+
+        renderLocationChips();
+    }
+
+    function renderListCardCompact(job) {
+        const detailUrl = `job-details.html?id=${encodeURIComponent(job.id)}`;
+        const status = getJobStatus(job);
+        return `
+            <article class="jobs-page-card jobs-page-card--compact" style="--job-accent:${escAttr(job.color || '#3B4BA6')}">
+                ${buildLogo(job, 'job-avatar job-avatar--sm')}
+                <div class="jobs-page-card-body">
+                    <span class="job-kicker">${escText(job.company || 'Company')}</span>
+                    <a href="${detailUrl}" class="jobs-page-title">${escText(job.title || 'Untitled role')}</a>
+                    <div class="job-meta">${buildMetaPills(job)}</div>
+                    <span class="job-badge ${status.cls}">${status.label}</span>
+                </div>
+            </article>
+        `;
+    }
+
+    function renderCuratedSections(sections) {
+        const root = $('jobsPageCuratedSections');
+        if (!root) return;
+
+        if (!sections.length) {
+            root.innerHTML = '';
+            root.hidden = true;
+            return;
+        }
+
+        root.hidden = false;
+        root.innerHTML = sections.map(section => {
+            const title = JobsBrowser.SECTION_LABELS[section.id] || section.id;
+            return `
+                <section class="jobs-curated-block" aria-label="${escAttr(title)}">
+                    <div class="jobs-curated-block-head">
+                        <h3>${escText(title)}</h3>
+                        <span>${section.jobs.length} role${section.jobs.length === 1 ? '' : 's'}</span>
+                    </div>
+                    <div class="jobs-curated-scroll">${section.jobs.map(renderListCardCompact).join('')}</div>
+                </section>
+            `;
+        }).join('');
+    }
+
+    function clearListFilters() {
+        if ($('jobsPageKeyword')) $('jobsPageKeyword').value = '';
+        if ($('jobsPageLocation')) $('jobsPageLocation').value = '';
+        if ($('jobsPageType')) $('jobsPageType').value = '';
+        if ($('jobsPageSort')) $('jobsPageSort').value = userProfile ? 'recommended' : 'newest';
+        activeCategory = '';
+        browsePage = 1;
+        renderCategoryChips();
+        renderListPage();
     }
 
     function renderListPage() {
         const list = $('jobsPageList');
         const summary = $('jobsPageSummary');
-        if (!list) return;
+        if (!list || typeof JobsBrowser === 'undefined') return;
 
         populateListFilters();
-        const jobs = getFilteredJobs();
+        const sort = $('jobsPageSort')?.value || (userProfile ? 'recommended' : 'newest');
+        const filtered = getFilteredJobs();
+        const sorted = JobsBrowser.sortJobs(filtered, sort, userProfile);
+        const filtering = hasActiveListFilters();
 
-        if ($('jobsPageTotal')) $('jobsPageTotal').textContent = String(allJobs.length);
-        if ($('jobsPageFiltered')) $('jobsPageFiltered').textContent = String(jobs.length);
-        if (summary) {
-            summary.textContent = jobs.length === 1
-                ? `Showing 1 of ${allJobs.length} live jobs.`
-                : `Showing ${jobs.length} of ${allJobs.length} live jobs.`;
+        let browseJobs = sorted;
+        if (!filtering) {
+            const grouped = JobsBrowser.buildJobSections(sorted, userProfile);
+            renderCuratedSections(grouped.sections);
+            browseJobs = JobsBrowser.sortJobs(grouped.browse, sort, userProfile);
+            document.querySelector('.jobs-browse-header--dashboard')?.removeAttribute('hidden');
+        } else {
+            renderCuratedSections([]);
+            document.querySelector('.jobs-browse-header--dashboard')?.setAttribute('hidden', '');
         }
 
-        if (!jobs.length) {
+        const pageData = JobsBrowser.paginate(browseJobs, browsePage);
+
+        if ($('jobsPageTotal')) $('jobsPageTotal').textContent = String(allJobs.length);
+        if ($('jobsPageFiltered')) $('jobsPageFiltered').textContent = String(sorted.length);
+        if ($('jobsPageBrowseCount')) {
+            $('jobsPageBrowseCount').textContent = `${browseJobs.length.toLocaleString()} listing${browseJobs.length === 1 ? '' : 's'}`;
+        }
+        if (summary) {
+            summary.textContent = filtering
+                ? `${sorted.length.toLocaleString()} match${sorted.length === 1 ? '' : 'es'} · ${allJobs.length.toLocaleString()} live roles`
+                : `${allJobs.length.toLocaleString()} live roles — picks for you below, or filter to narrow down`;
+        }
+
+        if (!sorted.length) {
             list.innerHTML = `
                 <div class="job-empty-state jobs-page-empty">
                     <i class="fa-solid fa-briefcase job-empty-icon"></i>
-                    <p>No matching jobs found</p>
-                    <span>Try clearing the filters or searching a different keyword.</span>
+                    <p>${allJobs.length ? 'No matching jobs found' : 'No jobs available yet'}</p>
+                    <span>${allJobs.length ? 'Try a different keyword, location, or category.' : 'Check back soon after the next job feed refresh.'}</span>
+                    ${allJobs.length ? '<button type="button" class="jobs-clear-btn jobs-clear-btn--dashboard" id="listEmptyClear">Clear filters</button>' : ''}
                 </div>
             `;
+            $('listEmptyClear')?.addEventListener('click', clearListFilters);
+            if ($('jobsPagePagination')) $('jobsPagePagination').hidden = true;
             return;
         }
 
-        list.innerHTML = jobs.map(renderListCard).join('');
+        if (browsePage === 1) {
+            list.innerHTML = pageData.items.map(renderListCard).join('');
+        } else {
+            list.insertAdjacentHTML('beforeend', pageData.items.map(renderListCard).join(''));
+        }
+
         list.querySelectorAll('[data-apply-job]').forEach(button => {
             button.addEventListener('click', () => openAppModal(button.getAttribute('data-apply-job')));
         });
+
+        const pagination = $('jobsPagePagination');
+        if (pagination) {
+            pagination.hidden = !pageData.hasMore;
+            const btn = $('jobsPageLoadMore');
+            if (btn) {
+                btn.textContent = `Load more (${Math.min(pageData.page * JobsBrowser.PAGE_SIZE, pageData.total)} of ${pageData.total})`;
+            }
+        }
+    }
+
+    async function loadUserProfile() {
+        try {
+            const res = await fetch('api/profile/index.php', { credentials: 'include', cache: 'no-store' });
+            const result = await res.json();
+            if (result.success && result.profile) {
+                userProfile = result.profile;
+            }
+        } catch (error) {
+            console.warn('Profile load failed:', error);
+        }
     }
 
     async function renderDetailPage() {
@@ -635,14 +797,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function init() {
         if (typeof JobsStore === 'undefined') return;
-        await Promise.all([JobsStore.fetchJobs(), JobsStore.fetchApplications()]);
+
+        if (pageMode === 'list') {
+            renderListSkeleton();
+            renderCategoryChips();
+        }
+
+        await Promise.all([
+            JobsStore.fetchJobs(),
+            JobsStore.fetchApplications(),
+            pageMode === 'list' ? loadUserProfile() : Promise.resolve(),
+        ]);
         allJobs = JobsStore.getActiveJobs();
 
         if (pageMode === 'list') {
+            if ($('jobsPageSort') && userProfile) $('jobsPageSort').value = 'recommended';
             renderListPage();
-            [$('jobsPageKeyword'), $('jobsPageLocation'), $('jobsPageType'), $('jobsPageSort')].forEach(input => {
-                input?.addEventListener('input', renderListPage);
-                input?.addEventListener('change', renderListPage);
+
+            $('jobsPageKeyword')?.addEventListener('input', () => {
+                browsePage = 1;
+                debouncedListRender();
+            });
+
+            [$('jobsPageLocation'), $('jobsPageType'), $('jobsPageSort')].forEach(input => {
+                input?.addEventListener('change', () => {
+                    browsePage = 1;
+                    renderListPage();
+                });
+            });
+
+            $('jobsPageClearFilters')?.addEventListener('click', clearListFilters);
+            $('jobsPageLoadMore')?.addEventListener('click', () => {
+                browsePage += 1;
+                renderListPage();
             });
         }
 

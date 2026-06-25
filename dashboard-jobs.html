@@ -24,7 +24,7 @@
             <div>
                 <span class="jobs-dashboard-eyebrow"><i class="fa-solid fa-briefcase"></i> Job Board</span>
                 <h1>All Live Jobs</h1>
-                <p>Search active recruiter listings, compare key details, and open the full advert before applying.</p>
+                <p>Personalized picks based on your profile, plus filters to find the right role fast.</p>
             </div>
             <div class="jobs-dashboard-metrics">
                 <div>
@@ -39,31 +39,46 @@
         </section>
 
         <section class="dash-section jobs-dashboard-section">
-            <div class="jobs-page-toolbar">
-                <div class="jobs-page-search">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="jobsPageKeyword" placeholder="Search job title, company, skill, or description">
+            <div class="jobs-filter-sticky jobs-filter-sticky--dashboard">
+                <div class="jobs-quick-filter-row jobs-dashboard-chips" id="jobsPageLocationChips" aria-label="Location filters"></div>
+                <div class="jobs-quick-filter-row jobs-category-chips" id="jobsPageCategoryChips" aria-label="Category filters"></div>
+
+                <div class="jobs-page-toolbar">
+                    <div class="jobs-page-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="search" id="jobsPageKeyword" placeholder="Search title, company, or skill..." autocomplete="off">
+                    </div>
+                    <select id="jobsPageLocation">
+                        <option value="">All locations</option>
+                    </select>
+                    <select id="jobsPageType">
+                        <option value="">All job types</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Internship">Internship</option>
+                    </select>
+                    <select id="jobsPageSort">
+                        <option value="recommended">Recommended</option>
+                        <option value="newest">Newest first</option>
+                        <option value="closing">Closing soon</option>
+                        <option value="salary">Highest salary</option>
+                    </select>
+                    <button type="button" class="jobs-clear-btn jobs-clear-btn--dashboard" id="jobsPageClearFilters">Clear</button>
                 </div>
-                <select id="jobsPageLocation">
-                    <option value="">All locations</option>
-                </select>
-                <select id="jobsPageType">
-                    <option value="">All job types</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Freelance">Freelance</option>
-                    <option value="Internship">Internship</option>
-                </select>
-                <select id="jobsPageSort">
-                    <option value="newest">Newest first</option>
-                    <option value="closing">Closing soon</option>
-                    <option value="salary">Highest salary</option>
-                </select>
             </div>
 
             <div class="jobs-page-summary" id="jobsPageSummary">Loading jobs...</div>
+            <div id="jobsPageCuratedSections" class="jobs-curated-sections jobs-curated-sections--dashboard"></div>
+            <div class="jobs-browse-header jobs-browse-header--dashboard">
+                <h3>All listings</h3>
+                <span id="jobsPageBrowseCount"></span>
+            </div>
             <div class="jobs-page-list" id="jobsPageList"></div>
+            <div class="jobs-pagination jobs-pagination--dashboard" id="jobsPagePagination" hidden>
+                <button type="button" class="job-preview-btn" id="jobsPageLoadMore">Load more jobs</button>
+            </div>
         </section>
     </main>
 
@@ -113,7 +128,8 @@
 
     <script src="components.js?v=20260524-jobs"></script>
     <script src="jobs-store.js?v=20260524"></script>
-    <script src="job-pages.js?v=20260524-jobs"></script>
+    <script src="jobs-browser.js?v=20260625"></script>
+    <script src="job-pages.js?v=20260625"></script>
 </body>
 
 </html>
