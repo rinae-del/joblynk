@@ -64,6 +64,18 @@
         return [job.location || 'Remote friendly', job.type || 'Full-time', formatSalaryLabel(job)].filter(Boolean);
     }
 
+    function renderMetaPills(job) {
+        const salary = formatSalaryLabel(job);
+        const pills = [
+            { icon: 'fa-location-dot', text: job.location || 'Remote friendly' },
+            { icon: 'fa-briefcase', text: job.type || 'Full-time' },
+        ];
+        if (salary) pills.push({ icon: 'fa-wallet', text: salary, salary: true });
+        return pills
+            .map(pill => `<span class="${pill.salary ? 'is-salary' : ''}"><i class="fa-solid ${pill.icon}"></i>${escText(pill.text)}</span>`)
+            .join('');
+    }
+
     function normalizeList(value) {
         if (Array.isArray(value)) return value.map(item => String(item || '').trim()).filter(Boolean);
         const raw = String(value || '').trim();
@@ -265,17 +277,15 @@
     }
 
     function renderJobCard(job, compact = false) {
-        const meta = buildJobMeta(job);
         const companyInitial = String(job.company || 'J').trim().charAt(0).toUpperCase() || 'J';
         const companyLogo = job.companyLogoUrl || job.company_logo_url || '';
-        const description = String(job.description || job.requirements || 'Open this listing to view more details.').trim();
+        const description = String(job.description || job.requirements || 'Open this listing to view the full role details and requirements.').trim();
         const applicantCount = getApplicantCount(job);
         const closingLabel = formatClosingLabel(job);
         const accent = getSafeAccent(job);
         const logoHtml = companyLogo
             ? `<img src="${escAttr(companyLogo)}" alt="" loading="lazy" decoding="async">`
             : escText(companyInitial);
-        const descLimit = compact ? 120 : 160;
 
         return `
             <article class="public-job-card${compact ? ' public-job-card--compact' : ''}" style="--job-accent:${escAttr(accent)}">
@@ -287,13 +297,13 @@
                         <div class="public-job-card-badges public-job-badges">${getSourceBadge(job)}${JobsBrowser.isFresh(job, 3) ? '<span class="job-pill job-pill--new">New</span>' : ''}</div>
                     </div>
                 </div>
-                <div class="public-job-meta">${meta.map(item => `<span>${escText(item)}</span>`).join('')}</div>
-                <p>${escText(description).slice(0, descLimit)}${description.length > descLimit ? '…' : ''}</p>
+                <div class="public-job-meta">${renderMetaPills(job)}</div>
+                <p>${escText(description)}</p>
                 <div class="public-job-card-footer">
                     <div class="public-job-footnotes">
-                        <span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>
-                        ${closingLabel ? `<span>${escText(closingLabel)}</span>` : ''}
-                        ${applicantCount ? `<span>${escText(applicantCount + ' applicants')}</span>` : ''}
+                        <span><i class="fa-regular fa-clock"></i>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>
+                        ${closingLabel ? `<span><i class="fa-regular fa-calendar"></i>${escText(closingLabel)}</span>` : ''}
+                        ${applicantCount ? `<span><i class="fa-solid fa-users"></i>${escText(applicantCount + ' applied')}</span>` : ''}
                     </div>
                     <div class="public-job-actions">
                         <button type="button" class="public-job-secondary" data-view-job="${escAttr(job.id)}">View</button>
@@ -435,7 +445,7 @@
         state.selectedJobId = job.id;
         $('jobPreviewCompany').textContent = job.company || 'Company';
         $('jobPreviewTitle').textContent = job.title || 'Untitled role';
-        $('jobPreviewMeta').innerHTML = buildJobMeta(job).map(item => `<span>${escText(item)}</span>`).join('');
+        $('jobPreviewMeta').innerHTML = renderMetaPills(job);
         $('jobPreviewBody').innerHTML = buildJobDetailsHtml(job);
         openModal('jobPreviewModal');
     }

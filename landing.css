@@ -4189,7 +4189,6 @@ body.modal-open {
 /* ── Jobs page: mobile layout (public board) ── */
 .jobs-public-page main {
     max-width: 100%;
-    overflow-x: clip;
 }
 
 .jobs-chip-scroller {
