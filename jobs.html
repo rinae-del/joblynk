@@ -10,41 +10,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260715">
+    <link rel="stylesheet" href="landing.css?v=20260716">
     <link rel="stylesheet" href="jobs.css?v=20260628">
 </head>
 
-<body class="landing-page jobs-public-page">
+<body class="landing-page jobs-public-page" data-nav-active="jobs">
 
-    <nav class="landing-nav">
-        <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
-            <img src="images/logo.png" alt="" class="landing-logo-img">
-            <span class="landing-logo-text">JobLynk</span>
-        </a>
-
-        <div class="landing-nav-links">
-            <a href="index.html" class="landing-nav-link">Home</a>
-            <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
-            <a href="recruiter-pricing.html" class="landing-nav-link">For Recruiters</a>
-            <a href="index.html#faq" class="landing-nav-link">FAQ</a>
-        </div>
-
-        <div class="landing-nav-actions">
-            <a href="sign-in.html" class="btn-landing btn-landing-outline" id="jobsSignInLink">Sign In</a>
-            <a href="sign-up.html" class="btn-landing btn-landing-primary" id="jobsSignupLink">Get Started Free</a>
-        </div>
-
-        <button class="landing-nav-hamburger" id="navHamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
-    </nav>
-
-    <div class="mobile-nav-menu" id="mobileNavMenu">
-        <a href="index.html">Home</a>
-        <a href="jobs.html">For Job Seekers</a>
-        <a href="recruiter-pricing.html">For Recruiters</a>
-        <a href="index.html#faq">FAQ</a>
-        <a href="sign-in.html" id="jobsMobileSignInLink">Sign In</a>
-        <a href="sign-up.html" id="jobsMobileSignupLink">Get Started Free</a>
-    </div>
+    <div id="landingNavMount"></div>
 
     <main class="jobs-main">
         <section class="jobs-board-section" id="jobsBoard">
@@ -185,9 +157,10 @@
         </div>
     </footer>
 
+    <script src="landing-nav.js?v=20260716"></script>
     <script src="jobs-store.js?v=20260715"></script>
     <script src="jobs-browser.js?v=20260625-board"></script>
-    <script src="jobs.js?v=20260628b"></script>
+    <script src="jobs.js?v=20260716"></script>
 </body>
 
 </html>

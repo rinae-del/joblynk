@@ -1125,6 +1125,21 @@ body.landing-page {
     background: rgba(99, 102, 241, 0.12);
 }
 
+.mobile-nav-link.is-active {
+    color: #f1f5f9;
+    background: rgba(99, 102, 241, 0.16);
+}
+
+.mobile-nav-divider {
+    height: 1px;
+    margin: 0.35rem 0.5rem;
+    background: rgba(148, 163, 184, 0.14);
+}
+
+.mobile-nav-action {
+    font-weight: 700;
+}
+
 /* ── Hero ── */
 .hero-section {
     position: relative;

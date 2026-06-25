@@ -152,24 +152,14 @@
             state.session = { loggedIn: false, user: null };
         }
 
-        const dashboardUrl = state.session.user?.role === 'recruiter'
-            ? 'recruiter-overview.html'
-            : state.session.user?.role === 'admin'
-                ? 'admin-overview.html'
-                : 'dashboard.html';
-
         if (state.session.loggedIn) {
-            [$('jobsSignInLink'), $('jobsMobileSignInLink')].forEach(link => {
-                if (!link) return;
-                link.href = dashboardUrl;
-                link.textContent = 'Dashboard';
-            });
-            [$('jobsSignupLink'), $('jobsMobileSignupLink')].forEach(link => {
-                if (!link) return;
-                link.href = dashboardUrl;
-                link.textContent = 'My Account';
-            });
+            document.body.dataset.loggedIn = '1';
+            document.body.dataset.userRole = state.session.user?.role || '';
+        } else {
+            document.body.dataset.loggedIn = '0';
+            delete document.body.dataset.userRole;
         }
+        window.JobLynkNav?.remount?.();
     }
 
     function renderSkeleton() {
@@ -531,8 +521,6 @@
     }
 
     function bindEvents() {
-        $('navHamburger')?.addEventListener('click', () => $('mobileNavMenu')?.classList.toggle('open'));
-
         $('publicJobKeyword')?.addEventListener('input', () => {
             state.browsePage = 1;
             debouncedRender();
@@ -601,9 +589,7 @@
     }
 
     function syncNavOffset() {
-        const nav = document.querySelector('.landing-nav');
-        if (!nav) return;
-        document.documentElement.style.setProperty('--jb-nav-h', `${nav.offsetHeight}px`);
+        window.JobLynkNav?.syncNavHeight?.();
     }
 
     function countActiveFilters() {

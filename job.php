@@ -254,34 +254,16 @@ function jp_asset(string $path): string
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= e(jp_asset('landing.css?v=20260627b')) ?>">
+    <link rel="stylesheet" href="<?= e(jp_asset('landing.css?v=20260716')) ?>">
     <link rel="stylesheet" href="<?= e(jp_asset('job-page.css?v=20260627b')) ?>">
     <?php if (!$notFound): ?>
     <script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
 </head>
 
-<body class="landing-page job-detail-public">
+<body class="landing-page job-detail-public" data-nav-active="jobs" data-logged-in="<?= $loggedIn ? '1' : '0' ?>" data-user-role="<?= e($_SESSION['user_role'] ?? '') ?>">
 
-    <nav class="landing-nav">
-        <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
-            <img src="<?= e(jp_asset('images/logo.png')) ?>" alt="" class="landing-logo-img">
-            <span class="landing-logo-text">JobLynk</span>
-        </a>
-        <div class="landing-nav-links">
-            <a href="index.html" class="landing-nav-link">Home</a>
-            <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
-            <a href="recruiter-pricing.html" class="landing-nav-link">For Recruiters</a>
-        </div>
-        <div class="landing-nav-actions">
-            <?php if ($loggedIn): ?>
-            <a href="dashboard.html" class="btn-landing btn-landing-primary">My Account</a>
-            <?php else: ?>
-            <a href="sign-in.html" class="btn-landing btn-landing-outline">Sign In</a>
-            <a href="sign-up.html" class="btn-landing btn-landing-primary">Get Started Free</a>
-            <?php endif; ?>
-        </div>
-    </nav>
+    <div id="landingNavMount"></div>
 
     <main class="jp-main">
     <?php if ($notFound): ?>
@@ -526,6 +508,7 @@ function jp_asset(string $path): string
             externalUrl: <?= json_encode($externalUrl) ?>
         };
     </script>
+    <script src="<?= e(jp_asset('landing-nav.js?v=20260716')) ?>"></script>
     <script src="<?= e(jp_asset('job-page.js?v=20260627b')) ?>"></script>
     <?php endif; ?>
 </body>

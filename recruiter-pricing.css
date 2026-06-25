@@ -41,10 +41,6 @@ html[data-theme="dark"] body.pricing-page {
     background: rgba(16, 185, 129, 0.16);
 }
 
-.pricing-page .landing-nav-link.is-active::after {
-    display: none;
-}
-
 .pricing-page .mobile-nav-menu {
     position: fixed;
     top: var(--landing-nav-h, 68px);
