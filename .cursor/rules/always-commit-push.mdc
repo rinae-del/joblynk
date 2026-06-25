@@ -1,0 +1,27 @@
+---
+description: Always commit and push completed work to the current branch
+alwaysApply: true
+---
+
+# Always Commit and Push
+
+After completing a task that changes files, commit and push without waiting to be asked.
+
+## Workflow
+
+1. Run `git status` and `git diff` to review changes.
+2. Stage only files related to the task — exclude unrelated or secret files (`.env`, credentials).
+3. Write a concise commit message focused on **why** (1–2 sentences).
+4. Commit, then push to the current branch with `-u` if the branch has no upstream.
+5. Confirm success with `git status` after push.
+
+## Constraints
+
+- Do not commit if there are no changes.
+- Do not force-push to `main`/`master` unless explicitly requested.
+- Do not skip hooks or amend unless the git safety protocol allows it.
+- Warn before committing files that likely contain secrets.
+
+## Message style
+
+Follow existing repo style (e.g. `feat:`, `fix:`, `refactor:`).
