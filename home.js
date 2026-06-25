@@ -52,46 +52,13 @@
         return [salary, note].filter(Boolean).join(', ');
     }
 
-    function resolveLogoUrl(url) {
-        if (typeof JobsStore !== 'undefined' && typeof JobsStore.resolveAssetUrl === 'function') {
-            return JobsStore.resolveAssetUrl(url);
-        }
-        const path = String(url || '').trim();
-        if (!path) return '';
-        if (/^https?:\/\//i.test(path)) return path;
-        if (path.startsWith('/')) return `${window.location.origin}${path}`;
-        const base = window.location.pathname.replace(/[^/]*$/, '');
-        return `${window.location.origin}${base}${path.replace(/^\//, '')}`;
-    }
-
-    function hasCompanyLogo(job) {
-        return Boolean(resolveLogoUrl(job.companyLogoUrl || job.company_logo_url || ''));
-    }
-
-    function companyInitial(company) {
-        return String(company || 'J').trim().charAt(0).toUpperCase() || 'J';
-    }
-
     function pickFeaturedJobs(jobs) {
-        return [...jobs]
-            .sort((a, b) => {
-                const aLogo = hasCompanyLogo(a) ? 1 : 0;
-                const bLogo = hasCompanyLogo(b) ? 1 : 0;
-                if (bLogo !== aLogo) return bLogo - aLogo;
-                const aNative = (a.source || 'native') === 'native' ? 1 : 0;
-                const bNative = (b.source || 'native') === 'native' ? 1 : 0;
-                return bNative - aNative;
-            })
-            .slice(0, FEATURED_LIMIT);
+        return jobs.slice(0, FEATURED_LIMIT);
     }
 
     function renderJobRow(job) {
         const company = job.company || 'Company';
-        const logo = resolveLogoUrl(job.companyLogoUrl || job.company_logo_url || '');
-        const hasLogo = Boolean(logo);
-        const accent = /^#[0-9A-Fa-f]{3,6}$/.test(String(job.color || '').trim()) ? job.color : '#6366F1';
         const salary = formatSalaryLabel(job);
-        const rowClass = hasLogo ? 'home-job-row' : 'home-job-row home-job-row--mono';
 
         const meta = [
             job.location ? `<span>${escText(job.location)}</span>` : '',
@@ -99,19 +66,14 @@
             `<span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>`,
         ].filter(Boolean).join('');
 
-        const avatarHtml = hasLogo
-            ? `<div class="home-job-logo"><img src="${escAttr(logo)}" alt="${escAttr(company)} logo" loading="lazy" decoding="async"></div>`
-            : `<div class="home-job-monogram" aria-hidden="true"><span>${escText(companyInitial(company))}</span></div>`;
-
         const url = jobPageUrl(job);
 
         return `
-            <a class="${rowClass}" href="${escAttr(url)}" style="--job-accent:${escAttr(accent)}">
-                ${avatarHtml}
+            <a class="home-job-row" href="${escAttr(url)}">
                 <div class="home-job-body">
                     <h3>${escText(job.title || 'Untitled role')}</h3>
                     <p class="home-job-company">${escText(company)}</p>
-                    ${salary ? `<p class="home-job-salary"><i class="fa-solid fa-wallet" aria-hidden="true"></i>${escText(salary)}</p>` : ''}
+                    ${salary ? `<p class="home-job-salary">${escText(salary)}</p>` : ''}
                     <div class="home-job-meta">${meta}</div>
                 </div>
                 <span class="home-job-cta">View role</span>
