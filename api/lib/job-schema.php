@@ -112,12 +112,36 @@ function absoluteJobAssetUrl(string $path): string
         return $path;
     }
 
-    $base = defined('APP_URL') ? rtrim((string) APP_URL, '/') : '';
-    if ($base === '') {
-        return ltrim($path, '/');
-    }
+    // Root-relative so logos work on any deployed domain (APP_URL may differ).
+    return '/' . ltrim($path, '/');
+}
 
-    return $base . '/' . ltrim($path, '/');
+/**
+ * Shared SELECT + JOIN for job listings with company logo resolution.
+ */
+function jobListingSelectSql(string $jobAlias = 'j'): string
+{
+    return "{$jobAlias}.*,
+        COALESCE(
+            NULLIF(TRIM(c.logo_url), ''),
+            NULLIF(TRIM(cn.logo_url), '')
+        ) AS company_logo_url,
+        (SELECT COUNT(*) FROM applications a WHERE a.job_id = {$jobAlias}.id) AS applicant_count";
+}
+
+function jobListingJoinSql(string $jobAlias = 'j'): string
+{
+    return "FROM {$jobAlias}
+        LEFT JOIN users u ON {$jobAlias}.user_id = u.id
+        LEFT JOIN companies c ON c.id = u.company_id
+        LEFT JOIN companies cn ON cn.id = (
+            SELECT c2.id
+            FROM companies c2
+            WHERE TRIM(c2.logo_url) != ''
+              AND LOWER(TRIM(c2.name)) = LOWER(TRIM({$jobAlias}.company))
+            ORDER BY c2.id DESC
+            LIMIT 1
+        )";
 }
 
 function normalizeJobRow(array &$job): void

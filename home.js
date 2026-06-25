@@ -52,11 +52,15 @@
     }
 
     function resolveLogoUrl(url) {
+        if (typeof JobsStore !== 'undefined' && typeof JobsStore.resolveAssetUrl === 'function') {
+            return JobsStore.resolveAssetUrl(url);
+        }
         const path = String(url || '').trim();
         if (!path) return '';
         if (/^https?:\/\//i.test(path)) return path;
-        const root = window.location.pathname.replace(/[^/]*$/, '');
-        return `${window.location.origin}${root}${path.replace(/^\//, '')}`;
+        if (path.startsWith('/')) return `${window.location.origin}${path}`;
+        const base = window.location.pathname.replace(/[^/]*$/, '');
+        return `${window.location.origin}${base}${path.replace(/^\//, '')}`;
     }
 
     function hasCompanyLogo(job) {
@@ -79,7 +83,9 @@
 
         return `
             <a class="home-job-row" href="${escAttr(url)}" style="--job-accent:${escAttr(accent)}">
-                <div class="home-job-logo"><img src="${escAttr(logo)}" alt="" loading="lazy" decoding="async"></div>
+                <div class="home-job-logo">
+                    <img src="${escAttr(logo)}" alt="${escAttr(company)} logo" loading="lazy" decoding="async">
+                </div>
                 <div class="home-job-body">
                     <h3>${escText(job.title || 'Untitled role')}</h3>
                     <p class="home-job-company">${escText(company)}</p>
@@ -112,7 +118,13 @@
                 : (JobsStore?.getActiveJobs?.() || []).slice();
 
             const withLogo = jobs.filter(hasCompanyLogo);
-            const featured = withLogo.slice(0, 4);
+            const featured = withLogo
+                .sort((a, b) => {
+                    const aNative = (a.source || 'native') === 'native' ? 1 : 0;
+                    const bNative = (b.source || 'native') === 'native' ? 1 : 0;
+                    return bNative - aNative;
+                })
+                .slice(0, 4);
 
             if (lead) {
                 lead.textContent = featured.length

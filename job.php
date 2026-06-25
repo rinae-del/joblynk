@@ -69,11 +69,8 @@ $pdo = getDB();
 $job = null;
 if ($id) {
     $stmt = $pdo->prepare('
-        SELECT j.*, c.logo_url AS company_logo_url,
-               (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count
-        FROM jobs j
-        LEFT JOIN users u ON j.user_id = u.id
-        LEFT JOIN companies c ON c.id = u.company_id
+        SELECT ' . jobListingSelectSql('j') . '
+        ' . jobListingJoinSql('j') . '
         WHERE j.id = ?
         LIMIT 1
     ');

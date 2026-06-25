@@ -421,8 +421,9 @@ html[data-theme="dark"] body.home-public-page {
 .home-public-page .home-job-logo img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    object-position: top center;
+    object-fit: cover;
+    object-position: center;
+    background: #fff;
 }
 
 .home-public-page .home-job-body {

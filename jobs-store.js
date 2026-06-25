@@ -42,6 +42,15 @@ const JobsStore = (() => {
         return getJobsLocal();
     }
 
+    function resolveAssetUrl(url) {
+        const path = String(url || '').trim();
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) return path;
+        if (path.startsWith('/')) return `${window.location.origin}${path}`;
+        const base = window.location.pathname.replace(/[^/]*$/, '');
+        return `${window.location.origin}${base}${path.replace(/^\//, '')}`;
+    }
+
     function normalizeJob(j) {
         const logoRaw = j.company_logo_url || j.companyLogoUrl || '';
         return {
@@ -49,7 +58,7 @@ const JobsStore = (() => {
             title: j.title,
             jobReference: j.job_reference || j.jobReference || '',
             company: j.company,
-            companyLogoUrl: logoRaw,
+            companyLogoUrl: resolveAssetUrl(logoRaw),
             location: j.location || '',
             type: j.type || 'Full-time',
             description: j.description || '',
@@ -254,6 +263,6 @@ const JobsStore = (() => {
         init, fetchJobs, fetchApplications,
         getJobs, getActiveJobs, getJobById, fetchJobById, addJob, updateJob,
         getApplications, submitApplication, hasApplied,
-        normalizeJob,
+        normalizeJob, resolveAssetUrl,
     };
 })();

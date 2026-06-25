@@ -290,9 +290,22 @@
         return `<span class="job-source-badge">${escText(source)}</span>`;
     }
 
+    function resolveCompanyLogo(job) {
+        const raw = job.companyLogoUrl || job.company_logo_url || '';
+        if (typeof JobsStore !== 'undefined' && typeof JobsStore.resolveAssetUrl === 'function') {
+            return JobsStore.resolveAssetUrl(raw);
+        }
+        const path = String(raw || '').trim();
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) return path;
+        if (path.startsWith('/')) return `${window.location.origin}${path}`;
+        const base = window.location.pathname.replace(/[^/]*$/, '');
+        return `${window.location.origin}${base}${path.replace(/^\//, '')}`;
+    }
+
     function renderJobRow(job) {
         const companyInitial = String(job.company || 'J').trim().charAt(0).toUpperCase() || 'J';
-        const companyLogo = job.companyLogoUrl || job.company_logo_url || '';
+        const companyLogo = resolveCompanyLogo(job);
         const salary = formatSalaryLabel(job);
         const applicantCount = getApplicantCount(job);
         const closingLabel = formatClosingLabel(job);

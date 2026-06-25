@@ -125,7 +125,7 @@ if ($method === 'GET') {
 
     // Single job
     if ($jobId) {
-        $stmt = $pdo->prepare('SELECT j.*, u.first_name, u.last_name, c.logo_url AS company_logo_url, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id LEFT JOIN companies c ON c.id = u.company_id WHERE j.id = ?');
+        $stmt = $pdo->prepare('SELECT ' . jobListingSelectSql('j') . ', u.first_name, u.last_name FROM ' . jobListingJoinSql('j') . ' WHERE j.id = ?');
         $stmt->execute([$jobId]);
         $job = $stmt->fetch();
         if (!$job) jsonResponse(['success' => false, 'message' => 'Job not found.'], 404);
@@ -135,7 +135,7 @@ if ($method === 'GET') {
 
     // Recruiter: my jobs
     if (isset($_GET['mine']) && $userId) {
-        $stmt = $pdo->prepare('SELECT j.*, c.logo_url AS company_logo_url, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id LEFT JOIN companies c ON c.id = u.company_id WHERE j.user_id = ? ORDER BY j.created_at DESC');
+        $stmt = $pdo->prepare('SELECT ' . jobListingSelectSql('j') . ' FROM ' . jobListingJoinSql('j') . ' WHERE j.user_id = ? ORDER BY j.created_at DESC');
         $stmt->execute([$userId]);
         $jobs = $stmt->fetchAll();
         foreach ($jobs as &$j) {
@@ -145,7 +145,7 @@ if ($method === 'GET') {
     }
 
     // All active jobs
-    $stmt = $pdo->query('SELECT j.*, c.logo_url AS company_logo_url, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicant_count FROM jobs j LEFT JOIN users u ON j.user_id = u.id LEFT JOIN companies c ON c.id = u.company_id WHERE j.status = "active" ORDER BY j.created_at DESC');
+    $stmt = $pdo->query('SELECT ' . jobListingSelectSql('j') . ' FROM ' . jobListingJoinSql('j') . ' WHERE j.status = "active" ORDER BY j.created_at DESC');
     $jobs = $stmt->fetchAll();
     foreach ($jobs as &$j) {
         normalizeJobRow($j);
