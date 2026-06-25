@@ -19,6 +19,7 @@ $base = rtrim(APP_URL, '/');
 
 $staticPages = [
     ['loc' => $base . '/', 'priority' => '1.0', 'freq' => 'daily'],
+    ['loc' => $base . '/home.html', 'priority' => '1.0', 'freq' => 'daily'],
     ['loc' => $base . '/jobs.html', 'priority' => '0.9', 'freq' => 'hourly'],
     ['loc' => $base . '/recruiter-pricing.html', 'priority' => '0.6', 'freq' => 'weekly'],
     ['loc' => $base . '/cv-builder.html', 'priority' => '0.6', 'freq' => 'weekly'],

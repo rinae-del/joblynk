@@ -688,6 +688,14 @@
 
         const jobId = new URLSearchParams(window.location.search).get('job');
         if (jobId && getJobById(jobId)) openPreview(jobId);
+
+        const urlKeyword = new URLSearchParams(window.location.search).get('q')
+            || new URLSearchParams(window.location.search).get('keyword');
+        if (urlKeyword && $('publicJobKeyword')) {
+            $('publicJobKeyword').value = urlKeyword;
+            state.browsePage = 1;
+            renderJobs();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', init);
