@@ -426,7 +426,7 @@ body.home-public-page.landing-page {
 
 .home-public-page .home-jobs-list {
     display: grid;
-    gap: 0.75rem;
+    gap: 1rem;
     border: none;
     border-radius: 0;
     overflow: visible;
@@ -439,61 +439,63 @@ body.home-public-page.landing-page {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 1.15rem;
     align-items: stretch;
-    padding: 1.05rem 1.15rem;
-    border: 1px solid rgba(148, 163, 184, 0.11);
-    border-radius: 16px;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.42), rgba(15, 23, 42, 0.52));
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    padding: 1.25rem 1.35rem;
+    border-radius: 18px;
+    background: var(--home-card);
+    border: 1px solid var(--home-border);
+    box-shadow: var(--home-card-shadow);
     text-decoration: none;
     color: inherit;
     overflow: hidden;
-    transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.home-public-page .home-job-row::before {
+.home-public-page .home-job-row::after {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, rgba(99, 102, 241, 0.65), rgba(52, 211, 153, 0.35));
-    opacity: 0;
-    transition: opacity 0.22s ease;
+    top: -20%;
+    right: -8%;
+    width: 46%;
+    height: 80%;
+    background: radial-gradient(circle at 70% 20%, rgba(99, 102, 241, 0.14), transparent 68%);
+    pointer-events: none;
+    opacity: 0.55;
+    transition: opacity 0.25s ease;
 }
 
 .home-public-page .home-job-row:hover {
-    border-color: rgba(129, 140, 248, 0.28);
-    background: linear-gradient(145deg, rgba(40, 51, 71, 0.55), rgba(20, 28, 46, 0.62));
-    box-shadow: 0 14px 32px rgba(2, 6, 23, 0.22);
-    transform: translateY(-1px);
+    border-color: var(--home-border-hover);
+    background: var(--home-card-hover);
+    box-shadow: var(--home-card-shadow-hover);
+    transform: translateY(-3px);
 }
 
-.home-public-page .home-job-row:hover::before {
+.home-public-page .home-job-row:hover::after {
     opacity: 1;
 }
 
 .home-public-page .home-job-main {
+    position: relative;
+    z-index: 1;
     min-width: 0;
-    padding-left: 0.15rem;
 }
 
 .home-public-page .home-job-head {
     display: flex;
     align-items: flex-start;
     gap: 0.55rem;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
 }
 
 .home-public-page .home-job-head h3 {
     margin: 0;
     flex: 1;
     min-width: 0;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.02rem;
+    font-weight: 800;
     line-height: 1.35;
-    letter-spacing: -0.02em;
-    color: #f1f5f9;
+    letter-spacing: -0.025em;
+    color: #f8fafc;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -502,23 +504,24 @@ body.home-public-page.landing-page {
 
 .home-public-page .home-job-fresh {
     flex-shrink: 0;
-    margin-top: 0.15rem;
-    padding: 0.15rem 0.45rem;
+    margin-top: 0.12rem;
+    padding: 0.18rem 0.5rem;
     border-radius: 999px;
-    background: rgba(52, 211, 153, 0.12);
-    border: 1px solid rgba(52, 211, 153, 0.28);
+    background: rgba(52, 211, 153, 0.16);
+    border: 1px solid rgba(52, 211, 153, 0.32);
     color: #6ee7b7;
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.12);
 }
 
 .home-public-page .home-job-company {
-    margin: 0 0 0.65rem;
-    color: #94a3b8;
-    font-size: 0.84rem;
-    font-weight: 500;
+    margin: 0 0 0.75rem;
+    color: #cbd5e1;
+    font-size: 0.86rem;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -527,28 +530,37 @@ body.home-public-page.landing-page {
 .home-public-page .home-job-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.45rem;
 }
 
 .home-public-page .home-job-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.45rem;
     max-width: 100%;
-    padding: 0.28rem 0.55rem;
-    border-radius: 8px;
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(148, 163, 184, 0.12);
-    color: #94a3b8;
-    font-size: 0.74rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.45rem;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid var(--home-border);
+    color: #cbd5e1;
+    font-size: 0.76rem;
     font-weight: 600;
     line-height: 1.35;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
 }
 
 .home-public-page .home-job-chip i {
     flex-shrink: 0;
+    width: 1.35rem;
+    height: 1.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
     font-size: 0.62rem;
-    opacity: 0.85;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.08));
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light);
 }
 
 .home-public-page .home-job-chip span {
@@ -559,27 +571,44 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-job-chip--salary {
-    background: rgba(52, 211, 153, 0.1);
-    border-color: rgba(52, 211, 153, 0.22);
-    color: #86efac;
+    background: rgba(6, 78, 59, 0.35);
+    border-color: rgba(52, 211, 153, 0.28);
+    color: #a7f3d0;
 }
 
 .home-public-page .home-job-chip--salary i {
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.28), rgba(52, 211, 153, 0.1));
+    border-color: rgba(52, 211, 153, 0.32);
     color: #6ee7b7;
 }
 
+.home-public-page .home-job-chip--location i {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.08));
+    border-color: rgba(56, 189, 248, 0.24);
+    color: #7dd3fc;
+}
+
+.home-public-page .home-job-chip--type i {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.08));
+    border-color: rgba(251, 191, 36, 0.24);
+    color: #fcd34d;
+}
+
 .home-public-page .home-job-aside {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 0.65rem;
+    gap: 0.75rem;
     flex-shrink: 0;
-    min-width: 5.5rem;
+    min-width: 5.75rem;
+    padding-left: 0.5rem;
 }
 
 .home-public-page .home-job-age {
-    color: #64748b;
+    color: #94a3b8;
     font-size: 0.72rem;
     font-weight: 600;
     white-space: nowrap;
@@ -591,31 +620,37 @@ body.home-public-page.landing-page {
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    height: 36px;
-    padding: 0 0.85rem;
-    border-radius: 10px;
-    background: rgba(99, 102, 241, 0.14);
-    border: 1px solid rgba(129, 140, 248, 0.22);
-    color: #c7d2fe;
-    font-size: 0.78rem;
+    height: 38px;
+    padding: 0 0.95rem;
+    border-radius: 11px;
+    background: var(--home-accent-soft);
+    border: 1px solid var(--home-accent-border);
+    color: var(--home-accent-light);
+    font-size: 0.8rem;
     font-weight: 700;
     white-space: nowrap;
-    transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.14);
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-public-page .home-job-cta i {
     font-size: 0.68rem;
-    transition: transform 0.22s ease;
+    transition: transform 0.25s ease;
 }
 
 .home-public-page .home-job-row:hover .home-job-cta {
     background: linear-gradient(135deg, #6366f1, #4f46e5);
     border-color: transparent;
     color: #fff;
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
 }
 
 .home-public-page .home-job-row:hover .home-job-cta i {
     transform: translateX(2px);
+}
+
+.home-public-page .home-job-row:hover .home-job-chip {
+    border-color: rgba(148, 163, 184, 0.18);
 }
 
 .home-public-page .home-jobs-empty,
@@ -1202,8 +1237,8 @@ body.home-public-page.landing-page {
 
     .home-public-page .home-job-row {
         grid-template-columns: 1fr;
-        gap: 0.85rem;
-        padding: 0.95rem 1rem;
+        gap: 0.9rem;
+        padding: 1.05rem 1.1rem;
     }
 
     .home-public-page .home-job-aside {
@@ -1212,8 +1247,9 @@ body.home-public-page.landing-page {
         justify-content: space-between;
         min-width: 0;
         width: 100%;
-        padding-top: 0.15rem;
-        border-top: 1px solid rgba(148, 163, 184, 0.1);
+        padding: 0.65rem 0 0;
+        margin-top: 0.15rem;
+        border-top: 1px solid var(--home-border);
     }
 
     .home-public-page .home-job-age {
