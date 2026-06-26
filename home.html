@@ -48,7 +48,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="landing.css?v=20260722">
-    <link rel="stylesheet" href="home.css?v=20260724">
+    <link rel="stylesheet" href="home.css?v=20260725">
 </head>
 
 <body class="landing-page home-public-page" data-nav-active="home">
@@ -67,22 +67,32 @@
                 <p class="home-hero-lead">
                     Browse live vacancies with clear pay where available, build a CV free, and apply in minutes.
                 </p>
+                <form class="home-hero-search" action="jobs.html" method="get" role="search">
+                    <label class="home-hero-search-field">
+                        <span class="visually-hidden">Search jobs</span>
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" name="q" placeholder="Job title, skill or company" autocomplete="off" enterkeyhint="search">
+                    </label>
+                    <button type="submit" class="btn-landing btn-landing-primary">Search jobs</button>
+                </form>
                 <div class="home-hero-actions">
-                    <a href="#jobs" class="btn-landing btn-landing-primary btn-lg">Browse jobs</a>
+                    <a href="#jobs" class="btn-landing btn-landing-outline btn-lg">Browse featured</a>
                     <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build CV</a>
                 </div>
-                <div class="home-hero-stats" aria-label="Platform highlights">
-                    <div class="home-hero-stat">
-                        <strong id="homeHeroJobCount">—</strong>
-                        <span>open roles</span>
-                    </div>
-                    <div class="home-hero-stat">
-                        <strong>Free</strong>
-                        <span>CV builder</span>
-                    </div>
-                    <div class="home-hero-stat">
-                        <strong>POPIA</strong>
-                        <span>secure</span>
+                <div class="home-scroll-strip home-hero-stats-wrap">
+                    <div class="home-hero-stats" aria-label="Platform highlights">
+                        <div class="home-hero-stat">
+                            <strong id="homeHeroJobCount">—</strong>
+                            <span>open roles</span>
+                        </div>
+                        <div class="home-hero-stat">
+                            <strong>Free</strong>
+                            <span>CV builder</span>
+                        </div>
+                        <div class="home-hero-stat">
+                            <strong>POPIA</strong>
+                            <span>secure</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,40 +100,41 @@
     </section>
 
     <!-- Featured jobs -->
-    <section class="home-jobs-section" id="jobs" aria-labelledby="homeJobsHeading">
+    <section class="home-jobs-section home-reveal" id="jobs" aria-labelledby="homeJobsHeading">
         <div class="section-container">
-            <div class="section-header home-jobs-header home-jobs-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line home-section-rule-line-live"></span>
-                    <span class="home-section-rule-label home-section-rule-label-live"><span class="home-live-dot" aria-hidden="true"></span> Live</span>
+            <div class="home-jobs-top">
+                <div class="home-jobs-header home-jobs-intro">
+                    <div class="home-section-rule" aria-hidden="true">
+                        <span class="home-section-rule-line home-section-rule-line-live"></span>
+                        <span class="home-section-rule-label home-section-rule-label-live"><span class="home-live-dot" aria-hidden="true"></span> Live</span>
+                    </div>
+                    <h2 id="homeJobsHeading">Featured roles</h2>
+                    <p class="home-jobs-lead" id="homeJobsLead">Loading…</p>
                 </div>
-                <h2 id="homeJobsHeading">Roles</h2>
-                <p class="home-jobs-lead" id="homeJobsLead">Loading…</p>
+                <a href="jobs.html" class="home-jobs-all-link home-jobs-all-link--inline">View all jobs <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
             </div>
-
-            <a href="jobs.html" class="btn-landing btn-landing-outline home-jobs-all-link">View all jobs</a>
 
             <div class="home-jobs-list" id="homeFeaturedJobs" aria-live="polite"></div>
 
             <div class="home-jobs-foot">
-                <form class="home-jobs-search" action="jobs.html" method="get" role="search">
-                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                    <input type="search" name="q" placeholder="Job title, company or skill" autocomplete="off" enterkeyhint="search" aria-label="Search jobs">
-                    <button type="submit" class="btn-landing btn-landing-primary">Search</button>
-                </form>
-                <nav class="home-location-links" aria-label="Browse jobs by city">
-                    <a href="jobs.html?q=johannesburg">Johannesburg</a>
-                    <a href="jobs.html?q=cape%20town">Cape Town</a>
-                    <a href="jobs.html?q=durban">Durban</a>
-                    <a href="jobs.html?q=pretoria">Pretoria</a>
-                    <a href="jobs.html?q=remote">Remote</a>
-                </nav>
+                <p class="home-jobs-foot-label">Popular cities</p>
+                <div class="home-scroll-strip">
+                    <nav class="home-location-links" aria-label="Browse jobs by city">
+                        <a href="jobs.html?q=johannesburg">Johannesburg</a>
+                        <a href="jobs.html?q=cape%20town">Cape Town</a>
+                        <a href="jobs.html?q=durban">Durban</a>
+                        <a href="jobs.html?q=pretoria">Pretoria</a>
+                        <a href="jobs.html?q=remote">Remote</a>
+                        <a href="jobs.html?q=port%20elizabeth">Gqeberha</a>
+                        <a href="jobs.html?q=bloemfontein">Bloemfontein</a>
+                    </nav>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Why JobLynk -->
-    <section class="why-section" id="why">
+    <section class="why-section home-reveal" id="why">
         <div class="section-container">
             <div class="home-why-intro">
                 <div class="home-section-rule" aria-hidden="true">
@@ -160,7 +171,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="features-section" id="features">
+    <section class="features-section home-reveal" id="features">
         <div class="section-container">
             <div class="home-features-intro">
                 <div class="home-section-rule" aria-hidden="true">
@@ -206,7 +217,7 @@
     </section>
 
     <!-- How It Works Section -->
-    <section class="how-it-works" id="how-it-works">
+    <section class="how-it-works home-reveal" id="how-it-works">
         <div class="section-container">
             <div class="home-section-intro home-how-intro">
                 <div class="home-section-rule" aria-hidden="true">
@@ -243,7 +254,7 @@
     </section>
 
     <!-- Benefits Counter Section -->
-    <section class="stats-counter-section">
+    <section class="stats-counter-section home-reveal">
         <div class="section-container">
             <div class="home-section-intro home-stats-intro">
                 <div class="home-section-rule" aria-hidden="true">
@@ -279,7 +290,7 @@
     </section>
 
     <!-- Success Stories Carousel -->
-    <section class="testimonials-section">
+    <section class="testimonials-section home-reveal">
         <div class="section-container">
             <div class="home-section-intro home-testimonials-intro">
                 <div class="home-section-rule" aria-hidden="true">
@@ -374,7 +385,7 @@
 
 
     <!-- FAQ Section -->
-    <section class="faq-section" id="faq">
+    <section class="faq-section home-reveal" id="faq">
         <div class="section-container">
             <div class="home-section-intro home-faq-intro">
                 <div class="home-section-rule" aria-hidden="true">
@@ -418,7 +429,7 @@
     </section>
 
     <!-- Final CTA Band -->
-    <section class="final-cta-section">
+    <section class="final-cta-section home-reveal">
         <div class="final-cta-inner">
             <div class="final-cta-copy">
                 <h2>Ready to start?</h2>
@@ -528,9 +539,8 @@
     <script src="landing-nav.js?v=20260716"></script>
     <script src="jobs-store.js?v=20260717"></script>
     <script src="jobs-browser.js?v=20260625-board"></script>
-    <script src="home.js?v=20260723"></script>
+    <script src="home.js?v=20260725"></script>
     <script>
-        const stickyCta = document.querySelector('.sticky-mobile-cta');
         const cvStartModal = document.getElementById('cvStartModal');
         const cvImportFile = document.getElementById('cvImportFile');
         const cvImportStatus = document.getElementById('cvImportStatus');
@@ -541,14 +551,6 @@
 
         syncNavHeight();
         window.addEventListener('resize', syncNavHeight, { passive: true });
-
-        const syncStickyCta = () => {
-            if (!stickyCta) return;
-            stickyCta.classList.toggle('is-visible', window.scrollY > 520);
-        };
-
-        syncStickyCta();
-        window.addEventListener('scroll', syncStickyCta, { passive: true });
 
         const openCvStartModal = () => {
             if (!cvStartModal) return;
