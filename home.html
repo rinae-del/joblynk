@@ -48,7 +48,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="landing.css?v=20260722">
-    <link rel="stylesheet" href="home.css?v=20260725">
+    <link rel="stylesheet" href="home.css?v=20260726">
 </head>
 
 <body class="landing-page home-public-page" data-nav-active="home">
@@ -57,29 +57,31 @@
 
     <!-- Hero -->
     <section class="home-hero" id="top">
-        <div class="home-hero-media">
-            <img src="images/hero.png" alt="Colleagues reviewing job opportunities together at a desk" class="home-hero-img" width="960" height="640" loading="eager" decoding="async">
-        </div>
-        <div class="home-hero-inner">
-            <div class="section-container home-hero-copy">
-                <p class="home-hero-eyebrow"><span class="home-live-dot" aria-hidden="true"></span> Live across South Africa</p>
-                <h1>Find work that <em>fits you</em></h1>
-                <p class="home-hero-lead">
-                    Browse live vacancies with clear pay where available, build a CV free, and apply in minutes.
-                </p>
-                <form class="home-hero-search" action="jobs.html" method="get" role="search">
-                    <label class="home-hero-search-field">
-                        <span class="visually-hidden">Search jobs</span>
-                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                        <input type="search" name="q" placeholder="Job title, skill or company" autocomplete="off" enterkeyhint="search">
-                    </label>
-                    <button type="submit" class="btn-landing btn-landing-primary">Search jobs</button>
-                </form>
-                <div class="home-hero-actions">
-                    <a href="#jobs" class="btn-landing btn-landing-outline btn-lg">Browse featured</a>
-                    <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build CV</a>
-                </div>
-                <div class="home-scroll-strip home-hero-stats-wrap">
+        <div class="home-hero-bg" aria-hidden="true"></div>
+        <div class="section-container home-hero-shell">
+            <div class="home-hero-grid">
+                <div class="home-hero-copy">
+                    <p class="home-hero-eyebrow"><span class="home-live-dot" aria-hidden="true"></span> Live across South Africa</p>
+                    <h1>Find work that <em>fits you</em></h1>
+                    <p class="home-hero-lead">
+                        Browse live vacancies with clear pay where available, build a CV free, and apply in minutes.
+                    </p>
+                    <form class="home-hero-search" action="jobs.html" method="get" role="search">
+                        <label class="home-hero-search-field">
+                            <span class="visually-hidden">Search jobs</span>
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <input type="search" name="q" placeholder="Job title, skill or company" autocomplete="off" enterkeyhint="search">
+                        </label>
+                        <button type="submit" class="home-hero-search-btn btn-landing btn-landing-primary" aria-label="Search jobs">
+                            <span class="home-hero-search-btn-text">Search</span>
+                            <i class="fa-solid fa-arrow-right home-hero-search-btn-icon" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                    <div class="home-hero-quicklinks">
+                        <a href="#jobs">Browse featured roles</a>
+                        <span class="home-hero-quicklinks-sep" aria-hidden="true"></span>
+                        <a href="#cv-start" class="js-open-cv-start">Build your CV free</a>
+                    </div>
                     <div class="home-hero-stats" aria-label="Platform highlights">
                         <div class="home-hero-stat">
                             <strong id="homeHeroJobCount">—</strong>
@@ -93,6 +95,12 @@
                             <strong>POPIA</strong>
                             <span>secure</span>
                         </div>
+                    </div>
+                </div>
+                <div class="home-hero-visual">
+                    <div class="home-hero-visual-frame">
+                        <img src="images/hero.png" alt="Colleagues reviewing job opportunities together at a desk" class="home-hero-img" width="960" height="640" loading="eager" decoding="async">
+                        <div class="home-hero-visual-glow" aria-hidden="true"></div>
                     </div>
                 </div>
             </div>
