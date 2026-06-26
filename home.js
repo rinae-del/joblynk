@@ -45,13 +45,57 @@
         const note = String(job.salaryNote || job.salary_note || '').trim();
         const period = String(job.salaryPeriod || job.salary_period || 'Per Month').replace(/^Per\s+/i, 'per ');
         let salary = '';
-        if (from && to) salary = `${from} – ${to} ${period}`;
+        if (from && to && from === to) salary = `${from} ${period}`;
+        else if (from && to) salary = `${from} – ${to} ${period}`;
         else if (from) salary = `${from} ${period}`;
         else if (to) salary = `${to} ${period}`;
         const combined = [salary, note].filter(Boolean).join(' · ');
         if (combined) return combined;
         if (job.hideSalary || job.hide_salary) return '';
         return '';
+    }
+
+    function isFreshPosting(job) {
+        const days = Math.max(0, Math.floor((Date.now() - new Date(job.postedAt || job.created_at).getTime()) / 86400000));
+        return days <= 1;
+    }
+
+    function renderJobChips(job, salary) {
+        const chips = [];
+        if (salary) chips.push({ mod: 'salary', icon: 'fa-wallet', text: salary });
+        if (job.location) chips.push({ mod: 'location', icon: 'fa-location-dot', text: job.location });
+        if (job.type) chips.push({ mod: 'type', icon: 'fa-briefcase', text: job.type });
+        return chips.map(chip => `
+            <span class="home-job-chip home-job-chip--${chip.mod}">
+                <i class="fa-solid ${chip.icon}" aria-hidden="true"></i>
+                <span>${escText(chip.text)}</span>
+            </span>
+        `).join('');
+    }
+
+    function renderJobRow(job) {
+        const company = job.company || 'Company';
+        const salary = formatSalaryLabel(job);
+        const age = formatRelativeAge(job.postedAt || job.created_at);
+        const url = jobPageUrl(job);
+        const chipsHtml = renderJobChips(job, salary);
+
+        return `
+            <a class="home-job-row" href="${escAttr(url)}">
+                <div class="home-job-main">
+                    <div class="home-job-head">
+                        <h3>${escText(job.title || 'Untitled role')}</h3>
+                        ${isFreshPosting(job) ? '<span class="home-job-fresh">New</span>' : ''}
+                    </div>
+                    <p class="home-job-company">${escText(company)}</p>
+                    ${chipsHtml ? `<div class="home-job-chips">${chipsHtml}</div>` : ''}
+                </div>
+                <div class="home-job-aside">
+                    <span class="home-job-age">${escText(age)}</span>
+                    <span class="home-job-cta">View <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+                </div>
+            </a>
+        `;
     }
 
     function jobHasSalary(job) {
@@ -62,31 +106,6 @@
         return [...jobs]
             .sort((a, b) => Number(jobHasSalary(b)) - Number(jobHasSalary(a)))
             .slice(0, FEATURED_LIMIT);
-    }
-
-    function renderJobRow(job) {
-        const company = job.company || 'Company';
-        const salary = formatSalaryLabel(job);
-
-        const meta = [
-            salary ? `<span class="is-salary">${escText(salary)}</span>` : '',
-            job.location ? `<span>${escText(job.location)}</span>` : '',
-            job.type ? `<span>${escText(job.type)}</span>` : '',
-            `<span>${escText(formatRelativeAge(job.postedAt || job.created_at))}</span>`,
-        ].filter(Boolean).join('');
-
-        const url = jobPageUrl(job);
-
-        return `
-            <a class="home-job-row" href="${escAttr(url)}">
-                <div class="home-job-body">
-                    <h3>${escText(job.title || 'Untitled role')}</h3>
-                    <p class="home-job-company">${escText(company)}</p>
-                    <div class="home-job-meta">${meta}</div>
-                </div>
-                <span class="home-job-cta">View role</span>
-            </a>
-        `;
     }
 
     function updateHeroStats(jobCount) {
