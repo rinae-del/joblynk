@@ -162,9 +162,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadFeaturedJobs();
         initHomeNavScroll();
-        initScrollReveal();
-        initSmoothAnchors();
-        initStickyCta();
     });
 
     function initHomeNavScroll() {
@@ -176,83 +173,5 @@
 
         syncNavScrollState();
         window.addEventListener('scroll', syncNavScrollState, { passive: true });
-    }
-
-    function initScrollReveal() {
-        const sections = document.querySelectorAll('.home-public-page .home-reveal');
-        if (!sections.length) return;
-
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            sections.forEach(el => el.classList.add('is-visible'));
-            return;
-        }
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { root: null, rootMargin: '0px 0px -8%', threshold: 0.08 });
-
-        sections.forEach(el => observer.observe(el));
-    }
-
-    function initSmoothAnchors() {
-        document.querySelectorAll('.home-public-page a[href^="#"]').forEach(link => {
-            if (link.classList.contains('js-open-cv-start')) return;
-
-            link.addEventListener('click', event => {
-                const hash = link.getAttribute('href');
-                if (!hash || hash === '#') return;
-                const target = document.querySelector(hash);
-                if (!target || target.closest('[aria-hidden="true"]')) return;
-                event.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                history.replaceState(null, '', hash);
-            });
-        });
-    }
-
-    function initStickyCta() {
-        const stickyCta = document.querySelector('.home-public-page .sticky-mobile-cta');
-        const jobsSection = document.getElementById('jobs');
-        const footer = document.querySelector('.home-public-page .landing-footer');
-        if (!stickyCta) return;
-
-        let jobsInView = false;
-        let footerInView = false;
-
-        const sync = () => {
-            const scrolled = window.scrollY > 480;
-            const modalOpen = document.body.classList.contains('modal-open');
-            const show = scrolled && !jobsInView && !footerInView && !modalOpen;
-            stickyCta.classList.toggle('is-visible', show);
-        };
-
-        if (jobsSection && 'IntersectionObserver' in window) {
-            new IntersectionObserver(entries => {
-                jobsInView = entries.some(e => e.isIntersecting && e.intersectionRatio >= 0.35);
-                sync();
-            }, { threshold: [0, 0.35, 0.6] }).observe(jobsSection);
-        }
-
-        if (footer && 'IntersectionObserver' in window) {
-            new IntersectionObserver(entries => {
-                footerInView = entries.some(e => e.isIntersecting);
-                sync();
-            }, { rootMargin: '0px 0px -40px 0px', threshold: 0 }).observe(footer);
-        }
-
-        window.addEventListener('scroll', sync, { passive: true });
-        document.addEventListener('keydown', event => {
-            if (event.key === 'Escape') setTimeout(sync, 0);
-        });
-
-        const modalObserver = new MutationObserver(sync);
-        modalObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-        sync();
     }
 })();

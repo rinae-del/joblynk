@@ -3,41 +3,35 @@
    ============================================================ */
 
 .home-public-page {
-    --home-max: 1200px;
+    --home-max: 1180px;
     --home-gutter: 1.25rem;
-    --home-border: rgba(255, 255, 255, 0.09);
-    --home-border-hover: rgba(96, 165, 250, 0.45);
-    --home-section-pad: 5rem;
-    --home-page-bg: #04060d;
-    --home-surface: #0c1220;
-    --home-surface-raised: #121a2b;
-    --home-accent: #2563eb;
-    --home-accent-deep: #1d4ed8;
-    --home-accent-light: #93c5fd;
-    --home-accent-soft: rgba(37, 99, 235, 0.14);
-    --home-accent-border: rgba(96, 165, 250, 0.32);
-    --home-teal: #14b8a6;
-    --home-teal-light: #5eead4;
-    --home-teal-soft: rgba(20, 184, 166, 0.12);
-    --home-live: #22c55e;
-    --home-live-soft: rgba(34, 197, 94, 0.14);
-    --home-muted: #8b95a8;
-    --home-text: #f1f5f9;
+    --home-border: rgba(148, 163, 184, 0.12);
+    --home-border-hover: rgba(129, 140, 248, 0.4);
+    --home-section-pad: 4.5rem;
+    --home-accent: #6366f1;
+    --home-accent-light: #a5b4fc;
+    --home-accent-soft: rgba(99, 102, 241, 0.12);
+    --home-accent-border: rgba(129, 140, 248, 0.28);
+    --home-page-bg: #0b1120;
 
-    --home-card: linear-gradient(165deg, rgba(18, 26, 43, 0.96) 0%, rgba(10, 15, 28, 0.98) 100%);
-    --home-card-hover: linear-gradient(165deg, rgba(24, 34, 54, 0.98) 0%, rgba(14, 20, 36, 1) 100%);
-    --home-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 12px 32px rgba(0, 0, 0, 0.45);
-    --home-card-shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 20px 44px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(37, 99, 235, 0.18);
+    /* Premium glass card surface + lighting */
+    --home-card: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.68));
+    --home-card-hover: linear-gradient(180deg, rgba(40, 51, 71, 0.72), rgba(20, 28, 46, 0.78));
+    --home-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px rgba(2, 6, 23, 0.35);
+    --home-card-shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 22px 48px rgba(2, 6, 23, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.12);
 }
 
+/* Ambient depth that continues the hero mood across the page */
 html body.home-public-page,
 html[data-theme="dark"] body.home-public-page {
     position: relative;
-    color: var(--home-text);
     background:
-        radial-gradient(ellipse 70% 50% at 100% 0%, rgba(37, 99, 235, 0.16), transparent 55%),
-        radial-gradient(ellipse 55% 45% at 0% 12%, rgba(20, 184, 166, 0.1), transparent 52%),
-        radial-gradient(ellipse 50% 40% at 50% 100%, rgba(37, 99, 235, 0.08), transparent 58%),
+        radial-gradient(ellipse 65% 45% at 85% 4%, rgba(99, 102, 241, 0.14), transparent 58%),
+        radial-gradient(ellipse 55% 40% at 8% 18%, rgba(52, 211, 153, 0.07), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 15% 55%, rgba(79, 70, 229, 0.09), transparent 58%),
+        radial-gradient(ellipse 55% 45% at 92% 62%, rgba(99, 102, 241, 0.08), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 50% 88%, rgba(52, 211, 153, 0.05), transparent 60%),
+        radial-gradient(ellipse 45% 35% at 78% 92%, rgba(99, 102, 241, 0.07), transparent 55%),
         var(--home-page-bg);
     background-attachment: fixed;
 }
@@ -55,57 +49,6 @@ html[data-theme="dark"] body.home-public-page {
     padding-right: var(--home-gutter);
     position: relative;
     z-index: 1;
-}
-
-.home-public-page .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.home-public-page [id] {
-    scroll-margin-top: calc(var(--landing-nav-h, 62px) + 14px);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    html:has(.home-public-page) {
-        scroll-behavior: smooth;
-    }
-}
-
-.home-public-page a,
-.home-public-page button {
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Home button overrides */
-.home-public-page .btn-landing-primary {
-    background: linear-gradient(135deg, var(--home-accent) 0%, var(--home-accent-deep) 100%);
-    border-color: rgba(96, 165, 250, 0.35);
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
-}
-
-.home-public-page .btn-landing-primary:hover {
-    background: linear-gradient(135deg, #3b82f6 0%, var(--home-accent) 100%);
-    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.45);
-}
-
-.home-public-page .btn-landing-outline {
-    border-color: rgba(255, 255, 255, 0.14);
-    color: #cbd5e1;
-    background: rgba(255, 255, 255, 0.03);
-}
-
-.home-public-page .btn-landing-outline:hover {
-    border-color: var(--home-accent-border);
-    color: #fff;
-    background: var(--home-accent-soft);
 }
 
 /* ── Reusable section intro (rule + label + heading) ─────── */
@@ -166,266 +109,164 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .landing-nav {
-    background: rgba(4, 6, 13, 0.82);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    background: rgba(11, 17, 32, 0.78);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
     transition: background 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease;
 }
 
 .home-public-page.is-nav-scrolled .landing-nav {
-    background: linear-gradient(180deg, rgba(4, 6, 13, 0.94) 0%, rgba(4, 6, 13, 0.6) 55%, rgba(4, 6, 13, 0) 100%);
+    background: linear-gradient(180deg, rgba(11, 17, 32, 0.92) 0%, rgba(11, 17, 32, 0.55) 55%, rgba(11, 17, 32, 0) 100%);
     border-bottom-color: transparent;
-    backdrop-filter: blur(12px) saturate(1.15);
-    -webkit-backdrop-filter: blur(12px) saturate(1.15);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
 }
 
 /* ── Hero ────────────────────────────────────────────────── */
 .home-public-page .home-hero {
     position: relative;
-    padding: 2rem 0 3.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
+    padding: 0 0 3rem;
+    border-bottom: none;
+    background: transparent;
 }
 
-.home-public-page .home-hero-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-        radial-gradient(ellipse 55% 70% at 78% 35%, rgba(37, 99, 235, 0.18), transparent 62%),
-        radial-gradient(ellipse 45% 55% at 12% 70%, rgba(20, 184, 166, 0.1), transparent 58%);
-}
-
-.home-public-page .home-hero-shell {
+.home-public-page .home-hero-media {
     position: relative;
+    width: 100%;
+    height: clamp(240px, 36vw, 400px);
+    overflow: hidden;
+    margin: 0;
+}
+
+.home-public-page .home-hero-media::before,
+.home-public-page .home-hero-media::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
     z-index: 1;
 }
 
-.home-public-page .home-hero-grid {
-    display: grid;
-    gap: 2rem;
-    align-items: center;
+.home-public-page .home-hero-media::after {
+    bottom: 0;
+    height: 72%;
+    background: linear-gradient(to bottom, transparent 0%, var(--home-page-bg) 92%);
 }
 
-.home-public-page .home-hero-copy {
-    min-width: 0;
-    text-align: left;
-}
-
-.home-public-page .home-hero-visual {
-    min-width: 0;
-}
-
-.home-public-page .home-hero-visual-frame {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.06) inset,
-        0 24px 56px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(37, 99, 235, 0.12);
-    background: var(--home-surface);
+.home-public-page.is-nav-scrolled .home-hero-media::before {
+    top: 0;
+    height: calc(var(--landing-nav-h, 62px) + 32px);
+    background: linear-gradient(to bottom, rgba(11, 17, 32, 0.55) 0%, transparent 100%);
 }
 
 .home-public-page .home-hero-img {
     display: block;
     width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
+    height: 100%;
     object-fit: cover;
-    object-position: center 22%;
+    object-position: center 24%;
+    border-radius: 0;
 }
 
-.home-public-page .home-hero-visual-glow {
-    position: absolute;
-    inset: auto -20% -30% -20%;
-    height: 55%;
-    background: radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.35), transparent 68%);
-    pointer-events: none;
+.home-public-page .home-hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: none;
+    margin: -0.5rem auto 0;
+    padding: 0;
+}
+
+.home-public-page .home-hero-copy {
+    min-width: 0;
+    max-width: var(--home-max);
+    margin: 0 auto;
+    text-align: left;
 }
 
 .home-public-page .home-hero-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 1.1rem;
-    padding: 0.32rem 0.7rem 0.32rem 0.5rem;
+    gap: 0.55rem;
+    margin: 0 0 1rem;
+    padding: 0.35rem 0.75rem 0.35rem 0.55rem;
     border-radius: 999px;
-    border: 1px solid rgba(34, 197, 94, 0.28);
-    background: var(--home-live-soft);
-    color: #86efac;
-    font-size: 0.72rem;
+    border: 1px solid rgba(129, 140, 248, 0.22);
+    background: rgba(99, 102, 241, 0.1);
+    color: #c7d2fe;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
 .home-public-page .home-hero h1 {
-    margin: 0 0 0.9rem;
-    max-width: 11ch;
-    font-size: clamp(2rem, 4.5vw, 3.45rem);
+    margin: 0 0 1rem;
+    max-width: 14ch;
+    font-size: clamp(2.1rem, 4.8vw, 3.2rem);
     font-weight: 800;
-    line-height: 1.02;
-    letter-spacing: -0.045em;
-    color: #fff;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+    color: #f8fafc;
 }
 
 .home-public-page .home-hero h1 em {
     font-style: normal;
-    background: linear-gradient(120deg, #93c5fd 0%, #5eead4 100%);
+    background: linear-gradient(135deg, #a5b4fc 0%, #6ee7b7 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
 .home-public-page .home-hero-lead {
-    margin: 0 0 1.1rem;
-    max-width: 32rem;
-    color: var(--home-muted);
-    font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    margin: 0 0 1.5rem;
+    max-width: 34rem;
+    color: #94a3b8;
+    font-size: 1.02rem;
     line-height: 1.65;
     font-weight: 500;
 }
 
-/* Compact search bar */
-.home-public-page .home-hero-search {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    max-width: 28rem;
-    margin: 0 0 0.85rem;
-    padding: 0.28rem;
-    border-radius: 11px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.home-public-page .home-hero-search:focus-within {
-    border-color: var(--home-accent-border);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16), 0 8px 24px rgba(0, 0, 0, 0.28);
-}
-
-.home-public-page .home-hero-search-field {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    min-width: 0;
-    height: 36px;
-    padding: 0 0.65rem;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-}
-
-.home-public-page .home-hero-search-field > i {
-    flex-shrink: 0;
-    color: #64748b;
-    font-size: 0.82rem;
-}
-
-.home-public-page .home-hero-search-field input {
-    flex: 1;
-    min-width: 0;
-    border: none;
-    background: transparent;
-    color: var(--home-text);
-    font: inherit;
-    font-size: 16px;
-    line-height: 1.2;
-    height: auto;
-    min-height: 0;
-    padding: 0;
-    outline: none;
-}
-
-.home-public-page .home-hero-search-field input::placeholder {
-    color: #64748b;
-    font-size: 0.92rem;
-}
-
-.home-public-page .home-hero-search-btn {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    height: 36px;
-    min-height: 36px;
-    padding: 0 0.85rem;
-    border-radius: 8px;
-    font-size: 0.84rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.home-public-page .home-hero-search-btn-icon {
-    display: none;
-    font-size: 0.78rem;
-}
-
-.home-public-page .home-hero-quicklinks {
+.home-public-page .home-hero-actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.55rem 0.75rem;
-    margin: 0 0 1.25rem;
-    font-size: 0.86rem;
-    font-weight: 600;
-}
-
-.home-public-page .home-hero-quicklinks a {
-    color: var(--home-accent-light);
-    text-decoration: none;
-    transition: color 0.18s ease;
-}
-
-.home-public-page .home-hero-quicklinks a:hover {
-    color: #fff;
-}
-
-.home-public-page .home-hero-quicklinks-sep {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
+    justify-content: flex-start;
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
 }
 
 .home-public-page .home-hero-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: 0.65rem;
 }
 
 .home-public-page .home-hero-stat {
     display: flex;
     flex-direction: column;
-    gap: 0.08rem;
-    min-width: 5.75rem;
-    padding: 0.6rem 0.8rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
+    gap: 0.12rem;
+    min-width: 6.5rem;
+    padding: 0.75rem 0.95rem;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    background: rgba(15, 23, 42, 0.42);
 }
 
 .home-public-page .home-hero-stat strong {
-    font-size: 0.95rem;
+    font-size: 1.02rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: #fff;
+    color: #f1f5f9;
     line-height: 1.2;
 }
 
 .home-public-page .home-hero-stat span {
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     font-weight: 600;
     color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.06em;
 }
 
 /* ── Section rhythm + ambient washes ─────────────────────── */
@@ -461,35 +302,35 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-jobs-section::before {
-    background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(20, 184, 166, 0.1), transparent 68%);
+    background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(52, 211, 153, 0.08), transparent 68%);
 }
 
 .home-public-page .why-section::before {
-    background: radial-gradient(ellipse 65% 50% at 8% 45%, rgba(37, 99, 235, 0.12), transparent 65%);
+    background: radial-gradient(ellipse 65% 50% at 8% 45%, rgba(99, 102, 241, 0.1), transparent 65%);
 }
 
 .home-public-page .features-section::before {
-    background: radial-gradient(ellipse 70% 55% at 92% 40%, rgba(37, 99, 235, 0.1), transparent 68%);
+    background: radial-gradient(ellipse 70% 55% at 92% 40%, rgba(99, 102, 241, 0.09), transparent 68%);
 }
 
 .home-public-page .how-it-works::before {
-    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37, 99, 235, 0.08), transparent 70%);
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(79, 70, 229, 0.07), transparent 70%);
 }
 
 .home-public-page .stats-counter-section::before {
-    background: radial-gradient(ellipse 65% 50% at 20% 60%, rgba(20, 184, 166, 0.08), transparent 65%);
+    background: radial-gradient(ellipse 65% 50% at 20% 60%, rgba(52, 211, 153, 0.07), transparent 65%);
 }
 
 .home-public-page .testimonials-section::before {
-    background: radial-gradient(ellipse 70% 55% at 88% 30%, rgba(37, 99, 235, 0.1), transparent 68%);
+    background: radial-gradient(ellipse 70% 55% at 88% 30%, rgba(99, 102, 241, 0.08), transparent 68%);
 }
 
 .home-public-page .faq-section::before {
-    background: radial-gradient(ellipse 60% 45% at 12% 80%, rgba(37, 99, 235, 0.08), transparent 65%);
+    background: radial-gradient(ellipse 60% 45% at 12% 80%, rgba(99, 102, 241, 0.06), transparent 65%);
 }
 
 .home-public-page .final-cta-section::before {
-    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(37, 99, 235, 0.14), transparent 70%);
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(99, 102, 241, 0.12), transparent 70%);
 }
 
 .home-public-page .features-section {
@@ -532,14 +373,14 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-section-rule-line-live {
-    background: linear-gradient(90deg, var(--home-teal), transparent);
+    background: linear-gradient(90deg, #34d399, transparent);
 }
 
 .home-public-page .home-section-rule-label-live {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    color: var(--home-teal-light);
+    color: #34d399;
 }
 
 .home-public-page .home-jobs-intro h2,
@@ -552,19 +393,19 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-live-dot {
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    background: var(--home-live);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+    background: #34d399;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
     animation: home-live-pulse 2.2s ease-out infinite;
     flex-shrink: 0;
 }
 
 @keyframes home-live-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
-    70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 
 .home-public-page .home-jobs-lead {
@@ -576,64 +417,20 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-jobs-all-link {
-    box-sizing: border-box;
-}
-
-.home-public-page .home-jobs-top {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1rem 1.25rem;
-    margin-bottom: 1.15rem;
-}
-
-.home-public-page .home-jobs-top .home-jobs-intro {
-    margin-bottom: 0;
-    flex: 1;
-    min-width: 0;
-}
-
-.home-public-page .home-jobs-all-link--inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-shrink: 0;
-    min-height: 44px;
-    padding: 0.45rem 0.15rem;
-    color: var(--home-accent-light);
-    font-size: 0.88rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: color 0.18s ease, gap 0.18s ease;
-}
-
-.home-public-page .home-jobs-all-link--inline i {
-    font-size: 0.72rem;
-    transition: transform 0.18s ease;
-}
-
-.home-public-page .home-jobs-all-link--inline:hover {
-    color: #bfdbfe;
-}
-
-.home-public-page .home-jobs-all-link--inline:hover i {
-    transform: translateX(3px);
+    width: 100%;
+    justify-content: center;
+    margin: 0 0 0.85rem;
+    box-sizing: border-box;
 }
 
 .home-public-page .home-jobs-list {
     display: grid;
-    gap: 0.85rem;
+    gap: 1rem;
     border: none;
     border-radius: 0;
     overflow: visible;
     background: transparent;
-}
-
-@media (min-width: 960px) {
-    .home-public-page .home-jobs-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1rem 1.1rem;
-    }
 }
 
 .home-public-page .home-job-row {
@@ -660,7 +457,7 @@ body.home-public-page.landing-page {
     right: -8%;
     width: 46%;
     height: 80%;
-    background: radial-gradient(circle at 70% 20%, rgba(37, 99, 235, 0.16), transparent 68%);
+    background: radial-gradient(circle at 70% 20%, rgba(99, 102, 241, 0.14), transparent 68%);
     pointer-events: none;
     opacity: 0.55;
     transition: opacity 0.25s ease;
@@ -710,13 +507,14 @@ body.home-public-page.landing-page {
     margin-top: 0.12rem;
     padding: 0.18rem 0.5rem;
     border-radius: 999px;
-    background: var(--home-live-soft);
-    border: 1px solid rgba(34, 197, 94, 0.32);
-    color: #86efac;
+    background: rgba(52, 211, 153, 0.16);
+    border: 1px solid rgba(52, 211, 153, 0.32);
+    color: #6ee7b7;
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.12);
 }
 
 .home-public-page .home-job-company {
@@ -760,7 +558,7 @@ body.home-public-page.landing-page {
     justify-content: center;
     border-radius: 7px;
     font-size: 0.62rem;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(37, 99, 235, 0.08));
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.08));
     border: 1px solid var(--home-accent-border);
     color: var(--home-accent-light);
 }
@@ -774,14 +572,14 @@ body.home-public-page.landing-page {
 
 .home-public-page .home-job-chip--salary {
     background: rgba(6, 78, 59, 0.35);
-    border-color: rgba(20, 184, 166, 0.28);
-    color: #99f6e4;
+    border-color: rgba(52, 211, 153, 0.28);
+    color: #a7f3d0;
 }
 
 .home-public-page .home-job-chip--salary i {
-    background: linear-gradient(135deg, rgba(20, 184, 166, 0.28), rgba(20, 184, 166, 0.1));
-    border-color: rgba(20, 184, 166, 0.32);
-    color: var(--home-teal-light);
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.28), rgba(52, 211, 153, 0.1));
+    border-color: rgba(52, 211, 153, 0.32);
+    color: #6ee7b7;
 }
 
 .home-public-page .home-job-chip--location i {
@@ -831,7 +629,7 @@ body.home-public-page.landing-page {
     font-size: 0.8rem;
     font-weight: 700;
     white-space: nowrap;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.16);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.14);
     transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -841,10 +639,10 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-job-row:hover .home-job-cta {
-    background: linear-gradient(135deg, var(--home-accent) 0%, var(--home-accent-deep) 100%);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     border-color: transparent;
     color: #fff;
-    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.38);
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
 }
 
 .home-public-page .home-job-row:hover .home-job-cta i {
@@ -874,47 +672,12 @@ body.home-public-page.landing-page {
 }
 
 .home-public-page .home-jobs-foot {
-    margin-top: 1.35rem;
-    padding: 1rem 0 0;
-    border-top: 1px solid var(--home-border);
-}
-
-.home-public-page .home-jobs-foot-label {
-    margin: 0 0 0.75rem;
-    color: #64748b;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-.home-public-page .home-scroll-strip {
-    position: relative;
-    margin-left: calc(-1 * var(--home-gutter));
-    margin-right: calc(-1 * var(--home-gutter));
-    padding-left: var(--home-gutter);
-    padding-right: var(--home-gutter);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    mask-image: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 10px), transparent);
-}
-
-.home-public-page .home-scroll-strip::-webkit-scrollbar {
-    display: none;
-}
-
-.home-public-page .home-scroll-strip .home-location-links {
-    flex-wrap: nowrap;
-    width: max-content;
-    max-width: none;
-    padding-bottom: 0.15rem;
-}
-
-.home-public-page .home-jobs-foot .home-scroll-strip {
-    margin-left: calc(-1 * var(--home-gutter));
-    margin-right: calc(-1 * var(--home-gutter));
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--home-border);
+    border-radius: 16px;
+    background: var(--home-card);
+    box-shadow: var(--home-card-shadow);
 }
 
 .home-public-page .home-jobs-search {
@@ -932,7 +695,7 @@ body.home-public-page.landing-page {
 
 .home-public-page .home-jobs-search:focus-within {
     border-color: var(--home-border-hover);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
 }
 
 .home-public-page .home-jobs-search > i {
@@ -971,27 +734,22 @@ body.home-public-page.landing-page {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 0;
+    margin-top: 0.95rem;
 }
 
 .home-public-page .home-location-links a {
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: 0 0.95rem;
+    height: 32px;
+    padding: 0 0.85rem;
     border-radius: 999px;
     border: 1px solid var(--home-border);
-    background: rgba(15, 23, 42, 0.72);
+    background: rgba(2, 6, 23, 0.4);
     color: #94a3b8;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     text-decoration: none;
-    white-space: nowrap;
-    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
-}
-
-.home-public-page .home-location-links a:active {
-    transform: scale(0.97);
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .home-public-page .home-location-links a:hover {
@@ -1021,10 +779,10 @@ body.home-public-page.landing-page {
 .home-public-page .why-icon,
 .home-public-page .stat-counter-icon,
 .home-public-page .feature-icon {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.24), rgba(37, 99, 235, 0.08)) !important;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.08)) !important;
     border: 1px solid var(--home-accent-border);
     color: var(--home-accent-light) !important;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.16);
 }
 
 /* ── Career tools / features ─────────────────────────────── */
@@ -1066,9 +824,9 @@ body.home-public-page.landing-page {
     padding: 0.7rem;
     border-radius: 12px;
     background:
-        radial-gradient(ellipse 80% 80% at 50% 0%, rgba(37, 99, 235, 0.1), transparent 70%),
-        rgba(4, 6, 13, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+        radial-gradient(ellipse 80% 80% at 50% 0%, rgba(99, 102, 241, 0.1), transparent 70%),
+        rgba(2, 6, 23, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1152,26 +910,13 @@ body.home-public-page.landing-page {
 
 .home-public-page .why-card {
     position: relative;
-    border-radius: 16px;
+    border-radius: 18px;
     background: var(--home-card);
     border: 1px solid var(--home-border);
-    border-top: 2px solid var(--home-accent);
     padding: 1.5rem 1.4rem;
     box-shadow: var(--home-card-shadow);
     overflow: hidden;
     transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.home-public-page .why-grid .why-card:nth-child(2) {
-    border-top-color: var(--home-teal);
-}
-
-.home-public-page .why-grid .why-card:nth-child(3) {
-    border-top-color: #8b5cf6;
-}
-
-.home-public-page .why-grid .why-card:nth-child(4) {
-    border-top-color: #f59e0b;
 }
 
 .home-public-page .why-card:hover {
@@ -1230,12 +975,12 @@ body.home-public-page.landing-page {
     font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 0.04em;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.24), rgba(37, 99, 235, 0.08));
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.08));
     border: 1px solid var(--home-accent-border);
     color: var(--home-accent-light);
     -webkit-text-fill-color: var(--home-accent-light);
     background-clip: border-box;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.16);
 }
 
 .home-public-page .step-item h3 {
@@ -1425,90 +1170,13 @@ body.home-public-page.landing-page {
     border: 1px solid var(--home-accent-border);
     box-shadow: var(--home-card-shadow-hover);
     background:
-        radial-gradient(ellipse 80% 80% at 20% 0%, rgba(37, 99, 235, 0.2), transparent 60%),
-        radial-gradient(ellipse 60% 60% at 90% 100%, rgba(20, 184, 166, 0.1), transparent 55%),
+        radial-gradient(ellipse 80% 80% at 20% 0%, rgba(99, 102, 241, 0.18), transparent 60%),
+        radial-gradient(ellipse 60% 60% at 90% 100%, rgba(52, 211, 153, 0.08), transparent 55%),
         var(--home-card);
-}
-
-/* ── Desktop polish ──────────────────────────────────────── */
-@media (min-width: 960px) {
-    .home-public-page .home-hero {
-        padding: 3rem 0 4.5rem;
-    }
-
-    .home-public-page .home-hero-grid {
-        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-        gap: 3rem;
-    }
-
-    .home-public-page .home-hero-visual {
-        order: 2;
-    }
-
-    .home-public-page .home-hero-copy {
-        order: 1;
-    }
-
-    .home-public-page .home-hero h1 {
-        font-size: 3.35rem;
-        max-width: 10ch;
-    }
-
-    .home-public-page .home-hero-search {
-        max-width: 30rem;
-    }
-
-    .home-public-page .home-hero-search-field,
-    .home-public-page .home-hero-search-btn {
-        height: 40px;
-        min-height: 40px;
-    }
-
-    .home-public-page .home-why-intro h2,
-    .home-public-page .home-features-intro h2,
-    .home-public-page .home-section-intro h2,
-    .home-public-page .home-jobs-header h2 {
-        font-size: 2.25rem;
-    }
-
-    .home-public-page .why-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .home-public-page .features-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .home-public-page .stats-counter-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .home-public-page .home-jobs-section {
-        padding-top: 5.5rem;
-        padding-bottom: 5.5rem;
-    }
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
-    .home-public-page .home-hero-grid {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .home-public-page .home-hero-visual {
-        order: -1;
-    }
-
-    .home-public-page .home-hero-visual-frame {
-        border-radius: 16px;
-    }
-
-    .home-public-page .home-hero-img {
-        aspect-ratio: 16 / 9;
-        max-height: 220px;
-    }
-
     .home-public-page .features-grid {
         grid-template-columns: 1fr;
         max-width: 440px;
@@ -1519,8 +1187,21 @@ body.home-public-page.landing-page {
         max-height: 88px;
     }
 
+    .home-public-page .home-hero-media {
+        height: clamp(210px, 44vw, 280px);
+    }
+
     .home-public-page .home-hero h1 {
-        max-width: 14ch;
+        max-width: 16ch;
+    }
+
+    .home-public-page .home-hero-stats {
+        width: 100%;
+    }
+
+    .home-public-page .home-jobs-all-link {
+        width: 100%;
+        justify-content: center;
     }
 
     .home-public-page .steps-grid {
@@ -1537,71 +1218,21 @@ body.home-public-page.landing-page {
 @media (max-width: 720px) {
     .home-public-page {
         --home-gutter: 1rem;
-        --home-section-pad: 3rem;
+        --home-section-pad: 3.25rem;
     }
 
     .home-public-page .home-hero {
-        padding: 1.25rem 0 2.5rem;
+        padding-bottom: 2.75rem;
     }
 
-    .home-public-page .home-hero-search {
-        max-width: none;
-        padding: 0.22rem;
-        border-radius: 10px;
+    .home-public-page .home-hero-actions {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .home-public-page .home-hero-search-field {
-        height: 34px;
-        padding: 0 0.5rem;
-    }
-
-    .home-public-page .home-hero-search-field input {
-        font-size: 16px;
-    }
-
-    .home-public-page .home-hero-search-field input::placeholder {
-        font-size: 0.88rem;
-    }
-
-    .home-public-page .home-hero-search-btn {
-        width: 34px;
-        min-width: 34px;
-        height: 34px;
-        min-height: 34px;
-        padding: 0;
-    }
-
-    .home-public-page .home-hero-search-btn-text {
-        display: none;
-    }
-
-    .home-public-page .home-hero-search-btn-icon {
-        display: block;
-    }
-
-    .home-public-page .home-hero-quicklinks {
-        font-size: 0.82rem;
-        margin-bottom: 1rem;
-    }
-
-    .home-public-page .home-hero-stats {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overscroll-behavior-x: contain;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        margin: 0 calc(-1 * var(--home-gutter));
-        padding: 0 var(--home-gutter) 0.15rem;
-        mask-image: linear-gradient(90deg, transparent, #000 8px, #000 calc(100% - 8px), transparent);
-    }
-
-    .home-public-page .home-hero-stats::-webkit-scrollbar {
-        display: none;
-    }
-
-    .home-public-page .home-hero-stat {
-        flex-shrink: 0;
-        min-width: 6.5rem;
+    .home-public-page .home-hero-actions .btn-landing {
+        width: 100%;
+        justify-content: center;
     }
 
     .home-public-page .home-job-row {
@@ -1626,9 +1257,8 @@ body.home-public-page.landing-page {
     }
 
     .home-public-page .home-job-cta {
-        min-height: 44px;
-        height: auto;
-        padding: 0 0.9rem;
+        height: 34px;
+        padding: 0 0.75rem;
     }
 
     .home-public-page .home-job-head h3 {
@@ -1662,63 +1292,5 @@ body.home-public-page.landing-page {
 @media (max-width: 520px) {
     .home-public-page .stats-counter-grid {
         grid-template-columns: 1fr;
-    }
-}
-
-/* ── Scroll reveal + sticky CTA (home) ───────────────────── */
-@media (prefers-reduced-motion: no-preference) {
-    .home-public-page .home-reveal {
-        opacity: 0;
-        transform: translateY(20px);
-        transition:
-            opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-            transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .home-public-page .home-reveal.is-visible {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-.home-public-page .sticky-mobile-cta {
-    padding-left: var(--home-gutter);
-    padding-right: var(--home-gutter);
-    background: rgba(4, 6, 13, 0.96);
-    border-top-color: rgba(255, 255, 255, 0.08);
-}
-
-.home-public-page .sticky-mobile-cta .btn-landing {
-    min-height: 44px;
-    border-radius: 11px;
-    font-weight: 700;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.32);
-}
-
-@media (max-width: 720px) {
-    .home-public-page .home-jobs-top {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .home-public-page .home-jobs-all-link--inline {
-        align-self: flex-start;
-        padding-left: 0;
-    }
-
-    .home-public-page .home-location-links a {
-        min-height: 36px;
-        padding: 0 0.9rem;
-        font-size: 0.78rem;
-    }
-
-    .home-public-page .home-job-row:active {
-        transform: scale(0.995);
-    }
-}
-
-@media (max-width: 700px) {
-    body.home-public-page.landing-page {
-        padding-bottom: calc(78px + env(safe-area-inset-bottom, 0));
     }
 }
