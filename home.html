@@ -1,159 +1,140 @@
 <!DOCTYPE html>
-<html lang="en-ZA" data-theme="dark">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobLynk | Jobs in South Africa — Free CV Builder &amp; Live Vacancies</title>
-    <meta name="description" content="Find jobs in Johannesburg, Cape Town, Durban and across South Africa. Browse live vacancies, build a professional CV free, and apply on JobLynk.">
-    <meta name="keywords" content="jobs South Africa, jobs Johannesburg, jobs Cape Town, jobs Durban, SA job board, CV builder South Africa, JobLynk">
-    <meta name="robots" content="index, follow, max-image-preview:large">
-    <link rel="canonical" href="https://joblynk.co.za/home.html">
-    <meta name="geo.region" content="ZA">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://joblynk.co.za/home.html">
-    <meta property="og:title" content="JobLynk | Jobs in South Africa">
-    <meta property="og:description" content="Browse live South African job vacancies. Free CV builder and applications for job seekers.">
-    <meta property="og:site_name" content="JobLynk">
-    <meta property="og:locale" content="en_ZA">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="JobLynk | Jobs in South Africa">
-    <meta name="twitter:description" content="Browse live South African job vacancies. Free CV builder and applications for job seekers.">
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@graph": [
-            {
-                "@type": "Organization",
-                "name": "JobLynk",
-                "url": "https://joblynk.co.za/",
-                "logo": "https://joblynk.co.za/images/logo.png",
-                "description": "South African job board and career tools for job seekers and recruiters."
-            },
-            {
-                "@type": "WebSite",
-                "name": "JobLynk",
-                "url": "https://joblynk.co.za/",
-                "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": "https://joblynk.co.za/jobs.html?q={search_term_string}",
-                    "query-input": "required name=search_term_string"
-                }
-            }
-        ]
-    }
-    </script>
+    <title>JobLynk | Get Hired Faster in South Africa | Free CV Builder & Live Jobs</title>
+    <meta name="description" content="South Africa's purpose-built hiring platform. Build a professional ATS-ready CV free, generate AI cover letters, and apply to live jobs across SA in one place.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="landing.css?v=20260722">
-    <link rel="stylesheet" href="home.css?v=20260724">
 </head>
 
-<body class="landing-page home-public-page" data-nav-active="home">
+<body class="landing-page">
 
-    <div id="landingNavMount"></div>
+    <!-- Announcement Bar -->
+    <div class="announce-bar">
+        <span><i class="fa-solid fa-bolt"></i> <strong>Free AI TOOL / Free CV Builder &amp; Live SA Job Board</strong></span>
+        <a href="jobs.html">View Jobs <i class="fa-solid fa-arrow-right-long"></i></a>
+    </div>
 
-    <!-- Hero -->
-    <section class="home-hero" id="top">
-        <div class="home-hero-media">
-            <img src="images/hero.png" alt="Colleagues reviewing job opportunities together at a desk" class="home-hero-img" width="960" height="640" loading="eager" decoding="async">
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
+            <img src="images/logo.png" alt="" class="landing-logo-img">
+            <span class="landing-logo-text">JobLynk</span>
+        </a>
+
+        <div class="landing-nav-links">
+            <a href="index.html" class="landing-nav-link">Home</a>
+            <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
+            <a href="recruiter-pricing.html" class="landing-nav-link">For Recruiters</a>
+            <a href="#faq" class="landing-nav-link">FAQ</a>
         </div>
-        <div class="home-hero-inner">
-            <div class="section-container home-hero-copy">
-                <p class="home-hero-eyebrow"><span class="home-live-dot" aria-hidden="true"></span> Live across South Africa</p>
-                <h1>Find work that <em>fits you</em></h1>
-                <p class="home-hero-lead">
-                    Browse live vacancies with clear pay where available, build a CV free, and apply in minutes.
-                </p>
-                <div class="home-hero-actions">
-                    <a href="#jobs" class="btn-landing btn-landing-primary btn-lg">Browse jobs</a>
-                    <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build CV</a>
+
+        <div class="landing-nav-actions">
+            <a href="jobs.html" class="btn-landing btn-landing-outline">View Jobs</a>
+            <a href="sign-in.html" class="btn-landing btn-landing-outline">Sign In</a>
+            <a href="sign-up.html" class="btn-landing btn-landing-primary">Get Started Free</a>
+        </div>
+
+        <button class="landing-nav-hamburger" id="navHamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    </nav>
+
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a href="index.html">Home</a>
+        <a href="jobs.html">For Job Seekers</a>
+        <a href="recruiter-pricing.html">For Recruiters</a>
+        <a href="#faq">FAQ</a>
+        <a href="jobs.html">View Jobs</a>
+        <a href="sign-in.html">Sign In</a>
+        <a href="sign-up.html">Get Started Free</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section hero-section--centered">
+        <div class="hero-grid-bg" aria-hidden="true"></div>
+        <div class="hero-content hero-content--centered">
+            <span class="hero-eyebrow"><i class="fa-solid fa-file-lines"></i> Free AI TOOL and CV Tools</span>
+
+            <h1 class="hero-title">The smart link to your next career move in <span>South Africa.</span></h1>
+
+            <p class="hero-subtitle">
+                Customise your existing CV or create a new CV using our free tools and templates. Browse live South African jobs and apply when the role feels right.
+            </p>
+
+            <div class="hero-actions">
+                <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create Free CV <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg"><i class="fa-solid fa-briefcase"></i> View Jobs</a>
+                <a href="cover-letter.html" class="btn-landing btn-landing-ghost btn-lg"><i class="fa-solid fa-envelope-open-text"></i> Free AI Cover Letter</a>
+            </div>
+
+            <ul class="hero-checklist">
+                <li><i class="fa-solid fa-check"></i> 100% free for job seekers</li>
+                <li><i class="fa-solid fa-check"></i> Live SA jobs from active recruiters</li>
+                <li><i class="fa-solid fa-check"></i> POPIA-compliant &amp; secure</li>
+            </ul>
+
+            <div class="hero-price-claim">
+                <strong>40% cheaper than other SA Job Boards</strong>
+                <span>Simple pricing for recruiters, free tools for job seekers.</span>
+            </div>
+
+            <div class="hero-trust-strip">
+                <div class="trust-avatars">
+                    <img src="images/testimonial-sipho.png" alt="" class="trust-avatar">
+                    <img src="images/testimonial-thabo.png" alt="" class="trust-avatar">
+                    <img src="images/testimonial-danielle.png" alt="" class="trust-avatar">
+                    <img src="images/testimonial-lerato.png" alt="" class="trust-avatar">
+                    <span class="trust-avatar trust-avatar-count">1.2k</span>
                 </div>
-                <div class="home-hero-stats" aria-label="Platform highlights">
-                    <div class="home-hero-stat">
-                        <strong id="homeHeroJobCount">—</strong>
-                        <span>open roles</span>
+                <div class="hero-trust-copy">
+                    <div class="trust-stars" aria-label="4.8 out of 5 stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                        <strong>4.8 / 5</strong>
                     </div>
-                    <div class="home-hero-stat">
-                        <strong>Free</strong>
-                        <span>CV builder</span>
-                    </div>
-                    <div class="home-hero-stat">
-                        <strong>POPIA</strong>
-                        <span>secure</span>
-                    </div>
+                    <p class="trust-label"><strong>1,200+</strong> South Africans hired through JobLynk</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Featured jobs -->
-    <section class="home-jobs-section" id="jobs" aria-labelledby="homeJobsHeading">
-        <div class="section-container">
-            <div class="section-header home-jobs-header home-jobs-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line home-section-rule-line-live"></span>
-                    <span class="home-section-rule-label home-section-rule-label-live"><span class="home-live-dot" aria-hidden="true"></span> Live</span>
-                </div>
-                <h2 id="homeJobsHeading">Roles</h2>
-                <p class="home-jobs-lead" id="homeJobsLead">Loading…</p>
-            </div>
-
-            <a href="jobs.html" class="btn-landing btn-landing-outline home-jobs-all-link">View all jobs</a>
-
-            <div class="home-jobs-list" id="homeFeaturedJobs" aria-live="polite"></div>
-
-            <div class="home-jobs-foot">
-                <form class="home-jobs-search" action="jobs.html" method="get" role="search">
-                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                    <input type="search" name="q" placeholder="Job title, company or skill" autocomplete="off" enterkeyhint="search" aria-label="Search jobs">
-                    <button type="submit" class="btn-landing btn-landing-primary">Search</button>
-                </form>
-                <nav class="home-location-links" aria-label="Browse jobs by city">
-                    <a href="jobs.html?q=johannesburg">Johannesburg</a>
-                    <a href="jobs.html?q=cape%20town">Cape Town</a>
-                    <a href="jobs.html?q=durban">Durban</a>
-                    <a href="jobs.html?q=pretoria">Pretoria</a>
-                    <a href="jobs.html?q=remote">Remote</a>
-                </nav>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why JobLynk -->
+    <!-- Why JobLynk / Differentiator Section -->
     <section class="why-section" id="why">
         <div class="section-container">
-            <div class="home-why-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line"></span>
-                    <span class="home-section-rule-label">Why JobLynk</span>
-                </div>
-                <h2>Built for South Africa</h2>
-                <p>Local listings. Free tools. Straight to applying.</p>
+            <div class="section-header">
+                <span class="eyebrow">Why JobLynk</span>
+                <h2>The job platform that actually <span class="highlight">works for you</span>.</h2>
+                <p>We built JobLynk because traditional job boards are crowded, generic, and stack the odds against candidates.
+                   We are changing that with simple, smarter tools and direct access to active SA recruiters.</p>
+                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg" style="margin-top: 1rem;">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
             <div class="why-grid">
                 <div class="why-card">
-                    <div class="why-icon"><i class="fa-solid fa-bullseye"></i></div>
-                    <h3>Local listings</h3>
-                    <p>SA employers only — roles that are actually open.</p>
+                    <div class="why-icon why-icon-amber"><i class="fa-solid fa-bullseye"></i></div>
+                    <h3>Designed for SA, not global noise</h3>
+                    <p>Real local jobs from real South African recruiters. Fresh, relevant listings updated regularly so you never waste time on outdated roles.</p>
                 </div>
                 <div class="why-card">
-                    <div class="why-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                    <h3>Faster applications</h3>
-                    <p>CV, cover letter and profile in one place.</p>
+                    <div class="why-icon why-icon-violet"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h3>AI that does the heavy lifting</h3>
+                    <p>Tailored cover letters, optimised CVs and skill-matched roles generated in seconds, not hours.</p>
                 </div>
                 <div class="why-card">
-                    <div class="why-icon"><i class="fa-solid fa-user-plus"></i></div>
-                    <h3>Free to start</h3>
-                    <p>No card. No catch. Up and running in minutes.</p>
+                    <div class="why-icon" style="background: rgba(14, 165, 233, 0.16); color: #38BDF8;"><i class="fa-solid fa-user-plus"></i></div>
+                    <h3>Get started in under 2 minutes</h3>
+                    <p>Create your free account, build your CV and start applying. No credit card, no commitments, no catch.</p>
+                    <a href="sign-up.html" class="btn-landing btn-landing-primary" style="margin-top: 1rem;">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
                 <div class="why-card">
-                    <div class="why-icon"><i class="fa-solid fa-handshake"></i></div>
-                    <h3>Direct apply</h3>
-                    <p>Your details go straight to the hiring team.</p>
+                    <div class="why-icon why-icon-green"><i class="fa-solid fa-handshake"></i></div>
+                    <h3>Direct line to hiring decision-makers</h3>
+                    <p>We have eliminated the job board black hole. Apply to vetted recruiters and companies with the confidence that you are dealing directly with the people making the hire.</p>
                 </div>
             </div>
         </div>
@@ -161,83 +142,81 @@
 
     <!-- Features Section -->
     <section class="features-section" id="features">
-        <div class="section-container">
-            <div class="home-features-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line"></span>
-                    <span class="home-section-rule-label">Career tools</span>
+        <div class="features-header">
+            <span class="eyebrow eyebrow-amber">Free career tools</span>
+            <h2>Everything you need to <span class="highlight">land the job</span>.</h2>
+            <p>Industry-leading tools that help you stand out from the stack and impress recruiters, all completely free.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-img-wrap">
+                    <img src="images/landing-cv-builder.png" alt="JobLynk CV builder screen" class="feature-img">
                 </div>
-                <h2>Apply with confidence</h2>
-                <p>CV builder, cover letters and live jobs — free.</p>
+                <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                <h3>ATS Optimised CV Builder</h3>
+                <p>Build a polished CV in under 10 minutes. Use templates, edit your details and download a professional PDF after creating your free account.</p>
+                <a href="#cv-start" class="feature-link js-open-cv-start">Try the CV Builder <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-img-wrap">
-                        <img src="images/landing-cv-builder.png" alt="JobLynk CV builder screen" class="feature-img" loading="lazy" decoding="async">
-                    </div>
-                    <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
-                    <h3>CV builder</h3>
-                    <p>ATS-ready templates. Edit, download, done.</p>
-                    <a href="#cv-start" class="feature-link js-open-cv-start">Try CV builder <i class="fa-solid fa-arrow-right"></i></a>
+            <div class="feature-card featured">
+                <div class="feature-img-wrap">
+                    <img src="images/landing-cover-letter.png" alt="JobLynk cover letter builder screen" class="feature-img">
                 </div>
-
-                <div class="feature-card">
-                    <div class="feature-img-wrap">
-                        <img src="images/landing-cover-letter.png" alt="JobLynk cover letter builder screen" class="feature-img" loading="lazy" decoding="async">
-                    </div>
-                    <div class="feature-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
-                    <h3>Cover letters</h3>
-                    <p>Tailored drafts from the job description.</p>
-                    <a href="cover-letter.html" class="feature-link">Write cover letter <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-img-wrap">
-                        <img src="images/landing-jobs-board.png" alt="JobLynk live jobs board screen" class="feature-img" loading="lazy" decoding="async">
-                    </div>
-                    <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
-                    <h3>Live job board</h3>
-                    <p>Search by city, keyword and job type.</p>
-                    <a href="jobs.html" class="feature-link">View jobs <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
+                <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+                <h3>AI Cover Letter Engine</h3>
+                <p>Generate personalised, context-aware cover letters tailored to each job spec in seconds. Stop staring at blank pages.</p>
+                <a href="cover-letter.html" class="feature-link">Generate a cover letter <i class="fa-solid fa-arrow-right"></i></a>
+                <span class="feature-badge">Most loved</span>
             </div>
+
+            <div class="feature-card">
+                <div class="feature-img-wrap">
+                    <img src="images/landing-jobs-board.png" alt="JobLynk live jobs board screen" class="feature-img">
+                </div>
+                <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>Live SA Job Board</h3>
+                <p>Search active South African jobs by keyword, location and job type. View listings as a guest and sign in only when you apply.</p>
+                <a href="jobs.html" class="feature-link">View Jobs <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="how-cta">
+            <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </section>
 
     <!-- How It Works Section -->
     <section class="how-it-works" id="how-it-works">
         <div class="section-container">
-            <div class="home-section-intro home-how-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line"></span>
-                    <span class="home-section-rule-label">How it works</span>
-                </div>
-                <h2>Three steps to hired</h2>
+            <div class="section-header">
+                <span class="eyebrow eyebrow-green">How it works</span>
+                <h2>From signup to hired in three steps.</h2>
+                <p>Simple, effective, and designed for the modern South African job market.</p>
             </div>
 
             <div class="steps-grid">
                 <div class="step-item">
                     <div class="step-number">01</div>
-                    <h3>Build your CV</h3>
-                    <p>Sign up free. Guided builder, ATS-ready output.</p>
+                    <h3>Build your profile &amp; CV</h3>
+                    <p>Sign up free and use our guided builder to create an ATS-ready CV that highlights your strengths.</p>
                 </div>
                 <div class="step-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
                 <div class="step-item">
                     <div class="step-number">02</div>
-                    <h3>Find SA roles</h3>
-                    <p>Filter by city, type and keyword.</p>
+                    <h3>Match with live SA roles</h3>
+                    <p>Browse verified jobs, save favourites, and let our matching algorithm surface roles that fit your profile.</p>
                 </div>
                 <div class="step-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
                 <div class="step-item">
                     <div class="step-number">03</div>
-                    <h3>Apply &amp; track</h3>
-                    <p>Submit from the job page. Follow progress in your dashboard.</p>
+                    <h3>Apply &amp; get hired</h3>
+                    <p>Generate a tailored AI cover letter and apply with one click. Track every application in your dashboard.</p>
                 </div>
             </div>
 
             <div class="how-cta">
-                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Create free profile <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Start your free profile <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -245,35 +224,26 @@
     <!-- Benefits Counter Section -->
     <section class="stats-counter-section">
         <div class="section-container">
-            <div class="home-section-intro home-stats-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line home-section-rule-line-live"></span>
-                    <span class="home-section-rule-label">At a glance</span>
-                </div>
-                <h2>The essentials</h2>
-            </div>
-
             <div class="stats-counter-grid">
                 <div class="stat-counter-item">
-                    <div class="stat-counter-icon"><i class="fa-solid fa-map-location-dot"></i></div>
-                    <h3 class="stat-counter-title-long">Built for SA</h3>
-                    <p>Local jobs and hiring teams</p>
+                    <h3 class="stat-counter-title-long">SA'S Fastest Growing</h3>
+                    <p>Hiring Platform</p>
                 </div>
                 <div class="stat-counter-item">
-                    <div class="stat-counter-icon"><i class="fa-solid fa-circle-check"></i></div>
-                    <h3>Free</h3>
-                    <p>CV, cover letters and applications</p>
+                    <h3>1,200+</h3>
+                    <p>South Africans hired through JobLynk</p>
                 </div>
                 <div class="stat-counter-item">
-                    <div class="stat-counter-icon"><i class="fa-solid fa-briefcase"></i></div>
-                    <h3>Live board</h3>
-                    <p>Updated as roles open and close</p>
+                    <h3>40%</h3>
+                    <p>Cheaper than other SA Job Boards</p>
                 </div>
                 <div class="stat-counter-item">
-                    <div class="stat-counter-icon"><i class="fa-solid fa-bolt"></i></div>
-                    <h3>Apply first</h3>
-                    <p>No account needed to start</p>
+                    <h3>Free AI TOOL</h3>
+                    <p>Cover letter builder for job seekers</p>
                 </div>
+            </div>
+            <div class="how-cta">
+                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Sign Up Free <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -281,12 +251,9 @@
     <!-- Success Stories Carousel -->
     <section class="testimonials-section">
         <div class="section-container">
-            <div class="home-section-intro home-testimonials-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line"></span>
-                    <span class="home-section-rule-label">Success stories</span>
-                </div>
-                <h2>Real outcomes</h2>
+            <div class="section-header">
+                <span class="eyebrow">Success stories</span>
+                <h2>Real candidates. Real offers. Real outcomes.</h2>
             </div>
 
             <div class="testimonials-carousel" id="testimonialsCarousel">
@@ -376,42 +343,36 @@
     <!-- FAQ Section -->
     <section class="faq-section" id="faq">
         <div class="section-container">
-            <div class="home-section-intro home-faq-intro">
-                <div class="home-section-rule" aria-hidden="true">
-                    <span class="home-section-rule-line"></span>
-                    <span class="home-section-rule-label">FAQ</span>
-                </div>
-                <h2>Common questions</h2>
+            <div class="section-header">
+                <span class="eyebrow">FAQ</span>
+                <h2>Everything you wanted to ask.</h2>
+                <p>Quick answers to common questions. Need more? <a href="mailto:info@joblynk.co.za">Email our team</a>.</p>
             </div>
 
             <div class="faq-grid">
                 <details class="faq-item">
-                    <summary>Is JobLynk free for job seekers?</summary>
-                    <p>Yes — CV builder, cover letters, browsing and applying are free.</p>
+                    <summary>Is JobLynk really free for job seekers?</summary>
+                    <p>Yes. Building your CV, generating cover letters, browsing live jobs and applying are 100% free for job seekers.</p>
                 </details>
                 <details class="faq-item">
-                    <summary>Are jobs verified?</summary>
-                    <p>Recruiters and companies are verified before they can post.</p>
+                    <summary>Are the jobs on JobLynk verified?</summary>
+                    <p>Yes. Every recruiter and company is verified before they can post on JobLynk. We review each listing for quality and relevance so you only see real opportunities from legitimate South African recruiters and hiring teams.</p>
                 </details>
                 <details class="faq-item">
-                    <summary>Can I apply without an account?</summary>
-                    <p>Yes. Start on the job page and sign up when you submit.</p>
+                    <summary>How does the AI cover letter work?</summary>
+                    <p>Paste any job description and our AI tailors a personalised cover letter using your profile, skills and experience. It is ready to download or copy in seconds.</p>
                 </details>
                 <details class="faq-item">
-                    <summary>How does the cover letter builder work?</summary>
-                    <p>Paste a job description. JobLynk drafts a letter from your profile.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Will my CV pass ATS?</summary>
-                    <p>Templates use clean structure and parseable text for tracking systems.</p>
+                    <summary>Will my CV pass ATS systems?</summary>
+                    <p>Our templates are designed and tested specifically for Applicant Tracking Systems with clean structure, parseable text and the right keyword placement.</p>
                 </details>
                 <details class="faq-item">
                     <summary>How do recruiters get started?</summary>
-                    <p>Create an account, verify your company, then pick a package.</p>
+                    <p>Create a recruiter account, verify your company details, then choose the package that fits your hiring needs on the dedicated recruiter packages page.</p>
                 </details>
                 <details class="faq-item">
-                    <summary>Is my data safe?</summary>
-                    <p>POPIA-compliant, encrypted, and never sold. Delete anytime.</p>
+                    <summary>Is my personal data safe?</summary>
+                    <p>We are POPIA-compliant, SSL-encrypted, and never sell your data. You control who sees your CV and can delete your account at any time.</p>
                 </details>
             </div>
         </div>
@@ -421,12 +382,12 @@
     <section class="final-cta-section">
         <div class="final-cta-inner">
             <div class="final-cta-copy">
-                <h2>Ready to start?</h2>
-                <p>Browse roles or build your CV — free.</p>
+                <h2>Your next role is one application away.</h2>
+                <p>Use JobLynk to build your CV, create stronger cover letters, browse live roles and apply with confidence. Free forever for job seekers.</p>
             </div>
             <div class="final-cta-actions">
-                <a href="#jobs" class="btn-landing btn-landing-primary btn-lg">Browse jobs</a>
-                <a href="#cv-start" class="btn-landing btn-landing-outline btn-lg js-open-cv-start">Build your CV</a>
+                <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create CV now <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg">View Jobs</a>
                 <a href="recruiter-signup.html" class="btn-landing btn-landing-outline btn-lg">I'm a recruiter</a>
             </div>
         </div>
@@ -440,7 +401,7 @@
                     <img src="images/logo.png" alt="">
                     <span>JobLynk</span>
                 </a>
-                <p>SA hiring platform connecting job seekers with local employers.</p>
+                <p>South Africa's purpose-built hiring platform, connecting the next generation of professionals with the country's most ambitious companies.</p>
             </div>
 
             <div class="footer-links">
@@ -486,7 +447,7 @@
 
     <!-- Sticky Mobile CTA -->
     <div class="sticky-mobile-cta">
-        <a href="#jobs" class="btn-landing btn-landing-primary btn-block">Browse jobs <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="#cv-start" class="btn-landing btn-landing-primary btn-block js-open-cv-start">Create CV free <i class="fa-solid fa-arrow-right"></i></a>
     </div>
 
     <!-- CV Start Modal -->
@@ -494,30 +455,24 @@
         <div class="cv-start-backdrop" data-close-cv-modal></div>
         <div class="cv-start-dialog" id="cv-start">
             <button class="cv-start-close" type="button" data-close-cv-modal aria-label="Close CV start dialog"><i class="fa-solid fa-xmark"></i></button>
-            <div class="cv-start-header">
-                <span class="cv-start-eyebrow">CV Builder</span>
-                <h2 id="cvStartTitle">Import or start fresh</h2>
-                <p>Upload a file to prefill your CV, or open a blank template and fill it in step by step.</p>
-            </div>
+            <span class="eyebrow eyebrow-green">Create your CV</span>
+            <h2 id="cvStartTitle">Customise your existing CV or create a new CV using our free tools and templates.</h2>
+            <p>Import your current CV and JobLynk will extract the basics into the builder, or create a new CV from a guided template.</p>
 
             <div class="cv-start-options">
                 <label class="cv-start-card cv-import-card" for="cvImportFile">
-                    <span class="cv-start-card-icon" aria-hidden="true"><i class="fa-solid fa-file-arrow-up"></i></span>
-                    <span class="cv-start-card-body">
-                        <strong>Import existing CV</strong>
-                        <small>PDF, DOCX or TXT. We extract contact info, summary, skills, experience and education.</small>
-                    </span>
-                    <span class="cv-start-card-action">Choose file <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></span>
+                    <span class="cv-start-card-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
+                    <strong>Customise current CV</strong>
+                    <small>Upload PDF, DOCX or TXT. We will prefill names, contact details, summary, skills, experience and education where possible.</small>
+                    <span class="cv-start-card-action">Choose file <i class="fa-solid fa-arrow-right"></i></span>
                     <input id="cvImportFile" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain">
                 </label>
 
                 <a class="cv-start-card cv-blank-card" href="cv-builder.html?blank=1">
-                    <span class="cv-start-card-icon" aria-hidden="true"><i class="fa-solid fa-pen-to-square"></i></span>
-                    <span class="cv-start-card-body">
-                        <strong>Start from scratch</strong>
-                        <small>Blank CV with guided sections — add your details at your own pace.</small>
-                    </span>
-                    <span class="cv-start-card-action">Open builder <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></span>
+                    <span class="cv-start-card-icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                    <strong>Create new CV</strong>
+                    <small>Open a fresh CV builder and fill in your details step by step.</small>
+                    <span class="cv-start-card-action">Create new CV <i class="fa-solid fa-arrow-right"></i></span>
                 </a>
             </div>
 
@@ -525,22 +480,13 @@
         </div>
     </div>
 
-    <script src="landing-nav.js?v=20260716"></script>
-    <script src="jobs-store.js?v=20260717"></script>
-    <script src="jobs-browser.js?v=20260625-board"></script>
-    <script src="home.js?v=20260723"></script>
     <script>
+        const hamburger = document.getElementById('navHamburger');
+        const mobileMenu = document.getElementById('mobileNavMenu');
         const stickyCta = document.querySelector('.sticky-mobile-cta');
         const cvStartModal = document.getElementById('cvStartModal');
         const cvImportFile = document.getElementById('cvImportFile');
         const cvImportStatus = document.getElementById('cvImportStatus');
-
-        const syncNavHeight = () => {
-            if (window.JobLynkNav?.syncNavHeight) window.JobLynkNav.syncNavHeight();
-        };
-
-        syncNavHeight();
-        window.addEventListener('resize', syncNavHeight, { passive: true });
 
         const syncStickyCta = () => {
             if (!stickyCta) return;
@@ -976,6 +922,24 @@ ${normalizeImportedText(extractedText).slice(0, 18000)}`;
             }
         });
 
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                mobileMenu.classList.toggle('open');
+                hamburger.querySelector('i').classList.toggle('fa-bars');
+                hamburger.querySelector('i').classList.toggle('fa-xmark');
+            });
+        }
+        if (mobileMenu) {
+            mobileMenu.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                    if (hamburger) {
+                        hamburger.querySelector('i').classList.add('fa-bars');
+                        hamburger.querySelector('i').classList.remove('fa-xmark');
+                    }
+                });
+            });
+        }
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 const href = this.getAttribute('href');
