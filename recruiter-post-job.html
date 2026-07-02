@@ -126,7 +126,7 @@
                         </div>
                         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:-4px 0 18px;">
                             <button type="button" id="btnGenerateJobAd" class="welcome-btn primary" style="padding:10px 16px;">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate With AI
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate with Free AI Tool
                             </button>
                             <span id="jobAdAiStatus" style="font-size:0.8rem; color:var(--text-muted);"></span>
                         </div>
@@ -415,6 +415,14 @@
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'JobLynk')}&background=4F46E5&color=fff&size=256&rounded=true`;
     }
 
+    function resolveAssetUrl(path) {
+        const value = String(path || '').trim();
+        if (!value) return '';
+        if (/^https?:\/\//i.test(value)) return value;
+        if (value.startsWith('/')) return `${window.location.origin}${value}`;
+        return new URL(value, window.location.href).href;
+    }
+
     function getAdvertCompanyName() {
         return (document.getElementById('wizCompany')?.value || window.__JobLynkUser?.company_name || '').trim();
     }
@@ -432,7 +440,7 @@
         const safeName = companyName || 'JobLynk';
         const shouldUseLogo = !isConfidentialAdvert(safeName) && postJobCompanyProfile?.logo_url;
         if (shouldUseLogo) {
-            img.src = postJobCompanyProfile.logo_url;
+            img.src = resolveAssetUrl(postJobCompanyProfile.logo_url);
             img.style.display = 'block';
             initial.style.display = 'none';
         } else {
@@ -454,7 +462,7 @@
 
         if (logo && fallback) {
             if (hasLogo) {
-                logo.src = postJobCompanyProfile.logo_url;
+                logo.src = resolveAssetUrl(postJobCompanyProfile.logo_url);
                 logo.style.display = 'block';
                 fallback.style.display = 'none';
             } else {
@@ -883,6 +891,7 @@ Do not invent salary, benefits or company claims.`;
             if (document.getElementById('wizSalaryNote')) document.getElementById('wizSalaryNote').value = job.salary_note || job.salaryNote || '';
             if (document.getElementById('wizSalaryPeriod')) document.getElementById('wizSalaryPeriod').value = job.salary_period || 'Per Month';
             if (document.getElementById('wizHideSalary')) document.getElementById('wizHideSalary').checked = !!(job.hide_salary || job.hideSalary);
+            if (document.getElementById('wizAutoRegret')) document.getElementById('wizAutoRegret').checked = !!(job.auto_regret || job.autoRegret);
             if (document.getElementById('wizDate')) document.getElementById('wizDate').value = job.closing_date || '';
 
             // Set benefit checkboxes

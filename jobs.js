@@ -505,7 +505,7 @@
         if (copy) {
             copy.textContent = state.session.loggedIn
                 ? 'Please use a job seeker account to apply for this role.'
-                : 'Browse as a guest — sign in or create a free account when you are ready to apply.';
+                : 'Browse as a guest. Sign in or create a free account when you are ready to apply.';
         }
         openModal('jobLoginModal');
     }

@@ -86,6 +86,12 @@ if ($paymentMethod === 'invoice') {
     ensurePaymentInvoicesTable($pdo);
 }
 
+if ($paymentMethod === 'payfast') {
+    if (trim(PAYFAST_MERCHANT_ID) === '' || trim(PAYFAST_MERCHANT_KEY) === '') {
+        jsonResponse(['success' => false, 'message' => 'PayFast is not configured on this server. Choose invoice payment or contact support@joblynk.co.za.'], 503);
+    }
+}
+
 // ── Check if email exists ──
 $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
 $stmt->execute([$email]);
@@ -261,7 +267,9 @@ if ($paymentMethod === 'invoice') {
 
 // Build signed return URL so the recruiter is auto-logged-in after PayFast redirect
 $returnTs  = time();
-$returnSig = hash_hmac('sha256', $userId . ':' . $returnTs, PAYFAST_PASSPHRASE);
+$passphrase = trim(PAYFAST_PASSPHRASE);
+$returnSecret = $passphrase !== '' ? $passphrase : 'joblynk-fallback-secret';
+$returnSig = hash_hmac('sha256', $userId . ':' . $returnTs, $returnSecret);
 $returnUrl = APP_URL . '/api/auth/payment-return.php?uid=' . $userId . '&ts=' . $returnTs . '&sig=' . $returnSig;
 
 $pfData = buildRecruiterPayFastData([

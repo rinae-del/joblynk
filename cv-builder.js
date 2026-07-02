@@ -1013,27 +1013,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSkills() {
         const list = $('skills-list');
-        list.innerHTML = cvData.skills.map((s, i) => `
-            <div class="list-card" data-id="${s.id}">
-                <div class="list-card-header" onclick="document.getElementById('sk-${s.id}').classList.toggle('open')">
-                    <div class="list-card-info"><span class="list-card-title">${s.name || '(Not specified)'}</span></div>
-                    <div class="list-card-actions">
-                        <button class="del-skill" data-id="${s.id}"><i class="fa-solid fa-trash-can"></i></button>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
+        const picker = $('skillPickerSelect');
+        const hint = $('skillsPickerHint');
+        if (!list) return;
+
+        const used = new Set(cvData.skills.map(skill => normalizeSkillTerm(skill.name)).filter(Boolean));
+
+        list.innerHTML = cvData.skills.length
+            ? cvData.skills.map((skill) => `
+                <div class="skill-chip-row" data-id="${skill.id}">
+                    <span class="skill-chip-label">${escapeHtml(skill.name || '(Not specified)')}</span>
+                    <button type="button" class="del-skill" data-id="${skill.id}" aria-label="Remove skill"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
-                <div class="list-card-body ${i===cvData.skills.length-1?'open':''}" id="sk-${s.id}">
-                    <div class="form-row">
-                        <div class="input-group full-width skill-input-group">
-                            <label>Skill</label>
-                            <input class="dyn skill-input" data-arr="skills" data-id="${s.id}" data-key="name" value="${escapeHtml(s.name)}" autocomplete="off" placeholder="Start typing a skill">
-                            <div class="skill-suggestion-list" data-skill-suggestions="${s.id}"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        attachDyn();
+            `).join('')
+            : '<p class="section-hint">No skills added yet.</p>';
+
+        if (picker) {
+            const available = skillSuggestionValues.filter(name => !used.has(normalizeSkillTerm(name)));
+            picker.innerHTML = ['<option value="">Select a skill</option>']
+                .concat(available.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`))
+                .join('');
+            picker.disabled = cvData.skills.length >= MAX_SKILLS || !available.length;
+        }
+
+        if (hint) {
+            hint.textContent = cvData.skills.length >= MAX_SKILLS
+                ? 'You have reached the maximum of 10 skills.'
+                : `${cvData.skills.length} of ${MAX_SKILLS} skills selected.`;
+        }
+    }
+
+    function initSkillsPicker() {
+        $('btnAddSkillFromPicker')?.addEventListener('click', () => {
+            const select = $('skillPickerSelect');
+            const value = String(select?.value || '').trim();
+            if (!value || cvData.skills.length >= MAX_SKILLS) return;
+            if (cvData.skills.some(skill => normalizeSkillTerm(skill.name) === normalizeSkillTerm(value))) return;
+            cvData.skills.push({ id: uid(), name: value });
+            renderSkills();
+            renderPreview();
+            saveData();
+        });
+
+        $('skillPickerSelect')?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                $('btnAddSkillFromPicker')?.click();
+            }
+        });
     }
 
     function renderLanguages() {
@@ -1120,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Delete handlers
         document.querySelectorAll('.del-exp').forEach(b => { b.onclick = (e) => { e.stopPropagation(); cvData.experience = cvData.experience.filter(x=>x.id!==b.dataset.id); renderExperience(); renderPreview(); }; });
         document.querySelectorAll('.del-edu').forEach(b => { b.onclick = (e) => { e.stopPropagation(); cvData.education = cvData.education.filter(x=>x.id!==b.dataset.id); renderEducation(); renderPreview(); }; });
-        document.querySelectorAll('.del-skill').forEach(b => { b.onclick = (e) => { e.stopPropagation(); cvData.skills = cvData.skills.filter(x=>x.id!==b.dataset.id); renderSkills(); renderPreview(); }; });
+        document.querySelectorAll('.del-skill').forEach(b => { b.onclick = (e) => { e.stopPropagation(); cvData.skills = cvData.skills.filter(x=>x.id!==b.dataset.id); renderSkills(); renderPreview(); saveData(); }; });
         document.querySelectorAll('.del-lang').forEach(b => { b.onclick = (e) => { e.stopPropagation(); cvData.languages = cvData.languages.filter(x=>x.id!==b.dataset.id); renderLanguages(); renderPreview(); }; });
     }
 
@@ -1129,7 +1156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     $('btnAddExperience').addEventListener('click', () => { cvData.experience.push({ id:uid(), jobTitle:'', employer:'', startDate:'', endDate:'', city:'', description:'' }); renderExperience(); renderPreview(); });
     $('btnAddEducation').addEventListener('click', () => { cvData.education.push({ id:uid(), school:'', degree:'', startDate:'', endDate:'', city:'', description:'' }); renderEducation(); renderPreview(); });
-    $('btnAddSkill').addEventListener('click', () => { cvData.skills.push({ id:uid(), name:'' }); renderSkills(); renderPreview(); });
     $('btnAddLanguage').addEventListener('click', () => { cvData.languages.push({ id:uid(), name:'', level:'' }); renderLanguages(); renderPreview(); });
 
     // ============================
@@ -1137,7 +1163,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     const A4_WIDTH_MM = 210;
     const A4_HEIGHT_MM = 297;
-    const EXPORT_RENDER_SCALE = 3;
+    const EXPORT_RENDER_SCALE = 2;
+    const MAX_SKILLS = 10;
 
     function waitForExportImages(root) {
         const pendingImages = Array.from(root.querySelectorAll('img'))
@@ -1326,6 +1353,99 @@ document.addEventListener('DOMContentLoaded', () => {
         return { host, pages: pages.map(page => page.paper) };
     }
 
+    function getExportRenderScale() {
+        return Math.min(3, Math.max(2, window.devicePixelRatio || 2));
+    }
+
+    async function captureExportCanvas(element) {
+        const rect = element.getBoundingClientRect();
+        return html2canvas(element, {
+            scale: getExportRenderScale(),
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            backgroundColor: '#ffffff',
+            width: Math.ceil(rect.width),
+            height: Math.ceil(rect.height),
+            windowWidth: Math.ceil(rect.width),
+            windowHeight: Math.ceil(rect.height),
+            imageTimeout: 15000,
+            onclone: (_doc, clone) => {
+                clone.style.transform = 'none';
+                clone.style.webkitFontSmoothing = 'antialiased';
+                clone.style.textRendering = 'optimizeLegibility';
+            }
+        });
+    }
+
+    function createOnePageExport(sourceElement) {
+        const host = document.createElement('div');
+        host.className = 'cv-pdf-export-host';
+        document.body.appendChild(host);
+
+        const page = sourceElement.cloneNode(true);
+        page.classList.add('export-pdf', 'export-one-page');
+        page.style.transform = 'none';
+        page.style.transition = 'none';
+        page.removeAttribute('id');
+        removeExportIds(page);
+
+        host.appendChild(page);
+        return { host, page };
+    }
+
+    async function downloadOnePagePdf(sourceElement, fileName) {
+        if (typeof html2canvas !== 'function') {
+            throw new Error('PDF renderer is not ready yet. Please try again.');
+        }
+
+        const JsPdf = window.jspdf?.jsPDF || window.jsPDF;
+        if (!JsPdf) {
+            throw new Error('PDF generator is not ready yet. Please try again.');
+        }
+
+        const { host, page } = createOnePageExport(sourceElement);
+
+        try {
+            if (document.fonts?.ready) await document.fonts.ready;
+            await waitForExportImages(host);
+            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+            const widthPx = page.offsetWidth;
+            const maxHeightPx = widthPx * (A4_HEIGHT_MM / A4_WIDTH_MM);
+            const naturalHeight = page.scrollHeight;
+            let fitScale = 1;
+            if (naturalHeight > maxHeightPx + 2) {
+                fitScale = maxHeightPx / naturalHeight;
+            }
+
+            let captureNode = page;
+            if (fitScale < 0.999) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cv-one-page-fit-wrap';
+                wrapper.style.width = `${widthPx}px`;
+                wrapper.style.height = `${Math.ceil(naturalHeight * fitScale)}px`;
+                wrapper.style.overflow = 'hidden';
+                page.style.transformOrigin = 'top left';
+                page.style.transform = `scale(${fitScale})`;
+                page.style.width = `${widthPx}px`;
+                page.style.height = `${naturalHeight}px`;
+                host.appendChild(wrapper);
+                wrapper.appendChild(page);
+                captureNode = wrapper;
+            } else {
+                page.classList.add('export-pdf-page');
+            }
+
+            const canvas = await captureExportCanvas(captureNode);
+            const pdf = new JsPdf({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: false });
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'SLOW');
+            pdf.save(fileName);
+        } finally {
+            host.remove();
+        }
+    }
+
     async function downloadA4Pdf(sourceElement, fileName) {
         if (typeof html2canvas !== 'function') {
             throw new Error('PDF renderer is not ready yet. Please try again.');
@@ -1347,21 +1467,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (let pageIndex = 0; pageIndex < pages.length; pageIndex += 1) {
                 const page = pages[pageIndex];
-                const rect = page.getBoundingClientRect();
-                const canvas = await html2canvas(page, {
-                    scale: EXPORT_RENDER_SCALE,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    width: Math.ceil(rect.width),
-                    height: Math.ceil(rect.height),
-                    windowWidth: Math.ceil(rect.width),
-                    windowHeight: Math.ceil(rect.height),
-                    imageTimeout: 15000
-                });
+                const canvas = await captureExportCanvas(page);
 
                 if (pageIndex > 0) pdf.addPage('a4', 'portrait');
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'FAST');
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM, undefined, 'SLOW');
             }
 
             pdf.save(fileName);
@@ -1393,6 +1502,37 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('PDF export failed:', error);
             alert(error.message || 'Could not download the CV. Please try again.');
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        }
+    });
+
+    $('btnOnePagePdf')?.addEventListener('click', async () => {
+        if (!isLoggedIn) {
+            await flushSaveData();
+            const modal = document.getElementById('guestAuthModal');
+            if (modal) modal.style.display = 'flex';
+            return;
+        }
+
+        const button = $('btnOnePagePdf');
+        const element = $('cvPaper');
+        const cvName = sanitizeFileName(getCurrentCvTitle() || buildDefaultCvName());
+        const originalHtml = button?.innerHTML;
+
+        try {
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing';
+            }
+            await flushSaveData();
+            await downloadOnePagePdf(element, `${cvName}-one-page.pdf`);
+        } catch (error) {
+            console.error('One-page PDF export failed:', error);
+            alert(error.message || 'Could not download the one-page CV. Please try again.');
         } finally {
             if (button) {
                 button.disabled = false;
@@ -1685,6 +1825,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // INITIALIZE: Load saved data
     // ============================
     hydrateCitySelect();
+
+    initSkillsPicker();
 
     loadData().then(() => {
         hydrateCitySelect($('city'), cvData.city);

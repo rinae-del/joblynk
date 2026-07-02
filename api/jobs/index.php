@@ -184,6 +184,7 @@ if ($method === 'POST') {
         $salaryNote  = trim($body['salaryNote'] ?? $body['salary_note'] ?? '');
         $salaryPeriod = trim($body['salaryPeriod'] ?? $body['salary_period'] ?? 'Per Month');
         $hideSalary  = !empty($body['hideSalary'] ?? $body['hide_salary'] ?? false) ? 1 : 0;
+        $autoRegret  = !empty($body['autoRegret'] ?? $body['auto_regret'] ?? false) ? 1 : 0;
         $benefits    = $body['benefits'] ?? [];
         $closingDate = $body['closingDate'] ?? $body['closing_date'] ?? null;
         $status      = $body['status'] ?? 'active';
@@ -191,6 +192,7 @@ if ($method === 'POST') {
 
         if (!$title) jsonResponse(['success' => false, 'message' => 'Job title is required.'], 422);
         if (!$company) jsonResponse(['success' => false, 'message' => 'Company name is required.'], 422);
+        if (!$closingDate) jsonResponse(['success' => false, 'message' => 'Closing date is required.'], 422);
 
         $benefitsJson = json_encode(is_array($benefits) ? $benefits : []);
 
@@ -211,6 +213,7 @@ if ($method === 'POST') {
             'salary_note' => $salaryNote,
             'salary_period' => $salaryPeriod,
             'hide_salary' => $hideSalary,
+            'auto_regret' => $autoRegret,
             'benefits' => $benefitsJson,
             'closing_date' => $closingDate ?: null,
             'custom_fields' => $customFieldsJson,

@@ -21,6 +21,14 @@ define('PAYFAST_VALIDATE_URL', PAYFAST_SANDBOX
     : 'https://www.payfast.co.za/eng/query/validate');
 
 /**
+ * PayFast requires urlencode with uppercase percent escapes.
+ */
+function payfastUrlEncode(string $value): string
+{
+    return strtoupper(urlencode($value));
+}
+
+/**
  * Build an ordered PayFast parameter string.
  */
 function buildPayFastParameterString(
@@ -46,7 +54,8 @@ function buildPayFastParameterString(
             continue;
         }
 
-        $parameterString .= $key . '=' . urlencode($trimValues ? trim($stringValue) : $stringValue) . '&';
+        $encodedValue = payfastUrlEncode($trimValues ? trim($stringValue) : $stringValue);
+        $parameterString .= $key . '=' . $encodedValue . '&';
     }
 
     return rtrim($parameterString, '&');
@@ -55,11 +64,29 @@ function buildPayFastParameterString(
 /**
  * Build the PayFast signature from an ordered field list.
  */
+function buildPayFastItnParameterString(array $data): string
+{
+    $payload = $data;
+    unset($payload['signature']);
+
+    $parts = [];
+    foreach ($payload as $key => $value) {
+        $stringValue = trim((string) $value);
+        if ($stringValue === '') {
+            continue;
+        }
+        $parts[$key] = $key . '=' . payfastUrlEncode($stringValue);
+    }
+
+    ksort($parts, SORT_STRING);
+    return implode('&', $parts);
+}
+
 function generatePayFastSignature(array $data, ?string $passphrase = null): string {
     $signatureString = buildPayFastParameterString($data);
 
     if ($passphrase !== null && trim($passphrase) !== '') {
-        $signatureString .= '&passphrase=' . urlencode(trim($passphrase));
+        $signatureString .= '&passphrase=' . payfastUrlEncode(trim($passphrase));
     }
 
     return md5($signatureString);

@@ -114,6 +114,18 @@ html[data-theme="dark"] body.pricing-page {
     font-weight: 500;
 }
 
+.pricing-value-claim {
+    margin: 1rem 0 0;
+    max-width: 34rem;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.pricing-value-claim strong {
+    color: #6ee7b7;
+}
+
 .pricing-hero-actions {
     display: flex;
     flex-wrap: wrap;

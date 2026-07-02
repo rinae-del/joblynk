@@ -884,7 +884,7 @@ body.landing-page {
     overflow-x: hidden;
 }
 
-/* ── Navigation ── */
+/* ?? Navigation ?? */
 .landing-nav {
     display: flex;
     align-items: center;
@@ -967,7 +967,9 @@ body.landing-page {
 
 .landing-nav-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .landing-nav-hamburger {
@@ -979,7 +981,7 @@ body.landing-page {
     cursor: pointer;
 }
 
-/* ── Buttons ── */
+/* ?? Buttons ?? */
 .btn-landing {
     display: inline-flex;
     align-items: center;
@@ -1043,7 +1045,7 @@ body.landing-page {
     font-size: 1rem;
 }
 
-/* ── Mobile Nav Menu ── */
+/* ?? Mobile Nav Menu ?? */
 .mobile-nav-menu {
     display: none;
     flex-direction: column;
@@ -1078,7 +1080,7 @@ body.landing-page {
     color: var(--accent-light);
 }
 
-/* ── Hero ── */
+/* ?? Hero ?? */
 .hero-section {
     position: relative;
     display: flex;
@@ -1399,7 +1401,7 @@ body.landing-page {
     font-weight: 600;
 }
 
-/* ── Logos Section ── */
+/* ?? Logos Section ?? */
 .logos-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -1500,7 +1502,7 @@ body.landing-page {
     50% { transform: translateY(-10px); }
 }
 
-/* ── Features Section ── */
+/* ?? Features Section ?? */
 .features-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -1633,7 +1635,7 @@ body.landing-page {
     color: var(--text);
 }
 
-/* ── How It Works ── */
+/* ?? How It Works ?? */
 .how-it-works {
     padding: 5.5rem 0;
     background: linear-gradient(180deg, rgba(30, 41, 59, 0.54) 0%, rgba(15, 23, 42, 0.15) 100%);
@@ -1713,7 +1715,7 @@ body.landing-page {
     line-height: 1.6;
 }
 
-/* ── Stats Counter ── */
+/* ?? Stats Counter ?? */
 .stats-counter-section {
     padding: 4rem 0 3rem;
 }
@@ -1756,7 +1758,7 @@ body.landing-page {
     font-weight: 500;
 }
 
-/* ── Testimonials ── */
+/* ?? Testimonials ?? */
 .testimonials-section {
     padding: 5.5rem 0 4rem;
 }
@@ -1846,7 +1848,7 @@ body.landing-page {
     color: var(--muted);
 }
 
-/* ── Dual CTA ── */
+/* ?? Dual CTA ?? */
 .dual-cta-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1949,7 +1951,7 @@ body.landing-page {
     box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
 }
 
-/* ── Footer ── */
+/* ?? Footer ?? */
 .landing-footer {
     max-width: 1200px;
     margin: 0 auto;
@@ -2056,7 +2058,7 @@ body.landing-page {
     color: var(--accent-light);
 }
 
-/* ── Responsive ── */
+/* ?? Responsive ?? */
 @media (max-width: 900px) {
     .landing-nav-links,
     .landing-nav-actions {
@@ -2256,7 +2258,7 @@ body.landing-page {
 }
 
 /* ================================================
-   2026 CONVERSION REDESIGN — overrides & new sections
+   2026 CONVERSION REDESIGN ? overrides & new sections
    ================================================ */
 
 /* Announcement bar */
@@ -2313,7 +2315,7 @@ body.landing-page {
     width: 100%;
 }
 
-/* ── Hero overrides ── */
+/* ?? Hero overrides ?? */
 .hero-eyebrow {
     display: inline-flex;
     align-items: center;
@@ -2411,7 +2413,7 @@ body.landing-page {
     background: linear-gradient(135deg, #059669, #34D399) !important;
 }
 
-/* ── Credibility strip (replaces fake logos) ── */
+/* ?? Credibility strip (replaces fake logos) ?? */
 .credibility-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -2467,7 +2469,7 @@ body.landing-page {
     .cred-item { font-size: 0.84rem; }
 }
 
-/* ── Generic section headers (new) ── */
+/* ?? Generic section headers (new) ?? */
 .section-header {
     text-align: center;
     max-width: 640px;
@@ -2524,7 +2526,7 @@ body.landing-page {
     -webkit-text-fill-color: transparent;
 }
 
-/* ── Why JobLynk ── */
+/* ?? Why JobLynk ?? */
 .why-section {
     padding: 5rem 0 4rem;
 }
@@ -2580,7 +2582,297 @@ body.landing-page {
     line-height: 1.65;
 }
 
-/* ── Feature card refinement (link CTA) ── */
+/* ?? Featured jobs (home landing) ?? */
+.landing-page .home-jobs-section {
+    padding: 4rem 0;
+    background: rgba(11, 17, 32, 0.45);
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.landing-page .home-jobs-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.landing-page .home-jobs-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+}
+
+.landing-page .home-jobs-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+.landing-page .home-jobs-lead {
+    margin: 0;
+    max-width: 36rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.landing-page .home-jobs-list {
+    display: grid;
+    gap: 0;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.35);
+}
+
+.landing-page .home-job-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+}
+
+.landing-page .home-job-row:last-child {
+    border-bottom: none;
+}
+
+.landing-page .home-job-row:hover {
+    background: rgba(99, 102, 241, 0.07);
+}
+
+.landing-page .home-job-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--job-accent, #6366f1), rgba(15, 23, 42, 0.5));
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.landing-page .home-job-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: top center;
+}
+
+.landing-page .home-job-body {
+    min-width: 0;
+}
+
+.landing-page .home-job-body h3 {
+    margin: 0 0 0.2rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.landing-page .home-job-company {
+    margin: 0 0 0.25rem;
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.landing-page .home-job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.65rem;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.landing-page .home-job-meta .is-salary {
+    color: #6ee7b7;
+}
+
+.landing-page .home-job-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 0.85rem;
+    border-radius: 9px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    color: #c7d2fe;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.landing-page .home-job-row:hover .home-job-cta {
+    background: var(--accent);
+    border-color: transparent;
+    color: #fff;
+}
+
+.landing-page .home-jobs-empty,
+.landing-page .home-jobs-loading {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.landing-page .home-jobs-loading i {
+    margin-right: 0.4rem;
+    color: var(--accent);
+}
+
+.landing-page .home-jobs-empty a {
+    color: var(--accent-light);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.landing-page .home-jobs-empty a:hover {
+    text-decoration: underline;
+}
+
+.landing-page .home-jobs-foot {
+    margin-top: 1.25rem;
+}
+
+.landing-page .home-jobs-search {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.55rem 0.55rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.landing-page .home-jobs-search > i {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.landing-page .home-jobs-search input {
+    width: 100%;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.92rem;
+    outline: none;
+}
+
+.landing-page .home-jobs-search input::placeholder {
+    color: #64748b;
+}
+
+.landing-page .home-jobs-search .btn-landing {
+    height: 42px;
+    padding: 0 1.1rem;
+    white-space: nowrap;
+}
+
+.landing-page .home-location-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1rem;
+}
+
+.landing-page .home-location-links a {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.4);
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.landing-page .home-location-links a:hover {
+    color: #e2e8f0;
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+@media (max-width: 720px) {
+    .landing-page .home-jobs-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .landing-page .home-jobs-header .btn-landing {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .landing-page .home-job-row {
+        grid-template-columns: 40px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        gap: 0.65rem;
+        align-items: start;
+    }
+
+    .landing-page .home-job-logo {
+        width: 40px;
+        height: 40px;
+        grid-row: 1 / 3;
+    }
+
+    .landing-page .home-job-cta {
+        grid-column: 2;
+        width: 100%;
+    }
+
+    .landing-page .home-job-body h3 {
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .landing-page .home-jobs-search {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
+    }
+
+    .landing-page .home-jobs-search .btn-landing {
+        grid-column: 1 / -1;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ?? Feature card refinement (link CTA) ?? */
 .feature-link {
     display: inline-flex;
     align-items: center;
@@ -2610,7 +2902,7 @@ body.landing-page {
     margin-bottom: 0;
 }
 
-/* ── How it works refinement ── */
+/* ?? How it works refinement ?? */
 .steps-grid {
     grid-template-columns: 1fr auto 1fr auto 1fr;
     align-items: stretch;
@@ -2655,7 +2947,7 @@ body.landing-page {
     }
 }
 
-/* ── Testimonial outcome chips ── */
+/* ?? Testimonial outcome chips ?? */
 .testimonial-result {
     display: inline-block;
     padding: 0.35rem 0.75rem;
@@ -2694,7 +2986,7 @@ body.landing-page {
     background: linear-gradient(180deg, rgba(20, 60, 50, 0.55), rgba(15, 23, 42, 0.98)) !important;
 }
 
-/* ── Recruiter ── */
+/* ?? Recruiter ?? */
 .recruiter-section {
     padding: 5rem 0 4rem;
     background: linear-gradient(180deg, rgba(15, 23, 42, 0.0) 0%, rgba(20, 50, 45, 0.18) 50%, rgba(15, 23, 42, 0.0) 100%);
@@ -2763,7 +3055,7 @@ body.landing-page {
     }
 }
 
-/* ── FAQ ── */
+/* ?? FAQ ?? */
 .faq-section {
     padding: 5rem 0 4rem;
 }
@@ -2817,7 +3109,7 @@ body.landing-page {
 }
 
 .faq-item[open] summary::after {
-    content: "−";
+    content: "?";
 }
 
 .faq-item p {
@@ -2837,7 +3129,7 @@ body.landing-page {
     }
 }
 
-/* ── Final CTA band ── */
+/* ?? Final CTA band ?? */
 .final-cta-section {
     max-width: 1200px;
     margin: 5rem auto 0;
@@ -2896,7 +3188,7 @@ body.landing-page {
     .final-cta-actions .btn-landing { flex: 1 1 200px; }
 }
 
-/* ── Sticky mobile CTA ── */
+/* ?? Sticky mobile CTA ?? */
 .sticky-mobile-cta {
     display: none;
     position: fixed;
@@ -2928,7 +3220,7 @@ body.landing-page {
     .announce-bar a { font-size: 0.8rem; }
 }
 
-/* ── Responsive overrides for new sections ── */
+/* ?? Responsive overrides for new sections ?? */
 @media (max-width: 900px) {
     .why-grid {
         grid-template-columns: 1fr;
@@ -3488,7 +3780,7 @@ html[data-theme="dark"] .recruiter-section {
     }
 }
 
-/* ── CV start modal ── */
+/* ?? CV start modal ?? */
 body.modal-open {
     overflow: hidden;
 }
@@ -3977,7 +4269,7 @@ body.modal-open {
     }
 }
 
-/* ── Jobs browser: filters, sections, pagination, skeleton ── */
+/* ?? Jobs browser: filters, sections, pagination, skeleton ?? */
 .jobs-filter-sticky {
     position: sticky;
     top: 72px;
@@ -4186,7 +4478,7 @@ body.modal-open {
     margin-bottom: 0.85rem;
 }
 
-/* ── Jobs page: mobile layout (public board) ── */
+/* ?? Jobs page: mobile layout (public board) ?? */
 .jobs-public-page main {
     max-width: 100%;
 }

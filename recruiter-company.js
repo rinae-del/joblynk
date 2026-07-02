@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Company')}&background=${DEFAULT_LOGO_BG}&color=fff&size=256&rounded=true`;
     }
 
+    function resolveAssetUrl(path) {
+        const value = String(path || '').trim();
+        if (!value) return value;
+        if (/^(https?:|data:|blob:|\/)/i.test(value)) return value;
+        return value.replace(/^\.\//, '');
+    }
+
     function setStatus(message, tone) {
         const el = $('companySaveStatus');
         if (!el) return;
@@ -103,7 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePreview() {
         const formData = collectFormData();
         const companyName = formData.name || window.__JobLynkUser?.company_name || 'Your company';
-        const logoUrl = (companyState && companyState.logo_url) ? companyState.logo_url : buildDefaultLogoUrl(companyName);
+        const logoUrl = (companyState && companyState.logo_url)
+            ? resolveAssetUrl(companyState.logo_url)
+            : buildDefaultLogoUrl(companyName);
         const logo = $('companyLogoPreview');
         const previewName = $('companyPreviewName');
         const previewMeta = $('companyPreviewMeta');
@@ -252,6 +261,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 setStatus(validationMessage, 'error');
                 input.value = '';
                 return;
+            }
+
+            const companyName = $('companyName')?.value.trim() || window.__JobLynkUser?.company_name || '';
+            if (!companyName) {
+                setStatus('Enter your company name before uploading a logo.', 'error');
+                $('companyName')?.focus();
+                input.value = '';
+                return;
+            }
+
+            if (!companyState?.company_id) {
+                await saveCompany();
+                if (!companyState?.company_id) {
+                    input.value = '';
+                    return;
+                }
             }
 
             setLogoLoading(true);

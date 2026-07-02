@@ -12,11 +12,14 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/helpers.php';
 
+require_once __DIR__ . '/../config/payfast.php';
+
 $uid = (int) ($_GET['uid'] ?? 0);
 $ts  = (int) ($_GET['ts'] ?? 0);
 $sig = $_GET['sig'] ?? '';
 
-$secret   = env('PAYFAST_PASSPHRASE', 'joblynk-fallback-secret');
+$passphrase = trim(PAYFAST_PASSPHRASE);
+$secret = $passphrase !== '' ? $passphrase : 'joblynk-fallback-secret';
 $expected = hash_hmac('sha256', $uid . ':' . $ts, $secret);
 
 // Verify signature and freshness (valid for 2 hours)

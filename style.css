@@ -7,8 +7,8 @@
     --bg: #F8F8FA;
     --bg-white: #FFFFFF;
     --topbar: #1B1340;
-    --accent: #3B4BA6;
-    --accent-light: #E8EAF6;
+    --accent: #4F46E5;
+    --accent-light: #6366F1;
     --accent-dark: #2C3A8C;
     --red: #E74C54;
     --text: #222222;
@@ -656,8 +656,90 @@ body {
     min-height: 297mm !important;
     max-height: 297mm !important;
     overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
     page-break-after: always;
     break-after: page;
+}
+
+.a4-paper.export-pdf-page .cv-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 16px;
+}
+
+.a4-paper.export-pdf-page .cv-wave {
+    flex: 0 0 72px;
+    height: 72px;
+    margin-top: 0;
+}
+
+.a4-paper.export-one-page {
+    width: 210mm !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.a4-paper.export-one-page .cv-header-block {
+    padding: 20px 32px;
+}
+
+.a4-paper.export-one-page .cv-content {
+    padding: 20px 32px 24px;
+    gap: 20px;
+}
+
+.a4-paper.export-one-page .cv-sidebar-block,
+.a4-paper.export-one-page .cv-main-block {
+    margin-bottom: 14px;
+}
+
+.a4-paper.export-one-page .cv-wave {
+    height: 48px;
+    flex: 0 0 48px;
+}
+
+.cv-one-page-fit-wrap {
+    background: #fff;
+    overflow: hidden;
+}
+
+.skills-picker {
+    margin-top: 12px;
+}
+
+.skill-chip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #F9FAFB;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.skill-chip-label {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.skill-chip-row .del-skill {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.skill-chip-row .del-skill:hover {
+    color: #DC2626;
+    background: #FEE2E2;
 }
 
 .a4-paper.export-pdf-page.cv-continuation-page .cv-header-block {

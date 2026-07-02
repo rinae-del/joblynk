@@ -178,19 +178,47 @@ if ($method === 'POST') {
             jsonResponse(['success' => false, 'message' => 'Invalid status.'], 422);
         }
 
-        // Verify recruiter owns the job
+        // Verify recruiter owns the job and load context for optional regret email
         $stmt = $pdo->prepare('
-            SELECT a.id FROM applications a
+            SELECT a.id, a.user_id, a.job_id, a.status AS previous_status,
+                   u.first_name, u.last_name, u.email,
+                   j.title AS job_title, j.company AS job_company, j.auto_regret
+            FROM applications a
             JOIN jobs j ON a.job_id = j.id
+            JOIN users u ON a.user_id = u.id
             WHERE a.id = ? AND j.user_id = ?
         ');
         $stmt->execute([$appId, $userId]);
-        if (!$stmt->fetch()) {
+        $application = $stmt->fetch();
+        if (!$application) {
             jsonResponse(['success' => false, 'message' => 'Application not found or not authorized.'], 404);
         }
 
         $stmt = $pdo->prepare('UPDATE applications SET status = ? WHERE id = ?');
         $stmt->execute([$newStatus, $appId]);
+
+        if ($newStatus === 'rejected'
+            && (int) ($application['auto_regret'] ?? 0) === 1
+            && ($application['previous_status'] ?? '') !== 'rejected'
+            && !empty($application['email'])) {
+            $firstName = htmlspecialchars(trim($application['first_name'] ?: 'there'), ENT_QUOTES, 'UTF-8');
+            $jobTitle = htmlspecialchars(trim($application['job_title'] ?: 'the role'), ENT_QUOTES, 'UTF-8');
+            $company = htmlspecialchars(trim($application['job_company'] ?: 'the employer'), ENT_QUOTES, 'UTF-8');
+            $body = '
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Hi ' . $firstName . ',</p>
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">Thank you for applying for <strong>' . $jobTitle . '</strong> at <strong>' . $company . '</strong>.</p>
+                <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 16px;">After careful review, the employer has decided to move forward with other candidates for this role. We encourage you to keep your profile updated and continue applying to other opportunities on JobLynk.</p>
+                <div style="text-align:center;margin:24px 0;">
+                    <a href="' . APP_URL . '/jobs.html" style="display:inline-block;padding:13px 30px;background:#4F46E5;color:#fff;font-size:15px;font-weight:800;text-decoration:none;border-radius:12px;">Browse more jobs</a>
+                </div>
+                <p style="font-size:14px;line-height:1.7;color:#64748B;margin:24px 0 0;">Kind regards,<br><strong>The JobLynk Team</strong></p>';
+            sendResendEmail(
+                $application['email'],
+                'Update on your application for ' . html_entity_decode($application['job_title'] ?? 'Job', ENT_QUOTES, 'UTF-8'),
+                buildEmailTemplate('Application update', $body)
+            );
+        }
+
         jsonResponse(['success' => true, 'message' => 'Application status updated.']);
     }
 
@@ -543,8 +571,36 @@ if ($method === 'POST') {
     jsonResponse(array_merge([
         'success' => true,
         'id' => $appId,
-        'message' => 'Application submitted!',
+        'message' => 'Your application has been sent.',
     ], $responseExtra), 201);
+}
+
+// ═══════════════════════════
+// DELETE - Recruiter removes application
+// ═══════════════════════════
+if ($method === 'DELETE') {
+    if ($userRole !== 'recruiter' && $userRole !== 'admin') {
+        jsonResponse(['success' => false, 'message' => 'Not authorized.'], 403);
+    }
+
+    $appId = (int)($_GET['id'] ?? 0);
+    if ($appId <= 0) {
+        jsonResponse(['success' => false, 'message' => 'Application id required.'], 422);
+    }
+
+    $stmt = $pdo->prepare('
+        SELECT a.id FROM applications a
+        JOIN jobs j ON a.job_id = j.id
+        WHERE a.id = ? AND j.user_id = ?
+    ');
+    $stmt->execute([$appId, $userId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['success' => false, 'message' => 'Application not found or not authorized.'], 404);
+    }
+
+    $stmt = $pdo->prepare('DELETE FROM applications WHERE id = ?');
+    $stmt->execute([$appId]);
+    jsonResponse(['success' => true, 'message' => 'Application deleted.']);
 }
 
 jsonResponse(['success' => false, 'message' => 'Method not allowed.'], 405);

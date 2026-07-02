@@ -539,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (JobsStore.hasApplied(job.id)) {
             button.disabled = true;
-            button.innerHTML = '<i class="fa-solid fa-circle-check"></i> Application submitted';
+            button.innerHTML = '<i class="fa-solid fa-circle-check"></i> Your application has been sent';
         } else {
             button.disabled = false;
             button.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Apply now';
@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="job-footer">
                         ${applied
-                            ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
+                            ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Your application has been sent</span>'
                             : `<div class="job-action-group"><a href="job-details.html?id=${encodeURIComponent(job.id)}" class="job-preview-btn"><i class="fa-regular fa-eye"></i> View details</a><button onclick="openAppModal('${job.id}')" class="job-apply-btn"><i class="fa-solid fa-paper-plane"></i> Apply now</button></div>`
                         }
                         <span class="job-footnote">${footnote}</span>
@@ -1045,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await JobsStore.fetchApplications();
             await JobsStore.fetchJobs();
 
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Submitted!';
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Application sent';
             btn.style.background = '#059669';
 
             setTimeout(() => {
@@ -1131,11 +1131,49 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    async function loadProfileNudge() {
+        const nudge = $('profileNudge');
+        const nudgeText = $('profileNudgeText');
+        if (!nudge) return;
+
+        try {
+            const res = await fetch('api/profile/index.php', { credentials: 'include', cache: 'no-store' });
+            const data = await res.json();
+            if (!data.success || !data.profile) return;
+
+            const profile = data.profile;
+            const fields = [
+                profile.first_name, profile.last_name, profile.email, profile.phone,
+                profile.location, profile.bio, profile.job_title, profile.linkedin,
+                profile.portfolio, profile.id_number, profile.street_address,
+                profile.city, profile.province,
+            ];
+            const skills = Array.isArray(profile.skills)
+                ? profile.skills
+                : (typeof profile.skills === 'string' ? profile.skills.split(',') : []);
+            let filled = fields.filter(v => String(v || '').trim()).length;
+            if (skills.filter(Boolean).length) filled += 1;
+            const percent = Math.round((filled / (fields.length + 1)) * 100);
+
+            if (percent >= 100) return;
+
+            nudge.hidden = false;
+            if (nudgeText) {
+                nudgeText.textContent = percent >= 70
+                    ? `Your profile is ${percent}% complete. Add the last few details to stand out.`
+                    : `Your profile is ${percent}% complete. Finish it so recruiters can find you faster.`;
+            }
+        } catch (e) {
+            console.warn('Profile nudge skipped:', e);
+        }
+    }
+
     // Initial render (async)
     (async () => {
         await renderCards();
         await renderJobs();
         await renderApplications();
+        await loadProfileNudge();
 
         // Wire up job search / filter controls
         const searchInput = $('jobSearchKeyword');

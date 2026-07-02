@@ -165,7 +165,7 @@
     function applyMode() {
         if (state.mode === 'create') {
             els.accountTitle.textContent = 'Create your free account to submit';
-            els.accountSub.textContent = 'Your application details above are saved — just set a password to finish.';
+            els.accountSub.textContent = 'Your application details above are saved. Just set a password to finish.';
             els.passwordLabel.innerHTML = 'Choose a password <span class="jp-optional">(min 8 characters)</span>';
             els.password.setAttribute('autocomplete', 'new-password');
             els.switchPrompt.textContent = 'Already have an account?';
@@ -173,7 +173,7 @@
             els.submitLabel.textContent = 'Create account & submit';
         } else {
             els.accountTitle.textContent = 'Sign in to submit your application';
-            els.accountSub.textContent = "Enter your password — we'll attach the application you just filled in.";
+            els.accountSub.textContent = "Enter your password. We'll attach the application you just filled in.";
             els.passwordLabel.innerHTML = 'Your password';
             els.password.setAttribute('autocomplete', 'current-password');
             els.switchPrompt.textContent = 'New to JobLynk?';
@@ -236,7 +236,7 @@
             password: els.password.value,
         });
         if (data.needsVerify) {
-            setFeedback('Please verify your email first — check your inbox, then sign in to submit.', 'info');
+            setFeedback('Please verify your email first. Check your inbox, then sign in to submit.', 'info');
             return false;
         }
         if (!data.success) {

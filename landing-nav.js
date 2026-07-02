@@ -13,7 +13,8 @@
 
     const DEFAULT_ACTIONS = [
         { id: 'signin', label: 'Sign in', href: 'sign-in.html', className: 'btn-landing btn-landing-outline' },
-        { id: 'signup', label: 'Get started', href: 'sign-up.html', className: 'btn-landing btn-landing-primary' },
+        { id: 'signup', label: 'Sign up', href: 'sign-up.html', className: 'btn-landing btn-landing-outline' },
+        { id: 'getstarted', label: 'Get started free', href: 'sign-up.html', className: 'btn-landing btn-landing-primary' },
     ];
 
     function getBasePrefix() {

@@ -73,6 +73,7 @@ function renderCandidateCard(app, compact = false) {
                 ${compact ? '' : `
                 <button class="btn-action accept" onclick="updateCandidateStatus(${app.id}, 'shortlisted')">Shortlist</button>
                 <button class="btn-action reject" onclick="updateCandidateStatus(${app.id}, 'rejected')">Reject</button>
+                <button class="btn-action reject" onclick="deleteCandidate(${app.id})">Delete</button>
                 `}
             </div>
         </div>
@@ -416,6 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const salaryNote = document.getElementById('wizSalaryNote')?.value || '';
             const salaryPeriod = document.getElementById('wizSalaryPeriod')?.value || 'Per Month';
             const hideSalary = document.getElementById('wizHideSalary')?.checked || false;
+            const autoRegret = document.getElementById('wizAutoRegret')?.checked || false;
             const closingDate = document.getElementById('wizDate')?.value || '';
 
             // Collect benefits
@@ -427,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var jobData = {
                 title, jobReference, company, location, type,
                 description, requirements, skills,
-                salaryFrom, salaryTo, salaryNote, salaryPeriod, hideSalary,
+                salaryFrom, salaryTo, salaryNote, salaryPeriod, hideSalary, autoRegret,
                 benefits, closingDate,
                 customFields: collectCustomFields()
             };
@@ -494,99 +496,101 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('indicator-1').classList.add('active');
             
             alert(editingId ? 'Job updated successfully!' : 'Job successfully posted! It will now appear on the Job Seeker dashboard.');
-            window.location.href = 'recruiter-my-jobs.html' + (jobData.id ? '?job=' + encodeURIComponent(jobData.id) : '');
+            window.location.href = 'recruiter-my-jobs.html';
         });
     }
 
     // ── Load My Jobs from API ──
-    async function loadMyJobs() {
-        const tbody = document.getElementById('myJobsTableBody');
-        if (!tbody) return;
-        const queryJobId = new URLSearchParams(window.location.search).get('job') || '';
-
+    async function fetchRecruiterJobs() {
         try {
             const res = await fetch('api/jobs/index.php?mine=1', { credentials: 'include', cache: 'no-store' });
             const result = await res.json();
-            if (!result.success || !Array.isArray(result.jobs)) return;
-
+            if (!result.success || !Array.isArray(result.jobs)) return [];
             recruiterState.jobs = result.jobs;
-
-            tbody.innerHTML = '';
-
-            const jobsToRender = queryJobId
-                ? result.jobs.filter(job => String(job.id) === String(queryJobId))
-                : result.jobs;
-
-            if (jobsToRender.length === 0) {
-                tbody.innerHTML = queryJobId
-                    ? '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">This job could not be found. It may have been removed or closed.</td></tr>'
-                    : '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">No jobs posted yet. Click "Post a Job" to get started.</td></tr>';
-                renderActivePostingsPreview();
-                populateCandidateFilter();
-                renderCandidatesView();
-                return;
-            }
-
-            // Update overview stat
-            const statJobs = document.getElementById('statActiveJobs');
-            if (statJobs) statJobs.textContent = result.jobs.length;
-
-            let totalApplicants = 0;
-
-            jobsToRender.forEach(job => {
-                const tr = document.createElement('tr');
-                tr.className = 'card-row card-row-recruiter';
-                const applicants = job.applicant_count || 0;
-                totalApplicants += parseInt(applicants, 10);
-
-                const statusClass = job.status === 'active' ? 'active' : 'closed';
-                const statusLabel = job.status.charAt(0).toUpperCase() + job.status.slice(1);
-
-                tr.innerHTML = `
-                    <td data-label="Job">
-                        <div class="entity-block">
-                            <span class="entity-title">${escHtml(job.title)}</span>
-                            <div class="entity-meta">
-                                ${job.job_reference ? `<span class="meta-chip"><i class="fa-solid fa-hashtag"></i> ${escHtml(job.job_reference)}</span>` : ''}
-                                <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escHtml(job.location || 'Remote')}</span>
-                                <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escHtml(job.type || 'Full-time')}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td data-label="Status"><span class="job-status ${statusClass}">${statusLabel}</span></td>
-                    <td data-label="Applicants">
-                        <div class="table-value">
-                            <span class="table-metric">${applicants}</span>
-                            <span class="table-note">candidate${parseInt(applicants, 10) === 1 ? '' : 's'}</span>
-                        </div>
-                    </td>
-                    <td data-label="Posted">
-                        <div class="table-value">
-                            <span>${formatRecruiterDate(job.created_at)}</span>
-                            <span class="table-note">${timeSince(job.created_at)}</span>
-                        </div>
-                    </td>
-                    <td class="actions-cell" data-label="Actions">
-                        <button class="tbl-btn" title="Edit" onclick="editMyJob(${job.id})"><i class="fa-solid fa-pen"></i></button>
-                        ${job.status === 'active'
-                            ? `<button class="tbl-btn" title="Close job" onclick="closeMyJob(${job.id})"><i class="fa-solid fa-circle-xmark"></i></button>`
-                            : `<button class="tbl-btn" title="Re-open job" onclick="reopenMyJob(${job.id})"><i class="fa-solid fa-rotate-left"></i></button>`
-                        }
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            const statApps = document.getElementById('statApplicants');
-            if (statApps && recruiterState.applications.length === 0) statApps.textContent = totalApplicants;
-
-            renderActivePostingsPreview();
-            populateCandidateFilter();
-            renderCandidatesView();
+            return result.jobs;
         } catch (e) {
             console.warn('Failed to load jobs from API:', e);
-            if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">Failed to load jobs. Please refresh the page.</td></tr>';
+            return [];
         }
+    }
+
+    function updateRecruiterJobStats(jobs) {
+        const activeJobs = jobs.filter(job => job.status === 'active');
+        const statJobs = document.getElementById('statActiveJobs');
+        if (statJobs) statJobs.textContent = activeJobs.length;
+    }
+
+    async function loadMyJobs() {
+        const tbody = document.getElementById('myJobsTableBody');
+        const jobs = await fetchRecruiterJobs();
+
+        updateRecruiterJobStats(jobs);
+        renderActivePostingsPreview();
+        populateCandidateFilter();
+
+        if (!tbody) {
+            renderCandidatesView();
+            return;
+        }
+
+        tbody.innerHTML = '';
+
+        if (jobs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">No jobs posted yet. Click "Post a Job" to get started.</td></tr>';
+            renderCandidatesView();
+            return;
+        }
+
+        let totalApplicants = 0;
+
+        jobs.forEach(job => {
+            const tr = document.createElement('tr');
+            tr.className = 'card-row card-row-recruiter';
+            const applicants = job.applicant_count || 0;
+            totalApplicants += parseInt(applicants, 10);
+
+            const statusClass = job.status === 'active' ? 'active' : 'closed';
+            const statusLabel = job.status.charAt(0).toUpperCase() + job.status.slice(1);
+
+            tr.innerHTML = `
+                <td data-label="Job">
+                    <div class="entity-block">
+                        <span class="entity-title">${escHtml(job.title)}</span>
+                        <div class="entity-meta">
+                            ${job.job_reference ? `<span class="meta-chip"><i class="fa-solid fa-hashtag"></i> ${escHtml(job.job_reference)}</span>` : ''}
+                            <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> ${escHtml(job.location || 'Remote')}</span>
+                            <span class="meta-chip"><i class="fa-regular fa-clock"></i> ${escHtml(job.type || 'Full-time')}</span>
+                        </div>
+                    </div>
+                </td>
+                <td data-label="Status"><span class="job-status ${statusClass}">${statusLabel}</span></td>
+                <td data-label="Applicants">
+                    <div class="table-value">
+                        <span class="table-metric">${applicants}</span>
+                        <span class="table-note">candidate${parseInt(applicants, 10) === 1 ? '' : 's'}</span>
+                    </div>
+                </td>
+                <td data-label="Posted">
+                    <div class="table-value">
+                        <span>${formatRecruiterDate(job.created_at)}</span>
+                        <span class="table-note">${timeSince(job.created_at)}</span>
+                    </div>
+                </td>
+                <td class="actions-cell" data-label="Actions">
+                    <button class="tbl-btn" title="Edit" onclick="editMyJob(${job.id})"><i class="fa-solid fa-pen"></i></button>
+                    ${job.status === 'active'
+                        ? `<button class="tbl-btn" title="Close job" onclick="closeMyJob(${job.id})"><i class="fa-solid fa-circle-xmark"></i></button>`
+                        : `<button class="tbl-btn" title="Re-open job" onclick="reopenMyJob(${job.id})"><i class="fa-solid fa-rotate-left"></i></button>`
+                    }
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        const statApps = document.getElementById('statApplicants');
+        if (statApps && recruiterState.applications.length === 0) statApps.textContent = totalApplicants;
+
+        renderCandidatesView();
     }
 
     window.editMyJob = async function(jobId) {
@@ -723,9 +727,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const actions = document.getElementById('candidateModalActions');
         const isTerminal = app.status === 'rejected' || app.status === 'hired';
-        actions.innerHTML = isTerminal ? '' : `
+        actions.innerHTML = isTerminal ? `
+            <button class="btn-action reject" onclick="deleteCandidate(${app.id}); closeCandidateModal();">Delete</button>
+        ` : `
             <button class="btn-action accept" onclick="updateCandidateStatus(${app.id}, 'shortlisted'); closeCandidateModal();">Shortlist</button>
             <button class="btn-action reject" onclick="updateCandidateStatus(${app.id}, 'rejected'); closeCandidateModal();">Reject</button>
+            <button class="btn-action reject" onclick="deleteCandidate(${app.id}); closeCandidateModal();">Delete</button>
         `;
 
         const modal = document.getElementById('candidateModal');
@@ -1004,6 +1011,25 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.warn('Failed to update application status:', e);
             alert('Failed to update candidate status.');
+        }
+    };
+
+    window.deleteCandidate = async function(applicationId) {
+        if (!confirm('Delete this candidate application? This cannot be undone.')) return;
+        try {
+            const res = await fetch(`api/applications/index.php?id=${encodeURIComponent(applicationId)}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            const result = await res.json();
+            if (!result.success) {
+                throw new Error(result.message || 'Delete failed');
+            }
+            closeCandidateModal();
+            await loadCandidates();
+        } catch (e) {
+            console.warn('Failed to delete application:', e);
+            alert('Failed to delete candidate.');
         }
     };
 

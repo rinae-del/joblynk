@@ -476,7 +476,7 @@ function jp_asset(string $path): string
 
         <div class="jp-success" id="jpSuccess" hidden>
             <i class="fa-solid fa-circle-check"></i>
-            <h2>Application submitted!</h2>
+            <h2>Your application has been sent</h2>
             <p id="jpSuccessMsg">We've received your application. Check your email for confirmation and next steps.</p>
             <div class="jp-success-actions">
                 <a href="dashboard.html" class="btn-landing btn-landing-primary">Go to dashboard</a>

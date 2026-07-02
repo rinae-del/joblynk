@@ -50,6 +50,7 @@ function ensureJobsSchema(PDO $pdo): array
         'closing_date' => 'ALTER TABLE jobs ADD COLUMN closing_date DATE NULL AFTER benefits',
         'custom_fields' => 'ALTER TABLE jobs ADD COLUMN custom_fields TEXT NULL AFTER closing_date',
         'hide_salary' => 'ALTER TABLE jobs ADD COLUMN hide_salary TINYINT(1) NOT NULL DEFAULT 0 AFTER salary_period',
+        'auto_regret' => 'ALTER TABLE jobs ADD COLUMN auto_regret TINYINT(1) NOT NULL DEFAULT 0 AFTER hide_salary',
         'color' => "ALTER TABLE jobs ADD COLUMN color VARCHAR(20) DEFAULT '#3B4BA6' AFTER status",
         'source' => "ALTER TABLE jobs ADD COLUMN source ENUM('native','adzuna','dpsa','careerjet') NOT NULL DEFAULT 'native' AFTER color",
         'external_id' => "ALTER TABLE jobs ADD COLUMN external_id VARCHAR(100) NULL AFTER source",
@@ -176,6 +177,7 @@ function normalizeJobRow(array &$job): void
     $job['benefits'] = json_decode($job['benefits'] ?? '[]', true) ?: [];
     $job['custom_fields'] = json_decode($job['custom_fields'] ?? '[]', true) ?: [];
     $job['hide_salary'] = (int) ($job['hide_salary'] ?? 0);
+    $job['auto_regret'] = (int) ($job['auto_regret'] ?? 0);
     $job['salary_period'] = $job['salary_period'] ?? 'Per Month';
     $job['salary_note'] = $job['salary_note'] ?? '';
     $job['closing_date'] = $job['closing_date'] ?? null;

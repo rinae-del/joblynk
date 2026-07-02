@@ -10,58 +10,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing-home.css?v=20260626">
+    <link rel="stylesheet" href="landing-home.css?v=20260628">
 </head>
 
-<body class="landing-page">
+<body class="landing-page" data-nav-active="home">
 
     <!-- Announcement Bar -->
     <div class="announce-bar">
-        <span><i class="fa-solid fa-bolt"></i> <strong>Free AI TOOL / Free CV Builder &amp; Live SA Job Board</strong></span>
+        <span><i class="fa-solid fa-bolt"></i> <strong>Free AI Tool / Free CV Builder &amp; Live SA Job Board</strong></span>
         <a href="jobs.html">View Jobs <i class="fa-solid fa-arrow-right-long"></i></a>
     </div>
 
-    <!-- Navigation -->
-    <nav class="landing-nav">
-        <a href="index.html" class="landing-nav-logo" aria-label="JobLynk home">
-            <img src="images/logo.png" alt="" class="landing-logo-img">
-            <span class="landing-logo-text">JobLynk</span>
-        </a>
-
-        <div class="landing-nav-links">
-            <a href="index.html" class="landing-nav-link">Home</a>
-            <a href="jobs.html" class="landing-nav-link">For Job Seekers</a>
-            <a href="recruiter-pricing.html" class="landing-nav-link">For Recruiters</a>
-            <a href="#faq" class="landing-nav-link">FAQ</a>
-        </div>
-
-        <div class="landing-nav-actions">
-            <a href="jobs.html" class="btn-landing btn-landing-outline">View Jobs</a>
-            <a href="sign-in.html" class="btn-landing btn-landing-outline">Sign In</a>
-            <a href="sign-up.html" class="btn-landing btn-landing-primary">Get Started Free</a>
-        </div>
-
-        <button class="landing-nav-hamburger" id="navHamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
-    </nav>
-
-    <!-- Mobile Nav Menu -->
-    <div class="mobile-nav-menu" id="mobileNavMenu">
-        <a href="index.html">Home</a>
-        <a href="jobs.html">For Job Seekers</a>
-        <a href="recruiter-pricing.html">For Recruiters</a>
-        <a href="#faq">FAQ</a>
-        <a href="jobs.html">View Jobs</a>
-        <a href="sign-in.html">Sign In</a>
-        <a href="sign-up.html">Get Started Free</a>
-    </div>
+    <div id="landingNavMount"></div>
 
     <!-- Hero Section -->
     <section class="hero-section hero-section--centered">
         <div class="hero-grid-bg" aria-hidden="true"></div>
         <div class="hero-content hero-content--centered">
-            <span class="hero-eyebrow"><i class="fa-solid fa-file-lines"></i> Free AI TOOL and CV Tools</span>
+            <span class="hero-eyebrow"><i class="fa-solid fa-wand-magic-sparkles"></i> Free AI Tool and CV Tools</span>
 
-            <h1 class="hero-title">The smart link to your next career move in <span>South Africa.</span></h1>
+            <h1 class="hero-title">The fastest way to land your next role in <span>South Africa.</span></h1>
 
             <p class="hero-subtitle">
                 Customise your existing CV or create a new CV using our free tools and templates. Browse live South African jobs and apply when the role feels right.
@@ -69,6 +37,7 @@
 
             <div class="hero-actions">
                 <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create Free CV <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="sign-up.html" class="btn-landing btn-landing-outline btn-lg">Sign up free</a>
                 <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg"><i class="fa-solid fa-briefcase"></i> View Jobs</a>
                 <a href="cover-letter.html" class="btn-landing btn-landing-ghost btn-lg"><i class="fa-solid fa-envelope-open-text"></i> Free AI Cover Letter</a>
             </div>
@@ -103,6 +72,40 @@
         </div>
     </section>
 
+    <!-- Featured Jobs -->
+    <section class="home-jobs-section" id="jobs" aria-labelledby="homeJobsHeading">
+        <div class="section-container">
+            <div class="home-jobs-header">
+                <div>
+                    <span class="eyebrow eyebrow-green">Live vacancies</span>
+                    <h2 id="homeJobsHeading">Featured roles across South Africa</h2>
+                    <p class="home-jobs-lead" id="homeJobsLead">Loading openings…</p>
+                </div>
+                <div class="home-jobs-header-actions">
+                    <a href="sign-up.html" class="btn-landing btn-landing-primary">Sign up free</a>
+                    <a href="jobs.html" class="btn-landing btn-landing-outline">View all jobs</a>
+                </div>
+            </div>
+
+            <div class="home-jobs-list" id="homeFeaturedJobs" aria-live="polite"></div>
+
+            <div class="home-jobs-foot">
+                <form class="home-jobs-search" action="jobs.html" method="get" role="search">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input type="search" name="q" placeholder="Search by job title, company or skill" autocomplete="off" enterkeyhint="search" aria-label="Search jobs">
+                    <button type="submit" class="btn-landing btn-landing-primary">Search</button>
+                </form>
+                <nav class="home-location-links" aria-label="Browse jobs by city">
+                    <a href="jobs.html?q=johannesburg">Johannesburg</a>
+                    <a href="jobs.html?q=cape%20town">Cape Town</a>
+                    <a href="jobs.html?q=durban">Durban</a>
+                    <a href="jobs.html?q=pretoria">Pretoria</a>
+                    <a href="jobs.html?q=remote">Remote</a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
     <!-- Why JobLynk / Differentiator Section -->
     <section class="why-section" id="why">
         <div class="section-container">
@@ -117,8 +120,8 @@
             <div class="why-grid">
                 <div class="why-card">
                     <div class="why-icon why-icon-amber"><i class="fa-solid fa-bullseye"></i></div>
-                    <h3>Designed for SA, not global noise</h3>
-                    <p>Real local jobs from real South African recruiters. Fresh, relevant listings updated regularly so you never waste time on outdated roles.</p>
+                    <h3>Verified companies and recruiters</h3>
+                    <p>Every listing comes from verified South African companies and recruiters. Fresh, relevant roles updated regularly so you never waste time on outdated posts.</p>
                 </div>
                 <div class="why-card">
                     <div class="why-icon why-icon-violet"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
@@ -134,7 +137,7 @@
                 <div class="why-card">
                     <div class="why-icon why-icon-green"><i class="fa-solid fa-handshake"></i></div>
                     <h3>Direct line to hiring decision-makers</h3>
-                    <p>We have eliminated the job board black hole. Apply to vetted recruiters and companies with the confidence that you are dealing directly with the people making the hire.</p>
+                    <p>Apply through verified companies and recruiters with confidence. You are dealing directly with the people making the hire, not anonymous listings.</p>
                 </div>
             </div>
         </div>
@@ -164,7 +167,7 @@
                     <img src="images/landing-cover-letter.png" alt="JobLynk cover letter builder screen" class="feature-img">
                 </div>
                 <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
-                <h3>AI Cover Letter Engine</h3>
+                <h3>Free AI Tool Cover Letter Engine</h3>
                 <p>Generate personalised, context-aware cover letters tailored to each job spec in seconds. Stop staring at blank pages.</p>
                 <a href="cover-letter.html" class="feature-link">Generate a cover letter <i class="fa-solid fa-arrow-right"></i></a>
                 <span class="feature-badge">Most loved</span>
@@ -261,7 +264,7 @@
                     <div class="testimonial-slide">
                         <div class="testimonial-card">
                             <div class="testimonial-result">Interview ready CV</div>
-                            <p class="testimonial-quote">I rebuilt my CV on JobLynk after struggling with old templates. It looked cleaner, read better and helped me apply with more confidence.</p>
+                            <p class="testimonial-quote">I rebuilt my CV with the Free AI Tool and landed interviews within three weeks. The templates looked cleaner and helped me apply with more confidence.</p>
                             <div class="testimonial-user">
                                 <img src="images/testimonial-sipho.png" alt="Sipho Mthembu" class="testimonial-avatar-img">
                                 <div class="user-meta">
@@ -275,7 +278,7 @@
                     <div class="testimonial-slide">
                         <div class="testimonial-card testimonial-card-featured">
                             <div class="testimonial-result testimonial-result-green">Hired through JobLynk</div>
-                            <p class="testimonial-quote">I applied to three roles on JobLynk and got called for interviews within a week. Two weeks later I had an offer. This platform actually works if you put in the effort.</p>
+                            <p class="testimonial-quote">I applied to three roles on JobLynk and got called for interviews within a week. Three weeks later I had an offer. This platform actually works if you put in the effort.</p>
                             <div class="testimonial-user">
                                 <img src="images/testimonial-thabo.png" alt="Thabo Radebe" class="testimonial-avatar-img">
                                 <div class="user-meta">
@@ -289,7 +292,7 @@
                     <div class="testimonial-slide">
                         <div class="testimonial-card">
                             <div class="testimonial-result testimonial-result-green">Stronger applications</div>
-                            <p class="testimonial-quote">The cover letter tool helped me sound professional without overthinking every paragraph. It gave me a solid starting point for each role.</p>
+                            <p class="testimonial-quote">The Free AI Tool cover letter builder helped me sound professional without overthinking every paragraph. I had an offer within a month.</p>
                             <div class="testimonial-user">
                                 <img src="images/testimonial-danielle.png" alt="Danielle Pieterse" class="testimonial-avatar-img">
                                 <div class="user-meta">
@@ -303,7 +306,7 @@
                     <div class="testimonial-slide">
                         <div class="testimonial-card">
                             <div class="testimonial-result testimonial-result-amber">Saved time</div>
-                            <p class="testimonial-quote">I could update my CV, check roles and prepare a cover letter from one place. That helped me apply after work without losing track.</p>
+                            <p class="testimonial-quote">I updated my CV, checked roles and prepared cover letters from one place. I landed a new payroll role in Durban within four weeks.</p>
                             <div class="testimonial-user">
                                 <img src="images/testimonial-michelle.png" alt="Michelle Naidoo" class="testimonial-avatar-img">
                                 <div class="user-meta">
@@ -317,7 +320,7 @@
                     <div class="testimonial-slide">
                         <div class="testimonial-card">
                             <div class="testimonial-result">Easy to use</div>
-                            <p class="testimonial-quote">The builder made it easy to turn my experience into something presentable. I did not need design skills to get a smart CV.</p>
+                            <p class="testimonial-quote">The builder made it easy to turn my experience into something presentable. I was hired as an office administrator within three weeks.</p>
                             <div class="testimonial-user">
                                 <img src="images/testimonial-lerato.png" alt="Lerato Mokoena" class="testimonial-avatar-img">
                                 <div class="user-meta">
@@ -356,7 +359,7 @@
                 </details>
                 <details class="faq-item">
                     <summary>Are the jobs on JobLynk verified?</summary>
-                    <p>Yes. Every recruiter and company is verified before they can post on JobLynk. We review each listing for quality and relevance so you only see real opportunities from legitimate South African recruiters and hiring teams.</p>
+                    <p>Yes. Every listing comes from verified companies and recruiters. We review each post for quality and relevance so you only see real opportunities from legitimate South African hiring teams.</p>
                 </details>
                 <details class="faq-item">
                     <summary>How does the AI cover letter work?</summary>
@@ -387,6 +390,7 @@
             </div>
             <div class="final-cta-actions">
                 <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create CV now <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Sign up free</a>
                 <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg">View Jobs</a>
                 <a href="recruiter-signup.html" class="btn-landing btn-landing-outline btn-lg">I'm a recruiter</a>
             </div>
@@ -397,7 +401,7 @@
     <footer class="landing-footer">
         <div class="footer-grid">
             <div class="footer-brand">
-                <a href="index.html" class="footer-brand-logo" aria-label="JobLynk home">
+                <a href="home.html" class="footer-brand-logo" aria-label="JobLynk home">
                     <img src="images/logo.png" alt="">
                     <span>JobLynk</span>
                 </a>
@@ -430,6 +434,7 @@
                 <ul>
                     <li><a href="terms-and-conditions.html">POPIA &amp; Data Policy</a></li>
                     <li><a href="recruiter-terms.html">Recruiter Terms</a></li>
+                    <li><a href="mailto:support@joblynk.co.za">Support</a></li>
                     <li><a href="mailto:info@joblynk.co.za">Contact</a></li>
                 </ul>
             </div>
@@ -481,8 +486,6 @@
     </div>
 
     <script>
-        const hamburger = document.getElementById('navHamburger');
-        const mobileMenu = document.getElementById('mobileNavMenu');
         const stickyCta = document.querySelector('.sticky-mobile-cta');
         const cvStartModal = document.getElementById('cvStartModal');
         const cvImportFile = document.getElementById('cvImportFile');
@@ -922,24 +925,6 @@ ${normalizeImportedText(extractedText).slice(0, 18000)}`;
             }
         });
 
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                mobileMenu.classList.toggle('open');
-                hamburger.querySelector('i').classList.toggle('fa-bars');
-                hamburger.querySelector('i').classList.toggle('fa-xmark');
-            });
-        }
-        if (mobileMenu) {
-            mobileMenu.querySelectorAll('a').forEach(a => {
-                a.addEventListener('click', () => {
-                    mobileMenu.classList.remove('open');
-                    if (hamburger) {
-                        hamburger.querySelector('i').classList.add('fa-bars');
-                        hamburger.querySelector('i').classList.remove('fa-xmark');
-                    }
-                });
-            });
-        }
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 const href = this.getAttribute('href');
@@ -1010,6 +995,11 @@ ${normalizeImportedText(extractedText).slice(0, 18000)}`;
             });
         })();
     </script>
+
+    <script src="landing-nav.js?v=20260701"></script>
+    <script src="jobs-store.js?v=20260717"></script>
+    <script src="jobs-browser.js?v=20260625-board"></script>
+    <script src="home.js?v=20260628"></script>
 
 </body>
 

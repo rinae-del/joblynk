@@ -12,11 +12,13 @@
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             background: #F8FAFC;
             color: #1E293B;
             line-height: 1.75;
             min-height: 100vh;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
         .tc-page {
             max-width: 780px;
@@ -104,6 +106,7 @@
             font-size: 0.92rem;
             color: #475569;
             line-height: 1.75;
+            overflow-wrap: anywhere;
         }
         .tc-section ul {
             list-style: none;
@@ -169,19 +172,19 @@
 
 <body>
     <div class="tc-page">
-        <a href="index.html" class="tc-back" onclick="if (history.length > 1) { history.back(); return false; }"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        <a href="home.html" class="tc-back" onclick="if (history.length > 1) { history.back(); return false; }"><i class="fa-solid fa-arrow-left"></i> Home</a>
         
         <div class="tc-logo"><span>JobLynk</span></div>
         <span class="tc-badge">Legal Document</span>
 
-        <h1>POPIA Consent & Data Sharing Agreement</h1>
-        <p class="tc-subtitle">Terms and Conditions</p>
+        <h1>POPIA Consent &amp; Data Sharing Agreement for Candidates</h1>
+        <p class="tc-subtitle">Terms and conditions for job seekers using JobLynk</p>
         <p class="tc-updated"><i class="fa-regular fa-calendar"></i> Last updated: 27 March 2026</p>
 
         <!-- Section 1 -->
         <div class="tc-section">
             <h2><span class="num">1</span> Purpose of Collection</h2>
-            <p>By registering a profile or submitting your CV, you ("the Data Subject") acknowledge and agree that JobLynk will collect and process your personal and special personal information (as defined by POPIA). This data is collected specifically for the purpose of:</p>
+            <p>By registering a profile or submitting your CV as a <strong>job seeker (candidate)</strong>, you acknowledge and agree that JobLynk will collect and process your personal information in line with the Protection of Personal Information Act (POPIA). This data is collected specifically for the purpose of:</p>
             <ul>
                 <li>Evaluating your suitability for current and future career opportunities.</li>
                 <li>Facilitating the recruitment process by matching your profile with job specifications.</li>
@@ -247,13 +250,19 @@
 
         <!-- Consent Summary -->
         <div class="tc-highlight">
-            <strong><i class="fa-solid fa-shield-halved"></i> By using JobLynk, you confirm that:</strong><br>
-            You have read and understood this POPIA Consent & Data Sharing Agreement. You consent to JobLynk processing your personal data and sharing your profile with potential employers for recruitment purposes in line with POPIA.
+            <strong><i class="fa-solid fa-shield-halved"></i> By using JobLynk as a candidate, you confirm that:</strong><br>
+            You have read and understood this POPIA Consent &amp; Data Sharing Agreement for candidates. You consent to JobLynk processing your personal data and sharing your profile with verified employers and recruiters for recruitment purposes in line with POPIA.
+        </div>
+
+        <div class="tc-section">
+            <h2><span class="num">6</span> Information Officer &amp; Complaints</h2>
+            <p>JobLynk's Information Officer can be reached at <a href="mailto:info@joblynk.co.za">info@joblynk.co.za</a>. Candidate support queries can be sent to <a href="mailto:support@joblynk.co.za">support@joblynk.co.za</a>.</p>
+            <p>If you believe your personal information has been processed unlawfully, you may lodge a complaint with the Information Regulator (South Africa).</p>
         </div>
 
         <div class="tc-footer">
             <p>JobLynk &copy; 2026. All rights reserved.</p>
-            <p style="margin-top:0.5rem;">Questions? <a href="mailto:info@joblynk.co.za">info@joblynk.co.za</a></p>
+            <p style="margin-top:0.5rem;">Candidate support: <a href="mailto:support@joblynk.co.za">support@joblynk.co.za</a> · General enquiries: <a href="mailto:info@joblynk.co.za">info@joblynk.co.za</a></p>
             <p style="margin-top:0.5rem;"><a href="recruiter-terms.html">Recruiter Terms &amp; Conditions</a></p>
         </div>
     </div>

@@ -25,9 +25,9 @@ foreach ($pfData as $key => $value) {
     $pfData[$key] = stripslashes((string) $value);
 }
 
-// Build parameter string for ITN verification using all posted fields up to signature.
+// Build parameter string for ITN verification (alphabetical keys per PayFast spec).
 $pfPassphrase = trim(PAYFAST_PASSPHRASE);
-$pfParamString = buildPayFastParameterString($pfData, false, true, false);
+$pfParamString = buildPayFastItnParameterString($pfData);
 
 // Add passphrase if set
 if ($pfPassphrase !== '') {

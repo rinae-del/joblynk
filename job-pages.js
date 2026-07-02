@@ -131,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
             job.location ? `<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> ${escText(job.location)}</span>` : '<span class="job-meta-pill"><i class="fa-solid fa-location-dot"></i> Remote-friendly</span>',
             job.type ? `<span class="job-meta-pill"><i class="fa-solid fa-clock"></i> ${escText(job.type)}</span>` : '',
             salary ? `<span class="job-meta-pill"><i class="fa-solid fa-wallet"></i> ${escText(salary)}</span>` : '',
-            job.jobReference ? `<span class="job-meta-pill"><i class="fa-solid fa-hashtag"></i> Ref ${escText(job.jobReference)}</span>` : ''
         ].filter(Boolean).join('');
     }
 
@@ -386,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (summary) {
             summary.textContent = filtering
                 ? `${sorted.length.toLocaleString()} match${sorted.length === 1 ? '' : 'es'} · ${allJobs.length.toLocaleString()} live roles`
-                : `${allJobs.length.toLocaleString()} live roles — picks for you below, or filter to narrow down`;
+                : `${allJobs.length.toLocaleString()} live roles. Picks for you below, or filter to narrow down`;
         }
 
         if (!sorted.length) {
@@ -483,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${closed
                         ? '<span class="job-applied-label job-closed-label"><i class="fa-solid fa-lock"></i> Position closed</span>'
                         : applied
-                            ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Application submitted</span>'
+                            ? '<span class="job-applied-label"><i class="fa-solid fa-circle-check"></i> Your application has been sent</span>'
                             : `<button type="button" class="job-apply-btn" id="jobDetailApply"><i class="fa-solid fa-paper-plane"></i> ${escText(applyLabel)}</button>`
                     }
                 </div>
@@ -500,7 +499,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div><dt>Posted</dt><dd>${escText(formatRelativeAge(job.postedAt))}</dd></div>
                             <div><dt>Applicants</dt><dd>${applicants}</dd></div>
                             ${closingLabel ? `<div><dt>Closing</dt><dd>${escText(closingLabel)}</dd></div>` : ''}
-                            ${job.jobReference ? `<div><dt>Reference</dt><dd>${escText(job.jobReference)}</dd></div>` : ''}
                         </dl>
                     </div>
                     <div class="job-detail-side-card">

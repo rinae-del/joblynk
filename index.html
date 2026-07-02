@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Find Jobs in South Africa | JobLynk — Launching Soon</title>
+    <title>Find Jobs in South Africa | JobLynk Launching Soon</title>
     <meta name="description" content="JobLynk is launching South Africa's smartest job board. Find jobs in Johannesburg, Cape Town, Durban &amp; remote. Get early access now.">
     <meta name="keywords" content="jobs South Africa, find jobs South Africa, job vacancies SA, jobs Johannesburg, jobs Cape Town, jobs Durban, remote jobs South Africa, South African job board">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -18,7 +18,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://joblynk.co.za/">
-    <meta property="og:title" content="Find Jobs in South Africa | JobLynk — Launching Soon">
+    <meta property="og:title" content="Find Jobs in South Africa | JobLynk Launching Soon">
     <meta property="og:description" content="A smarter way to find jobs in South Africa. Browse jobs in Johannesburg, Cape Town, Durban &amp; remote. Sign up for early access.">
     <meta property="og:site_name" content="JobLynk">
     <meta property="og:locale" content="en_ZA">
@@ -30,7 +30,7 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://joblynk.co.za/">
-    <meta name="twitter:title" content="Find Jobs in South Africa | JobLynk — Launching Soon">
+    <meta name="twitter:title" content="Find Jobs in South Africa | JobLynk Launching Soon">
     <meta name="twitter:description" content="A smarter way to find jobs in South Africa. Browse jobs in Johannesburg, Cape Town, Durban &amp; remote. Sign up for early access.">
     <meta name="twitter:image" content="https://joblynk.co.za/images/og-cover.png">
     <meta name="twitter:image:alt" content="JobLynk - Find jobs in South Africa">
@@ -101,17 +101,43 @@
             gap: 0.5rem;
         }
 
-        .logo-mark {
-            width: 28px;
+        .logo img {
+            display: block;
             height: 28px;
-            background: var(--accent);
-            border-radius: 6px;
-            display: inline-flex;
+            width: auto;
+            max-width: 96px;
+            object-fit: contain;
+        }
+
+        .site-header-inner {
+            display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .site-header-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .site-header-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .site-header-nav a:hover {
+            color: var(--text);
+        }
+
+        .site-header-nav .header-signup {
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            background: var(--accent);
             color: #fff;
-            font-size: 0.75rem;
-            font-weight: 700;
         }
 
         /* ── Hero ── */
@@ -426,11 +452,15 @@
 <body>
 
     <header class="site-header">
-        <div class="container">
-            <a href="index.html" class="logo" aria-label="JobLynk home">
-                <span class="logo-mark" aria-hidden="true">JL</span>
+        <div class="container site-header-inner">
+            <a href="home.html" class="logo" aria-label="JobLynk home">
+                <img src="images/logo.png" alt="">
                 JobLynk
             </a>
+            <nav class="site-header-nav" aria-label="Site">
+                <a href="home.html">Home</a>
+                <a href="sign-up.html" class="header-signup">Sign up</a>
+            </nav>
         </div>
     </header>
 
@@ -439,16 +469,16 @@
             <div class="container">
                 <p class="hero-eyebrow">South Africa &middot; Launching 2026</p>
 
-                <h1 class="hero-headline">Find jobs in South Africa faster.</h1>
+                <h1 class="hero-headline">The fastest way to land your next role in South Africa.</h1>
 
                 <p class="hero-body">
-                    JobLynk is building a better job board for South African job seekers.
-                    Browse verified vacancies in <strong>Johannesburg</strong>, <strong>Cape Town</strong>,
-                    <strong>Durban</strong> and remote roles — all in one place.
+                    JobLynk connects South African job seekers with verified companies and recruiters.
+                    Browse live vacancies in <strong>Johannesburg</strong>, <strong>Cape Town</strong>,
+                    <strong>Durban</strong> and remote roles, all in one place.
                 </p>
 
                 <p class="hero-kicker">
-                    <strong>Free CV builder</strong> &middot; <strong>AI cover letters</strong> &middot; <strong>Direct apply</strong>
+                    <strong>Free AI Tool</strong> &middot; <strong>Free CV builder</strong> &middot; <strong>Direct apply</strong>
                 </p>
 
                 <form class="notify-form" id="notifyForm" aria-label="Early access signup">
@@ -462,18 +492,18 @@
 
         <section class="features" aria-labelledby="features-heading">
             <div class="container">
-                <h2 id="features-heading">Built for South African job seekers</h2>
+                <h2 id="features-heading">Verified opportunities for South African talent</h2>
                 <div class="feature-grid">
                     <article class="feature-card">
-                        <h3>Real SA jobs only</h3>
-                        <p>Every listing is verified. No spam, no ghost jobs — just genuine South African employers hiring right now.</p>
+                        <h3>Verified companies and recruiters</h3>
+                        <p>Every listing comes from verified South African employers and recruiters hiring right now.</p>
                     </article>
                     <article class="feature-card">
                         <h3>Free CV builder</h3>
                         <p>Create a professional, ATS-ready CV in minutes using our guided builder. No design skills needed.</p>
                     </article>
                     <article class="feature-card">
-                        <h3>AI cover letters</h3>
+                        <h3>Free AI Tool cover letters</h3>
                         <p>Generate tailored cover letters for every job you apply to. Stand out from the stack automatically.</p>
                     </article>
                     <article class="feature-card">

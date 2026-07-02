@@ -203,7 +203,30 @@ if ($method === 'POST') {
     if ($isMultipart && isset($_FILES['logo'])) {
         $company = fetchCompanyProfile($pdo, $userId);
         if (empty($company['company_id'])) {
-            jsonResponse(['success' => false, 'message' => 'Save company details before uploading a logo.'], 422);
+            $fallbackName = trim($company['name'] ?? '');
+            if ($fallbackName === '') {
+                $fallbackName = trim($_SESSION['company_name'] ?? '');
+            }
+            if ($fallbackName === '') {
+                $fallbackName = 'My Company';
+            }
+
+            createCompanyProfile($pdo, $userId, [
+                'name' => $fallbackName,
+                'industry' => '',
+                'size' => '',
+                'vat_number' => '',
+                'address_line1' => '',
+                'address_line2' => '',
+                'city' => '',
+                'province' => '',
+                'postal_code' => '',
+                'country' => 'South Africa',
+                'website' => '',
+                'description' => '',
+                'logo_url' => '',
+            ]);
+            $company = fetchCompanyProfile($pdo, $userId);
         }
 
         $upload = storeCompanyLogoUpload($_FILES['logo'], (int) $company['company_id']);
