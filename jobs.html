@@ -6,15 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobLynk | Live SA Jobs</title>
     <meta name="description" content="Search live South African jobs on JobLynk. Browse roles by keyword, location and job type before signing in to apply.">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="apple-touch-icon" href="images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260716">
-    <link rel="stylesheet" href="jobs.css?v=20260628">
+    <link rel="stylesheet" href="landing-home.css?v=20260706k">
+    <link rel="stylesheet" href="jobs.css?v=20260706k">
 </head>
 
 <body class="landing-page jobs-public-page" data-nav-active="jobs">
+
+    <!-- Announcement Bar -->
+    <div class="announce-bar">
+        <span><i class="fa-solid fa-bolt"></i> <strong>Free AI Tool / Free CV Builder &amp; Live SA Job Board</strong></span>
+        <a href="home.html#cv-start">Build your CV <i class="fa-solid fa-arrow-right-long"></i></a>
+    </div>
 
     <div id="landingNavMount"></div>
 
@@ -146,13 +154,54 @@
         </div>
     </div>
 
-    <footer class="landing-footer jobs-footer">
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="home.html" class="footer-brand-logo" aria-label="JobLynk home">
+                    <img src="images/logo.png" alt="">
+                    <span>JobLynk</span>
+                </a>
+                <p>South Africa's purpose-built hiring platform, connecting the next generation of professionals with the country's most ambitious companies.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Job Seekers</h4>
+                <ul>
+                    <li><a href="sign-up.html">Create Profile</a></li>
+                    <li><a href="jobs.html">View Jobs</a></li>
+                    <li><a href="cv-builder.html">CV Builder</a></li>
+                    <li><a href="cover-letter.html">Cover Letters</a></li>
+                    <li><a href="sign-in.html">Sign In</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Recruiters</h4>
+                <ul>
+                    <li><a href="recruiter-pricing.html">Post a Job</a></li>
+                    <li><a href="recruiter-pricing.html">Recruiter Packages</a></li>
+                    <li><a href="recruiter-signup.html">Recruiter Signup</a></li>
+                    <li><a href="sign-in.html">Recruiter Login</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="terms-and-conditions.html">POPIA &amp; Data Policy</a></li>
+                    <li><a href="recruiter-terms.html">Recruiter Terms</a></li>
+                    <li><a href="mailto:support@joblynk.co.za">Support</a></li>
+                    <li><a href="mailto:info@joblynk.co.za">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
         <div class="footer-bottom">
             <p>&copy; 2026 JobLynk. Proudly South African. All rights reserved.</p>
             <div class="social-links">
-                <a href="index.html">Home</a>
-                <a href="cv-builder.html">CV Builder</a>
-                <a href="cover-letter.html">Cover Letters</a>
+                <a href="#" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
             </div>
         </div>
     </footer>

@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobLynk | Get Hired Faster in South Africa | Free CV Builder & Live Jobs</title>
     <meta name="description" content="South Africa's purpose-built hiring platform. Build a professional ATS-ready CV free, generate AI cover letters, and apply to live jobs across SA in one place.">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="apple-touch-icon" href="images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="landing-home.css?v=20260628">
+    <link rel="stylesheet" href="landing-home.css?v=20260706k">
 </head>
 
 <body class="landing-page" data-nav-active="home">
@@ -37,37 +39,7 @@
 
             <div class="hero-actions">
                 <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create Free CV <i class="fa-solid fa-arrow-right"></i></a>
-                <a href="sign-up.html" class="btn-landing btn-landing-outline btn-lg">Sign up free</a>
                 <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg"><i class="fa-solid fa-briefcase"></i> View Jobs</a>
-                <a href="cover-letter.html" class="btn-landing btn-landing-ghost btn-lg"><i class="fa-solid fa-envelope-open-text"></i> Free AI Cover Letter</a>
-            </div>
-
-            <ul class="hero-checklist">
-                <li><i class="fa-solid fa-check"></i> 100% free for job seekers</li>
-                <li><i class="fa-solid fa-check"></i> Live SA jobs from active recruiters</li>
-                <li><i class="fa-solid fa-check"></i> POPIA-compliant &amp; secure</li>
-            </ul>
-
-            <div class="hero-price-claim">
-                <strong>40% cheaper than other SA Job Boards</strong>
-                <span>Simple pricing for recruiters, free tools for job seekers.</span>
-            </div>
-
-            <div class="hero-trust-strip">
-                <div class="trust-avatars">
-                    <img src="images/testimonial-sipho.png" alt="" class="trust-avatar">
-                    <img src="images/testimonial-thabo.png" alt="" class="trust-avatar">
-                    <img src="images/testimonial-danielle.png" alt="" class="trust-avatar">
-                    <img src="images/testimonial-lerato.png" alt="" class="trust-avatar">
-                    <span class="trust-avatar trust-avatar-count">1.2k</span>
-                </div>
-                <div class="hero-trust-copy">
-                    <div class="trust-stars" aria-label="4.8 out of 5 stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-                        <strong>4.8 / 5</strong>
-                    </div>
-                    <p class="trust-label"><strong>1,200+</strong> South Africans hired through JobLynk</p>
-                </div>
             </div>
         </div>
     </section>
@@ -87,7 +59,13 @@
                 </div>
             </div>
 
-            <div class="home-jobs-list" id="homeFeaturedJobs" aria-live="polite"></div>
+            <div class="home-jobs-reveal">
+                <div class="home-jobs-list" id="homeFeaturedJobs" aria-live="polite"></div>
+                <div class="home-jobs-fade" aria-hidden="true"></div>
+            </div>
+            <div class="home-jobs-more">
+                <a href="jobs.html" class="btn-landing btn-landing-primary btn-lg">Browse jobs <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
 
             <div class="home-jobs-foot">
                 <form class="home-jobs-search" action="jobs.html" method="get" role="search">
@@ -390,7 +368,7 @@
             </div>
             <div class="final-cta-actions">
                 <a href="#cv-start" class="btn-landing btn-landing-primary btn-lg js-open-cv-start">Create CV now <i class="fa-solid fa-arrow-right"></i></a>
-                <a href="sign-up.html" class="btn-landing btn-landing-primary btn-lg">Sign up free</a>
+                <a href="sign-up.html" class="btn-landing btn-landing-outline btn-lg">Sign up free</a>
                 <a href="jobs.html" class="btn-landing btn-landing-outline btn-lg">View Jobs</a>
                 <a href="recruiter-signup.html" class="btn-landing btn-landing-outline btn-lg">I'm a recruiter</a>
             </div>
@@ -1003,7 +981,7 @@ ${normalizeImportedText(extractedText).slice(0, 18000)}`;
             if (reduce || !('IntersectionObserver' in window)) return;
 
             var targets = document.querySelectorAll(
-                '.section-header, .why-card, .feature-card, .home-jobs-search, .hero-price-claim, .hero-trust-strip'
+                '.section-header, .why-card, .feature-card, .home-job-row, .home-jobs-search'
             );
             if (!targets.length) return;
 

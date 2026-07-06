@@ -100,7 +100,7 @@
                 ? JobsBrowser.sortJobs(JobsStore.getActiveJobs(), 'newest')
                 : (JobsStore?.getActiveJobs?.() || []).slice();
 
-            const featured = jobs.slice(0, 8);
+            const featured = jobs.slice(0, 6);
 
             if (lead) {
                 lead.textContent = featured.length
@@ -114,6 +114,9 @@
             }
 
             list.innerHTML = featured.map(job => renderJobRow(job)).join('');
+            // Only fade the bottom row when there are enough cards to tease "more"
+            var reveal = list.closest('.home-jobs-reveal');
+            if (reveal) reveal.classList.toggle('is-faded', featured.length >= 5);
         } catch (error) {
             console.warn('Featured jobs failed:', error);
             if (lead) lead.textContent = 'Browse vacancies across Johannesburg, Cape Town, Durban and nationwide.';

@@ -4971,3 +4971,855 @@ body.reveal-on .js-reveal.is-visible {
     .btn-landing-primary::after { display: none; }
 }
 
+/* ============================================================
+   PREMIUM REFINEMENT LAYER
+   Editorial type scale, consistent section rhythm, disciplined
+   accent, and an elevated jobs list. Structure and copy unchanged;
+   colours stay within the existing indigo / slate palette.
+   ============================================================ */
+
+/* ---- Global type polish ---- */
+body.landing-page {
+    letter-spacing: -0.011em;
+}
+
+/* Consistent, confident section heading scale across the page */
+.landing-page .section-header h2,
+.landing-page .features-header h2,
+.landing-page .home-jobs-header h2 {
+    font-size: clamp(2.05rem, 3.8vw, 2.9rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+}
+
+.landing-page .section-header p,
+.landing-page .features-header p,
+.landing-page .home-jobs-lead {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+.landing-page .section-header,
+.landing-page .features-header {
+    margin-bottom: 3.5rem;
+}
+
+/* Refined eyebrows — smaller, wider tracking, quieter fill */
+.landing-page .eyebrow,
+.landing-page .section-header .eyebrow,
+.landing-page .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+}
+
+/* ---- Consistent, generous section rhythm ---- */
+.landing-page .home-jobs-section { padding: 6rem 0; }
+.landing-page .why-section { padding: 6rem 0; }
+.landing-page .features-section { padding: 6.5rem 2.5rem; }
+
+/* ---- Hero: disciplined emphasis instead of a rainbow gradient ---- */
+.landing-page .hero-title {
+    letter-spacing: -0.035em;
+    line-height: 1.03;
+}
+
+.landing-page .hero-title span {
+    background: linear-gradient(120deg, #818CF8 0%, #6366F1 60%, #60A5FA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.landing-page .hero-subtitle {
+    font-size: 1.16rem;
+    line-height: 1.65;
+    max-width: 540px;
+    color: #B4C0D3;
+}
+
+/* ---- Jobs list: from utilitarian rows to a premium directory ---- */
+.landing-page .home-jobs-list {
+    border-radius: 20px;
+    border-color: rgba(148, 163, 184, 0.16);
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.55));
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.landing-page .home-job-row {
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    gap: 1.15rem;
+    padding: 1.3rem 1.6rem;
+    border-bottom-color: rgba(148, 163, 184, 0.1);
+    position: relative;
+    transition: background 0.22s var(--ease-out);
+}
+
+/* Left accent rail that reveals on hover */
+.landing-page .home-job-row::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--job-accent, var(--accent));
+    opacity: 0;
+    transition: opacity 0.22s var(--ease-out);
+}
+
+.landing-page .home-job-row:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.landing-page .home-job-row:hover::before { opacity: 1; }
+
+.landing-page .home-job-logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    font-size: 1.15rem;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.landing-page .home-job-body h3 {
+    font-size: 1.06rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+}
+
+.landing-page .home-job-company {
+    font-size: 0.88rem;
+    margin-bottom: 0.4rem;
+}
+
+.landing-page .home-job-meta {
+    font-size: 0.8rem;
+    gap: 0.4rem 0.55rem;
+    align-items: center;
+    color: #8290a6;
+}
+
+/* Dot separators between meta items for an editorial rhythm */
+.landing-page .home-job-meta > * + *::before {
+    content: "·";
+    margin-right: 0.55rem;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.landing-page .home-job-cta {
+    height: 38px;
+    padding: 0 1.1rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+}
+
+/* ---- Cards: unified elevation and radius ---- */
+.landing-page .why-card,
+.landing-page .feature-card {
+    border-radius: 20px;
+}
+
+.landing-page .why-card {
+    padding: 2.25rem 2rem;
+}
+
+/* ---- Footer search: a touch more presence ---- */
+.landing-page .home-jobs-foot { margin-top: 2rem; }
+
+.landing-page .home-jobs-search {
+    padding: 0.6rem 0.6rem 0.6rem 1.15rem;
+    border-radius: 14px;
+    border-color: rgba(148, 163, 184, 0.18);
+}
+
+.landing-page .home-jobs-search input { font-size: 0.98rem; }
+
+/* ============================================================
+   HERO FOCUS PASS
+   One clear primary action, calmer supporting elements, and a
+   confident vertical rhythm. Structure/links unchanged.
+   ============================================================ */
+
+.landing-page .hero-section--centered {
+    padding: 7rem 2.5rem 5.5rem;
+}
+
+.landing-page .hero-content--centered {
+    max-width: 760px;
+}
+
+/* Eyebrow — quieter, on-brand indigo instead of shouting */
+.landing-page .hero-eyebrow {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(129, 140, 248, 0.3);
+    color: #C7D2FE;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    padding: 0.45rem 0.95rem;
+    margin-bottom: 1.75rem;
+}
+
+.landing-page .hero-eyebrow i { color: #A5B4FC; }
+
+/* Headline + subtitle rhythm */
+.landing-page .hero-title {
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    letter-spacing: -0.04em;
+    margin-bottom: 1.35rem;
+}
+
+.landing-page .hero-content--centered .hero-subtitle {
+    font-size: 1.2rem;
+    line-height: 1.65;
+    color: #AEBACE;
+    max-width: 560px;
+    margin-bottom: 2.25rem;
+}
+
+/* Primary action row — two buttons only, strong hierarchy */
+.landing-page .hero-actions {
+    gap: 0.85rem;
+    margin-bottom: 1.1rem;
+}
+
+.landing-page .hero-actions .btn-landing-primary.btn-lg {
+    padding: 1.05rem 2.15rem;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    box-shadow: 0 16px 38px rgba(99, 102, 241, 0.38);
+}
+
+.landing-page .hero-actions .btn-landing-outline.btn-lg {
+    padding: 1.05rem 1.85rem;
+    font-size: 1.02rem;
+    border-radius: 12px;
+    background: rgba(148, 163, 184, 0.06);
+    border-width: 1px;
+}
+
+/* Quiet tertiary links — present but out of the way */
+.landing-page .hero-actions-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-bottom: 2.4rem;
+    font-size: 0.9rem;
+}
+
+.landing-page .hero-actions-secondary a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #94A3B8;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.18s var(--ease-out);
+}
+
+.landing-page .hero-actions-secondary a:hover { color: #E2E8F0; }
+.landing-page .hero-actions-secondary a i { color: #818CF8; font-size: 0.85em; }
+.landing-page .hero-actions-sep { color: rgba(148, 163, 184, 0.45); }
+
+/* Checklist — refined, one calm reassurance line */
+.landing-page .hero-checklist {
+    gap: 0.5rem 1.6rem;
+    margin: 0 0 1.6rem;
+}
+
+.landing-page .hero-checklist li {
+    color: #B4C0D3;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Price claim — subtle premium pill, not a bright block */
+.landing-page .hero-price-claim {
+    gap: 0.4rem 0.7rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.09);
+    border-color: rgba(16, 185, 129, 0.26);
+    margin-bottom: 2.1rem;
+}
+
+.landing-page .hero-price-claim strong { color: #6EE7B7; font-weight: 800; }
+.landing-page .hero-price-claim span { font-size: 0.85rem; }
+
+/* Trust strip — a touch more air */
+.landing-page .hero-content--centered .hero-trust-strip { gap: 1rem; }
+
+@media (max-width: 700px) {
+    .landing-page .hero-section--centered { padding: 4rem 1.25rem 3.5rem; }
+    .landing-page .hero-actions { flex-direction: column; width: 100%; }
+    .landing-page .hero-actions .btn-landing.btn-lg { width: 100%; }
+}
+
+/* ============================================================
+   JOBS SECTION — featured roles as premium cards
+   Supersedes the earlier list treatment. Structure/JS unchanged.
+   ============================================================ */
+
+.landing-page .home-jobs-header { margin-bottom: 2.25rem; }
+
+.landing-page .home-jobs-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+}
+
+.landing-page .home-job-row {
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-areas:
+        "logo body"
+        "cta  cta";
+    gap: 0.15rem 1.15rem;
+    align-items: start;
+    padding: 1.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.5));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: transform 0.24s var(--ease-out), border-color 0.24s var(--ease-out),
+                box-shadow 0.24s var(--ease-out), background 0.24s var(--ease-out);
+}
+
+/* Drop the list divider + left rail — cards stand on their own */
+.landing-page .home-job-row:last-child { border-bottom: 1px solid rgba(148, 163, 184, 0.16); }
+.landing-page .home-job-row::before { display: none; }
+
+.landing-page .home-job-row:hover {
+    transform: translateY(-4px);
+    border-color: rgba(129, 140, 248, 0.5);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32);
+    background: linear-gradient(180deg, rgba(36, 47, 66, 0.75), rgba(17, 26, 44, 0.6));
+}
+
+.landing-page .home-job-logo {
+    grid-area: logo;
+    width: 56px;
+    height: 56px;
+    border-radius: 15px;
+}
+
+.landing-page .home-job-body { grid-area: body; min-width: 0; }
+
+.landing-page .home-job-body h3 {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 1.08rem;
+    line-height: 1.32;
+    min-height: 2.64em;
+}
+
+.landing-page .home-job-company { white-space: normal; }
+
+.landing-page .home-job-meta {
+    margin-top: 0.7rem;
+    gap: 0.35rem 0.5rem;
+}
+
+.landing-page .home-job-cta {
+    grid-area: cta;
+    width: 100%;
+    height: 42px;
+    margin-top: 1.15rem;
+    border-radius: 11px;
+    background: rgba(99, 102, 241, 0.14);
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    color: #C7D2FE;
+}
+
+.landing-page .home-job-row:hover .home-job-cta {
+    background: var(--accent);
+    border-color: transparent;
+    color: #fff;
+}
+
+@media (max-width: 720px) {
+    .landing-page .home-jobs-list { grid-template-columns: 1fr; }
+    .landing-page .home-job-row { padding: 1.25rem; }
+}
+
+/* ============================================================
+   JOBS CARD REFINEMENT — a finished, confident card:
+   defined surface, consistent logo tiles (no rainbow squares),
+   and a quiet "View role" footer link instead of a clunky button.
+   ============================================================ */
+
+.landing-page .home-job-row {
+    padding: 1.45rem 1.5rem 1.3rem;
+    background: rgba(30, 41, 59, 0.42);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.landing-page .home-job-row:hover {
+    background: rgba(33, 45, 66, 0.66);
+    border-color: rgba(129, 140, 248, 0.45);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Calm, uniform logo tiles — kills the multi-colour squares */
+.landing-page .home-job-logo {
+    background: rgba(129, 140, 248, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    color: #C7D2FE;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.landing-page .home-job-logo img {
+    background: #FFFFFF;
+    padding: 5px;
+    border-radius: 14px;
+}
+
+/* Type polish */
+.landing-page .home-job-body h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+    color: #F1F5F9;
+}
+
+.landing-page .home-job-company {
+    color: #97A4BA;
+    font-weight: 500;
+}
+
+.landing-page .home-job-meta {
+    margin-top: 0.8rem;
+    color: #8290A6;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.landing-page .home-job-meta .is-salary { color: #6EE7B7; font-weight: 700; }
+
+/* Footer: a divider + quiet "View role →" link (not a filled button) */
+.landing-page .home-job-cta {
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    margin-top: 1.2rem;
+    padding: 0.85rem 0 0;
+    border: none;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 0;
+    background: none;
+    color: #A5B4FC;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    gap: 0.45rem;
+    transition: color 0.2s var(--ease-out);
+}
+
+.landing-page .home-job-cta::after {
+    content: "\2192";
+    font-size: 1.05em;
+    transition: transform 0.2s var(--ease-out);
+}
+
+.landing-page .home-job-row:hover .home-job-cta {
+    color: #FFFFFF;
+    background: none;
+}
+
+.landing-page .home-job-row:hover .home-job-cta::after {
+    transform: translateX(4px);
+}
+
+/* ============================================================
+   JOBS CARD SPACING FIX
+   Cards size to their content (no stretch-induced dead space),
+   and the title no longer reserves a phantom second line.
+   ============================================================ */
+
+/* Don't stretch cards to match a taller neighbour — kills the big
+   gap between the meta line and the footer divider. */
+.landing-page .home-jobs-list { align-items: start; }
+
+.landing-page .home-job-row {
+    padding: 1.4rem 1.5rem 1.35rem;
+    row-gap: 0;
+    align-content: start;
+}
+
+/* Title takes only the space it needs (still clamps at 2 lines) */
+.landing-page .home-job-body h3 {
+    min-height: 0;
+    margin-bottom: 0.4rem;
+}
+
+.landing-page .home-job-company { margin-bottom: 0; }
+
+.landing-page .home-job-meta { margin-top: 0.7rem; }
+
+/* Footer sits a measured distance below the meta, not a chasm */
+.landing-page .home-job-cta {
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+}
+
+/* ============================================================
+   JOBS PREVIEW — fade the last row, funnel into "Browse jobs"
+   ============================================================ */
+.landing-page .home-jobs-reveal { position: relative; }
+
+.landing-page .home-jobs-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 230px;
+    background: linear-gradient(to bottom, rgba(13, 20, 37, 0) 0%, #0D1425 82%);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 2;
+}
+
+.landing-page .home-jobs-reveal.is-faded .home-jobs-fade { opacity: 1; }
+
+.landing-page .home-jobs-more {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 3;
+    margin-top: 1.75rem;
+}
+
+/* When the last row is faded, lift the CTA so it emerges from the fade */
+.landing-page .home-jobs-reveal.is-faded + .home-jobs-more {
+    margin-top: -2.75rem;
+}
+
+.landing-page .home-jobs-more .btn-landing {
+    padding: 1rem 2.5rem;
+    font-size: 1.02rem;
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(99, 102, 241, 0.42);
+}
+
+/* ============================================================
+   HOW IT WORKS — fix broken step layout + unstyled step text
+   ============================================================ */
+.landing-page .how-it-works { padding: 6.5rem 0; }
+
+/* Steps + arrows in a single row (was 5 items in a 3-col grid) */
+.landing-page .steps-grid {
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: stretch;
+    gap: 1.25rem;
+    max-width: 1000px;
+}
+
+.landing-page .step-item {
+    text-align: left;
+    padding: 2rem 1.75rem;
+    border-radius: 20px;
+    background: rgba(30, 41, 59, 0.42);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s var(--ease-out), border-color 0.25s var(--ease-out),
+                background 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+.landing-page .step-item:hover {
+    transform: translateY(-4px);
+    background: rgba(33, 45, 66, 0.6);
+    border-color: rgba(129, 140, 248, 0.45);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
+}
+
+/* Number becomes a tidy badge, not giant gradient text */
+.landing-page .step-number {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: rgba(99, 102, 241, 0.14);
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: initial;
+    color: #A5B4FC;
+    border: 1px solid rgba(129, 140, 248, 0.28);
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin-bottom: 1.3rem;
+}
+
+/* Style the step title/copy directly (markup has no .step-info wrapper) */
+.landing-page .step-item h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #F1F5F9;
+    margin-bottom: 0.5rem;
+}
+
+.landing-page .step-item p {
+    color: #97A4BA;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.landing-page .step-arrow {
+    align-self: center;
+    color: rgba(129, 140, 248, 0.55);
+    font-size: 1.4rem;
+}
+
+.landing-page .how-cta { margin-top: 3rem; }
+
+/* ============================================================
+   TESTIMONIALS — larger, warmer quote card with a quote mark
+   ============================================================ */
+.landing-page .testimonials-section { padding: 6.5rem 0 4.5rem; }
+
+.landing-page .testimonial-slide .testimonial-card {
+    max-width: 700px;
+    padding: 3rem 3rem 2.4rem;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(33, 45, 66, 0.7), rgba(15, 23, 42, 0.85));
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative quotation mark, top-right, out of the way of the chip */
+.landing-page .testimonial-slide .testimonial-card::before {
+    content: "\201C";
+    position: absolute;
+    top: -0.5rem;
+    right: 1.8rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 7rem;
+    line-height: 1;
+    color: rgba(129, 140, 248, 0.16);
+    pointer-events: none;
+}
+
+.landing-page .testimonial-slide .testimonial-quote {
+    position: relative;
+    font-size: 1.2rem;
+    line-height: 1.75;
+    color: #E8EDF5;
+    margin-bottom: 2rem;
+}
+
+.landing-page .testimonial-result {
+    background: rgba(99, 102, 241, 0.14);
+    border-color: rgba(129, 140, 248, 0.3);
+    color: #C7D2FE;
+    padding: 0.4rem 0.85rem;
+    margin-bottom: 1.4rem;
+}
+
+.landing-page .testimonial-avatar-img {
+    width: 54px;
+    height: 54px;
+    border: 2px solid rgba(129, 140, 248, 0.4);
+}
+
+.landing-page .user-meta h4 { font-size: 0.98rem; font-weight: 700; color: #F1F5F9; }
+.landing-page .user-meta p { font-size: 0.82rem; color: #97A4BA; margin: 0; }
+
+.landing-page .testimonial-arrow {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+.landing-page .testimonial-dot.active { background: var(--accent-light); }
+
+/* ============================================================
+   FOOTER — grounded full-width band, refined columns + socials
+   Uses theme variables so it adapts to light/dark.
+   ============================================================ */
+
+/* Full-width surface band; content stays centred at 1200 */
+.landing-page .landing-footer {
+    max-width: none;
+    margin: 6rem 0 0;
+    padding: 4.5rem 2.5rem 2.25rem;
+    background: var(--surface);
+    border-top: 1px solid var(--border-soft);
+}
+
+.landing-page .footer-grid,
+.landing-page .footer-bottom {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.landing-page .footer-grid {
+    gap: 2.5rem 3rem;
+    margin-bottom: 3rem;
+}
+
+/* Brand */
+.landing-page .footer-brand-logo {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+}
+
+.landing-page .footer-brand p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    max-width: 300px;
+}
+
+/* Link columns */
+.landing-page .footer-links h4 {
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    color: var(--text);
+    margin-bottom: 1.1rem;
+}
+
+.landing-page .footer-links li { margin-bottom: 0.7rem; }
+
+.landing-page .footer-links a {
+    display: inline-block;
+    font-size: 0.9rem;
+    transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.landing-page .footer-links a:hover {
+    color: var(--accent-light);
+    transform: translateX(3px);
+}
+
+/* Bottom bar */
+.landing-page .footer-bottom {
+    padding-top: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Social icons → tidy buttons */
+.landing-page .social-links { gap: 0.6rem; }
+
+.landing-page .social-links a {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--bg-light);
+    border: 1px solid var(--border-soft);
+    color: var(--muted);
+    font-size: 1rem;
+    transition: transform 0.2s var(--ease-out), color 0.2s var(--ease-out),
+                background 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+
+.landing-page .social-links a:hover {
+    color: #fff;
+    background: var(--accent);
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.32);
+}
+
+@media (max-width: 640px) {
+    .landing-page .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ============================================================
+   FINAL CTA BAND — cleaner indigo gradient, refined type,
+   one dominant primary. + Footer logo crop fix.
+   ============================================================ */
+.landing-page .final-cta-section { margin-top: 6rem; }
+
+.landing-page .final-cta-inner {
+    padding: 3.4rem clamp(1.75rem, 4vw, 3.75rem);
+    border-radius: 28px;
+    background:
+        radial-gradient(120% 140% at 12% 0%, rgba(99, 102, 241, 0.4), transparent 55%),
+        radial-gradient(100% 120% at 100% 110%, rgba(129, 140, 248, 0.22), transparent 55%),
+        linear-gradient(135deg, #232F4B, #0F172A);
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.5);
+}
+
+/* Subtle top sheen */
+.landing-page .final-cta-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    pointer-events: none;
+}
+
+.landing-page .final-cta-copy h2 {
+    font-size: clamp(1.95rem, 3.4vw, 2.7rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.85rem;
+}
+
+.landing-page .final-cta-copy p {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #CBD5E1;
+}
+
+.landing-page .final-cta-actions { gap: 0.75rem; }
+
+/* Outline buttons need presence on the coloured band */
+.landing-page .final-cta-actions .btn-landing-outline {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #E2E8F0;
+}
+
+.landing-page .final-cta-actions .btn-landing-outline:hover {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #FFFFFF;
+}
+
+.landing-page .final-cta-actions .btn-landing-primary {
+    box-shadow: 0 14px 34px rgba(99, 102, 241, 0.45);
+}
+
+/* Footer logo: show the full wide mark, uncropped (source is 762×423) */
+.landing-page .footer-brand-logo img {
+    width: auto;
+    height: 34px;
+    max-width: 130px;
+    border-radius: 0;
+    object-fit: contain;
+    object-position: left center;
+}
+
