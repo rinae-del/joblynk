@@ -24,6 +24,7 @@
                 { id: 'navJobs',         key: 'jobs',          icon: 'fa-solid fa-briefcase',           label: 'Jobs',           href: 'dashboard-jobs.html' },
                 { id: 'navApps',         key: 'applications',  icon: 'fa-regular fa-rectangle-list',    label: 'Applications',   href: 'dashboard.html#sectionApps' },
                 { id: 'navProfile',      key: 'profile',       icon: 'fa-solid fa-user-gear',           label: 'My Profile',     href: 'profile.html' },
+                { id: 'navNotifications',key: 'notifications', icon: 'fa-solid fa-bell',                label: 'Notifications',  href: 'notification-settings.html' },
             ],
             tabBarItems: [
                 { key: 'dashboard',     icon: 'fa-solid fa-house',              label: 'Home',     href: 'dashboard.html' },
@@ -34,6 +35,7 @@
             moreItems: [
                 { key: 'cover-letters', icon: 'fa-solid fa-envelope-open-text', label: 'Cover Letters', href: 'dashboard.html#sectionCoverLetters' },
                 { key: 'profile',       icon: 'fa-solid fa-user-gear',          label: 'My Profile',    href: 'profile.html' },
+                { key: 'notifications', icon: 'fa-solid fa-bell',               label: 'Notifications', href: 'notification-settings.html' },
             ],
             userIcon: { icon: 'fa-solid fa-user', bg: 'rgba(79,70,229,0.15)', color: '#818CF8' },
             bottomLinks: [
