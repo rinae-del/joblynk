@@ -244,3 +244,47 @@ Upload a parsed DPSA vacancy circular JSON via **Admin → Job Listings → Impo
 
 Afrihost supports multiple PHP versions. This app requires **PHP 7.4+** (PHP 8.x recommended).
 Set this in cPanel → **MultiPHP Manager** → select your domain → choose PHP 8.1 or 8.2.
+
+---
+
+## 13. Email (AWS SES) & Notification System
+
+Email now sends through **AWS SES** (v2 HTTPS API, signed with Signature V4 — no SDK, no SMTP).
+
+### 13.1 AWS setup
+1. In the AWS Console → **SES**, verify your sending **domain** (or a single sender address), and add the DKIM/SPF DNS records SES gives you.
+2. Request **production access** (moves you out of the SES sandbox so you can email anyone).
+3. Create an **IAM user** with a policy allowing `ses:SendEmail` / `ses:SendRawEmail`; generate an access key.
+
+### 13.2 .env
+```dotenv
+AWS_SES_REGION=eu-west-1            # or af-south-1
+AWS_SES_ACCESS_KEY_ID=AKIA...
+AWS_SES_SECRET_ACCESS_KEY=...
+MAIL_FROM_EMAIL=no-reply@yourdomain.co.za   # a verified SES identity
+MAIL_FROM_NAME=JobLynk
+MAIL_SECRET=<long-random-string>   # signs one-click unsubscribe links
+MAIL_CRON_SECRET=<long-random-string>       # guards the cron endpoints over HTTP
+REMINDER_AFTER_DAYS=7
+RECO_JOB_WINDOW_DAYS=10
+```
+(Resend has been removed. The `email_preferences` and `email_log` tables are created automatically on first use, or via `api/schema.sql`.)
+
+### 13.3 Consent & preferences
+- Model is **opt-out**: every category is on by default; users manage them at
+  `/notification-settings.html`, and every optional email has an unsubscribe link
+  + `List-Unsubscribe` header.
+- Categories: `account` (always on), `application_updates`, `reminders`,
+  `recommendations`, `marketing`.
+
+### 13.4 Scheduled emails (cPanel cron)
+Add two cron jobs (cPanel → **Cron Jobs**). Reminders daily, recommendations weekly:
+```bash
+# Daily 08:00 — nudge candidates with no response
+0 8 * * *  /usr/bin/php /home/cpuser/public_html/api/cron/send-reminders.php >/dev/null 2>&1
+
+# Mondays 08:30 — "jobs like these" digest (safe to run daily; dedups weekly)
+30 8 * * 1 /usr/bin/php /home/cpuser/public_html/api/cron/send-recommendations.php >/dev/null 2>&1
+```
+Both are also reachable over HTTP for external cron services, but only with the secret:
+`GET /api/cron/send-reminders.php?secret=MAIL_CRON_SECRET`.

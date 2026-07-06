@@ -1,11 +1,8 @@
 <?php
 /**
- * Resend Email Configuration
+ * Deprecated: email now sends via AWS SES.
+ * Kept as a shim so existing `require_once .../config/resend.php` calls
+ * (job.php, sitemap.php) still resolve APP_URL / APP_NAME and the mailer.
  */
 
-require_once __DIR__ . '/env.php';
-
-define('RESEND_API_KEY', env('RESEND_API_KEY', ''));
-define('RESEND_FROM_EMAIL', env('RESEND_FROM_EMAIL', 'Joblynk <onboarding@resend.dev>'));
-define('APP_URL', env('APP_URL', 'http://localhost'));
-define('APP_NAME', env('APP_NAME', 'Joblynk'));
+require_once __DIR__ . '/mailer.php';

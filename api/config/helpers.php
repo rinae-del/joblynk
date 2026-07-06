@@ -3,7 +3,7 @@
  * Shared helper functions for the API.
  */
 
-require_once __DIR__ . '/resend.php';
+require_once __DIR__ . '/mailer.php';
 
 /**
  * Set CORS and JSON response headers.
@@ -63,33 +63,11 @@ function isEmailVerificationRequired(): bool {
 }
 
 /**
- * Send an email using the Resend API (via cURL).
+ * Deprecated alias — email now sends via AWS SES (see config/mailer.php).
+ * Retained so existing callers keep working without edits.
  */
 function sendResendEmail(string $to, string $subject, string $htmlBody): bool {
-    $ch = curl_init('https://api.resend.com/emails');
-
-    $payload = json_encode([
-        'from'    => RESEND_FROM_EMAIL,
-        'to'      => [$to],
-        'subject' => $subject,
-        'html'    => $htmlBody,
-    ]);
-
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_HTTPHEADER     => [
-            'Authorization: Bearer ' . RESEND_API_KEY,
-            'Content-Type: application/json',
-        ],
-    ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    return $httpCode >= 200 && $httpCode < 300;
+    return sendEmail($to, $subject, $htmlBody);
 }
 
 /**

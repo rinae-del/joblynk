@@ -188,3 +188,27 @@ CREATE TABLE IF NOT EXISTS `job_credits` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`payment_id`) REFERENCES `payments`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+-- Email preferences (opt-out consent model) & send log
+CREATE TABLE IF NOT EXISTS `email_preferences` (
+    `user_id` INT NOT NULL,
+    `category` VARCHAR(40) NOT NULL,
+    `enabled` TINYINT(1) NOT NULL DEFAULT 1,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`user_id`, `category`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `email_log` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `category` VARCHAR(40) NOT NULL,
+    `subject` VARCHAR(255) NOT NULL DEFAULT '',
+    `dedup_key` VARCHAR(191) NULL,
+    `status` ENUM('sent','failed','skipped') NOT NULL DEFAULT 'sent',
+    `error` VARCHAR(255) NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_email_log_dedup` (`dedup_key`),
+    INDEX `idx_email_log_user_cat` (`user_id`, `category`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
