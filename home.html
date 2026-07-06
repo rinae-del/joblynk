@@ -996,6 +996,44 @@ ${normalizeImportedText(extractedText).slice(0, 18000)}`;
         })();
     </script>
 
+    <!-- Progressive scroll-reveal: pure enhancement, no content depends on it -->
+    <script>
+        (function () {
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce || !('IntersectionObserver' in window)) return;
+
+            var targets = document.querySelectorAll(
+                '.section-header, .why-card, .feature-card, .home-jobs-search, .hero-price-claim, .hero-trust-strip'
+            );
+            if (!targets.length) return;
+
+            document.body.classList.add('reveal-on');
+            targets.forEach(function (el, i) {
+                el.classList.add('js-reveal');
+                el.style.transitionDelay = ((i % 4) * 70) + 'ms';
+            });
+
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+            targets.forEach(function (el) { io.observe(el); });
+
+            // Safety net: reveal everything shortly after load, in case an
+            // element started in-view or an observer edge-case leaves it hidden.
+            window.addEventListener('load', function () {
+                setTimeout(function () {
+                    targets.forEach(function (el) { el.classList.add('is-visible'); });
+                }, 1200);
+            });
+        })();
+    </script>
+
     <script src="landing-nav.js?v=20260701"></script>
     <script src="jobs-store.js?v=20260717"></script>
     <script src="jobs-browser.js?v=20260625-board"></script>

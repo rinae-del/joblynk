@@ -55,7 +55,7 @@ $activities = [];
 // Recent user registrations
 $stmt = $pdo->query("SELECT id, first_name, last_name, role, created_at FROM users ORDER BY created_at DESC LIMIT 5");
 foreach ($stmt->fetchAll() as $u) {
-    $name = trim($u['first_name'] . ' ' . $u['last_name']);
+    $name = htmlspecialchars(trim($u['first_name'] . ' ' . $u['last_name']), ENT_QUOTES, 'UTF-8');
     $roleLabel = $u['role'] === 'recruiter' ? 'recruiter' : ($u['role'] === 'admin' ? 'admin' : 'user');
     $activities[] = [
         'type' => 'user_registered',
@@ -68,10 +68,12 @@ foreach ($stmt->fetchAll() as $u) {
 // Recent job postings
 $stmt = $pdo->query("SELECT j.title, j.company, j.created_at FROM jobs j ORDER BY j.created_at DESC LIMIT 5");
 foreach ($stmt->fetchAll() as $j) {
+    $company = htmlspecialchars((string) $j['company'], ENT_QUOTES, 'UTF-8');
+    $jobTitle = htmlspecialchars((string) $j['title'], ENT_QUOTES, 'UTF-8');
     $activities[] = [
         'type' => 'job_posted',
         'color' => '#7E22CE',
-        'text' => "<strong>{$j['company']}</strong> posted \"{$j['title']}\"",
+        'text' => "<strong>{$company}</strong> posted \"{$jobTitle}\"",
         'time' => $j['created_at'],
     ];
 }
@@ -84,11 +86,12 @@ $stmt = $pdo->query("
     ORDER BY a.created_at DESC LIMIT 5
 ");
 foreach ($stmt->fetchAll() as $a) {
-    $name = $a['applicant_name'] ?: 'Someone';
+    $name = htmlspecialchars($a['applicant_name'] ?: 'Someone', ENT_QUOTES, 'UTF-8');
+    $jobTitle = htmlspecialchars((string) $a['job_title'], ENT_QUOTES, 'UTF-8');
     $activities[] = [
         'type' => 'application_submitted',
         'color' => '#059669',
-        'text' => "<strong>{$name}</strong> applied for \"{$a['job_title']}\"",
+        'text' => "<strong>{$name}</strong> applied for \"{$jobTitle}\"",
         'time' => $a['created_at'],
     ];
 }
@@ -102,7 +105,7 @@ $stmt = $pdo->query("
     ORDER BY p.created_at DESC LIMIT 5
 ");
 foreach ($stmt->fetchAll() as $p) {
-    $name = trim($p['first_name'] . ' ' . $p['last_name']);
+    $name = htmlspecialchars(trim($p['first_name'] . ' ' . $p['last_name']), ENT_QUOTES, 'UTF-8');
     $amt = number_format($p['amount'], 0);
     $activities[] = [
         'type' => 'payment_received',

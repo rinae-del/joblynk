@@ -17,36 +17,34 @@
     --rp-green-light: #34d399;
     --rp-green-soft: rgba(16, 185, 129, 0.12);
     --rp-green-border: rgba(52, 211, 153, 0.32);
-    --rp-page-bg: #0b1120;
+    --rp-page-bg: transparent;
     --rp-card: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.68));
     --rp-card-hover: linear-gradient(180deg, rgba(40, 51, 71, 0.72), rgba(20, 28, 46, 0.78));
     --rp-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px rgba(2, 6, 23, 0.35);
     --rp-card-shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 22px 48px rgba(2, 6, 23, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.12);
 }
 
-/* Ambient depth — continues hero mood */
-html body.pricing-page,
-html[data-theme="dark"] body.pricing-page {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    background:
-        radial-gradient(ellipse 60% 40% at 82% 6%, rgba(16, 185, 129, 0.09), transparent 58%),
-        radial-gradient(ellipse 55% 45% at 10% 38%, rgba(99, 102, 241, 0.08), transparent 58%),
-        radial-gradient(ellipse 50% 40% at 88% 72%, rgba(99, 102, 241, 0.06), transparent 60%),
-        var(--rp-page-bg);
-    background-attachment: fixed;
+/* Hero shell — aligns with home landing */
+.pricing-hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-hero-section .hero-grid-bg {
+    opacity: 0.55;
 }
 
 .pricing-page .landing-nav-link.is-active {
-    color: #f1f5f9;
-    background: rgba(16, 185, 129, 0.16);
+    color: var(--text);
 }
 
-.pricing-page .mobile-nav-menu {
-    position: fixed;
-    top: var(--landing-nav-h, 68px);
-    left: 0;
-    right: 0;
-    z-index: 99;
+.pricing-page .landing-nav-link.is-active::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.pricing-page .mobile-nav-link.is-active {
+    color: var(--accent-light);
 }
 
 /* ── Section rule (shared with home) ─────────────────────── */
@@ -76,14 +74,25 @@ html[data-theme="dark"] body.pricing-page {
 
 /* ── Hero header ─────────────────────────────────────────── */
 .pricing-header {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
     align-items: start;
     gap: 2.5rem;
     max-width: var(--rp-max);
     margin: 0 auto;
-    padding: 3.25rem var(--rp-gutter) 2rem;
+    padding: 2.5rem var(--rp-gutter) 2rem;
     text-align: left;
+}
+
+.pricing-header-copy .hero-eyebrow {
+    margin-bottom: 0.85rem;
+}
+
+.pricing-header-copy .hero-checklist {
+    margin: 1.25rem 0 0;
+    justify-content: flex-start;
 }
 
 .pricing-header-copy {

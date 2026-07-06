@@ -647,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!app) return;
 
         // Mark application as viewed (fires email to candidate on first view)
-        fetch('/api/applications/index.php', {
+        fetch('api/applications/index.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -670,16 +670,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('candidateModalBody');
         body.innerHTML = `
             <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
-                <div style="width:50px; height:50px; border-radius:50%; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem;">${getInitials(applicantName)}</div>
+                <div style="width:50px; height:50px; border-radius:50%; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem;">${escapeHtml(getInitials(applicantName))}</div>
                 <div>
-                    <div style="font-weight:600; font-size:1.05rem;">${applicantName}</div>
-                    <div style="font-size:0.85rem; color:var(--text-muted);">${app.email || '-'}</div>
+                    <div style="font-weight:600; font-size:1.05rem;">${escapeHtml(applicantName)}</div>
+                    <div style="font-size:0.85rem; color:var(--text-muted);">${escapeHtml(app.email || '-')}</div>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
                 <div style="background:var(--bg); padding:12px; border-radius:10px;">
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Applied For</div>
-                    <div style="font-weight:600; font-size:0.9rem;">${app.job_title || 'Unknown Job'}</div>
+                    <div style="font-weight:600; font-size:0.9rem;">${escapeHtml(app.job_title || 'Unknown Job')}</div>
                 </div>
                 <div style="background:var(--bg); padding:12px; border-radius:10px;">
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Status</div>
@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div style="background:var(--bg); padding:12px; border-radius:10px;">
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Applicant Note</div>
-                    <div style="font-weight:500; font-size:0.85rem;">${app.note || '<span style="color:var(--text-muted);">No note</span>'}</div>
+                    <div style="font-weight:500; font-size:0.85rem;">${app.note ? escapeHtml(app.note) : '<span style="color:var(--text-muted);">No note</span>'}</div>
                 </div>
             </div>
 

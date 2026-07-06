@@ -3,9 +3,10 @@
 .env.local
 .env.production
 
-# IDE / Editor
+# IDE / Editor / local tooling
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~

@@ -104,8 +104,11 @@ const _authScript = document.currentScript || document.querySelector('script[src
         if (data.user.is_impersonating) {
             const banner = document.createElement('div');
             banner.style.cssText = 'background: #FEF2F2; color: #DC2626; padding: 10px 16px; text-align: center; font-weight: 600; font-size: 0.9rem; z-index: 9999; border: 1px solid #FCA5A5; border-radius: 8px; display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 16px;';
+            const escHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+            ));
             banner.innerHTML = `
-                <span><i class="fa-solid fa-user-secret"></i> You are impersonating <strong>${data.user.name}</strong> (${data.user.email}).</span>
+                <span><i class="fa-solid fa-user-secret"></i> You are impersonating <strong>${escHtml(data.user.name)}</strong> (${escHtml(data.user.email)}).</span>
                 <button onclick="window.location.href='api/admin/impersonate.php?revert=1'" style="background: #DC2626; color: white; border: none; padding: 4px 12px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">Return to Admin</button>
             `;
             const mainContent = document.querySelector('.main-content');

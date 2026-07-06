@@ -49,24 +49,30 @@ if ($task === 'cv_import') {
     $temperature = 0.45;
 }
 
-// ── Retrieve DeepSeek API key from admin settings ──
-$pdo = getDB();
+// ── Resolve DeepSeek API key: prefer the environment (not in the DB dump),
+//    fall back to the admin-configured setting for backwards compatibility. ──
+$apiKey = trim((string) env('DEEPSEEK_API_KEY', ''));
 
-try {
-    $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'deepseek_api_key'");
-    $stmt->execute();
-    $row = $stmt->fetch();
-} catch (PDOException $e) {
-    jsonResponse(['success' => false, 'message' => 'AI generation is not configured. Please contact the administrator.'], 503);
+if ($apiKey === '') {
+    $pdo = getDB();
+    try {
+        $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'deepseek_api_key'");
+        $stmt->execute();
+        $row = $stmt->fetch();
+    } catch (PDOException $e) {
+        jsonResponse(['success' => false, 'message' => 'AI generation is not configured. Please contact the administrator.'], 503);
+    }
+
+    if ($row) {
+        $decoded = json_decode($row['setting_value'], true);
+        if (is_string($decoded)) {
+            $apiKey = trim($decoded);
+        }
+    }
 }
 
-if (!$row) {
-    jsonResponse(['success' => false, 'message' => 'AI generation is not configured. The administrator needs to set the DeepSeek API key in Settings.'], 503);
-}
-
-$apiKey = json_decode($row['setting_value'], true);
-if (!$apiKey || !is_string($apiKey)) {
-    jsonResponse(['success' => false, 'message' => 'AI API key is invalid. Please contact the administrator.'], 503);
+if ($apiKey === '') {
+    jsonResponse(['success' => false, 'message' => 'AI generation is not configured. Set DEEPSEEK_API_KEY in the environment (or the admin Settings key).'], 503);
 }
 
 // ── Call DeepSeek API ──

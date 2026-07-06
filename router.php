@@ -22,6 +22,20 @@ if ($path === '/sitemap.xml') {
     exit;
 }
 
+// Hard-deny sensitive files regardless of web server (defence-in-depth: does not
+// rely on Apache .htaccess, so it also protects under the PHP dev server / nginx).
+$basename = basename($path);
+if (
+    ($basename !== '' && $basename[0] === '.')                     // dotfiles: .env, .gitignore, .htaccess
+    || preg_match('#\.(env|ini|log|sql|bak|sh|lock)$#i', $path)    // secrets, dumps, backups
+    || preg_match('#(^|/)\.git(/|$)#', $path)                      // .git internals
+    || preg_match('#(^|/)(seed-database|install-mock-data)\.php$#i', $path) // dev-only scripts
+) {
+    http_response_code(404);
+    echo 'Not found.';
+    exit;
+}
+
 // Only serve the root path or .html files — reject everything else
 if ($path !== '/' && !str_ends_with($path, '.html')) {
     // Pass through to the real file (needed for .php / .css / .js / images)

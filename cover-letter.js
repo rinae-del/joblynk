@@ -476,6 +476,5 @@ Tone: Professional, confident, and concise. Keep it to 2-3 short paragraphs and 
     populateInputs();
     applyAccentColor(currentAccentColor);
     renderPreview();
-    checkApiKey();
 
 });

@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     `external_url` VARCHAR(500) NULL,
     `apply_mode` ENUM('native', 'email_relay', 'external_completion') NOT NULL DEFAULT 'native',
     `apply_email` VARCHAR(255) NULL,
-    `source_payload` JSON NULL,
+    `source_payload` LONGTEXT NULL,
     `last_seen_at` DATETIME NULL,
     `synced_at` DATETIME NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

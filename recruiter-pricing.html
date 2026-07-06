@@ -7,29 +7,45 @@
     <title>Recruiter Pricing | JobLynk</title>
     <meta name="description" content="Post your jobs on JobLynk, South Africa's smart recruitment platform. Choose a plan that fits your hiring needs.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="landing.css?v=20260716">
-    <link rel="stylesheet" href="recruiter-pricing.css?v=20260712">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="landing-home.css?v=20260628">
+    <link rel="stylesheet" href="recruiter-pricing.css?v=20260725">
 </head>
 
 <body class="landing-page pricing-page" data-nav-active="recruiters">
 
+    <div class="announce-bar">
+        <span><i class="fa-solid fa-building"></i> <strong>Recruiter packages from R750 · 40% cheaper than other SA job boards</strong></span>
+        <a href="#pricingGrid">Compare packages <i class="fa-solid fa-arrow-right-long"></i></a>
+    </div>
+
     <div id="landingNavMount"></div>
+
+    <section class="pricing-hero-section" aria-labelledby="pricingHeroHeading">
+        <div class="hero-grid-bg" aria-hidden="true"></div>
 
     <!-- Header -->
     <header class="pricing-header">
         <div class="pricing-header-copy">
+            <span class="hero-eyebrow"><i class="fa-solid fa-user-tie"></i> Built for South African recruiters</span>
             <div class="rp-section-rule" aria-hidden="true">
                 <span class="rp-section-rule-line"></span>
                 <span class="rp-section-rule-label">For recruiters</span>
             </div>
-            <h1>Recruit <em>smarter</em>, not harder</h1>
+            <h1 id="pricingHeroHeading">Recruit <em>smarter</em>, not harder</h1>
             <p>Clear packages. Post in minutes. Unlimited applicants on every plan.</p>
-            <p class="pricing-value-claim"><strong>40% cheaper than other SA Job Boards.</strong> Simple pricing for recruiters, free tools for job seekers.</p>
+            <p class="pricing-value-claim"><strong>40% cheaper than other SA job boards.</strong> Simple pricing for recruiters, free tools for job seekers.</p>
+            <ul class="hero-checklist">
+                <li><i class="fa-solid fa-check"></i> Free company logo on every listing</li>
+                <li><i class="fa-solid fa-check"></i> Unlimited applicants per role</li>
+                <li><i class="fa-solid fa-check"></i> POPIA-compliant candidate data</li>
+            </ul>
             <div class="pricing-hero-actions">
-                <a href="#pricingGrid" class="btn-landing btn-landing-green btn-lg">Compare packages <i class="fa-solid fa-arrow-down"></i></a>
-                <a href="recruiter-signup.html" class="btn-landing btn-landing-primary btn-lg">Sign up free</a>
+                <a href="#pricingGrid" class="btn-landing btn-landing-primary btn-lg">Compare packages <i class="fa-solid fa-arrow-down"></i></a>
+                <a href="recruiter-signup.html" class="btn-landing btn-landing-outline btn-lg">Sign up free</a>
+                <a href="sign-in.html" class="btn-landing btn-landing-ghost btn-lg">Recruiter login</a>
             </div>
         </div>
 
@@ -43,6 +59,7 @@
             </ul>
         </aside>
     </header>
+    </section>
 
     <p class="signup-hint">New recruiters pick a package, then complete account setup. Existing recruiters can sign in and buy credits anytime.</p>
 
@@ -241,23 +258,39 @@
         </div>
     </div>
 
+    <!-- Final CTA -->
+    <section class="final-cta-section">
+        <div class="final-cta-inner">
+            <div class="final-cta-copy">
+                <h2>Ready to post your first role?</h2>
+                <p>Choose a package, set up your company profile, and publish your first advert in minutes. Every plan includes branding, unlimited applicants, and CV downloads.</p>
+            </div>
+            <div class="final-cta-actions">
+                <a href="recruiter-signup.html" class="btn-landing btn-landing-primary btn-lg">Create recruiter account <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#pricingGrid" class="btn-landing btn-landing-outline btn-lg">View packages</a>
+                <a href="home.html" class="btn-landing btn-landing-ghost btn-lg">Back to Home</a>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="landing-footer pricing-footer">
+    <footer class="landing-footer">
         <div class="footer-grid">
             <div class="footer-brand">
-                <a href="index.html" class="footer-brand-logo" aria-label="JobLynk home">
+                <a href="home.html" class="footer-brand-logo" aria-label="JobLynk home">
                     <img src="images/logo.png" alt="">
                     <span>JobLynk</span>
                 </a>
-                <p>Recruiter tools for clearer adverts, faster review, and simpler hiring.</p>
+                <p>South Africa's purpose-built hiring platform. Post roles, review applicants, and hire with clearer tools and transparent pricing.</p>
             </div>
 
             <div class="footer-links">
                 <h4>Recruiters</h4>
                 <ul>
+                    <li><a href="recruiter-pricing.html">Recruiter Packages</a></li>
                     <li><a href="recruiter-signup.html">Create Account</a></li>
                     <li><a href="recruiter-overview.html">Dashboard</a></li>
-                    <li><a href="recruiter-terms.html">Recruiter Terms</a></li>
+                    <li><a href="sign-in.html">Recruiter Login</a></li>
                 </ul>
             </div>
 
@@ -265,23 +298,25 @@
                 <h4>Job Seekers</h4>
                 <ul>
                     <li><a href="sign-up.html">Create Profile</a></li>
-                    <li><a href="cv-builder.html">CV Builder</a></li>
                     <li><a href="jobs.html">View Jobs</a></li>
+                    <li><a href="cv-builder.html">CV Builder</a></li>
+                    <li><a href="cover-letter.html">Cover Letters</a></li>
                 </ul>
             </div>
 
             <div class="footer-links">
-                <h4>Support</h4>
+                <h4>Company</h4>
                 <ul>
-                    <li><a href="mailto:support@joblynk.co.za">support@joblynk.co.za</a></li>
+                    <li><a href="recruiter-terms.html">Recruiter Terms</a></li>
                     <li><a href="terms-and-conditions.html">POPIA &amp; Data Policy</a></li>
-                    <li><a href="home.html">Back to Home</a></li>
+                    <li><a href="mailto:support@joblynk.co.za">Support</a></li>
+                    <li><a href="home.html">Home</a></li>
                 </ul>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2026 JobLynk. All rights reserved.</p>
+            <p>&copy; 2026 JobLynk. Proudly South African. All rights reserved.</p>
             <div class="social-links">
                 <a href="#" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
                 <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
@@ -289,6 +324,10 @@
             </div>
         </div>
     </footer>
+
+    <div class="sticky-mobile-cta">
+        <a href="recruiter-signup.html" class="btn-landing btn-landing-primary btn-block">Sign up as recruiter <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
 
     <script src="landing-nav.js?v=20260701"></script>
     <script>
@@ -467,11 +506,23 @@
                 banner.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Payment was cancelled. You can try again when ready.';
             }
 
-            const header = document.querySelector('.pricing-header');
+            const header = document.querySelector('.pricing-hero-section') || document.querySelector('.pricing-header');
             header.parentNode.insertBefore(banner, header.nextSibling);
 
             // Clean URL
             window.history.replaceState({}, '', window.location.pathname);
+        })();
+
+        (function initStickyRecruiterCta() {
+            const stickyCta = document.querySelector('.sticky-mobile-cta');
+            if (!stickyCta) return;
+
+            const syncStickyCta = () => {
+                stickyCta.classList.toggle('is-visible', window.scrollY > 520);
+            };
+
+            syncStickyCta();
+            window.addEventListener('scroll', syncStickyCta, { passive: true });
         })();
 
     </script>

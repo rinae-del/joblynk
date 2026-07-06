@@ -15,17 +15,21 @@ require_once __DIR__ . '/../lib/adzuna-sync.php';
 $isCli = (PHP_SAPI === 'cli');
 
 if (!$isCli) {
-    $secret = env('SYNC_SECRET', '');
-    if ($secret !== '') {
-        $provided = $_GET['secret'] ?? $_POST['secret'] ?? ($_SERVER['HTTP_X_SYNC_SECRET'] ?? '');
-        if (!hash_equals($secret, (string) $provided)) {
-            http_response_code(403);
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Forbidden.']);
-            exit;
-        }
-    }
     header('Content-Type: application/json');
+    // HTTP access requires a configured secret. Without one, this endpoint is
+    // CLI-only (use the Admin → "Refresh job feed" button, which is auth-gated).
+    $secret = env('SYNC_SECRET', '');
+    if ($secret === '') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'This endpoint is disabled over HTTP. Set SYNC_SECRET to enable cron access.']);
+        exit;
+    }
+    $provided = $_GET['secret'] ?? $_POST['secret'] ?? ($_SERVER['HTTP_X_SYNC_SECRET'] ?? '');
+    if (!hash_equals($secret, (string) $provided)) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Forbidden.']);
+        exit;
+    }
 }
 
 $pdo = getDB();

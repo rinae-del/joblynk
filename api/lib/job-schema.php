@@ -57,7 +57,7 @@ function ensureJobsSchema(PDO $pdo): array
         'external_url' => "ALTER TABLE jobs ADD COLUMN external_url VARCHAR(500) NULL AFTER external_id",
         'apply_mode' => "ALTER TABLE jobs ADD COLUMN apply_mode ENUM('native','email_relay','external_completion') NOT NULL DEFAULT 'native' AFTER external_url",
         'apply_email' => "ALTER TABLE jobs ADD COLUMN apply_email VARCHAR(255) NULL AFTER apply_mode",
-        'source_payload' => 'ALTER TABLE jobs ADD COLUMN source_payload JSON NULL AFTER apply_email',
+        'source_payload' => 'ALTER TABLE jobs ADD COLUMN source_payload LONGTEXT NULL AFTER apply_email',
         'last_seen_at' => 'ALTER TABLE jobs ADD COLUMN last_seen_at DATETIME NULL AFTER source_payload',
         'synced_at' => 'ALTER TABLE jobs ADD COLUMN synced_at DATETIME NULL AFTER last_seen_at',
     ];
