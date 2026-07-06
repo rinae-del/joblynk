@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLynk | Email &amp; Notifications</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css?v=20260419">
+    <link rel="stylesheet" href="admin-dashboard.css?v=20260419">
+    <script src="auth-guard.js?v=20260524b" data-role="admin"></script>
+    <style>
+        .em-status { display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; }
+        .em-dot { width:10px; height:10px; border-radius:50%; }
+        .em-ok { color:#059669; } .em-ok .em-dot { background:#10B981; }
+        .em-bad { color:#DC2626; } .em-bad .em-dot { background:#EF4444; }
+        .em-row-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        .em-input { flex:1; min-width:200px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); font-family:inherit; }
+        .em-msg { font-size:0.82rem; margin-top:8px; min-height:1.2em; }
+        .em-msg.ok { color:#059669; } .em-msg.err { color:#DC2626; }
+        .em-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+        .em-table th, .em-table td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+        .em-table th { color:var(--text-muted); font-weight:700; text-transform:uppercase; font-size:0.7rem; letter-spacing:0.05em; }
+        .em-table td.wrap { white-space:normal; max-width:280px; }
+        .em-badge { padding:2px 8px; border-radius:999px; font-size:0.7rem; font-weight:700; }
+        .em-sent { background:rgba(16,185,129,0.15); color:#059669; }
+        .em-failed { background:rgba(239,68,68,0.15); color:#DC2626; }
+        .em-skipped { background:rgba(148,163,184,0.18); color:#64748B; }
+    </style>
+</head>
+
+<body>
+    <div id="app-sidebar" data-role="admin" data-active="email"></div>
+    <div id="app-topbar" data-label="Admin" data-role="admin"></div>
+
+    <main class="main-content">
+        <nav id="app-breadcrumb" data-crumbs='[{"label":"Admin","href":"admin-overview.html"},{"label":"Email &amp; Notifications"}]'></nav>
+
+        <section class="dash-section">
+            <div class="section-title-row">
+                <h2><i class="fa-solid fa-envelope section-icon" style="color:#6366F1"></i> Email &amp; Notifications</h2>
+            </div>
+
+            <div class="settings-grid">
+                <!-- SES status -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-plug-circle-check"></i> AWS SES status</h3>
+                    <div id="sesStatus" class="setting-row"><span class="setting-desc">Checking…</span></div>
+                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                        <span class="setting-desc">Send a test email to confirm delivery works end to end.</span>
+                        <div class="em-row-actions" style="width:100%;">
+                            <input type="email" id="testTo" class="em-input" placeholder="you@example.com">
+                            <button class="welcome-btn primary" style="color:#fff; background:linear-gradient(135deg,#6366F1,#818CF8);" onclick="sendTest()"><i class="fa-solid fa-paper-plane"></i> Send test</button>
+                        </div>
+                        <div class="em-msg" id="testMsg"></div>
+                    </div>
+                </div>
+
+                <!-- Manual batch runs -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-clock-rotate-left"></i> Run batches now</h3>
+                    <p class="setting-desc" style="margin-bottom:12px;">These normally run on a daily/weekly cron. Trigger them manually to test. They de-duplicate, so re-running is safe.</p>
+                    <div class="em-row-actions">
+                        <button class="welcome-btn secondary" style="color:var(--text); border-color:var(--border); background:var(--bg);" onclick="runBatch('run_reminders', this)"><i class="fa-solid fa-bell"></i> Run reminders</button>
+                        <button class="welcome-btn secondary" style="color:var(--text); border-color:var(--border); background:var(--bg);" onclick="runBatch('run_recommendations', this)"><i class="fa-solid fa-wand-magic-sparkles"></i> Run recommendations</button>
+                    </div>
+                    <div class="em-msg" id="batchMsg"></div>
+                </div>
+
+                <!-- Counts -->
+                <div class="settings-card">
+                    <h3 class="settings-card-title"><i class="fa-solid fa-chart-simple"></i> Send totals</h3>
+                    <div id="counts" class="setting-row"><span class="setting-desc">Loading…</span></div>
+                </div>
+            </div>
+
+            <!-- Recent log -->
+            <div class="settings-card" style="margin-top:20px;">
+                <h3 class="settings-card-title"><i class="fa-solid fa-list"></i> Recent emails</h3>
+                <div style="overflow-x:auto;">
+                    <table class="em-table">
+                        <thead><tr><th>When</th><th>Recipient</th><th>Category</th><th>Subject</th><th>Status</th></tr></thead>
+                        <tbody id="logBody"><tr><td colspan="5" class="setting-desc">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="components.js?v=20260706k"></script>
+    <script src="admin-dashboard.js?v=20260419"></script>
+    <script>
+    (function () {
+        var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+
+        function load() {
+            fetch('api/admin/email.php', { credentials: 'include' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (!d || !d.success) return;
+                    var s = d.ses || {};
+                    document.getElementById('sesStatus').innerHTML = s.configured
+                        ? '<span class="em-status em-ok"><span class="em-dot"></span>Configured</span><span class="setting-desc" style="margin-left:auto;">' + esc(s.from) + ' · ' + esc(s.region) + '</span>'
+                        : '<span class="em-status em-bad"><span class="em-dot"></span>Not configured</span><span class="setting-desc" style="margin-left:auto;">Set AWS_SES_* + MAIL_FROM_EMAIL in .env</span>';
+
+                    var c = d.counts || {};
+                    document.getElementById('counts').innerHTML =
+                        '<span class="em-badge em-sent">Sent ' + (c.sent || 0) + '</span> ' +
+                        '<span class="em-badge em-failed" style="margin:0 6px;">Failed ' + (c.failed || 0) + '</span> ' +
+                        '<span class="em-badge em-skipped">Skipped ' + (c.skipped || 0) + '</span>';
+
+                    var rows = (d.recent || []).map(function (e) {
+                        return '<tr><td>' + esc((e.created_at || '').replace('T', ' ').slice(0, 16)) + '</td>' +
+                            '<td>' + esc(e.email) + '</td>' +
+                            '<td>' + esc(e.category) + '</td>' +
+                            '<td class="wrap">' + esc(e.subject) + (e.error ? ' <span class="setting-desc">(' + esc(e.error) + ')</span>' : '') + '</td>' +
+                            '<td><span class="em-badge em-' + esc(e.status) + '">' + esc(e.status) + '</span></td></tr>';
+                    }).join('');
+                    document.getElementById('logBody').innerHTML = rows || '<tr><td colspan="5" class="setting-desc">No emails logged yet.</td></tr>';
+                });
+        }
+
+        window.sendTest = function () {
+            var to = document.getElementById('testTo').value.trim();
+            var msg = document.getElementById('testMsg');
+            msg.className = 'em-msg'; msg.textContent = 'Sending…';
+            fetch('api/admin/email.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ action: 'test', to: to }) })
+                .then(function (r) { return r.json(); })
+                .then(function (d) { msg.className = 'em-msg ' + (d.success ? 'ok' : 'err'); msg.textContent = d.message || (d.success ? 'Sent.' : 'Failed.'); load(); })
+                .catch(function () { msg.className = 'em-msg err'; msg.textContent = 'Request failed.'; });
+        };
+
+        window.runBatch = function (action, btn) {
+            var msg = document.getElementById('batchMsg');
+            if (btn) btn.disabled = true;
+            msg.className = 'em-msg'; msg.textContent = 'Running…';
+            fetch('api/admin/email.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ action: action }) })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (btn) btn.disabled = false;
+                    var res = d.result || {};
+                    msg.className = 'em-msg ' + (d.success ? 'ok' : 'err');
+                    msg.textContent = d.success ? ('Done — ' + JSON.stringify(res)) : (d.message || 'Failed.');
+                    load();
+                })
+                .catch(function () { if (btn) btn.disabled = false; msg.className = 'em-msg err'; msg.textContent = 'Request failed.'; });
+        };
+
+        load();
+    })();
+    </script>
+</body>
+
+</html>

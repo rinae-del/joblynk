@@ -55,6 +55,7 @@
                 { id: 'navApplications', key: 'applications', icon: 'fa-solid fa-file-signature',   label: 'Applications',  href: 'admin-applications.html' },
                 { id: 'navDocuments',    key: 'documents',    icon: 'fa-solid fa-folder-open',      label: 'Documents',     href: 'admin-documents.html' },
                 { id: 'navReports',      key: 'reports',      icon: 'fa-solid fa-chart-line',       label: 'Reports',       href: 'admin-reports.html' },
+                { id: 'navEmail',        key: 'email',        icon: 'fa-solid fa-envelope',         label: 'Email',         href: 'admin-email.html' },
                 { id: 'navSettings',     key: 'settings',     icon: 'fa-solid fa-gear',             label: 'Settings',      href: 'admin-settings.html' },
             ],
             // Bottom tab bar: first 4 items + "More" drawer
