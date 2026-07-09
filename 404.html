@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>404 — Page Not Found | JobLynk</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #FFFFFF;
+            --text: #0F172A;
+            --text-secondary: #64748B;
+            --accent: #1E3A5F;
+            --border: #E2E8F0;
+        }
+
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2.5rem;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .logo span {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .code {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: clamp(5rem, 18vw, 8rem);
+            line-height: 1;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.03em;
+        }
+
+        h1 {
+            font-size: clamp(1.35rem, 4vw, 1.75rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 28rem;
+        }
+
+        .divider {
+            width: 48px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 1.75rem auto;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo" aria-label="JobLynk">
+        <img src="images/logo.png" alt="">
+        <span>JobLynk</span>
+    </div>
+
+    <div class="code" aria-hidden="true">404</div>
+    <h1>Page not found</h1>
+    <div class="divider" aria-hidden="true"></div>
+    <p>Sorry, the page you are looking for does not exist or is temporarily unavailable.</p>
+
+    <p class="footer">&copy; <span id="year"></span> JobLynk. Proudly South African.</p>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

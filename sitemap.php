@@ -1,4 +1,9 @@
 <?php
+require_once __DIR__ . '/api/config/maintenance.php';
+if (isSiteTakedown()) {
+    serveTakedown404();
+}
+
 /**
  * sitemap.php — XML sitemap of public pages + every active job.
  * Served at /sitemap.xml (see .htaccess / router.php).

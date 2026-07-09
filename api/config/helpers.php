@@ -3,7 +3,10 @@
  * Shared helper functions for the API.
  */
 
+require_once __DIR__ . '/maintenance.php';
 require_once __DIR__ . '/mailer.php';
+
+abortIfSiteTakedown();
 
 /**
  * Set CORS and JSON response headers.

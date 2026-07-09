@@ -6,8 +6,14 @@
  * then serves the matching HTML file. Works with both mod_php and PHP-FPM.
  */
 
+require_once __DIR__ . '/api/config/maintenance.php';
+
 $uri  = $_SERVER['REQUEST_URI'] ?? '';
 $path = parse_url($uri, PHP_URL_PATH) ?? '';
+
+if (isSiteTakedown()) {
+    serveTakedown404();
+}
 
 // SEO-friendly single job pages: /job/{id}-{slug}
 if (preg_match('#^/job/(\d+)(?:-[^/]*)?/?$#', $path, $m)) {
@@ -52,9 +58,7 @@ if ($path === '/' || $path === '') {
 $file = __DIR__ . $path;
 
 if (!file_exists($file) || !is_file($file) || !is_readable($file)) {
-    http_response_code(404);
-    echo 'Not found.';
-    exit;
+    serveTakedown404();
 }
 
 $content = file_get_contents($file);

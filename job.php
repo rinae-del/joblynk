@@ -1,4 +1,9 @@
 <?php
+require_once __DIR__ . '/api/config/maintenance.php';
+if (isSiteTakedown()) {
+    serveTakedown404();
+}
+
 /**
  * job.php — Public, SEO-optimised single job page.
  * Server-rendered so crawlers get full content, meta tags and JobPosting
