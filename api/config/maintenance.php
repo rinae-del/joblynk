@@ -3,7 +3,7 @@
  * Temporary site takedown toggle.
  * Set SITE_TAKEDOWN to false to restore normal operation.
  */
-const SITE_TAKEDOWN = true;
+const SITE_TAKEDOWN = false;
 
 function isSiteTakedown(): bool
 {
